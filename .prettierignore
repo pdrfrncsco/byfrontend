@@ -1,0 +1,4 @@
+{
+  "extends": "./.eslintrc.cjs",
+  "extends": ["plugin:prettier/recommended"]
+}
