@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Competition Pro | Organizer Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#89938f",
+                    "inverse-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "on-secondary-container": "#adb4ce",
+                    "primary-fixed": "#afefdd",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-surface-variant": "#bfc9c4",
+                    "tertiary-container": "#cca730",
+                    "surface-container-low": "#0b1c30",
+                    "tertiary-fixed": "#ffe088",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed-variant": "#065043",
+                    "surface-variant": "#26364a",
+                    "surface-dim": "#031427",
+                    "outline-variant": "#3f4945",
+                    "on-primary-container": "#7ebdac",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "error": "#ffb4ab",
+                    "secondary": "#bec6e0",
+                    "surface-tint": "#94d3c1",
+                    "inverse-on-surface": "#213145",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-surface": "#d3e4fe",
+                    "on-tertiary-container": "#4f3e00",
+                    "primary": "#94d3c1",
+                    "on-secondary": "#283044",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-fixed": "#131b2e",
+                    "tertiary": "#e9c349",
+                    "surface": "#031427",
+                    "background": "#031427",
+                    "on-background": "#d3e4fe",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#000f21",
+                    "primary-container": "#004d40",
+                    "on-primary-fixed": "#00201a",
+                    "surface-container-highest": "#26364a",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary": "#00382e",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b",
+                    "secondary-container": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "title-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(148, 211, 193, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #031427;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f4945;
+            border-radius: 10px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- Sidebar Navigation -->
+<aside class="w-64 h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-md z-50 hidden md:flex">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-3 mb-xs">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">sports_soccer</span>
+</div>
+<div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tighter">CP</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Elite Performance Unit</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-md py-3 bg-primary-container text-on-primary-container border-l-4 border-primary font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Leagues
+            </a>
+<a class="flex items-center gap-3 px-md py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                Tournaments
+            </a>
+<a class="flex items-center gap-3 px-md py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">app_registration</span>
+                Registration
+            </a>
+<a class="flex items-center gap-3 px-md py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Fixtures
+            </a>
+<a class="flex items-center gap-3 px-md py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">format_list_numbered</span>
+                Standings
+            </a>
+<a class="flex items-center gap-3 px-md py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-sm text-label-sm active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+                Analytics
+            </a>
+</nav>
+<div class="px-md mt-auto pt-md border-t border-outline-variant/30">
+<button class="w-full py-2 bg-primary text-on-primary font-label-sm text-label-sm rounded-lg hover:brightness-110 active:scale-95 transition-all">
+                Export Global Data
+            </button>
+<div class="mt-md space-y-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Support
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">check_circle</span>
+                    System Status
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- Top Navbar -->
+<header class="w-full h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-lg sticky top-0 z-40">
+<div class="flex items-center gap-lg">
+<span class="font-headline-lg text-headline-lg text-primary tracking-tighter">DASHBOARD</span>
+<div class="hidden lg:flex items-center gap-6">
+<a class="text-primary border-b-2 border-primary pb-5 font-title-md text-title-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-title-md text-title-md" href="#">Competitions</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-title-md text-title-md" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-2 px-md py-2 bg-primary text-on-primary font-title-md text-title-md rounded hover:brightness-110 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Create Tournament
+                </button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior sports administrator in a dark business suit, set against a blurred background of a modern football stadium under stadium lights at night. High-contrast lighting, enterprise SaaS aesthetic, primary green accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDHGpzQBDeQ6f_suaVzw_AUbSByL35GKAi3uBq9XfKQf2PRGONAm7jmGjfzRvhntuxyax8rVNfl1MaH4qUz3cq7bGS5agUJu_VT178vBikut57vnOm1-4WPeb0TndhDJTTrd1olr78iPGO9-tTywjoXSouaUWPuYZ0fH60LMbdZCcom5AZGOv8eRZmCGjzGGZW8fkVKQuxEcOHW48SmSO9U-yMTFbRTeEp0nhU9n3TrodeWLmRvS5LA28xCi8HoZNikuqkRhaw0vc"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-lg max-w-container-max mx-auto w-full space-y-lg">
+<!-- Hero Bento Header -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- KPI Section -->
+<div class="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-primary">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Active Comps</span>
+<div class="flex items-end justify-between mt-sm">
+<span class="font-headline-lg text-headline-lg text-primary">12</span>
+<span class="font-data-tabular text-data-tabular text-primary/70">+2 this mo</span>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-tertiary">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Pending Reg</span>
+<div class="flex items-end justify-between mt-sm">
+<span class="font-headline-lg text-headline-lg text-tertiary">142</span>
+<span class="font-data-tabular text-data-tabular text-tertiary/70">8 urgency</span>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-secondary">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Fixtures Today</span>
+<div class="flex items-end justify-between mt-sm">
+<span class="font-headline-lg text-headline-lg text-secondary">24</span>
+<span class="font-data-tabular text-data-tabular text-secondary/70">4 live</span>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-outline">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Revenue (MTD)</span>
+<div class="flex items-end justify-between mt-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">$84k</span>
+<span class="font-data-tabular text-data-tabular text-primary">↑ 12%</span>
+</div>
+</div>
+</div>
+<!-- Registration Progress Widget -->
+<div class="lg:col-span-4 glass-panel p-md rounded-xl relative overflow-hidden group">
+<div class="absolute inset-0 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
+
+</div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Registration Status</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Girabola 24/25 League</p>
+</div>
+<span class="bg-primary-container text-on-primary-container px-2 py-1 rounded text-[10px] font-bold">LIVE</span>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between font-data-tabular text-data-tabular">
+<span>17/20 Teams</span>
+<span class="text-primary font-bold">85%</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary glow-accent" style="width: 85%"></div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-sm">3 teams pending documentation approval.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Dashboard Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Match Ticker & Fixtures -->
+<div class="lg:col-span-8 space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Upcoming Fixtures</h2>
+<div class="flex gap-2">
+<button class="px-3 py-1 glass-panel rounded hover:bg-surface-container-high text-label-sm font-label-sm">Filter</button>
+<button class="px-3 py-1 glass-panel rounded hover:bg-surface-container-high text-label-sm font-label-sm">Calendar</button>
+</div>
+</div>
+<div class="space-y-sm">
+<!-- Fixture Row 1 -->
+<div class="glass-panel hover:bg-surface-container-high transition-colors p-md rounded flex items-center gap-lg">
+<div class="w-16 text-center border-r border-outline-variant pr-md">
+<p class="font-data-tabular text-[12px] text-on-surface-variant uppercase">Today</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile">18:30</p>
+</div>
+<div class="flex-1 grid grid-cols-3 items-center">
+<div class="flex items-center gap-3 justify-end text-right">
+<span class="font-title-md text-title-md">Luanda City FC</span>
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official logo of a football club called Luanda City FC, featuring a modern geometric lion emblem in gold and black on a white circular crest. High definition sports logo aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4bQ6xCnRDusjGiVFivUScIiPrX1MEDFG4KMmMdR2JEZLV1u5wYSj1UH7JN7moehuIhdj_6mBoLsqNaK7hZwX2IjiOiHekhNxS8lbn6DXdhn3pGpwFJNgKGtohrcA90Wp4bLnBo15nb1VLIK4A-OgXPfsTlOopbPC5NmSODwi7zNNVUwruiuAhdi_UKVz0DXCXs6dVYa1YdA4v0V9Ecyw0SlXarYQYRC3J55wQhrSYPYUPNvFmgo4HiUr04EZEWLkDdbUxfrMD1h8"/>
+</div>
+</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant">vs</div>
+<div class="flex items-center gap-3 justify-start text-left">
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official logo of a football club called Sagrada Esperanca, featuring a classic shield with a sunrise and green/white stripes. Enterprise sports management style." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<span class="font-title-md text-title-md">Sagrada Esperanca</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right hidden sm:block">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Matchday 14</p>
+<p class="font-body-md text-body-md">National Stadium</p>
+</div>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:scale-110 transition-transform">analytics</span>
+</div>
+</div>
+<!-- Fixture Row 2 -->
+<div class="glass-panel hover:bg-surface-container-high transition-colors p-md rounded flex items-center gap-lg">
+<div class="w-16 text-center border-r border-outline-variant pr-md">
+<p class="font-data-tabular text-[12px] text-on-surface-variant uppercase">Today</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile">20:45</p>
+</div>
+<div class="flex-1 grid grid-cols-3 items-center">
+<div class="flex items-center gap-3 justify-end text-right">
+<span class="font-title-md text-title-md">Petro de Luanda</span>
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Petro de Luanda football club crest, featuring a circular blue and yellow emblem with an oil derrick symbol. Polished professional sports branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSwMYlkaFz_2BvOgVzU0oUj28cl5wqLH-TAKw1cUC0nY_bYX7Pun0KaLEy2O1tllRFDD0O0JXd9PGPbaLdDtFfIWIyVLOQ2dLRrdti300HopxJtiGy0aYa5YfY6YetDgsNQJfitQ8IdAYFfLVr3Arp7btabgoHdsMJvgEPHUxM2HXy2GU_XP8jeBGL3DTKcokHexHKSMnKcITd3hhZ_7qc1wa4yRs1sonr4TQfb-Sb50iYzHDfmOh1J1b42fu_-3OfJ74JIddgpGc"/>
+</div>
+</div>
+<div class="text-center font-label-sm text-label-sm text-on-surface-variant">vs</div>
+<div class="flex items-center gap-3 justify-start text-left">
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="1 de Agosto football club crest, a sophisticated red and black shield with star elements and classic typography. High quality digital sport icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt5uwJ8D2IYDbDfzoLiUWgw4s07rl_lgqsGJLf6R-n6G-LdWpCIHmN5cpZhpCjvDZs2EAiwhRoO7mWbp5g2qrUczOFlqBsxBvuvSCurnj51H1K3K7CA6WFicH-6UNraekMdo-AwjzMsWayWcxCn9g_zG8ka2Ef5E2_PNgg3RmgU6wdWU_cSmQ-Uo6d-klzspAhWKZ7oh7XVQl7YCZxLbTvdRcs2BQSalZoI-7AUbmqTOgI1pebxFEDksMjPPEvWddz0CkiRrJB6G4"/>
+</div>
+<span class="font-title-md text-title-md">1 de Agosto</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right hidden sm:block">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Super Cup Final</p>
+<p class="font-body-md text-body-md">Multisports Arena</p>
+</div>
+<span class="material-symbols-outlined text-tertiary cursor-pointer hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+</div>
+<!-- Fixture Row 3 (Live State) -->
+<div class="bg-surface-container-highest p-md rounded flex items-center gap-lg border border-primary/20 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-1 bg-primary"></div>
+<div class="w-16 text-center border-r border-outline-variant pr-md">
+<p class="font-data-tabular text-[12px] text-primary animate-pulse font-bold">LIVE 64'</p>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">2 - 1</p>
+</div>
+<div class="flex-1 grid grid-cols-3 items-center">
+<div class="flex items-center gap-3 justify-end text-right">
+<span class="font-title-md text-title-md">Bravos do Maquis</span>
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Bravos do Maquis football team logo, showing a fierce mascot on a blue and yellow crest. Professional sport aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTX9jIhkmiUwa8S8mHSiXnfkJMw2mljrtqJNIn0xdW7QPIW66wSAfOlibAPGdCLBcyyhIAOKpkWBYowhXK1WViqrrpJSzJcbACQeyUFENmKxdoyR8BuCYIPFb3mWSgpOkusnp2_EFyKDmRIHB8X4JToIcseUtEJZDIa6l0F8krveyEmNZlTPW3XlUGKtAPliGM4ZKnFZLqngV7qlAgsKx-nmfraO5yZpxB0mra6Zm2-Cln_fTrVTNmna1zoqFaeOTLyelsAMPnAzg"/>
+</div>
+</div>
+<div class="text-center">
+<span class="bg-primary/20 text-primary px-3 py-0.5 rounded-full text-[10px] font-bold">MATCH TRACKER</span>
+</div>
+<div class="flex items-center gap-3 justify-start text-left">
+<div class="w-8 h-8 bg-surface-variant rounded-full p-1 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Wiliete SC football club emblem, featuring green and yellow stripes with a modern minimalist shield design. High performance sports brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh83UzJeUiJk14zFsTkZ4fTOQviEhlIepgv5kGfwLQk9GGmXknabZkI4ipEE71OwL_461i3h9F3JXF1aOMWANHWs2-0g6WqMroKaGBZ9K5N2majxy067_F5CXkbA20OgqnGflyKM9c8Fk-zqEa8C3C4beA8hYA-NUXyf5UO4TpQISENQU2hJ_GN-R7G61CNRKrZD2_MXlc3nlpGaK_ieekk22Y98Q2SXXMVOy93qW61XOekYTEopSCSIvTwuwoHu-Nn9_P7fIDB0s"/>
+</div>
+<span class="font-title-md text-title-md">Wiliete SC</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right hidden sm:block">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Zonal League</p>
+<p class="font-body-md text-body-md">Mundunduleno Stadium</p>
+</div>
+<span class="material-symbols-outlined text-primary animate-pulse">broadcast_on_personal</span>
+</div>
+</div>
+</div>
+<!-- Async Data Table Preview -->
+<div class="glass-panel rounded-xl overflow-hidden mt-lg">
+<div class="p-md bg-surface-container border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md">Latest Player Registrations</h3>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-dim/50 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">
+<tr>
+<th class="px-md py-3 font-medium">Player Name</th>
+<th class="px-md py-3 font-medium">Club</th>
+<th class="px-md py-3 font-medium">ID Status</th>
+<th class="px-md py-3 font-medium">Payment</th>
+<th class="px-md py-3 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/20 transition-colors">
+<td class="px-md py-3">André Silva</td>
+<td class="px-md py-3">Petro Atlético</td>
+<td class="px-md py-3"><span class="text-primary">● Verified</span></td>
+<td class="px-md py-3">Complete</td>
+<td class="px-md py-3 text-right">
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-variant/20 transition-colors">
+<td class="px-md py-3">Mauro Bento</td>
+<td class="px-md py-3">Kabuscorp SC</td>
+<td class="px-md py-3"><span class="text-tertiary">● Pending Approval</span></td>
+<td class="px-md py-3 text-error">Failed</td>
+<td class="px-md py-3 text-right">
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-variant/20 transition-colors">
+<td class="px-md py-3">Zini Salvador</td>
+<td class="px-md py-3">Clube 1 de Agosto</td>
+<td class="px-md py-3"><span class="text-primary">● Verified</span></td>
+<td class="px-md py-3">Complete</td>
+<td class="px-md py-3 text-right">
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Sidebar / Quick Tools -->
+<div class="lg:col-span-4 space-y-lg">
+<!-- Quick Actions Cluster -->
+<div class="glass-panel p-lg rounded-xl space-y-md">
+<h3 class="font-title-md text-title-md mb-2">Organizer Toolbox</h3>
+<div class="grid grid-cols-2 gap-md">
+<button class="flex flex-col items-center justify-center p-md bg-surface-container hover:bg-primary/10 hover:border-primary border border-outline-variant rounded transition-all group">
+<span class="material-symbols-outlined text-primary mb-2 group-hover:scale-110 transition-transform">add_circle</span>
+<span class="font-label-sm text-label-sm">New Comp</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container hover:bg-tertiary/10 hover:border-tertiary border border-outline-variant rounded transition-all group">
+<span class="material-symbols-outlined text-tertiary mb-2 group-hover:scale-110 transition-transform">download</span>
+<span class="font-label-sm text-label-sm">Export CSV</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container hover:bg-secondary/10 hover:border-secondary border border-outline-variant rounded transition-all group">
+<span class="material-symbols-outlined text-secondary mb-2 group-hover:scale-110 transition-transform">person_add</span>
+<span class="font-label-sm text-label-sm">Add Official</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container hover:bg-outline/20 hover:border-outline border border-outline-variant rounded transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant mb-2 group-hover:scale-110 transition-transform">chat</span>
+<span class="font-label-sm text-label-sm">Bulk SMS</span>
+</button>
+</div>
+</div>
+<!-- Revenue Graph Preview -->
+<div class="glass-panel p-md rounded-xl">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-title-md text-title-md">Revenue Growth</h3>
+<span class="text-primary font-data-tabular text-data-tabular">+$12,400 wk</span>
+</div>
+<div class="h-40 w-full relative">
+<!-- Visual placeholder for a chart -->
+<div class="absolute bottom-0 left-0 w-full h-full flex items-end gap-1 px-1">
+<div class="w-1/12 bg-primary/20 h-1/4 rounded-t"></div>
+<div class="w-1/12 bg-primary/30 h-1/3 rounded-t"></div>
+<div class="w-1/12 bg-primary/40 h-1/2 rounded-t"></div>
+<div class="w-1/12 bg-primary/30 h-2/3 rounded-t"></div>
+<div class="w-1/12 bg-primary/50 h-3/4 rounded-t"></div>
+<div class="w-1/12 bg-primary/40 h-2/3 rounded-t"></div>
+<div class="w-1/12 bg-primary/60 h-4/5 rounded-t"></div>
+<div class="w-1/12 bg-primary/70 h-full rounded-t"></div>
+<div class="w-1/12 bg-primary/80 h-3/4 rounded-t"></div>
+<div class="w-1/12 bg-primary/90 h-1/2 rounded-t"></div>
+<div class="w-1/12 bg-primary h-5/6 rounded-t glow-accent"></div>
+<div class="w-1/12 bg-primary/80 h-3/4 rounded-t"></div>
+</div>
+</div>
+<div class="mt-md flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Mon</span>
+<span>Wed</span>
+<span>Fri</span>
+<span>Today</span>
+</div>
+</div>
+<!-- System Health / Audit Log -->
+<div class="glass-panel p-md rounded-xl">
+<h3 class="font-title-md text-title-md mb-md">Audit Activity</h3>
+<div class="space-y-md">
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-primary mt-1.5"></div>
+<div>
+<p class="font-body-md text-body-md">Fixture #1024 updated by <span class="text-primary">Admin_Dave</span></p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">2 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary mt-1.5"></div>
+<div>
+<p class="font-body-md text-body-md">New referee registration: <span class="text-tertiary">Marcos Mendes</span></p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">14 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-2 h-2 rounded-full bg-outline mt-1.5"></div>
+<div>
+<p class="font-body-md text-body-md">System Backup successful</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">1 hour ago</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Shell -->
+<footer class="w-full py-lg bg-surface-container-lowest mt-auto border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-xl max-w-container-max mx-auto gap-md">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-title-md text-title-md text-on-surface">COMPETITION PRO</span>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">© 2024 Global Football Ecosystem. Enterprise Grade Sports Management.</p>
+</div>
+<div class="flex gap-lg">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API Documentation</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Compliance</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Floating Action Button for Mobile Context -->
+<div class="fixed bottom-6 right-6 md:hidden">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+</div>
+<!-- Background Atmospheric Effect -->
+<div class="fixed inset-0 -z-10 opacity-30 pointer-events-none">
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-tertiary/5 blur-[100px] rounded-full"></div>
+</div>
+<script>
+        // Micro-interactions for the live ticker
+        const liveTicker = document.querySelector('.animate-pulse');
+        let counter = 64;
+        setInterval(() => {
+            if (counter < 90) {
+                counter++;
+                if (liveTicker) liveTicker.textContent = `LIVE ${counter}'`;
+            }
+        }, 10000); // Update every 10 seconds for demo
+
+        // Add hover effects to dashboard cards
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('border-primary/30');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('border-primary/30');
+            });
+        });
+    </script>
+</body></html>

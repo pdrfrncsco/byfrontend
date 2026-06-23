@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FootOps Admin - Onboarding Estádio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#d3e4fe",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "primary-container": "#004d40",
+                    "tertiary-container": "#cca730",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-primary-container": "#7ebdac",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-container-low": "#0b1c30",
+                    "on-secondary-fixed": "#131b2e",
+                    "on-secondary": "#283044",
+                    "outline": "#89938f",
+                    "surface-tint": "#94d3c1",
+                    "on-tertiary": "#3c2f00",
+                    "surface-container-lowest": "#000f21",
+                    "surface-variant": "#26364a",
+                    "surface-container-highest": "#26364a",
+                    "on-primary-fixed-variant": "#065043",
+                    "primary-fixed": "#afefdd",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-secondary-container": "#adb4ce",
+                    "surface-container": "#102034",
+                    "primary": "#94d3c1",
+                    "on-primary": "#00382e",
+                    "tertiary-fixed": "#ffe088",
+                    "outline-variant": "#3f4945",
+                    "inverse-on-surface": "#213145",
+                    "on-error-container": "#ffdad6",
+                    "secondary": "#bec6e0",
+                    "background": "#031427",
+                    "surface-dim": "#031427",
+                    "surface": "#031427",
+                    "on-error": "#690005",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-surface": "#d3e4fe",
+                    "on-primary-fixed": "#00201a",
+                    "secondary-fixed": "#dae2fd",
+                    "surface-bright": "#2a3a4f",
+                    "secondary-container": "#3f465c",
+                    "error-container": "#93000a",
+                    "tertiary": "#e9c349",
+                    "on-background": "#d3e4fe",
+                    "inverse-primary": "#29695b",
+                    "surface-container-high": "#1b2b3f",
+                    "on-tertiary-container": "#4f3e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xs": "4px",
+                    "xl": "48px",
+                    "lg": "24px",
+                    "container-max": "1440px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "sm": "8px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Archivo Narrow"],
+                    "body-md": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "title-md": ["Geist"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            overflow-x: hidden;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        .glass-card {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(148, 211, 193, 0.2);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest border-b border-outline-variant dark:border-outline-variant fixed top-0 w-full z-50 h-16 flex justify-between items-center px-lg">
+<div class="font-display-lg text-headline-lg text-primary dark:text-primary uppercase tracking-tight">FootOps Admin</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors p-2 rounded-full" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors p-2 rounded-full" data-icon="help">help</span>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of a football club administrator with a focused expression, set against a dark, tech-oriented studio background with subtle blue and green lighting. The style is sharp, corporate, and minimalist, echoing high-performance sports management aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClt2wc5ugDhffYGxmNVGNi__RKXkjFJXx-iPYfittHYmtBy4QdYWYJmWARoiyNQLe8Ngyvf3Of8nL9Eb0V-e7sLiVaZyX09genXSS9wF44735z9B1bmBUdTvVplmrVY5g-6_Fo9rNP0bGYygI00BCLhg28WM_IF2HawIc3fAkBgVLnvKaWFQjI67fpjdLzwSQmA_HbfdJRi-qaTmSe_OLan2AApKmAj8ky_RMugaXWITNPmB2Et8ZkHlfL1Hp2gAGGgTSrg74Vq_o"/>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar -->
+<aside class="bg-surface-container dark:bg-surface-container border-r border-outline-variant dark:border-outline-variant h-[calc(100vh-64px)] w-80 fixed left-0 flex flex-col hidden md:flex">
+<div class="p-lg">
+<div class="flex items-center gap-md mb-md">
+<div class="w-12 h-12 bg-surface-container-high rounded-xl flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="stadium">stadium</span>
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Setup Wizard</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Configuração Inicial</div>
+</div>
+</div>
+</div>
+<nav class="flex-1">
+<!-- Informação do Clube -->
+<div class="text-on-surface-variant flex items-center gap-md py-md px-lg hover:bg-surface-container-high cursor-pointer transition-all hover:text-primary">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+<span class="font-title-md text-title-md">Informação do Clube</span>
+</div>
+<!-- Identidade Visual -->
+<div class="text-on-surface-variant flex items-center gap-md py-md px-lg hover:bg-surface-container-high cursor-pointer transition-all hover:text-primary">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+<span class="font-title-md text-title-md">Identidade Visual</span>
+</div>
+<!-- Estádio (ACTIVE) -->
+<div class="text-primary font-bold flex items-center gap-md py-md px-lg bg-primary-container/10 border-r-4 border-primary cursor-pointer">
+<span class="material-symbols-outlined" data-icon="stadium" style="font-variation-settings: 'FILL' 1;">stadium</span>
+<span class="font-title-md text-title-md">Estádio</span>
+</div>
+<!-- Filiação -->
+<div class="text-on-surface-variant flex items-center gap-md py-md px-lg hover:bg-surface-container-high cursor-pointer transition-all hover:text-primary">
+<span class="material-symbols-outlined" data-icon="app_registration">app_registration</span>
+<span class="font-title-md text-title-md">Filiação</span>
+</div>
+<!-- Revisão -->
+<div class="text-on-surface-variant flex items-center gap-md py-md px-lg hover:bg-surface-container-high cursor-pointer transition-all hover:text-primary">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-title-md text-title-md">Revisão</span>
+</div>
+</nav>
+<!-- Progress Indicator -->
+<div class="p-lg border-t border-outline-variant">
+<div class="flex justify-between items-center mb-sm">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Progresso Total</span>
+<span class="text-label-sm font-label-sm text-primary">60%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 60%"></div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-80 pb-24 px-lg py-xl flex flex-col items-center">
+<div class="max-w-[1000px] w-full">
+<header class="mb-xl">
+<h1 class="font-display-lg text-headline-lg text-on-surface mb-xs">Infraestrutura: Estádio</h1>
+<p class="text-on-surface-variant text-body-md max-w-2xl">Insira os detalhes técnicos da praça esportiva principal. Estes dados serão utilizados para logística de jogos e relatórios de bilheteria.</p>
+</header>
+<div class="bento-grid">
+<!-- Form Section -->
+<div class="col-span-12 lg:col-span-7 glass-card p-lg rounded-xl flex flex-col gap-lg">
+<h3 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+                            Dados Básicos
+                        </h3>
+<div class="flex flex-col gap-md">
+<div class="group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs group-focus-within:text-primary transition-colors">Nome do Estádio</label>
+<input class="w-full bg-surface-container-highest border border-outline-variant rounded-lg p-md text-on-surface font-body-md focus:border-primary transition-all placeholder:text-on-surface-variant/30" placeholder="Ex: Estádio Municipal de Elite" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs group-focus-within:text-primary transition-colors">Capacidade Total</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border border-outline-variant rounded-lg p-md text-on-surface font-data-tabular focus:border-primary transition-all placeholder:text-on-surface-variant/30 pr-12" placeholder="0" type="number"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm">pax</span>
+</div>
+</div>
+<div class="group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs group-focus-within:text-primary transition-colors">Tipo de Gramado</label>
+<select class="w-full bg-surface-container-highest border border-outline-variant rounded-lg p-md text-on-surface font-body-md focus:border-primary transition-all appearance-none">
+<option>Grama Natural</option>
+<option>Híbrido</option>
+<option>Sintético Pro</option>
+</select>
+</div>
+</div>
+<div class="group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs group-focus-within:text-primary transition-colors">Endereço Completo</label>
+<textarea class="w-full bg-surface-container-highest border border-outline-variant rounded-lg p-md text-on-surface font-body-md focus:border-primary transition-all placeholder:text-on-surface-variant/30 resize-none" placeholder="Rua, Número, Bairro, Cidade - UF" rows="3"></textarea>
+</div>
+</div>
+<div class="mt-md p-md bg-secondary-container/20 rounded-lg border border-secondary-container flex gap-md items-start">
+<span class="material-symbols-outlined text-secondary" data-icon="tips_and_updates">tips_and_updates</span>
+<p class="text-on-secondary-container text-label-sm">Certifique-se de que a capacidade informada condiz com o laudo do Corpo de Bombeiros vigente.</p>
+</div>
+</div>
+<!-- Visualization Section -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-md">
+<div class="glass-card rounded-xl overflow-hidden flex-1 min-h-[300px] relative flex flex-col">
+<div class="absolute top-0 left-0 w-full p-md bg-gradient-to-b from-surface-container-lowest/80 to-transparent z-10 flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Visualização Geográfica</span>
+<button class="bg-surface-container-lowest/50 hover:bg-surface-container-low text-on-surface p-1 rounded-md border border-outline-variant backdrop-blur-sm transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="fullscreen">fullscreen</span>
+</button>
+</div>
+<!-- Map Placeholder with specific prompt -->
+<div class="flex-1 w-full bg-surface-container-highest relative overflow-hidden flex items-center justify-center">
+<div class="w-full h-full" data-alt="A high-tech digital map view of a modern sports stadium complex from a top-down satellite perspective. The map uses a sophisticated dark mode color scheme with deep midnight blues and vibrant primary green accents highlighting roads and infrastructure. Modern UI elements like glowing coordinate markers and data overlays create a precise, data-rich architectural visualization." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrORUEhSoH84Koxp3g3KZKNr9-G5PrlajasSe_ezvXkmK3kE723khQfZuk3JTgF0Y-LSJW86U2GaJ-jqaevkDjyXKNhFlGbaDJE2-sPVoSuOkCw7uSEfbYbzKOraOQXo74mwRRKhj12azZI8GXxiwPNS-E4vsW1-Xz-BluW71geGWVm2-a71VxyZlNqetTLKi-fzurjvr7gRL2W4pwkfcfevVvgEA7DB837KDK5EfnD1Qb3by3TCpFSfCpLeuvwmU6LYOr3Tacy8Y')"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="flex flex-col items-center animate-pulse">
+<span class="material-symbols-outlined text-primary text-5xl drop-shadow-[0_0_15px_rgba(148,211,193,0.5)]" data-icon="location_on" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<div class="bg-primary text-on-primary text-label-sm px-sm py-xs rounded mt-sm shadow-xl">Localização do Estádio</div>
+</div>
+</div>
+</div>
+<div class="p-md border-t border-outline-variant bg-surface-container-low flex justify-between items-center">
+<span class="text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="layers">layers</span>
+                                    Satélite Híbrido
+                                </span>
+<div class="flex gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+</div>
+</div>
+</div>
+<!-- Secondary Widget -->
+<div class="glass-card p-md rounded-xl border-l-4 border-tertiary">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-tertiary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="photo_camera">photo_camera</span>
+</div>
+<div class="flex-1">
+<div class="text-label-sm font-label-sm text-tertiary uppercase">Upload Opcional</div>
+<div class="text-body-md text-on-surface">Adicionar foto de fachada</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer Action Bar -->
+<footer class="fixed bottom-0 right-0 w-full md:w-[calc(100%-20rem)] bg-surface-container-low dark:bg-surface-container-low border-t border-outline-variant dark:border-outline-variant z-50">
+<div class="flex justify-between items-center px-xl py-md w-full max-w-container-max mx-auto">
+<button class="text-on-surface-variant border border-outline px-lg py-sm rounded-xl font-label-sm text-label-sm hover:bg-surface-container-high transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+                Voltar
+            </button>
+<div class="flex items-center gap-lg">
+<span class="text-label-sm text-on-surface-variant hidden sm:inline">Todos os campos marcados são obrigatórios.</span>
+<button class="bg-primary text-on-primary font-bold rounded-xl px-lg py-sm font-label-sm text-label-sm hover:opacity-90 transition-all flex items-center gap-sm shadow-lg shadow-primary/20">
+                    Continuar
+                    <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Subtle Background Shader Effect -->
+
+<script>
+        // Micro-interaction for input fields
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.closest('.group')?.classList.add('scale-[1.01]');
+            });
+            element.addEventListener('blur', () => {
+                element.closest('.group')?.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Simple coordinate display animation logic
+        let count = 0;
+        setInterval(() => {
+            count += 0.0001;
+            // This is just a visual placeholder for logic
+        }, 100);
+    </script>
+</body></html>

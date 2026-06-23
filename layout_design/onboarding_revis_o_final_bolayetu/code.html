@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BolaYetu Pro - Revisão e Lançamento</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#0b1c30",
+                    "primary-container": "#004d40",
+                    "on-error": "#690005",
+                    "surface-container": "#102034",
+                    "primary-fixed-dim": "#94d3c1",
+                    "secondary-container": "#3f465c",
+                    "on-surface-variant": "#bfc9c4",
+                    "on-secondary-fixed": "#131b2e",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "surface": "#031427",
+                    "on-primary-fixed": "#00201a",
+                    "tertiary-container": "#cca730",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-surface": "#d3e4fe",
+                    "on-tertiary": "#3c2f00",
+                    "inverse-on-surface": "#213145",
+                    "secondary-fixed": "#dae2fd",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "error": "#ffb4ab",
+                    "surface-bright": "#2a3a4f",
+                    "primary": "#94d3c1",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "surface-container-lowest": "#000f21",
+                    "error-container": "#93000a",
+                    "outline": "#89938f",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-secondary-container": "#adb4ce",
+                    "on-background": "#d3e4fe",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "background": "#031427",
+                    "tertiary-fixed": "#ffe088",
+                    "on-primary-container": "#7ebdac",
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b",
+                    "secondary": "#bec6e0",
+                    "outline-variant": "#3f4945",
+                    "on-secondary": "#283044",
+                    "surface-dim": "#031427",
+                    "inverse-surface": "#d3e4fe",
+                    "on-error-container": "#ffdad6",
+                    "tertiary": "#e9c349",
+                    "on-primary": "#00382e",
+                    "surface-container-highest": "#26364a",
+                    "primary-fixed": "#afefdd",
+                    "on-primary-fixed-variant": "#065043",
+                    "surface-variant": "#26364a",
+                    "surface-tint": "#94d3c1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xl": "48px",
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "body-md": ["Geist"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .confetti-slow {
+            animation: confetti-fall 10s linear infinite;
+        }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface text-primary dark:text-primary docked full-width top-0 border-b border-white/10 flex justify-between items-center h-16 px-gutter w-full z-50">
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary uppercase tracking-tighter">
+            BolaYetu Pro
+        </div>
+<div class="flex items-center gap-md">
+<button class="hover:text-primary-fixed-dim transition-colors scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<button class="hover:text-primary-fixed-dim transition-colors scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 pt-16 pb-20">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low dark:bg-surface-container-low docked h-[calc(100vh-64px)] w-64 left-0 bg-surface-container-low border-r border-white/10 shrink-0">
+<div class="px-md mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-primary">Setup Wizard</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Step 4 of 4</p>
+</div>
+<nav class="flex flex-col gap-xs">
+<div class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-label-sm text-label-sm">Organization</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+<span class="font-label-sm text-label-sm">Branding</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-white/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="emoji_events">emoji_events</span>
+<span class="font-label-sm text-label-sm">Competitions</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm text-primary border-r-2 border-primary bg-primary-container/10 transition-all duration-200 ease-in-out cursor-default">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-label-sm text-label-sm">Review</span>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 relative p-gutter md:p-xl overflow-y-auto">
+<!-- Atmospheric Elements -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-tertiary/5 rounded-full blur-[100px]"></div>
+<!-- Subtle Confetti Elements -->
+<div class="confetti-slow absolute top-0 left-[10%] w-2 h-2 bg-primary/40 rounded-full"></div>
+<div class="confetti-slow absolute top-[-50px] left-[40%] w-3 h-3 bg-tertiary/30 rotate-45" style="animation-delay: 2s;"></div>
+<div class="confetti-slow absolute top-[-20px] left-[80%] w-2 h-4 bg-secondary/30" style="animation-delay: 5s;"></div>
+</div>
+<!-- Content Header -->
+<div class="relative z-10 mb-xl">
+<div class="flex items-center gap-sm mb-xs">
+<span class="bg-primary/20 text-primary px-sm py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest">Revisão Final</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-xs">Quase lá, Comandante.</h1>
+<p class="text-on-surface-variant max-w-2xl">Revise as configurações do seu ecossistema digital antes do lançamento oficial. Todas as informações podem ser editadas posteriormente no painel administrativo.</p>
+</div>
+<!-- Bento Grid Summary -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter relative z-10 mb-xl">
+<!-- Organization Summary -->
+<div class="md:col-span-8 glass-panel p-lg rounded-xl flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="corporate_fare">corporate_fare</span>
+<h3 class="font-title-md text-title-md text-on-surface">Dados da Organização</h3>
+</div>
+<button class="text-primary hover:underline font-label-sm text-label-sm">Editar</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase mb-xs">Nome Oficial</p>
+<p class="font-title-md text-title-md">Federação Nacional de Futebol</p>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase mb-xs">Sede Regional</p>
+<p class="font-body-md text-body-md">Luanda, Angola</p>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase mb-xs">Tipo de Entidade</p>
+<p class="font-body-md text-body-md">Associação Governamental</p>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase mb-xs">Data de Fundação</p>
+<p class="font-data-tabular text-data-tabular">14 / 08 / 1979</p>
+</div>
+</div>
+</div>
+<!-- Branding Preview -->
+<div class="md:col-span-4 glass-panel p-lg rounded-xl flex flex-col gap-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-tertiary" data-icon="palette">palette</span>
+<h3 class="font-title-md text-title-md text-on-surface">Identidade</h3>
+</div>
+<button class="text-primary hover:underline font-label-sm text-label-sm">Editar</button>
+</div>
+<div class="flex items-center gap-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex items-center justify-center border border-white/10">
+<img class="w-12 h-12 object-contain" data-alt="A professional minimalist vector crest or logo for a football federation, featuring sharp geometric lines and a clean athletic aesthetic. The logo is rendered in high-contrast white against a deep midnight blue background, embodying a sense of authority and performance-focused branding. The style is inspired by modern corporate sports identity systems." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmZoCZfqCdS9W5GeQEq9MJ8KtGxbgRq0kSYRok-svp6m6Wxjc5QOyrH5XfOM4epxvqOi8EPOYKttqZmIgzfV1gDV3b7R4aMKWyrGvtDGjWLm5mkkEK3OcHmD-n33ozWrO8SERx2pcqCdzuVmuzsYP98v-FoAUiyBiV1QvnZ4ei4i-W7Ey_Q6nQGp9TBu90tFrZ3yt1rTl28_ilPgIyqnL_yLxRgVhnX-_h3HL4aDK1wjvlAClh9ON7JjvBTrJVs7WtcfIPXgCaqQI"/>
+</div>
+<div>
+<p class="font-title-md text-title-md">Escudo Principal</p>
+<p class="text-on-surface-variant font-label-sm text-label-sm">SVG Vector (Alt. Def.)</p>
+</div>
+</div>
+<div class="mt-xs">
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase mb-sm">Paleta de Cores</p>
+<div class="flex gap-xs">
+<div class="w-full h-8 bg-[#94d3c1] rounded-sm"></div>
+<div class="w-full h-8 bg-[#0b1c30] rounded-sm"></div>
+<div class="w-full h-8 bg-[#e9c349] rounded-sm"></div>
+</div>
+</div>
+</div>
+<!-- Competition Details -->
+<div class="md:col-span-12 glass-panel p-lg rounded-xl">
+<div class="flex justify-between items-center mb-lg">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="emoji_events">emoji_events</span>
+<h3 class="font-title-md text-title-md text-on-surface">Competições Configuradas</h3>
+</div>
+<button class="text-primary hover:underline font-label-sm text-label-sm">Gerenciar</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/5">
+<th class="py-md px-sm text-on-surface-variant font-label-sm text-label-sm uppercase">Nome da Competição</th>
+<th class="py-md px-sm text-on-surface-variant font-label-sm text-label-sm uppercase">Categoria</th>
+<th class="py-md px-sm text-on-surface-variant font-label-sm text-label-sm uppercase">Início</th>
+<th class="py-md px-sm text-on-surface-variant font-label-sm text-label-sm uppercase">Equipes</th>
+<th class="py-md px-sm text-on-surface-variant font-label-sm text-label-sm uppercase text-right">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-md px-sm font-title-md text-title-md font-bold">Liga Pro 1ª Divisão</td>
+<td class="py-md px-sm">Sênior Masculino</td>
+<td class="py-md px-sm">Mar 2024</td>
+<td class="py-md px-sm">16</td>
+<td class="py-md px-sm text-right"><span class="text-primary">Pronto</span></td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-md px-sm font-title-md text-title-md font-bold">Taça da Federação</td>
+<td class="py-md px-sm">Eliminatória Direta</td>
+<td class="py-md px-sm">Jun 2024</td>
+<td class="py-md px-sm">32</td>
+<td class="py-md px-sm text-right"><span class="text-primary">Pronto</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Launch Section -->
+<div class="relative z-10 flex flex-col items-center justify-center py-xl glass-panel rounded-xl border-primary/20 overflow-hidden">
+
+<div class="text-center relative z-20 max-w-lg px-md">
+<div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-lg">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="rocket_launch" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg mb-sm">Pronto para a Decolagem</h2>
+<p class="text-on-surface-variant mb-xl">Ao clicar no botão abaixo, seu ecossistema digital será gerado e os portais públicos estarão acessíveis para clubes e torcedores.</p>
+<div class="flex flex-col sm:flex-row gap-md justify-center">
+<button class="bg-primary text-on-primary px-xl py-lg rounded-lg font-title-md text-title-md font-bold hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20" onclick="handleLaunch()">
+                            Lançar Portal do Ecossistema
+                        </button>
+</div>
+</div>
+</div>
+<!-- Manual Navigation Buttons -->
+<div class="relative z-10 flex justify-between mt-xl pb-10">
+<button class="flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="font-title-md text-title-md">Voltar</span>
+</button>
+<button class="border border-outline px-xl py-md rounded-lg font-title-md text-title-md hover:bg-white/5 transition-all">
+                    Finalizar
+                </button>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-container-highest text-primary dark:text-primary docked full-width bottom-0 border-t border-white/10 shadow-lg fixed bottom-0 w-full z-50 flex justify-between items-center px-xl py-md">
+<div class="font-title-md text-title-md text-on-surface">© 2024 BolaYetu Digital Ecosystem</div>
+<div class="flex gap-lg">
+<a class="text-on-secondary-container hover:text-primary transition-colors cursor-pointer font-body-md text-body-md" href="#">Privacy Policy</a>
+<a class="text-on-secondary-container hover:text-primary transition-colors cursor-pointer font-body-md text-body-md" href="#">Terms of Service</a>
+<a class="text-on-secondary-container hover:text-primary transition-colors cursor-pointer font-body-md text-body-md" href="#">Support</a>
+</div>
+</footer>
+<script>
+        function handleLaunch() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<span class="flex items-center gap-md"><svg class="animate-spin h-5 w-5 text-on-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Iniciando...</span>';
+            btn.classList.add('pointer-events-none');
+            
+            setTimeout(() => {
+                alert('Portal BolaYetu Pro Lançado com Sucesso!');
+                btn.innerHTML = 'Lançamento Concluído';
+                btn.classList.replace('bg-primary', 'bg-tertiary-container');
+            }, 2000);
+        }
+
+        // Simple parallax effect for glass cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.glass-panel');
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+            
+            cards.forEach(card => {
+                card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Competition Pro | Standings &amp; Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#89938f",
+                    "inverse-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "on-secondary-container": "#adb4ce",
+                    "primary-fixed": "#afefdd",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-surface-variant": "#bfc9c4",
+                    "tertiary-container": "#cca730",
+                    "surface-container-low": "#0b1c30",
+                    "tertiary-fixed": "#ffe088",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed-variant": "#065043",
+                    "surface-variant": "#26364a",
+                    "surface-dim": "#031427",
+                    "outline-variant": "#3f4945",
+                    "on-primary-container": "#7ebdac",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "error": "#ffb4ab",
+                    "secondary": "#bec6e0",
+                    "surface-tint": "#94d3c1",
+                    "inverse-on-surface": "#213145",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-surface": "#d3e4fe",
+                    "on-tertiary-container": "#4f3e00",
+                    "primary": "#94d3c1",
+                    "on-secondary": "#283044",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-fixed": "#131b2e",
+                    "tertiary": "#e9c349",
+                    "surface": "#031427",
+                    "background": "#031427",
+                    "on-background": "#d3e4fe",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#000f21",
+                    "primary-container": "#004d40",
+                    "on-primary-fixed": "#00201a",
+                    "surface-container-highest": "#26364a",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary": "#00382e",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b",
+                    "secondary-container": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "title-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #031427; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 2px; }
+        
+        @keyframes line-draw {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+        .animate-draw {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: line-draw 3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-outline-variant w-full h-16 sticky top-0 z-50">
+<div class="flex justify-between items-center px-lg w-full max-w-container-max mx-auto h-full">
+<div class="flex items-center gap-xl">
+<span class="font-headline-lg text-headline-lg text-primary tracking-tighter">COMPETITION PRO</span>
+<nav class="hidden lg:flex items-center gap-lg">
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Dashboard</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Competitions</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Teams</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Schedules</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Referees</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center bg-surface-container-high px-md py-xs rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-xs">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-48" placeholder="Global Search..." type="text"/>
+</div>
+<button class="material-symbols-outlined p-sm hover:bg-surface-container-high rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined p-sm hover:bg-surface-container-high rounded-full transition-all">settings</button>
+<img class="w-8 h-8 rounded-full border border-primary object-cover" data-alt="A professional portrait of a sports administrator, high-end studio lighting, sharp focus, wearing a modern corporate blazer, neutral blue-gray background, echoing the professional and authoritative sports management theme of Competition Pro." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0sz-uwIhCc4BDcnEfBTb3GB8etHFWG1vjNpduB1Pbtm2JzrycsFoRmtekpVN5KnFsdSRDepTD0MaErE9qTm0mAlJX3NFndZqM6wg8Kr5iDoRvlmh2PF1PHmxvPg5XTCz9MiM3aSpgDW5cd6z7WIZkvX8WdUuLpVBjyc7jp1Ba0s0mKYhLNbDyVPwgwzxi7F1qBwCFQHIrtits42ZgUEWaQqPnH1MnyvdyGczy6bvwnsKbh7ow8voXdmoQT-Gdc4n7BW4TFl0-J-A"/>
+</div>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-64px)]">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col w-64 bg-surface-container-low border-r border-outline-variant py-md fixed left-0 top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-xs">
+<img class="w-10 h-10 rounded-lg" data-alt="A sophisticated football federation logo, minimalist geometric shield design in primary green and midnight blue, sharp corporate aesthetic, vector style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeLpt8jr-KF205bJa6JdEXvrtwmw0eChr66yIisjv_7Ut_YvxGdkcA7vRoHr9gjFrSIoCE5WuHYXJw8EC3Wb_wjWviYrha7XGGCPagNdiym3Im1SOlIDAb_qz8JBBxhzt7rFZrc8SyffULLWPDv9MKPdx4jgFU_TeYmD8qK3v2IHgapAHqreAwZc1g6sEzKDggw5ecpumC-jNt-_xBPXHTqovXdcI860jzt0LGw1KwCJuMFA3Bxc_eSc6rfXcAW1oBZZ2e1HVvBD0"/>
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Federation</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Elite Performance Unit</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-label-sm text-label-sm">Leagues</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-sm text-label-sm">Tournaments</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">app_registration</span>
+<span class="font-label-sm text-label-sm">Registration</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-sm text-label-sm">Fixtures</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container border-l-4 border-primary" href="#">
+<span class="material-symbols-outlined">format_list_numbered</span>
+<span class="font-label-sm text-label-sm">Standings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-sm text-label-sm">Analytics</span>
+</a>
+</nav>
+<div class="px-md mt-lg border-t border-outline-variant pt-md">
+<button class="w-full py-sm bg-primary text-on-primary font-title-md text-title-md rounded-lg active:translate-x-1 transition-transform mb-md">
+                    Export Global Data
+                </button>
+<div class="space-y-1">
+<a class="flex items-center gap-md px-sm py-xs text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span class="font-label-sm text-label-sm">Support</span>
+</a>
+<a class="flex items-center gap-md px-sm py-xs text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="font-label-sm text-label-sm text-primary">System Status: Optimal</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-lg bg-surface min-h-screen">
+<div class="max-w-container-max mx-auto space-y-lg">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md border-b border-outline-variant pb-md">
+<div>
+<nav class="flex gap-xs text-label-sm font-label-sm text-on-surface-variant mb-xs">
+<span>Leagues</span>
+<span>/</span>
+<span class="text-primary">Premier Division 2024</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">LEAGUE STANDINGS &amp; PERFORMANCE</h1>
+</div>
+<div class="flex gap-sm">
+<div class="bg-surface-container-high px-md py-sm rounded-lg flex items-center gap-sm cursor-pointer border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Matchweek 24</span>
+</div>
+<div class="bg-surface-container-high px-md py-sm rounded-lg flex items-center gap-sm cursor-pointer border border-outline-variant hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-tertiary">filter_list</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">All Groups</span>
+</div>
+</div>
+</div>
+<!-- Dashboard Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Main Table Section -->
+<div class="lg:col-span-8 space-y-lg">
+<section class="glass-card rounded-xl overflow-hidden shadow-2xl">
+<div class="px-md py-sm bg-surface-container flex justify-between items-center border-b border-outline-variant">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">leaderboard</span>
+                                    CHAMPIONSHIP TABLE
+                                </h3>
+<div class="flex gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Live Updates</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse font-data-tabular text-data-tabular">
+<thead class="bg-surface-container-low text-on-surface-variant uppercase tracking-tighter">
+<tr>
+<th class="px-md py-sm font-bold">Pos</th>
+<th class="px-md py-sm font-bold">Team</th>
+<th class="px-md py-sm font-bold text-center">P</th>
+<th class="px-md py-sm font-bold text-center">W</th>
+<th class="px-md py-sm font-bold text-center">D</th>
+<th class="px-md py-sm font-bold text-center">L</th>
+<th class="px-md py-sm font-bold text-center">GF</th>
+<th class="px-md py-sm font-bold text-center">GA</th>
+<th class="px-md py-sm font-bold text-center">GD</th>
+<th class="px-md py-sm font-bold text-center text-primary">Pts</th>
+<th class="px-md py-sm font-bold text-center">Form</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Table Row 1 -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors cursor-pointer group">
+<td class="px-md py-sm font-bold text-primary">01</td>
+<td class="px-md py-sm flex items-center gap-sm">
+<div class="w-6 h-6 bg-primary/20 rounded flex items-center justify-center border border-primary/40">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-bold">Titan City FC</span>
+</td>
+<td class="px-md py-sm text-center">24</td>
+<td class="px-md py-sm text-center">18</td>
+<td class="px-md py-sm text-center">4</td>
+<td class="px-md py-sm text-center">2</td>
+<td class="px-md py-sm text-center">54</td>
+<td class="px-md py-sm text-center">12</td>
+<td class="px-md py-sm text-center text-primary">+42</td>
+<td class="px-md py-sm text-center font-bold text-primary text-title-md">58</td>
+<td class="px-md py-sm text-center">
+<div class="flex justify-center gap-1">
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">D</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-highest/50 transition-colors cursor-pointer group">
+<td class="px-md py-sm font-bold text-on-surface">02</td>
+<td class="px-md py-sm flex items-center gap-sm">
+<div class="w-6 h-6 bg-tertiary/20 rounded flex items-center justify-center border border-tertiary/40">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-bold">Summit Athletics</span>
+</td>
+<td class="px-md py-sm text-center">24</td>
+<td class="px-md py-sm text-center">16</td>
+<td class="px-md py-sm text-center">6</td>
+<td class="px-md py-sm text-center">2</td>
+<td class="px-md py-sm text-center">48</td>
+<td class="px-md py-sm text-center">18</td>
+<td class="px-md py-sm text-center text-primary">+30</td>
+<td class="px-md py-sm text-center font-bold text-on-surface text-title-md">54</td>
+<td class="px-md py-sm text-center">
+<div class="flex justify-center gap-1">
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">D</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">D</div>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-highest/50 transition-colors cursor-pointer group">
+<td class="px-md py-sm font-bold text-on-surface">03</td>
+<td class="px-md py-sm flex items-center gap-sm">
+<div class="w-6 h-6 bg-error/20 rounded flex items-center justify-center border border-error/40">
+<span class="material-symbols-outlined text-[16px] text-error" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-bold">Red Peak Rovers</span>
+</td>
+<td class="px-md py-sm text-center">24</td>
+<td class="px-md py-sm text-center">14</td>
+<td class="px-md py-sm text-center">3</td>
+<td class="px-md py-sm text-center">7</td>
+<td class="px-md py-sm text-center">41</td>
+<td class="px-md py-sm text-center">31</td>
+<td class="px-md py-sm text-center text-primary">+10</td>
+<td class="px-md py-sm text-center font-bold text-on-surface text-title-md">45</td>
+<td class="px-md py-sm text-center">
+<div class="flex justify-center gap-1">
+<div class="w-4 h-4 rounded-sm bg-error-container flex items-center justify-center text-[10px] text-on-error-container">L</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-error-container flex items-center justify-center text-[10px] text-on-error-container">L</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-highest/50 transition-colors cursor-pointer group">
+<td class="px-md py-sm font-bold text-on-surface">04</td>
+<td class="px-md py-sm flex items-center gap-sm">
+<div class="w-6 h-6 bg-secondary/20 rounded flex items-center justify-center border border-secondary/40">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-bold">Horizon United</span>
+</td>
+<td class="px-md py-sm text-center">23</td>
+<td class="px-md py-sm text-center">12</td>
+<td class="px-md py-sm text-center">5</td>
+<td class="px-md py-sm text-center">6</td>
+<td class="px-md py-sm text-center">36</td>
+<td class="px-md py-sm text-center">28</td>
+<td class="px-md py-sm text-center text-primary">+8</td>
+<td class="px-md py-sm text-center font-bold text-on-surface text-title-md">41</td>
+<td class="px-md py-sm text-center">
+<div class="flex justify-center gap-1">
+<div class="w-4 h-4 rounded-sm bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">D</div>
+<div class="w-4 h-4 rounded-sm bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container">D</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-primary/80 flex items-center justify-center text-[10px] text-on-primary">W</div>
+<div class="w-4 h-4 rounded-sm bg-error-container flex items-center justify-center text-[10px] text-on-error-container">L</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Ranking Evolution Chart (SVG) -->
+<section class="glass-card rounded-xl p-md">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-title-md text-title-md flex items-center gap-sm uppercase">
+<span class="material-symbols-outlined text-tertiary">trending_up</span>
+                                    Ranking Evolution: Titan City FC
+                                </h3>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs">
+<div class="w-3 h-1 bg-primary rounded-full"></div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Position</span>
+</div>
+<select class="bg-surface-container border border-outline-variant text-label-sm rounded-lg p-xs focus:ring-primary">
+<option>Last 10 Matchweeks</option>
+<option>Full Season</option>
+</select>
+</div>
+</div>
+<div class="relative h-48 w-full">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 100">
+<!-- Grid lines -->
+<line class="text-outline-variant opacity-20" stroke="currentColor" stroke-dasharray="4" x1="0" x2="1000" y1="0" y2="0"></line>
+<line class="text-outline-variant opacity-20" stroke="currentColor" stroke-dasharray="4" x1="0" x2="1000" y1="50" y2="50"></line>
+<line class="text-outline-variant opacity-20" stroke="currentColor" stroke-dasharray="4" x1="0" x2="1000" y1="100" y2="100"></line>
+<!-- Chart Line -->
+<path class="animate-draw" d="M0,80 L100,60 L200,70 L300,40 L400,30 L500,20 L600,10 L700,5 L800,10 L900,10 L1000,5" fill="none" stroke="#94d3c1" stroke-width="3"></path>
+<!-- Hover Points -->
+<circle cx="0" cy="80" fill="#94d3c1" r="4"></circle>
+<circle class="animate-pulse" cx="500" cy="20" fill="#94d3c1" r="4"></circle>
+<circle cx="1000" cy="5" fill="#94d3c1" r="4"></circle>
+</svg>
+<div class="absolute -bottom-6 left-0 right-0 flex justify-between font-label-sm text-label-sm text-on-surface-variant px-1">
+<span>MW14</span><span>MW16</span><span>MW18</span><span>MW20</span><span>MW22</span><span>MW24</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Side Analytics / Widgets -->
+<div class="lg:col-span-4 space-y-lg">
+<!-- Top Performers Widgets -->
+<div class="space-y-md">
+<!-- Golden Boot -->
+<div class="glass-card rounded-xl p-md border-l-4 border-tertiary">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest">Top Scorer</p>
+<h4 class="text-headline-lg-mobile font-headline-lg-mobile">Marcus 'Strike' Vance</h4>
+<p class="text-label-sm font-label-sm text-tertiary">Titan City FC</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-tertiary">
+<img class="w-full h-full object-cover" data-alt="Dynamic portrait of a professional football striker, mid-action intense focus, dramatic lighting from above, high-speed photography, athlete sweat visible, sporting apparel, technical sports aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLyEss6ODxrQQjsoHZkZxlZQEzQjZjBkQ3Ak1aK8DumFk9XkQD4C9hZhK8mmVR_Sp1OcmqvpvgmeABuPHAnWDv1vWXr9rm1LlLDKs5BsIzQLUNjII2CAJyvEYLawpPUDoT-dUChl9ekMecUx8gXiq0VUaIOGU2B-rx1exe9iJuH_LBsDyn-Pg04SajRZznwwa5ZQk6Y3Bw-6TMYzwT-8r9b60gDDTtdbe0ixUJY7W4bgaD_A6VA3436DtT2Qb0ckjJS2v3-QqkOqs"/>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-headline-lg text-headline-lg text-tertiary">22</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant pb-xs">Goals</span>
+</div>
+<span class="text-label-sm font-label-sm bg-tertiary/10 text-tertiary px-sm py-xs rounded">G/M: 0.92</span>
+</div>
+</div>
+<!-- Top Assists -->
+<div class="glass-card rounded-xl p-md border-l-4 border-primary">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest">Top Assists</p>
+<h4 class="text-headline-lg-mobile font-headline-lg-mobile">Luca Modesto</h4>
+<p class="text-label-sm font-label-sm text-primary">Summit Athletics</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+<img class="w-full h-full object-cover" data-alt="Portrait of a sleek, creative midfielder, wearing a high-performance training jersey, calm and intelligent expression, bokeh stadium lights in the background, sharp detail on the face, dark sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgYWbeBlWyHdLY6BMDHG0h_8e7sGb7v2LnQoFLpA3Ch9Mkfkh3vYYjYbg8oKPzm2YIe9yNUXWnjbcg0rziC85S4yCkUuNwUJkmp998Wz8OTXiSL5UMsGE8gWaHmzEn8TeWXNYmxzDllef5jMqM-YBurv_k01b8wUbeW1XotlxI1AhdBCD6QExw1geGvgTKrpW7-H6DZo9p95hqoOBNr24syqza2D0mPsls7hDS2XiBtZqi_VJPe-JXmmBoVOTZ0_1wevkmWzqen2U"/>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">assistant_navigation</span>
+<span class="font-headline-lg text-headline-lg text-primary">14</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant pb-xs">Assists</span>
+</div>
+<span class="text-label-sm font-label-sm bg-primary/10 text-primary px-sm py-xs rounded">Key Passes: 48</span>
+</div>
+</div>
+<!-- Clean Sheets -->
+<div class="glass-card rounded-xl p-md border-l-4 border-secondary">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest">Clean Sheets</p>
+<h4 class="text-headline-lg-mobile font-headline-lg-mobile">Jan Vlasik</h4>
+<p class="text-label-sm font-label-sm text-secondary">Titan City FC</p>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary">
+<img class="w-full h-full object-cover" data-alt="Close-up of a determined goalkeeper in high-end goalie gear, wearing branded gloves, focused eyes, rainy night match atmosphere, bright floodlights causing a slight lens flare, ultra-high definition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF353lMlDrN0myiNKZu32HBOvuKGppY2AMO-c7_5buIjgdT7JCuBqdzLIf9zzZBGoaHayKKY5eJVI5wMuOoBSL6aKkuWa31zKJ2lQRiTUcd4CnLgHqDcyfccffnrAFklmELt_x8wpSwZP8PVUaeLNTpe8NqqpspMR0oRNyK_upOHXoCQdVkvJHBOwlrcXpQZZP7d6TmIORyE97mj5-q0kjUo08eOzJuO5wmDvVPIvjK7NS_xxT62b-LcE4esjPJ-Dih8ve3gtc3LU"/>
+</div>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary">pan_tool</span>
+<span class="font-headline-lg text-headline-lg text-secondary">15</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant pb-xs">Sheets</span>
+</div>
+<span class="text-label-sm font-label-sm bg-secondary/10 text-secondary px-sm py-xs rounded">Saves: 89%</span>
+</div>
+</div>
+</div>
+<!-- Discipline Tracker -->
+<section class="glass-card rounded-xl p-md">
+<h3 class="font-title-md text-title-md mb-md flex items-center gap-sm uppercase">
+<span class="material-symbols-outlined text-error">warning</span>
+                                Discipline Tracker
+                            </h3>
+<div class="space-y-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-10 bg-yellow-400 rounded-sm shadow-lg flex items-center justify-center font-bold text-black text-title-md">Y</div>
+<div class="flex-1">
+<div class="flex justify-between text-label-sm font-label-sm mb-1">
+<span>Yellow Cards</span>
+<span class="font-data-tabular">412 Total</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-yellow-400 w-[65%]"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="w-8 h-10 bg-error rounded-sm shadow-lg flex items-center justify-center font-bold text-on-error text-title-md">R</div>
+<div class="flex-1">
+<div class="flex justify-between text-label-sm font-label-sm mb-1">
+<span>Red Cards</span>
+<span class="font-data-tabular">18 Total</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-error w-[12%]"></div>
+</div>
+</div>
+</div>
+<div class="pt-md border-t border-outline-variant">
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-sm uppercase">Highest Recipient</p>
+<div class="flex justify-between items-center bg-surface-container-low p-sm rounded border border-outline-variant">
+<span class="font-bold">Brute Force United</span>
+<span class="font-data-tabular text-error">4R / 32Y</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant w-full py-lg mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-xl max-w-container-max mx-auto gap-lg">
+<div class="text-center md:text-left">
+<h4 class="font-title-md text-title-md text-on-surface mb-xs tracking-tighter uppercase">Global Football Ecosystem</h4>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-60">© 2024 Competition Pro. Enterprise Grade Sports Management Systems.</p>
+</div>
+<nav class="flex flex-wrap justify-center gap-md">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">API Documentation</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Compliance</a>
+</nav>
+<div class="flex gap-md">
+<span class="text-label-sm font-label-sm text-on-tertiary-fixed-variant bg-tertiary/10 px-md py-xs rounded-full">v4.2.0 Stable</span>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for table rows and widgets
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('translate-x-1');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('translate-x-1');
+            });
+        });
+
+        // Simulating live data update highlight
+        setInterval(() => {
+            const liveIndicator = document.querySelector('.animate-pulse');
+            if(liveIndicator) {
+                liveIndicator.classList.add('bg-white');
+                setTimeout(() => liveIndicator.classList.remove('bg-white'), 500);
+            }
+        }, 5000);
+    </script>
+</body></html>

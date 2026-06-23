@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zito Luvumbo | Player Insights | BOLAYETU</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#3c2f00",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "error-container": "#93000a",
+                    "on-primary-fixed-variant": "#065043",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-surface": "#d3e4fe",
+                    "inverse-primary": "#29695b",
+                    "surface-container-highest": "#26364a",
+                    "secondary": "#bec6e0",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "outline-variant": "#3f4945",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface": "#031427",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "surface-tint": "#94d3c1",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed": "#afefdd",
+                    "secondary-container": "#3f465c",
+                    "on-secondary-fixed": "#131b2e",
+                    "inverse-on-surface": "#213145",
+                    "surface-container-high": "#1b2b3f",
+                    "primary-fixed-dim": "#94d3c1",
+                    "primary-container": "#004d40",
+                    "on-secondary-container": "#adb4ce",
+                    "on-primary-fixed": "#00201a",
+                    "on-primary": "#00382e",
+                    "secondary-fixed": "#dae2fd",
+                    "on-tertiary-container": "#4f3e00",
+                    "tertiary-container": "#cca730",
+                    "surface-container": "#102034",
+                    "outline": "#89938f",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#ffe088",
+                    "surface-dim": "#031427",
+                    "surface-container-lowest": "#000f21",
+                    "primary": "#94d3c1",
+                    "inverse-surface": "#d3e4fe",
+                    "tertiary": "#e9c349",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#0b1c30",
+                    "surface-variant": "#26364a",
+                    "surface-bright": "#2a3a4f",
+                    "on-background": "#d3e4fe",
+                    "background": "#031427",
+                    "on-secondary": "#283044",
+                    "on-primary-container": "#7ebdac",
+                    "on-surface-variant": "#bfc9c4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "48px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "base": "4px",
+                    "md": "16px",
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "sm": "8px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "title-md": ["Geist"],
+                    "body-md": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "label-sm": ["Geist"]
+            },
+            "fontSize": {
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 10px; }
+        
+        /* Subtle radar chart simulation via SVG */
+        .radar-grid { stroke: rgba(137, 147, 143, 0.2); stroke-width: 1; fill: none; }
+        .radar-area { fill: rgba(148, 211, 193, 0.25); stroke: #94d3c1; stroke-width: 2; }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-on-primary">
+<!-- Side Navigation Bar -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col p-md gap-base bg-surface-container-low border-r border-outline-variant z-50">
+<div class="mb-lg px-md">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">BOLAYETU</h1>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mt-xs">Player Insights</p>
+</div>
+<nav class="flex-1 space-y-base overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest rounded-full px-md py-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-full px-md py-sm transition-transform scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-body-md text-body-md">Performance</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest rounded-full px-md py-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="font-body-md text-body-md">Career</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest rounded-full px-md py-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">play_circle</span>
+<span class="font-body-md text-body-md">Media</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest rounded-full px-md py-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-body-md text-body-md">Documents</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest rounded-full px-md py-sm transition-all duration-200" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-body-md text-body-md">Market Value</span>
+</a>
+</nav>
+<div class="mt-auto pt-md border-t border-outline-variant space-y-base">
+<button class="w-full bg-primary text-on-primary font-title-md py-sm rounded-lg hover:opacity-90 transition-opacity">
+                Download Report
+            </button>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-label-sm">Support</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-label-sm">Logout</span>
+</a>
+</div>
+</aside>
+<main class="md:ml-64 min-h-screen">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 bg-surface border-b border-outline-variant w-full">
+<div class="flex justify-between items-center px-lg py-md w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-xl">
+<span class="md:hidden font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">BOLAYETU</span>
+<nav class="hidden lg:flex gap-lg items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Players</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Leagues</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Scouting</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Transfers</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<input class="bg-surface-variant border-none rounded-full px-md py-sm text-body-md w-64 focus:ring-1 focus:ring-primary" placeholder="Search data..." type="text"/>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+</div>
+<button class="bg-tertiary text-on-tertiary font-bold px-lg py-sm rounded-full text-label-sm uppercase tracking-wide hover:opacity-90">Go Pro</button>
+<button class="text-on-surface-variant hover:text-primary transition-opacity"><span class="material-symbols-outlined">notifications</span></button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a football scout wearing a sleek navy blazer and tactical headphones, set against a blurred high-tech control room with digital screens showing player statistics and heatmaps. The lighting is focused and professional, highlighting a sharp, authoritative gaze." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdJbuSjwXBuOTgbvdPLgGSFxbPbzyvwOgy4TrPneW0GWfym7j5lUr-3J3FK_IKtemUdRMspqzguoCo4aO3ROpVg8NYAqxfiNpYmTaCCYY3EnaTBYuxppETWGb47Mj7YCPlFSleB-9g4GT5-gYcg7zo2Q2iZ6SA5PjU4L1IeuPOMfdd7SL0wg3E0UcWRw_QbO2St3YDZtDz9uk4qxINXi29REkLNU3Pm3CBqJM2y9dHmV146XyjLeMWz_vy8jxlpHaiFZfoD0ezvQg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative h-[420px] w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A wide-angle, low-angle dynamic shot of a modern football stadium at night under bright floodlights. The grass is pristine green with a slight misty atmosphere, and the stands are filled with cheering fans in the distance. The lighting is cinematic with deep blue night sky and vibrant white artificial lights." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBriMgTjlcGrU_3RLg7THh9RRh2rBZLayTewPHm3kAwN19bbaI2UkjQe0NpdDAccWKV8rkSGizK_JyQQ2Q3Uc5M72JUVwR98ONHM573ePyHfSJgT4VdAUFs_hx4flx1qcEfaeN2txMOz5jkRhM3QDPQH0BS0n6vOGn2AeJhWvfdWpVq4INcJiewenBznCdLaatODw5otL_QLutK5vYtrMzVqxu1fWFM0nUEOkXgSSWOdedXIjY4cOxGMBjnraxku1ZRcvkrZmsKE78')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full px-lg pb-xl max-w-container-max mx-auto flex flex-col md:flex-row items-end gap-lg">
+<div class="relative group">
+<div class="w-40 h-40 md:w-48 md:h-48 rounded-xl border-4 border-surface overflow-hidden shadow-2xl relative z-10">
+<img class="w-full h-full object-cover" data-alt="A high-contrast profile photo of professional football player Zito Luvumbo in his official Petro de Luanda kit, looking intensely towards the camera. The background is a studio dark navy with dramatic side-lighting that emphasizes his athletic features and determination. Professional sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGrFzmr76ff_-xHo98cXRRk9BsWYGMLehHLMaSC6DHaDHZOtIfcBRX1CYFy_aTILTqdUAQcPIUJpRitf1mTon76v1WWFnhULoPim58qtyHHGCIe_gTVY_pBucCt_nDnhUFbkhwFlkTQHi6diYyjByRMmRMz9Pn4YuhzBLSFs8sd7bTJ0RlNJazhxd6V07F0A3naaCgZdR3RxO2povAkiVLo80ttQEI6JYjrEhv3dvJy50j1VAlfoObyWmAbNYtPOX2neUHr3UXADA"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary text-on-primary px-md py-xs rounded-lg font-bold text-label-sm z-20 shadow-lg">RW / LW</div>
+</div>
+<div class="flex-1 pb-sm">
+<div class="flex items-center gap-sm mb-xs">
+<span class="w-6 h-4 bg-red-600 rounded-xs inline-block"></span>
+<span class="text-label-sm text-tertiary uppercase font-bold tracking-widest">Petro de Luanda</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-white font-bold leading-none">Zito Luvumbo</h2>
+<div class="flex flex-wrap gap-md mt-md">
+<div class="glass-panel px-md py-sm rounded-lg flex flex-col">
+<span class="text-label-sm text-on-surface-variant uppercase">Market Value</span>
+<span class="font-headline-lg text-primary font-bold">€4.50m</span>
+</div>
+<div class="glass-panel px-md py-sm rounded-lg flex flex-col">
+<span class="text-label-sm text-on-surface-variant uppercase">Contract Until</span>
+<span class="font-headline-lg text-white font-bold">Jun 30, 2026</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Content Canvas -->
+<div class="max-w-container-max mx-auto px-lg py-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left Column: Bio & Base Stats -->
+<div class="lg:col-span-4 space-y-lg">
+<!-- Info Card -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-lg">
+<h3 class="font-title-md text-title-md text-white mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">person</span>
+                            Player Information
+                        </h3>
+<div class="space-y-md">
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-body-md">Age</span>
+</div>
+<span class="font-bold text-white">22 (Mar 9, 2002)</span>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">public</span>
+<span class="text-body-md">Nationality</span>
+</div>
+<div class="flex items-center gap-xs font-bold text-white">
+<span class="w-4 h-3 bg-yellow-500"></span> Angola
+                                </div>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">straighten</span>
+<span class="text-body-md">Height</span>
+</div>
+<span class="font-bold text-white">179 cm</span>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">fitness_center</span>
+<span class="text-body-md">Weight</span>
+</div>
+<span class="font-bold text-white">72 kg</span>
+</div>
+<div class="flex justify-between items-center py-sm">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">footprint</span>
+<span class="text-body-md">Preferred Foot</span>
+</div>
+<span class="font-bold text-primary">Left</span>
+</div>
+</div>
+</div>
+<!-- Skills Radar (Visual Placeholder) -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-lg overflow-hidden">
+<h3 class="font-title-md text-title-md text-white mb-lg">Technical Profile</h3>
+<div class="relative aspect-square w-full flex items-center justify-center">
+<svg class="w-full h-full max-w-[240px]" viewbox="0 0 200 200">
+<!-- Pentagonal Grid -->
+<polygon class="radar-grid" points="100,20 180,80 150,170 50,170 20,80"></polygon>
+<polygon class="radar-grid" points="100,50 160,95 137,152 63,152 40,95"></polygon>
+<polygon class="radar-grid" points="100,80 130,105 118,135 82,135 70,105"></polygon>
+<!-- Data Plot -->
+<polygon class="radar-area" points="100,30 170,85 140,160 55,160 30,90"></polygon>
+<!-- Points & Labels -->
+<text class="fill-on-surface-variant text-[10px] font-bold" text-anchor="middle" x="100" y="15">PACE</text>
+<text class="fill-on-surface-variant text-[10px] font-bold" text-anchor="start" x="185" y="85">DRI</text>
+<text class="fill-on-surface-variant text-[10px] font-bold" text-anchor="start" x="155" y="180">SHO</text>
+<text class="fill-on-surface-variant text-[10px] font-bold" text-anchor="end" x="45" y="180">PHY</text>
+<text class="fill-on-surface-variant text-[10px] font-bold" text-anchor="end" x="15" y="85">PAS</text>
+</svg>
+</div>
+<div class="grid grid-cols-2 gap-sm mt-md">
+<div class="bg-surface-container-highest/50 p-sm rounded flex justify-between">
+<span class="text-label-sm text-on-surface-variant">Pace</span>
+<span class="text-label-sm font-data-tabular text-primary">91</span>
+</div>
+<div class="bg-surface-container-highest/50 p-sm rounded flex justify-between">
+<span class="text-label-sm text-on-surface-variant">Dribbling</span>
+<span class="text-label-sm font-data-tabular text-primary">88</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Stats, Timeline, Achievements -->
+<div class="lg:col-span-8 space-y-lg">
+<!-- Stats Grid -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-md">
+<div class="bg-surface-container-high p-md rounded-xl border border-outline-variant text-center">
+<p class="text-label-sm text-on-surface-variant mb-xs">Appearances</p>
+<h4 class="font-display-lg text-headline-lg text-white font-bold">32</h4>
+<div class="text-[10px] text-primary mt-xs">+4 vs LY</div>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl border border-outline-variant text-center">
+<p class="text-label-sm text-on-surface-variant mb-xs">Goals</p>
+<h4 class="font-display-lg text-headline-lg text-tertiary font-bold">12</h4>
+<div class="text-[10px] text-tertiary mt-xs">0.38 / game</div>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl border border-outline-variant text-center">
+<p class="text-label-sm text-on-surface-variant mb-xs">Assists</p>
+<h4 class="font-display-lg text-headline-lg text-white font-bold">08</h4>
+<div class="text-[10px] text-on-surface-variant mt-xs">2nd in League</div>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl border border-outline-variant text-center">
+<p class="text-label-sm text-on-surface-variant mb-xs">Top Speed</p>
+<h4 class="font-display-lg text-headline-lg text-primary font-bold">35.4</h4>
+<div class="text-[10px] text-on-surface-variant mt-xs">km/h</div>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl border border-outline-variant text-center col-span-2 md:col-span-1">
+<p class="text-label-sm text-on-surface-variant mb-xs">Pass Acc.</p>
+<h4 class="font-display-lg text-headline-lg text-white font-bold">84%</h4>
+<div class="text-[10px] text-primary mt-xs">Elite Tier</div>
+</div>
+</div>
+<!-- Performance Chart -->
+<div class="bg-surface-container rounded-xl border border-outline-variant p-lg">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-title-md text-title-md text-white">Seasonal Performance Curve</h3>
+<div class="flex gap-sm">
+<span class="flex items-center gap-xs text-label-sm text-primary"><span class="w-2 h-2 rounded-full bg-primary"></span> G+A</span>
+<span class="flex items-center gap-xs text-label-sm text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-on-surface-variant"></span> Avg Rating</span>
+</div>
+</div>
+<div class="h-48 w-full bg-surface-container-lowest/50 rounded-lg border border-outline-variant/20 relative flex items-end p-md overflow-hidden">
+<!-- Visual Chart Mockup -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 400 100">
+<path d="M0,80 Q50,40 100,60 T200,20 T300,50 T400,10" fill="none" stroke="#94d3c1" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0,90 Q50,70 100,80 T200,60 T300,75 T400,40" fill="none" stroke="#89938f" stroke-dasharray="4" stroke-width="2"></path>
+</svg>
+<div class="absolute inset-x-0 bottom-2 flex justify-between px-md text-[10px] text-on-surface-variant font-data-tabular">
+<span>SEP</span><span>OCT</span><span>NOV</span><span>DEC</span><span>JAN</span><span>FEB</span><span>MAR</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Career Timeline -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-lg">
+<h3 class="font-title-md text-title-md text-white mb-lg">Career Timeline</h3>
+<div class="relative ml-4 space-y-lg before:content-[''] before:absolute before:left-[-17px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant">
+<div class="relative">
+<div class="absolute left-[-22px] top-1.5 w-3 h-3 rounded-full bg-primary border-2 border-surface"></div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-white">Petro de Luanda</p>
+<p class="text-label-sm text-on-surface-variant">23/24 - Current</p>
+</div>
+<span class="bg-primary-container text-on-primary-container px-sm py-xs rounded text-[10px] font-bold">€3.2M FEE</span>
+</div>
+</div>
+<div class="relative">
+<div class="absolute left-[-22px] top-1.5 w-3 h-3 rounded-full bg-outline border-2 border-surface"></div>
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold text-white">Cagliari Calcio</p>
+<p class="text-label-sm text-on-surface-variant">21/22 - 22/23</p>
+</div>
+<span class="bg-surface-variant text-on-surface-variant px-sm py-xs rounded text-[10px] font-bold">FREE</span>
+</div>
+</div>
+<div class="relative opacity-60">
+<div class="absolute left-[-22px] top-1.5 w-3 h-3 rounded-full bg-outline border-2 border-surface"></div>
+<div>
+<p class="font-bold text-white">1° de Agosto Academy</p>
+<p class="text-label-sm text-on-surface-variant">Youth System</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Achievements -->
+<div class="bg-surface-container-low rounded-xl border border-outline-variant p-lg">
+<h3 class="font-title-md text-title-md text-white mb-lg">Achievements</h3>
+<div class="grid grid-cols-1 gap-md">
+<div class="flex items-center gap-md p-md bg-surface-container-high rounded-lg border border-outline-variant/30">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined">emoji_events</span>
+</div>
+<div>
+<p class="text-body-md font-bold text-white">Angolan Girabola Champion</p>
+<p class="text-label-sm text-on-surface-variant">2022/23 Season</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-md bg-surface-container-high rounded-lg border border-outline-variant/30">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">military_tech</span>
+</div>
+<div>
+<p class="text-body-md font-bold text-white">Young Player of the Year</p>
+<p class="text-label-sm text-on-surface-variant">Angola FA Awards 2023</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Media & Documents Bento -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<div class="md:col-span-7 bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden group">
+<div class="relative h-64 bg-black">
+<div class="absolute inset-0 bg-cover bg-center opacity-70" data-alt="A cinematic capture of Zito Luvumbo in full sprint, ball at his feet, leaving a defender behind in a blur of motion. The focus is sharp on his face and the Nike football, while the background stadium crowd is artistically blurred. The lighting is electric and high-contrast, perfectly suited for a highlights reel thumbnail." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBSg_579NsKHTKJXLkoZjH8CV36Q54mQPJzLOEIgbMObmwTg1IcHllKy7VA69BRLll9orPTEYw1ZL9kp6vH59zARD80w86WixIXCYT5IZdf0hUK2dIsbJOWJ-FrcuppZuubSVOhICiofoK3npa2A6qMaTBSjglqkhDULYmCTyVIVTZS-O33giaMMvjMWJhKbkYYzCzXPrVRToDsKCKpCMWAzRDabjszQBdTya9JsHWt3oTxPZ9dLpo01EHP2lH_aleYDmC04sruLR4')"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-md flex items-center justify-center border border-primary/50 group-hover:scale-110 transition-transform cursor-pointer">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-md bg-gradient-to-t from-black to-transparent">
+<p class="text-white font-bold">Season 23/24 Goals &amp; Skills</p>
+<p class="text-on-surface-variant text-label-sm">High Intensity Dribbling Reel • 04:12</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 bg-surface-container-low rounded-xl border border-outline-variant p-lg">
+<h3 class="font-title-md text-title-md text-white mb-md">Documents</h3>
+<div class="space-y-sm">
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-high rounded cursor-pointer transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="text-body-md text-on-surface">Scouting Report Q1</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">download</span>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-high rounded cursor-pointer transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+<span class="text-body-md text-on-surface">Medical Clearance</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">download</span>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-high rounded cursor-pointer transition-colors">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">history_edu</span>
+<span class="text-body-md text-on-surface">Contract Summary</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">lock</span>
+</div>
+</div>
+<button class="w-full mt-md border border-outline text-on-surface-variant hover:bg-surface-container-highest py-sm rounded-lg text-label-sm font-bold uppercase transition-all">
+                                View Archive
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant w-full mt-xl">
+<div class="flex flex-col md:flex-row justify-between items-center px-lg py-md w-full max-w-container-max mx-auto gap-md">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-title-md text-title-md text-primary font-bold">BOLAYETU</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">© 2024 Bolayetu Digital. All African Football Data Reserved.</p>
+</div>
+<nav class="flex gap-lg">
+<a class="text-label-sm text-on-surface-variant hover:text-tertiary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm text-on-surface-variant hover:text-tertiary transition-colors" href="#">Data Sources</a>
+<a class="text-label-sm text-on-surface-variant hover:text-tertiary transition-colors" href="#">API Access</a>
+<a class="text-label-sm text-on-surface-variant hover:text-tertiary transition-colors" href="#">Contact Support</a>
+</nav>
+</div>
+</footer>
+</main>
+<!-- Mobile Bottom Nav -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t border-outline-variant grid grid-cols-4 px-base py-sm z-50">
+<a class="flex flex-col items-center gap-xs text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-bold">Profile</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px]">Stats</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">play_circle</span>
+<span class="text-[10px]">Media</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px]">Options</span>
+</a>
+</nav>
+<script>
+        // Simple interactive micro-interaction for cards
+        document.querySelectorAll('.bg-surface-container-high').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.2s ease-out';
+                card.classList.add('shadow-lg');
+                card.classList.add('shadow-primary/5');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.classList.remove('shadow-lg');
+                card.classList.remove('shadow-primary/5');
+            });
+        });
+    </script>
+</body></html>

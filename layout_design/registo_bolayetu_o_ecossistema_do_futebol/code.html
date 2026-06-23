@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(16, 32, 52, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .input-focus-glow:focus-within {
+            box-shadow: 0 0 0 2px rgba(148, 211, 193, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#213145",
+                        "secondary-fixed": "#dae2fd",
+                        "on-background": "#d3e4fe",
+                        "inverse-surface": "#d3e4fe",
+                        "on-tertiary": "#3c2f00",
+                        "on-primary-fixed-variant": "#065043",
+                        "on-surface": "#d3e4fe",
+                        "on-primary-fixed": "#00201a",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "surface-dim": "#031427",
+                        "on-primary-container": "#7ebdac",
+                        "surface-container": "#102034",
+                        "outline-variant": "#3f4945",
+                        "tertiary-fixed": "#ffe088",
+                        "on-primary": "#00382e",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-surface-variant": "#bfc9c4",
+                        "primary-fixed": "#afefdd",
+                        "on-tertiary-container": "#4f3e00",
+                        "primary-fixed-dim": "#94d3c1",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-fixed": "#131b2e",
+                        "background": "#031427",
+                        "primary-container": "#004d40",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-error": "#690005",
+                        "surface-container-low": "#0b1c30",
+                        "secondary": "#bec6e0",
+                        "on-secondary": "#283044",
+                        "error-container": "#93000a",
+                        "surface-tint": "#94d3c1",
+                        "surface-container-lowest": "#000f21",
+                        "on-secondary-container": "#adb4ce",
+                        "surface-container-highest": "#26364a",
+                        "primary": "#94d3c1",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "tertiary": "#e9c349",
+                        "surface-bright": "#2a3a4f",
+                        "on-error-container": "#ffdad6",
+                        "surface": "#031427",
+                        "tertiary-container": "#cca730",
+                        "surface-variant": "#26364a",
+                        "surface-container-high": "#1b2b3f",
+                        "inverse-primary": "#29695b",
+                        "secondary-container": "#3f465c",
+                        "outline": "#89938f",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "48px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "gutter": "20px",
+                        "base": "4px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Archivo Narrow"],
+                        "display-lg": ["Archivo Narrow"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "label-sm": ["Geist"],
+                        "body-md": ["Geist"],
+                        "title-md": ["Geist"],
+                        "data-tabular": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary min-h-screen overflow-x-hidden">
+<!-- Split Screen Container -->
+<main class="flex min-h-screen w-full flex-col md:flex-row">
+<!-- Left Side: Visual & Stats (Hidden on Mobile) -->
+<section class="hidden md:flex md:w-1/2 lg:w-3/5 relative overflow-hidden bg-surface-container-lowest">
+<!-- Background Image with Overlay -->
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center" data-alt="A dramatic, low-angle shot of a high-tech football stadium in Africa during twilight. The sky is a deep midnight blue with hints of teal, reflecting the Bolayetu brand colors. Professional athletes are captured in sharp, cinematic action silhouettes against glowing digital pitch-side displays. The overall atmosphere is premium, authoritative, and technologically advanced, emphasizing high-performance sports data analytics." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAuT6hv9Pks0jBTA29Sn-H8zDziIvyDUjqHatq_eFLqnxBB7JgqRyaozIRCdQTbngt1cjmPEgL5jLoRd92Qa1HFwYwuHf6uZuP6AtlUyYtAp36VnokQM6rbbByKZ2A6SroXGwkHoPE2wl0Ls73eg_dEYgocPhwloED_3i31hf2sodT3eYby4CeFG1cl2UEy0jhKbjG03qERIQpRbI5_u0GpYqq6GkNdcZ9_VodqpzN5zlc0jpwa9z3rYXh36jGNKAAXmhGtxID_eIA')"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent"></div>
+<div class="absolute inset-0 bg-background/20 backdrop-brightness-50"></div>
+</div>
+<!-- Content Overlay -->
+<div class="relative z-10 flex flex-col justify-between p-xl w-full">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight mb-md">BOLAYETU</h1>
+<p class="font-display-lg text-display-lg text-on-surface max-w-xl leading-tight">
+                        O Pulso Digital do Futebol Africano.
+                    </p>
+</div>
+<!-- Trust Section / Community Stats -->
+<div class="grid grid-cols-3 gap-lg glass-effect p-lg rounded-xl max-w-2xl border border-outline-variant/20">
+<div class="flex flex-col">
+<span class="font-data-tabular text-headline-lg text-primary">500+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Clubes</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-tabular text-headline-lg text-tertiary">10k+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Atletas</span>
+</div>
+<div class="flex flex-col">
+<span class="font-data-tabular text-headline-lg text-secondary">24</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Federações</span>
+</div>
+</div>
+</div>
+<!-- Atmospheric Shader -->
+
+</section>
+<!-- Right Side: Registration Form -->
+<section class="flex-1 flex flex-col items-center justify-center p-md sm:p-lg lg:p-xl bg-surface-dim relative">
+<!-- Mobile Header Logo -->
+<div class="md:hidden self-start mb-xl">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold tracking-tight">BOLAYETU</h1>
+</div>
+<div class="w-full max-w-[440px]">
+<header class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Criar a sua conta</h2>
+<p class="font-body-md text-on-surface-variant">Junte-se à elite e sinta o pulso digital do futebol africano em tempo real.</p>
+</header>
+<form class="space-y-lg" onsubmit="event.preventDefault();">
+<!-- Name -->
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="name">Nome Completo</label>
+<div class="relative input-focus-glow rounded">
+<input class="w-full bg-surface-container-high border-outline-variant/30 text-on-surface rounded border p-md focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant" id="name" placeholder="Ex: António Silva" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="email">E-mail Profissional</label>
+<div class="relative input-focus-glow rounded">
+<input class="w-full bg-surface-container-high border-outline-variant/30 text-on-surface rounded border p-md focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant" id="email" placeholder="nome@clube.com" type="email"/>
+</div>
+</div>
+<!-- Password Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="password">Palavra-passe</label>
+<div class="relative input-focus-glow rounded">
+<input class="w-full bg-surface-container-high border-outline-variant/30 text-on-surface rounded border p-md focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-base group">
+<label class="block font-label-sm text-label-sm text-on-surface-variant group-focus-within:text-primary transition-colors" for="confirm_password">Confirmar</label>
+<div class="relative input-focus-glow rounded">
+<input class="w-full bg-surface-container-high border-outline-variant/30 text-on-surface rounded border p-md focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant" id="confirm_password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-primary-container hover:bg-primary-container/80 text-primary font-title-md text-title-md py-md px-lg rounded transition-all duration-200 active:scale-[0.98] mt-md border border-primary/20" type="submit">
+                        Criar Conta
+                    </button>
+<!-- Divider -->
+<div class="relative flex items-center py-md">
+<div class="flex-grow border-t border-outline-variant/20"></div>
+<span class="flex-shrink mx-md font-label-sm text-label-sm text-outline-variant">OU</span>
+<div class="flex-grow border-t border-outline-variant/20"></div>
+</div>
+<!-- Secondary Action -->
+<div class="text-center">
+<p class="font-body-md text-on-surface-variant">
+                            Já tem uma conta? 
+                            <a class="text-primary hover:underline font-semibold transition-colors" href="#">Iniciar sessão</a>
+</p>
+</div>
+</form>
+<!-- Compliance / Trust Footer -->
+<footer class="mt-xl pt-xl border-t border-outline-variant/10">
+<div class="flex flex-wrap justify-between items-center gap-md">
+<div class="flex items-center gap-sm opacity-60">
+<span class="material-symbols-outlined text-primary scale-75">verified_user</span>
+<span class="font-label-sm text-label-sm text-on-surface">GDPR Ready</span>
+</div>
+<div class="flex items-center gap-sm opacity-60">
+<span class="material-symbols-outlined text-primary scale-75">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface">Secure Encryption</span>
+</div>
+</div>
+<div class="mt-lg text-center">
+<p class="font-label-sm text-label-sm text-outline-variant leading-relaxed">
+                            Ao criar conta, concorda com os nossos <a class="underline" href="#">Termos de Serviço</a> e <a class="underline" href="#">Política de Privacidade</a>.
+                        </p>
+</div>
+</footer>
+</div>
+</section>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.classList.add('scale-[1.01]');
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.classList.remove('scale-[1.01]');
+                });
+            });
+        });
+    </script>
+</body></html>

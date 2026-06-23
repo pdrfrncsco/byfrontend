@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#3f465c",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#000f21",
+                    "outline-variant": "#3f4945",
+                    "on-surface": "#d3e4fe",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "tertiary-fixed": "#ffe088",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-background": "#d3e4fe",
+                    "on-error": "#690005",
+                    "secondary": "#bec6e0",
+                    "primary-container": "#004d40",
+                    "surface-tint": "#94d3c1",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-container-highest": "#26364a",
+                    "surface-variant": "#26364a",
+                    "tertiary-container": "#cca730",
+                    "background": "#031427",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-secondary": "#283044",
+                    "tertiary": "#e9c349",
+                    "on-secondary-fixed": "#131b2e",
+                    "primary-fixed": "#afefdd",
+                    "surface-dim": "#031427",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-high": "#1b2b3f",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#0b1c30",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-container": "#adb4ce",
+                    "on-primary": "#00382e",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "inverse-primary": "#29695b",
+                    "on-primary-container": "#7ebdac",
+                    "inverse-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "secondary-fixed": "#dae2fd",
+                    "primary": "#94d3c1",
+                    "outline": "#89938f",
+                    "surface": "#031427",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed": "#00201a",
+                    "inverse-on-surface": "#213145",
+                    "on-primary-fixed-variant": "#065043"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xl": "48px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        .pitch-pattern {
+            background-color: #031427;
+            background-image: radial-gradient(circle at 2px 2px, rgba(148, 211, 193, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .celebratory-glow {
+            box-shadow: 0 0 80px -20px rgba(148, 211, 193, 0.15);
+        }
+
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary/30 min-h-screen flex flex-col pitch-pattern">
+<!-- Top Navigation -->
+<header class="bg-background/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-outline-variant/10">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full">
+<div class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Bolayetu</div>
+<div class="flex items-center gap-md">
+<button class="hover:bg-surface-container-highest/50 p-sm rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">help_outline</span>
+</button>
+<button class="hover:bg-surface-container-highest/50 p-sm rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-16 h-full">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low border-r border-outline-variant/10 h-[calc(100vh-64px)] w-64 fixed left-0">
+<div class="px-lg mb-xl">
+<div class="font-title-md text-title-md text-primary">Onboarding</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Step 5 of 5</div>
+</div>
+<nav class="flex flex-col flex-1">
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+<span class="font-title-md text-title-md">Profile</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-title-md text-title-md">Clubs</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-title-md text-title-md">Players</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-title-md text-title-md">Leagues</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-primary font-bold border-r-2 border-primary bg-primary-container/10 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-title-md text-title-md">Review</span>
+</div>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-lg md:p-xl flex flex-col items-center">
+<div class="max-w-4xl w-full">
+<!-- Header Section -->
+<div class="text-center mb-xl">
+<div class="inline-flex items-center justify-center w-16 h-16 bg-primary-container/20 rounded-full mb-md celebratory-glow border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[40px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-xs">Tudo pronto para o jogo!</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Revisa as tuas preferências antes de entrarmos no relvado.</p>
+</div>
+<!-- Bento Grid Layout for Summary -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+<!-- Fan Profile Card -->
+<div class="md:col-span-3 glass-panel rounded-xl p-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-lg opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[120px]">sports_soccer</span>
+</div>
+<div class="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-lg">
+<div class="w-32 h-32 rounded-full border-4 border-primary/20 p-1 flex-shrink-0">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a football fan in a minimalist setting, captured with cinematic low-key lighting. The subject has a confident expression, wearing a sleek modern jersey with subtle geometric patterns. The color palette is dominated by deep blues and vibrant primary greens, echoing a high-performance sports technology aesthetic. The background is softly blurred with hints of a digital arena display." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0zB_bwSHzDWPHOfE01Jmi54zUegZwBDOCS3EUhBykSDlu1naNWqzFizi6rf-WvM0aPtT7dR9WVTkBg2pwTkMjgG8AeoOsAIT-ZE64Do7ru3pcEQQk7QWt84PI0vw_wwwwWK2STGWnbbJ1L2QbyRyisIv9vsKEVT6YIdtH7TR9bEgSJFzTanitpJY5STs5QalN9I633A91wYzzvgBU8H33u3HZ-JXbfCBtG5yQ6oVlSevcJs7y4iZhI9H06dpnVFpybOUE4DmP27s"/>
+</div>
+</div>
+<div class="flex-1 text-center md:text-left">
+<h2 class="font-title-md text-title-md text-primary mb-xs">O teu perfil de adepto</h2>
+<p class="font-body-md text-body-md text-on-surface mb-md max-w-lg">Configuraste um ecossistema focado em análise tática e acompanhamento de performance de elite.</p>
+<div class="flex flex-wrap justify-center md:justify-start gap-sm">
+<span class="px-md py-xs bg-primary-container/20 text-primary rounded-full font-label-sm text-label-sm flex items-center gap-xs border border-primary/10">
+<span class="material-symbols-outlined text-[14px]">bolt</span> Pro Scout
+                                    </span>
+<span class="px-md py-xs bg-secondary-container/20 text-on-surface rounded-full font-label-sm text-label-sm flex items-center gap-xs border border-outline-variant/10">
+<span class="material-symbols-outlined text-[14px]">analytics</span> Data Enthusiast
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Clubs Summary -->
+<div class="glass-panel rounded-xl p-md flex flex-col border border-outline-variant/5">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">groups</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Clubs</span>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center gap-sm p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center font-data-tabular text-data-tabular">FCP</div>
+<span class="font-body-md text-body-md text-on-surface">FC Porto</span>
+</div>
+<div class="flex items-center gap-sm p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center font-data-tabular text-data-tabular">MCF</div>
+<span class="font-body-md text-body-md text-on-surface">Manchester City</span>
+</div>
+<div class="text-center py-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">+ 4 others</span>
+</div>
+</div>
+</div>
+<!-- Players Summary -->
+<div class="glass-panel rounded-xl p-md flex flex-col border border-outline-variant/5">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">sports_soccer</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Players</span>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center justify-between p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A close-up high-resolution face portrait of a professional football athlete, focused and intense. The lighting is dramatic and technical, highlighting the facial details against a dark navy background. The image has a sharp, high-contrast look consistent with premium sports broadcasting. The color palette incorporates deep blues and accents of neon primary green, creating a sophisticated digital scouting vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB07cQw3brcDn3HuJodOoIaKYbxcXo-2tEaK-DSM_gz0XpFOybKixL-jXJ4sBzRlFOs6ExHsX1iuD2TN1ucgivKq-eUao8J5Vh6EsFw81Fxq46RDC83PZmJfZ4AjcWLv9hZClOOEeKiPAlye9u_SlqksuW4paR93y-f024EvrRsLrpUC7LOP1diJZ9XzjGwNF2fFrsUN_RdT5k8Kkr-DMKGII04vykVlSCOKsFnvXfNfsIUgm-ghW2k50RBBRwvQ5H2lHVNtJ2oRo"/>
+</div>
+<span class="font-body-md text-body-md text-on-surface">Vitor Roque</span>
+</div>
+<span class="font-data-tabular text-data-tabular text-tertiary">91 OVR</span>
+</div>
+<div class="flex items-center justify-between p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A macro detail shot of a professional football player's boots on a perfectly manicured grass pitch, illuminated by bright stadium lights. The focus is sharp on the technical texture of the cleats and the vibrant green grass. The lighting creates a high-energy, performance-focused atmosphere. The overall style is clean and minimalist, using a dark background and bright, focused highlights of green and white." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlXmcMeKWsleh3AS2bJfoXlzsWaxgig9Itl0Z84M3brFtzGqVQcnjVv_27md07bHHR3fkyJNeSg7edUjB5fXNRMo-V-0eKVwxVloU9xCjg8Oe39_m76EITmnMdtrJxxeIolNuNSwDOgwR44CScd9Fa7Vql4KJlSczY8icyWz6lMJc7nQFTLtN2i1knY_piABhvxpNdzG8o7cGvczmROdfNfAbajwO_TDsRaxxjMOnewhMd1tOxIWTsADwavECPRUWC3E-i9IR81KQ"/>
+</div>
+<span class="font-body-md text-body-md text-on-surface">Erling Haaland</span>
+</div>
+<span class="font-data-tabular text-data-tabular text-tertiary">95 OVR</span>
+</div>
+<div class="text-center py-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">+ 12 others</span>
+</div>
+</div>
+</div>
+<!-- Leagues Summary -->
+<div class="glass-panel rounded-xl p-md flex flex-col border border-outline-variant/5">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">emoji_events</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Leagues</span>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center gap-sm p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<span class="material-symbols-outlined text-tertiary text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-body-md text-body-md text-on-surface">UEFA Champions League</span>
+</div>
+<div class="flex items-center gap-sm p-sm rounded bg-surface-container/50 border border-outline-variant/10">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">shield</span>
+<span class="font-body-md text-body-md text-on-surface">Liga Portugal Betclic</span>
+</div>
+<div class="text-center py-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">+ 2 others</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex flex-col items-center gap-md">
+<button class="group relative w-full md:w-auto min-w-[320px] bg-primary text-on-primary py-lg px-xl rounded-full font-title-md text-title-md transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary/20 overflow-hidden">
+<div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="relative z-10 flex items-center justify-center gap-md">
+                            Finalizar Configuração
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</span>
+</button>
+<button class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors py-sm px-lg uppercase tracking-widest">
+                        Guardar como rascunho
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-background border-t border-outline-variant/10 mt-auto">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto w-full py-md">
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+                © 2024 Bolayetu Performance Systems
+            </div>
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Confetti Micro-interaction Canvas -->
+<canvas class="fixed inset-0 pointer-events-none z-[100]" id="confetti-canvas"></canvas>
+<script>
+        // Simple celebratory micro-interaction
+        document.querySelector('button.bg-primary').addEventListener('mouseenter', () => {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#94d3c1', '#ffe088', '#afefdd'];
+
+            function createPiece() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: -20,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 10 - 5
+                };
+            }
+
+            for(let i=0; i<30; i++) pieces.push(createPiece());
+
+            let animationFrame;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach((p, i) => {
+                    p.y += p.speed;
+                    p.rotation += p.rotationSpeed;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                    ctx.restore();
+
+                    if(p.y > canvas.height) pieces.splice(i, 1);
+                });
+
+                if(pieces.length > 0) {
+                    animationFrame = requestAnimationFrame(animate);
+                }
+            }
+            animate();
+        });
+    </script>
+</body></html>

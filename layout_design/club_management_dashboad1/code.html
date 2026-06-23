@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOLA YETU | Petro de Luanda Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#7ebdac",
+                    "surface": "#031427",
+                    "primary-fixed-dim": "#94d3c1",
+                    "primary-container": "#004d40",
+                    "on-surface-variant": "#bfc9c4",
+                    "error-container": "#93000a",
+                    "inverse-on-surface": "#213145",
+                    "surface-container-highest": "#26364a",
+                    "surface-container": "#102034",
+                    "on-primary-fixed-variant": "#065043",
+                    "surface-variant": "#26364a",
+                    "surface-tint": "#94d3c1",
+                    "on-error": "#690005",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary-fixed": "#00201a",
+                    "surface-container-high": "#1b2b3f",
+                    "surface-bright": "#2a3a4f",
+                    "tertiary-container": "#cca730",
+                    "on-surface": "#d3e4fe",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-background": "#d3e4fe",
+                    "on-secondary-container": "#adb4ce",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-primary": "#00382e",
+                    "secondary-container": "#3f465c",
+                    "outline": "#89938f",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#000f21",
+                    "primary-fixed": "#afefdd",
+                    "inverse-surface": "#d3e4fe",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "tertiary-fixed": "#ffe088",
+                    "surface-container-low": "#0b1c30",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-tertiary": "#3c2f00",
+                    "outline-variant": "#3f4945",
+                    "secondary": "#bec6e0",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-secondary-fixed": "#131b2e",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "background": "#031427",
+                    "primary": "#94d3c1",
+                    "surface-dim": "#031427",
+                    "inverse-primary": "#29695b",
+                    "tertiary": "#e9c349",
+                    "on-secondary": "#283044"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "base": "4px",
+                    "container-max": "1440px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "title-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .tertiary-glow:hover {
+            box-shadow: 0 0 20px rgba(233, 195, 73, 0.15);
+        }
+        .sidebar-active {
+            border-right: 4px solid #94d3c1;
+            background: rgba(148, 211, 193, 0.1);
+            color: #94d3c1;
+            font-weight: bold;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #031427;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1b2b3f;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col p-md z-50 bg-surface-container border-r border-surface-variant w-64">
+<div class="flex items-center gap-sm mb-xl px-sm">
+<img alt="Petro de Luanda Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQR2-enc488tuI3Yx6cyfFpqngxwqYBM-xrY4ab87L4872P-uFEg2PihPSpBeupNi_b6sUIt6YxKltwY5NHzvT9O_T8tYrHcbLozOML-6YWJT8XM4gI1cs3lJzxEl0lCKqnXtXPMPVxMTIipm1FYQrffXUc58MzmybYuGekH-odPG1vszKSH_ZQ5Wfa85itGuNGbae5mU9r06blciDfndNNV8VI-LjS59xGmAp6c2XFhQqWwR-yEaedQcO_x6gthHlDlKPEXnrvQc"/>
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary leading-tight">BOLA YETU</h2>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Active Tenant</p>
+</div>
+</div>
+<nav class="flex-grow space-y-sm">
+<!-- Active: Home (Dashboard intent) -->
+<a class="flex items-center gap-md p-md rounded transition-all sidebar-active font-body-md text-body-md duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-md p-md rounded transition-all text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface duration-200 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span>Scouting</span>
+</a>
+<a class="flex items-center gap-md p-md rounded transition-all text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface duration-200 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span>Transfers</span>
+</a>
+<a class="flex items-center gap-md p-md rounded transition-all text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface duration-200 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span>Medical</span>
+</a>
+<a class="flex items-center gap-md p-md rounded transition-all text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface duration-200 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">school</span>
+<span>Academy</span>
+</a>
+<a class="flex items-center gap-md p-md rounded transition-all text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface duration-200 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Finance</span>
+</a>
+</nav>
+<div class="mt-auto space-y-sm pt-xl border-t border-surface-variant">
+<button class="w-full bg-primary text-on-primary py-sm rounded font-title-md text-title-md hover:brightness-110 transition-all cursor-pointer active:opacity-80">
+                Upgrade Plan
+            </button>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 flex-1 relative flex flex-col">
+<!-- TopNavBar (Authority Source: JSON) -->
+<header class="sticky top-0 z-40 h-16 flex justify-between items-center w-full px-lg bg-surface-container-low border-b border-surface-variant">
+<div class="flex items-center gap-xl">
+<h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter">BOLA YETU</h1>
+<div class="hidden md:flex gap-lg items-center">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-title-md text-title-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Analytics</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="px-md py-xs bg-primary-container text-on-primary-container border border-primary/20 rounded font-title-md text-title-md cursor-pointer active:opacity-80 transition-all">
+                    Manage Tenant
+                </button>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined p-xs text-on-surface-variant hover:text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined p-xs text-on-surface-variant hover:text-primary cursor-pointer">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a sports management executive with a focused and authoritative expression, high-end studio lighting on a dark minimalist background, representing corporate reliability and athletic precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ltfP7ZfaMcVfHrWKiAB6vxdd-gh7oNnHZxEhaGBfnfy6fXbFOPqkAv9g_C5JrCJnPyl1TGtVt3w0O4GnMhptT2dikb7lKyOvKL_p_4golgrJPNust84y1LPfUo-60SZL8pgdwfgS7oFHyZdwRP6mCwowsDYyNSibKPnHr-noSgCKYt-pzR7UBm-g5sn-2aE6AoekKXigeHFT4aSA7gDHukXe5TXMTrUrPbfxl9MjjInaWq_aqvGCcHZQ-F7ccG6j31f7dwlMY6E"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<section class="p-lg space-y-lg max-w-container-max mx-auto w-full">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Club Operations Overview</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Live feed from Estádio 11 de Novembro | Last sync: 12s ago</p>
+</div>
+<div class="flex gap-sm">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young football coach in professional gear, focused on training, vibrant stadium lighting in background, athletic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAI5BfFOspfLv8DJPbRKQngChKvIK0yay_QW7toWglURb2DmlmeRI8mcc9Bjp9FwkDgC-AW3EQW9-8xXrMVT2qiahgBowFjX-aVMbPWHR0BtJaAcLKEdUFQ5e0l73pQNdP5Nm7TpDNqHkELHyiWN04LTzswvo4L8w-R9gAjhWDrwCpxqZ_CMhssxFI-zUr7pYmv7seQuD_2kmMVzbM_gcQjaTQUomyuqplg3UqzJVxvHuB-1APl718O2gUTY6FTAgJ2nmb2MgCx_-s"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a female athletic director in a modern office, tech-forward feel, corporate and sophisticated vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPkNlZr-6TKhgR1yrzjYNXNP2jXCeuYuLzPrnr7j2gfNXco8OWO0qCtnzTzS3Ljgwxr4ZWDuM1F6IfBTk8DvFzpfoUYBBQ5Rs3UxuUyKrQegk4jdkwPE2KwUD4AW65kCKztN32U1Muw_OM-a7-3s-cAPGA38y3RX_OgRjXynb4XRi42H7RU8b6q6nFc1jaMTP5CKsxSreg7fZjRvGHZE2vt06zgDOR_WGCh_lYutP0jWmTSySQQzbrEY7wb143Ef5wtJVBdxZt5Vs"/>
+</div>
+</div>
+<span class="text-label-sm self-center text-primary-fixed-dim">+3 Active Admins</span>
+</div>
+</div>
+<!-- Bento Grid - KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<!-- Squad Value -->
+<div class="glass-panel p-md rounded-xl space-y-base relative overflow-hidden group">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-tertiary uppercase tracking-wider">Squad Value</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim">groups</span>
+</div>
+<div class="pt-sm">
+<div class="font-headline-lg text-headline-lg text-on-surface font-data-tabular">€42.8M</div>
+<div class="flex items-center gap-xs text-primary font-label-sm">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+8.4% this season</span>
+</div>
+</div>
+<!-- Small Sparkline visualization -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-tertiary to-transparent opacity-20"></div>
+</div>
+<!-- Academy Pipeline -->
+<div class="glass-panel p-md rounded-xl space-y-base group">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-primary uppercase tracking-wider">Academy Pipeline</span>
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+<div class="pt-sm">
+<div class="font-headline-lg text-headline-lg text-on-surface font-data-tabular">24</div>
+<div class="text-on-surface-variant font-label-sm">Pro-ready prospects</div>
+</div>
+<div class="mt-md h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+</div>
+<!-- Stadium Revenue -->
+<div class="glass-panel p-md rounded-xl space-y-base">
+<div class="flex justify-between items-start">
+<span class="text-label-sm text-secondary uppercase tracking-wider">Stadium Rev</span>
+<span class="material-symbols-outlined text-secondary">stadium</span>
+</div>
+<div class="pt-sm">
+<div class="font-headline-lg text-headline-lg text-on-surface font-data-tabular">Kz 1.2B</div>
+<div class="flex items-center gap-xs text-error font-label-sm">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+<span>-2.1% v Prev. Match</span>
+</div>
+</div>
+</div>
+<!-- First Team Analytics -->
+<div class="glass-panel p-md rounded-xl bg-primary-container/10 border-primary/20 flex flex-col justify-between">
+<div class="flex justify-between items-center">
+<span class="text-label-sm text-primary font-bold">MATCH WIN PROB.</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<div class="text-center py-sm">
+<span class="font-display-lg text-display-lg text-primary">78%</span>
+</div>
+<div class="text-label-sm text-center text-on-primary-container">Next: Petro v Primeiro de Agosto</div>
+</div>
+</div>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Player Performance Matrix (Left Column) -->
+<div class="lg:col-span-2 glass-panel rounded-xl overflow-hidden">
+<div class="p-md border-b border-surface-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">monitoring</span>
+                            Player Analytics Matrix
+                        </h3>
+<div class="flex gap-sm">
+<button class="text-label-sm px-sm py-1 bg-surface-container-high rounded border border-surface-variant">Top Scorers</button>
+<button class="text-label-sm px-sm py-1 rounded border border-primary text-primary">XG / 90</button>
+</div>
+</div>
+<div class="p-0 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 text-label-sm text-on-surface-variant uppercase tracking-widest border-b border-surface-variant">
+<th class="p-md">Player</th>
+<th class="p-md">Pos</th>
+<th class="p-md">XG</th>
+<th class="p-md">Pass %</th>
+<th class="p-md">Distance</th>
+<th class="p-md text-right">Rating</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular">
+<tr class="border-b border-surface-variant hover:bg-white/5 transition-colors">
+<td class="p-md flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary/20 flex items-center justify-center font-bold text-tertiary">TG</div>
+<span>Tiago Azulão</span>
+</td>
+<td class="p-md text-on-surface-variant">FW</td>
+<td class="p-md">0.82</td>
+<td class="p-md">84%</td>
+<td class="p-md">11.2km</td>
+<td class="p-md text-right font-bold text-primary">8.4</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-white/5 transition-colors bg-surface-container-low/30">
+<td class="p-md flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary">GK</div>
+<span>Hugo Marques</span>
+</td>
+<td class="p-md text-on-surface-variant">GK</td>
+<td class="p-md">0.02</td>
+<td class="p-md">92%</td>
+<td class="p-md">5.4km</td>
+<td class="p-md text-right font-bold text-primary">7.9</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-white/5 transition-colors">
+<td class="p-md flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">AM</div>
+<span>Megue</span>
+</td>
+<td class="p-md text-on-surface-variant">MF</td>
+<td class="p-md">0.45</td>
+<td class="p-md">89%</td>
+<td class="p-md">12.5km</td>
+<td class="p-md text-right font-bold text-primary">8.1</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-white/5 transition-colors bg-surface-container-low/30">
+<td class="p-md flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-error/20 flex items-center justify-center font-bold text-error">ED</div>
+<span>Eddie Afonso</span>
+</td>
+<td class="p-md text-on-surface-variant">DF</td>
+<td class="p-md">0.12</td>
+<td class="p-md">78%</td>
+<td class="p-md">10.8km</td>
+<td class="p-md text-right font-bold text-on-surface">7.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-md bg-surface-container-high/20 flex justify-center">
+<button class="text-label-sm text-primary uppercase tracking-widest hover:underline">View All Squad Analytics</button>
+</div>
+</div>
+<!-- Right Sidebar Column -->
+<div class="space-y-gutter">
+<!-- Squad Morale Glass Card -->
+<div class="glass-panel p-md rounded-xl relative overflow-hidden">
+<h3 class="font-title-md text-title-md mb-md">Squad Health &amp; Morale</h3>
+<div class="space-y-md">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full border-2 border-primary p-0.5">
+<div class="w-full h-full rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+</div>
+</div>
+<div>
+<div class="font-bold">Match Fitness</div>
+<div class="text-label-sm text-on-surface-variant">High Intensity - 94% Avg</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="p-sm bg-surface-container-high rounded">
+<div class="text-label-sm text-on-surface-variant">Injured</div>
+<div class="font-data-tabular text-error font-bold">2 Players</div>
+</div>
+<div class="p-sm bg-surface-container-high rounded">
+<div class="text-label-sm text-on-surface-variant">Fatigue Risk</div>
+<div class="font-data-tabular text-tertiary font-bold">4 Players</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Transfer Activity Feed -->
+<div class="glass-panel p-md rounded-xl space-y-md">
+<h3 class="font-title-md text-title-md flex items-center justify-between">
+                            Recent Ops Activity
+                            <span class="material-symbols-outlined text-on-surface-variant text-[20px]">history</span>
+</h3>
+<div class="space-y-md relative before:content-[''] before:absolute before:left-2 before:top-4 before:bottom-0 before:w-0.5 before:bg-surface-variant">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-primary border-4 border-surface"></div>
+<div class="text-label-sm text-primary font-bold">TRANSFERS • 2H AGO</div>
+<p class="text-body-md">Contract extension finalized for <span class="font-bold text-on-surface">Tiago Azulão</span> until 2026.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-tertiary border-4 border-surface"></div>
+<div class="text-label-sm text-tertiary font-bold">FINANCE • 5H AGO</div>
+<p class="text-body-md">Q3 Stadium maintenance budget approved by board.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-secondary border-4 border-surface"></div>
+<div class="text-label-sm text-secondary font-bold">SCOUTING • YESTERDAY</div>
+<p class="text-body-md">New scout report received: 18yo Midfielder from Gira Bola Academy.</p>
+</div>
+</div>
+</div>
+<!-- Operations Map Widget -->
+<div class="glass-panel rounded-xl overflow-hidden aspect-video relative">
+<div class="w-full h-full bg-cover bg-center grayscale opacity-60" data-location="Luanda" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBnnE7Gl8A9yDIn1NC2dpQUf5YtL40yrrI-ht3r3m0a67nYN1MTJzl6LY2KyniLu8s6-UwUx3vriBMK1SZxZUZd5S5jHpSoH5JtiLjO2XPDqULTFBl1WTEZzRUL9DZRchX2siV7DMUkHrTmSIGYpg-nKZ2FIUX1P8ljYRravS8WHW4iLOuUpmLBRJqFrYX2la4LUjG3iL5CIdAWOUcg_emmZNMBzsKl98xVgQcO3QTh5OYbXCBbhVGtYi75RWKfWintlh9oFGpfraw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<div class="absolute bottom-md left-md">
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 bg-primary rounded-full animate-ping"></div>
+<span class="font-title-md text-title-md">Luanda HQ</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Petro de Luanda Training Ground</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Contextual FAB (Authority Source: Mandate) -->
+<div class="fixed bottom-lg right-lg z-50">
+<button class="bg-tertiary text-on-tertiary w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="absolute right-full mr-md bg-tertiary text-on-tertiary px-md py-xs rounded font-title-md text-title-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">New Operation</span>
+</button>
+</div>
+<!-- Background Decoration -->
+<div class="fixed inset-0 pointer-events-none -z-10">
+<div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-tertiary/5 blur-[100px] rounded-full"></div>
+</div>
+<script>
+        // Simple micro-interaction for rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.cursor = 'pointer';
+            });
+        });
+
+        // Search Bar focus simulation (not in original HTML but expected for "on_left")
+        // Implementation inside header as per JSON search_bar: on_left
+        const header = document.querySelector('header');
+        const searchContainer = document.createElement('div');
+        searchContainer.className = "relative flex-grow max-w-md mx-md hidden lg:flex";
+        searchContainer.innerHTML = `
+            <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input type="text" placeholder="Search players, staff, or documents..." class="w-full bg-surface-container-high border-none rounded-full pl-xl pr-md py-2 text-body-md focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant/50">
+        `;
+        header.insertBefore(searchContainer, header.children[1]);
+    </script>
+</body></html>

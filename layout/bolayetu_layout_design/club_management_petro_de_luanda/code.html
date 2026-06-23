@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu Club Portal | Petro de Luanda Squad Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;600&family=JetBrains+Mono:wght@450&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pitch-pattern {
+            background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 40px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f4945;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#89938f",
+                        "secondary-container": "#3f465c",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-background": "#d3e4fe",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#065043",
+                        "surface-bright": "#2a3a4f",
+                        "on-tertiary-container": "#4f3e00",
+                        "inverse-primary": "#29695b",
+                        "background": "#031427",
+                        "surface-container-high": "#1b2b3f",
+                        "on-primary-container": "#7ebdac",
+                        "tertiary-fixed": "#ffe088",
+                        "on-tertiary": "#3c2f00",
+                        "primary-fixed": "#afefdd",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "primary-container": "#004d40",
+                        "error": "#ffb4ab",
+                        "on-surface": "#d3e4fe",
+                        "tertiary-container": "#cca730",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary": "#00382e",
+                        "inverse-on-surface": "#213145",
+                        "surface-tint": "#94d3c1",
+                        "outline-variant": "#3f4945",
+                        "surface-container-highest": "#26364a",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "secondary": "#bec6e0",
+                        "surface-container-lowest": "#000f21",
+                        "on-secondary": "#283044",
+                        "tertiary": "#e9c349",
+                        "surface": "#031427",
+                        "surface-container": "#102034",
+                        "on-primary-fixed": "#00201a",
+                        "surface-dim": "#031427",
+                        "surface-variant": "#26364a",
+                        "inverse-surface": "#d3e4fe",
+                        "primary": "#94d3c1",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "primary-fixed-dim": "#94d3c1",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "secondary-fixed": "#dae2fd",
+                        "on-surface-variant": "#bfc9c4",
+                        "surface-container-low": "#0b1c30",
+                        "on-tertiary-fixed": "#241a00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "container-max": "1440px",
+                        "xs": "4px",
+                        "xl": "48px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "display-lg": ["Archivo Narrow"],
+                        "headline-lg-mobile": ["Archivo Narrow"],
+                        "data-tabular": ["JetBrains Mono"],
+                        "label-sm": ["Geist"],
+                        "title-md": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary antialiased">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col border-r border-outline-variant bg-surface py-lg z-50">
+<div class="px-md mb-xl flex items-center gap-md">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">sports_soccer</span>
+</div>
+<div>
+<h1 class="font-display-lg text-headline-lg-mobile text-primary uppercase tracking-tighter">Bolayetu</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-none">Club Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-base overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm mx-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span>Ecosystem</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm mx-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span>Organizations</span>
+</a>
+<a class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm mx-sm font-bold shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span>Clubs</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm mx-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+<span>Players</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm mx-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Fan Zone</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm mx-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Analytics</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-lg border-t border-outline-variant space-y-base">
+<button class="w-full bg-primary text-on-primary font-title-md text-title-md py-md rounded-lg flex items-center justify-center gap-sm mb-lg active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">add</span>
+<span>Create Entry</span>
+</button>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen flex flex-col relative pb-20 md:pb-0">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 bg-surface-container-low border-b border-outline-variant px-lg py-md flex justify-between items-center">
+<div class="flex items-center gap-xl">
+<div class="flex flex-col">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Petro de Luanda</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Squad Overview</p>
+</div>
+<div class="hidden lg:flex items-center gap-lg ml-xl">
+<a class="text-primary border-b-2 border-primary pb-base font-bold font-title-md text-title-md" href="#">Directory</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-title-md text-title-md" href="#">Live Matches</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-title-md text-title-md" href="#">Scouting</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-title-md text-title-md" href="#">Transfers</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="bg-background border border-outline-variant rounded-full pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-primary focus:outline-none w-48 lg:w-64" placeholder="Quick Search" type="text"/>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-all text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full border border-primary p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="A professional headshot of an Angolan football club director wearing a formal team-branded polo shirt, set against a blurred stadium background with soft evening lighting. The portrait is high-contrast and sharp, conveying authority and a corporate sports professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0C4EmQZbVSeMyhC3kJmQSY0Q9Mio5RGfwWW5tHAd9zV5BY8At2Y1AZAgC2bBGbiwma9raXBR-Y6BT1OS96AvuibzcGqieuoOwkm5StODEoYnYGXauO7V7caoOyRsyi5cgV84U4aifjCT9KzrJphQOGfR7fPg7uC6N63fk4Sl15m2M2V17u6LBstwI1lQ1sIDIVE8lmeRB3MkEdVhehgOJyw2ovqy0s1hOMGsrPXo9uTLdvKYXzx8h4MLKgNjIU3Ejm-dIehGEzF4"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-lg space-y-lg max-w-container-max mx-auto w-full">
+<!-- Hero Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<!-- Training Load Card -->
+<div class="lg:col-span-2 bg-surface-container p-lg rounded-xl border border-outline-variant relative overflow-hidden group">
+<div class="flex justify-between items-start mb-lg">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Weekly Training Load</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Avg Intensity: 78% High</p>
+</div>
+<span class="material-symbols-outlined text-primary">monitoring</span>
+</div>
+<div class="h-32 flex items-end justify-between gap-base">
+<!-- Simulated Chart Bars -->
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[60%] relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap">Mon: 45</div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[85%] relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Tue: 68</div>
+</div>
+<div class="flex-1 bg-primary h-[95%] rounded-t-sm relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Wed: 82</div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[40%] relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Thu: 32</div>
+</div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[75%] relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Fri: 62</div>
+</div>
+<div class="flex-1 bg-tertiary h-[20%] rounded-t-sm relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Sat: Match</div>
+</div>
+<div class="flex-1 bg-outline-variant h-[10%] rounded-t-sm relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest px-2 py-1 rounded text-xs opacity-0 group-hover/bar:opacity-100 transition-opacity">Sun: Rest</div>
+</div>
+</div>
+</div>
+<!-- Next Match Widget -->
+<div class="bg-surface-container p-lg rounded-xl border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-sm mb-md">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Upcoming Match</span>
+</div>
+<div class="flex justify-between items-center gap-md py-md">
+<div class="flex flex-col items-center gap-base">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center p-2">
+<img class="w-full h-full object-contain" data-alt="A clean, minimalist vector logo of Petro de Luanda football club with iconic yellow, red, and blue colors, presented with a slight glossy 3D depth effect against a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB1F0Rkkh0A24OPGLp6JFqGeJCZg3elGRb0Ac3OxqiK3ZjmjSDZx8_5q170F_DhSNlsqd1pFA8pnQT4tThEN9mu0w0keuOvOEP9ByqiNOq2NX_MMl1eWipbfSohGzUIDYVtzjTc_hDLpoWQPEab1ZJqohPF4N-i9Yn2LnnTq0_BDjrD_pPdGJVfzul-ymYtJFuIJFgfMwBrHHj0vE1j04pprmuFGvfGToidCFxLCQfzu4bqo6Nlfad5avI5LRfCedcy_lGeP2k2Bw"/>
+</div>
+<span class="font-label-sm text-label-sm text-center">PETRO</span>
+</div>
+<div class="text-on-surface-variant font-data-tabular">VS</div>
+<div class="flex flex-col items-center gap-base">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center p-2">
+<img class="w-full h-full object-contain" data-alt="A clean, minimalist vector logo of Sagrada Esperança football club with its distinctive green and white motifs, presented as a professional sports emblem with high-end digital rendering on a dark canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhXRbDo-lXglUI9Pvumeh8Sz7-NKEMK4s3qFyWqnc8w05oAD35rzouxseG5u4Yi-KQUzcqPSyPP25URn-ScAeynWgtyqofQkFSE-MU3NkM_an0FpAiAQCBNyajp6Akv5WTdBzEnu4dcnfd5qs_3uF3p51ymIzDC-389jfhvhH6PSZ9wZzFsxj8EyRhBsfLejeqgnDlQpndhnQXwt1UOrfQ9j-XYCw42nMNnkzcACNKztXvVoLEGKGvZcDa3N4OEj5kJ8Aqm98gnCQ"/>
+</div>
+<span class="font-label-sm text-label-sm text-center uppercase">Sagrada</span>
+</div>
+</div>
+</div>
+<div class="mt-lg">
+<div class="flex justify-between items-center text-body-md font-bold text-primary">
+<span>Next Saturday</span>
+<span>16:00 WAT</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1 text-center">Estádio 11 de Novembro, Luanda</p>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="bg-surface-container p-lg rounded-xl border border-outline-variant">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-lg tracking-widest">Squad Health</h3>
+<div class="space-y-md">
+<div class="flex justify-between items-end border-b border-outline-variant pb-sm">
+<span class="text-on-surface-variant font-body-md">Available Players</span>
+<span class="font-headline-lg text-headline-lg text-primary">24<span class="text-title-md font-normal text-on-surface-variant">/28</span></span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant pb-sm">
+<span class="text-on-surface-variant font-body-md">On Injury List</span>
+<span class="font-headline-lg text-headline-lg text-error">4</span>
+</div>
+<div class="flex items-center gap-sm text-primary font-label-sm">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Fitness level at peak (8.4/10)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Squad and Tactics -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg h-full">
+<!-- Tactics Widget (Left) -->
+<div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden flex flex-col h-full min-h-[500px]">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<h3 class="font-title-md text-title-md">Formation (4-3-3)</h3>
+<button class="p-1 hover:bg-surface-variant rounded transition-all">
+<span class="material-symbols-outlined text-primary">edit_square</span>
+</button>
+</div>
+<div class="flex-1 relative pitch-pattern p-6">
+<!-- Pitch Outlines -->
+<div class="absolute inset-6 border border-white/10 rounded-sm">
+<!-- Penalty Area Top -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-20 border border-white/10 border-t-0"></div>
+<!-- Penalty Area Bottom -->
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-20 border border-white/10 border-b-0"></div>
+<!-- Halfway Line -->
+<div class="absolute top-1/2 left-0 w-full h-[1px] bg-white/10"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 border border-white/10 rounded-full"></div>
+</div>
+<!-- Player Markers -->
+<div class="absolute inset-0 flex flex-col justify-around py-12 px-8">
+<!-- Attackers -->
+<div class="flex justify-around">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary shadow-lg shadow-primary/20 flex items-center justify-center text-[10px] text-on-primary font-bold">LW</div>
+<span class="text-[10px] bg-black/60 px-1 rounded backdrop-blur-sm">Gilberto</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary shadow-lg shadow-primary/20 flex items-center justify-center text-[10px] text-on-primary font-bold">ST</div>
+<span class="text-[10px] bg-black/60 px-1 rounded backdrop-blur-sm">Azulão</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary shadow-lg shadow-primary/20 flex items-center justify-center text-[10px] text-on-primary font-bold">RW</div>
+<span class="text-[10px] bg-black/60 px-1 rounded backdrop-blur-sm">Jaredi</span>
+</div>
+</div>
+<!-- Midfielders -->
+<div class="flex justify-around px-8">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">CM</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Megue</span>
+</div>
+<div class="flex flex-col items-center gap-1 mt-8">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">DM</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Soares</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">CM</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Anderson</span>
+</div>
+</div>
+<!-- Defenders -->
+<div class="flex justify-around">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">LB</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">To Carneiro</span>
+</div>
+<div class="flex justify-center gap-12">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">CB</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Quinito</span>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">CB</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Pedro</span>
+</div>
+</div>
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary border-2 border-on-primary flex items-center justify-center text-[10px] text-on-primary font-bold">RB</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Eddie</span>
+</div>
+</div>
+<!-- Goalkeeper -->
+<div class="flex justify-center">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-tertiary border-2 border-on-tertiary flex items-center justify-center text-[10px] text-on-tertiary font-bold">GK</div>
+<span class="text-[10px] bg-black/60 px-1 rounded">Hugo</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-high flex justify-around items-center border-t border-outline-variant">
+<div class="text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Attacking</p>
+<p class="font-data-tabular text-primary">High</p>
+</div>
+<div class="text-center border-x border-outline-variant px-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tempo</p>
+<p class="font-data-tabular text-primary">Balanced</p>
+</div>
+<div class="text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Defense</p>
+<p class="font-data-tabular text-primary">Deep Block</p>
+</div>
+</div>
+</div>
+<!-- Squad List (Right) -->
+<div class="lg:col-span-2 bg-surface-container rounded-xl border border-outline-variant flex flex-col">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-md">
+<h3 class="font-title-md text-title-md">Full Squad Registry</h3>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-bold">First Team</span>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm bg-surface-container-highest border border-outline-variant rounded text-body-md hover:bg-surface-variant transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                                Filter
+                            </button>
+<button class="px-md py-sm bg-surface-container-highest border border-outline-variant rounded text-body-md hover:bg-surface-variant transition-all flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                Export
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Player</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Position</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Age</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Status</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Value</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase">Rating</th>
+</tr>
+</thead>
+<tbody class="font-body-md">
+<tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up face of an Angolan striker with intense focus, sharp lighting casting shadows on one side of the face, cinematic sports portraiture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8HT6Q8VxWp0Gimnadmaq646uphjF2QrVsAz8-lsQnSteqJW8k4mDzRwYba1aHNPPH-qxUQXfA_GQtQ2bPxZDy-qzW3n6olqmvu3pzHIs401P-sl2eTXbj9CVL0kngaoqNZFuCVCN3aiDQQXifsbuCX63Nu1dkEfdsVx95STm0M4rsRKHhmVEiSdZ6jRpSZzMkvx_DVe9PkOW7BCSuPTnpEZCRtyq34fa3r0XfMZpyRe6dWr7JhsU28DbMu9nC_9lRjTWPPFQDNsM"/>
+</div>
+<div class="flex flex-col">
+<span class="font-bold">Tiago Azulão</span>
+<span class="text-xs text-on-surface-variant font-data-tabular">#26 • Brazil</span>
+</div>
+</td>
+<td class="p-md font-data-tabular text-on-primary-container">ST</td>
+<td class="p-md font-data-tabular">35</td>
+<td class="p-md">
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">Key Player</span>
+</td>
+<td class="p-md font-data-tabular">€450k</td>
+<td class="p-md">
+<div class="flex items-center gap-1">
+<span class="text-primary font-bold">8.1</span>
+<div class="flex gap-[1px]">
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-2 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young Angolan winger athlete looking dynamic and energetic, stadium lights in the background with bokeh effect, professional sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPXAFPCgYoShno3SYv4-0H2AOhUvlND0eCSn_f8ilOcL8StTEWKlpUV3yD9BHyw6ud9T5ZrJpF7KavPW9wug88cHoW7yseay5ntg0-nNz_AdbV-xdnhnUkWspYWpGsgDupG1sxCsnd5svJa_PgT-jkf-V3bCxva_JsapawG3aL6VUQmQCyYpU8bnil1Okfx2_s-vry9TJ9XUptDsI7fNIbLhKODnI2X3ZZBSJDoWITqsErX_NX5TEXw7_fSm2LNyVwIXaGuqSX--Q"/>
+</div>
+<div class="flex flex-col">
+<span class="font-bold">Gilberto</span>
+<span class="text-xs text-on-surface-variant font-data-tabular">#16 • Angola</span>
+</div>
+</td>
+<td class="p-md font-data-tabular text-on-primary-container">LW</td>
+<td class="p-md font-data-tabular">22</td>
+<td class="p-md">
+<span class="px-2 py-0.5 rounded-full bg-tertiary/20 text-tertiary text-[10px] font-bold">Hot Prospect</span>
+</td>
+<td class="p-md font-data-tabular">€1.2M</td>
+<td class="p-md">
+<div class="flex items-center gap-1">
+<span class="text-primary font-bold">7.8</span>
+<div class="flex gap-[1px]">
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors bg-surface-container-high/50">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Focused goalkeeper athlete during a training session in Luanda, catching a football with intense concentration, golden hour sunlight, hyper-realistic sports photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUqPGZrmw3qtHJekqNosEmp_Z70Qn4xzDqcn1kk61t4Vf7XF9GCNL0CGrqCfAoOgcnzNt03Ql6YVqOWH8p3oup0gNGIFEnxlzur3V0cTmqz1223Urca-5RU9wTRaXGzKgsxUiUrh_sGIvvdYdbsFopP1HiNe65JnRNmkOcS2AfJogGnSXNd5x4h6w2bxg1S3awUdctoqPwruyS7IZ4b47B0f6Fc6sKBbC0BAZgLLvfTF-0J3e0Qj2am2shlfbngP8X6qV-Heg-Ap8"/>
+</div>
+<div class="flex flex-col">
+<span class="font-bold">Hugo Marques</span>
+<span class="text-xs text-on-surface-variant font-data-tabular">#1 • Angola</span>
+</div>
+</td>
+<td class="p-md font-data-tabular text-on-primary-container">GK</td>
+<td class="p-md font-data-tabular">37</td>
+<td class="p-md">
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">Key Player</span>
+</td>
+<td class="p-md font-data-tabular">€250k</td>
+<td class="p-md">
+<div class="flex items-center gap-1">
+<span class="text-primary font-bold">7.2</span>
+<div class="flex gap-[1px]">
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a determined Angolan central defender, dark skin, braided hair, serious expression, wearing a team training bib, high information density professional image." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJmkeVsxV0hdLeq8g5DMgzUt3k8OFLd5XXBXnK5kqRuESrpg_i58qfPDaoypZFM8if0oqa6h6UGBnrDSf6fI2V4qO_llVCKKIPJUlfLumE4NN9zoyZPvRXNMTomuUjZJ7hVVPz604mfDfEWhm0qXidPmfD-yZhXsI7U8OWNozbBCDZyWkyyrC3pqE4sNcjkZpY3Aj77iQL-pnpX1kluwgibeZ-RVVS2inPrjbEDkB06ZeosALcnR1W7G0XO9uTynmHLWmo2JkXC_c"/>
+</div>
+<div class="flex flex-col">
+<span class="font-bold">Quinito</span>
+<span class="text-xs text-on-surface-variant font-data-tabular">#5 • Angola</span>
+</div>
+</td>
+<td class="p-md font-data-tabular text-on-primary-container">CB</td>
+<td class="p-md font-data-tabular">26</td>
+<td class="p-md">
+<span class="px-2 py-0.5 rounded-full bg-outline-variant text-on-surface-variant text-[10px] font-bold">First Team</span>
+</td>
+<td class="p-md font-data-tabular">€600k</td>
+<td class="p-md">
+<div class="flex items-center gap-1">
+<span class="text-primary font-bold">7.5</span>
+<div class="flex gap-[1px]">
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+</div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a tall, athletic Angolan midfielder during a match, beads of sweat visible, intense determination, stadium lights creating a professional broadcast feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_a27uxBbXDAq7woTY8DB_Sw1xWuAJYwmWsKhkKEwNeT4e0Mn6fJm3RZ9ua_KzRRD-7XrsW1WedC4Rh7PGOAFQ7x0dyHWIDuEsjj-shQP7cZ9BgpyyR4KYxGCphCN37u9wE7z7hzBBGrZMYqETrCZ6M35chVGhGV4e3tz-V9t3wjIFo8VaBwrunCRCiT3MSgW7jnNrpC8ba81_BvrrmhLnBywSU79FtQk7OUJgBdLIzPU8vagCuuL6kkDaIANh4vSt9DNWI9kVvfc"/>
+</div>
+<div class="flex flex-col">
+<span class="font-bold">Megue</span>
+<span class="text-xs text-on-surface-variant font-data-tabular">#10 • Angola</span>
+</div>
+</td>
+<td class="p-md font-data-tabular text-on-primary-container">CAM</td>
+<td class="p-md font-data-tabular">27</td>
+<td class="p-md">
+<span class="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">Key Player</span>
+</td>
+<td class="p-md font-data-tabular">€800k</td>
+<td class="p-md">
+<div class="flex items-center gap-1">
+<span class="text-primary font-bold">7.9</span>
+<div class="flex gap-[1px]">
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-3 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+<div class="w-1 h-4 bg-primary"></div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-auto p-md bg-surface-container-high border-t border-outline-variant flex justify-between items-center">
+<span class="text-body-md text-on-surface-variant">Showing 5 of 28 players</span>
+<div class="flex gap-sm">
+<button class="p-1 rounded hover:bg-surface-variant border border-outline-variant">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-variant border border-outline-variant">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-surface-container-highest border-t border-outline-variant flex justify-around items-center h-16 px-md pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold active:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Clubs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Players</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button (FAB) - Suppressed per rules for Details screen -->
+<script>
+        // Micro-interaction for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                row.classList.toggle('bg-primary/5');
+            });
+        });
+
+        // Search highlight logic (placeholder)
+        const searchInput = document.querySelector('input[type="text"]');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+            });
+        }
+    </script>
+</body></html>

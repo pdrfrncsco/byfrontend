@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu - Onboarding Passo 4</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#e9c349",
+                    "surface-container-low": "#0b1c30",
+                    "outline-variant": "#3f4945",
+                    "on-surface": "#d3e4fe",
+                    "on-error": "#690005",
+                    "error": "#ffb4ab",
+                    "secondary-container": "#3f465c",
+                    "on-secondary": "#283044",
+                    "tertiary-container": "#cca730",
+                    "on-error-container": "#ffdad6",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed": "#131b2e",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-background": "#d3e4fe",
+                    "on-tertiary": "#3c2f00",
+                    "primary-fixed-dim": "#94d3c1",
+                    "primary-container": "#004d40",
+                    "outline": "#89938f",
+                    "surface-container": "#102034",
+                    "inverse-surface": "#d3e4fe",
+                    "on-primary-fixed-variant": "#065043",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-primary-fixed": "#00201a",
+                    "surface-tint": "#94d3c1",
+                    "surface-container-lowest": "#000f21",
+                    "secondary-fixed": "#dae2fd",
+                    "surface-container-high": "#1b2b3f",
+                    "on-secondary-container": "#adb4ce",
+                    "background": "#031427",
+                    "tertiary": "#e9c349",
+                    "surface-dim": "#031427",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "secondary": "#bec6e0",
+                    "on-surface-variant": "#bfc9c4",
+                    "on-tertiary-container": "#4f3e00",
+                    "primary-fixed": "#afefdd",
+                    "inverse-primary": "#29695b",
+                    "on-tertiary-fixed": "#241a00",
+                    "surface-bright": "#2a3a4f",
+                    "surface-variant": "#26364a",
+                    "on-primary": "#00382e",
+                    "inverse-on-surface": "#213145",
+                    "surface": "#031427",
+                    "on-primary-container": "#7ebdac",
+                    "tertiary-fixed": "#ffe088",
+                    "surface-container-highest": "#26364a",
+                    "primary": "#94d3c1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "container-max": "1440px",
+                    "gutter": "20px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "xl": "48px"
+            },
+            "fontFamily": {
+                    "title-md": ["Geist"],
+                    "label-sm": ["Geist"],
+                    "display-lg": ["Archivo Narrow"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            -webkit-font-smoothing: antialiased;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-primary font-title-md text-title-md w-full top-0 sticky z-50 border-b border-outline-variant flat no shadows">
+<div class="flex justify-between items-center px-lg py-md w-full max-w-container-max mx-auto">
+<div class="font-display-lg text-display-lg text-primary uppercase tracking-tighter">BOLAYETU</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined hover:text-primary transition-colors duration-200 cursor-pointer">help</span>
+<span class="material-symbols-outlined hover:text-primary transition-colors duration-200 cursor-pointer">notifications</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a focused young football player in training gear, captured with high-contrast cinematic lighting against a dark navy background to match the professional sports scouting aesthetic. The image conveys determination and high-performance reliability through sharp focus and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZK7jf6SnYdoOZeNq6M6ZRG5kXuCnK3LzUIvMqYZrda8ZGSM0ls888EEgYx8e5uYvE6DmivB44yy5TN0htxUTnr65O_FMzGMm6kvh9qwOmyZ41Pjo9V8mlJtvFe-9OjThMKwZJ8RLyKPeXfxCTei0KOkBGo4E0gK-2tNk-e2fin1PsLO4e8NdP70V4PfvUJaU3a1Ibyo9LEzzsJpyXjCaqvPfQhtp3Gb_ti6gH_Sh1i2j7jbAXsKTrNsXuelpmJeiDX7Zr6kuxK1k"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-140px)]">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low font-label-sm text-label-sm h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flat no shadows">
+<div class="flex flex-col h-full py-xl px-md gap-sm">
+<div class="mb-xl">
+<div class="font-title-md text-title-md text-on-surface mb-xs">Onboarding Progress</div>
+<div class="text-on-surface-variant font-body-md">Step 4 of 5 (80%)</div>
+<div class="w-full h-1.5 bg-surface-container-highest rounded-full mt-md overflow-hidden">
+<div class="h-full bg-primary w-[80%] transition-all duration-1000 ease-out"></div>
+</div>
+</div>
+<nav class="space-y-sm">
+<div class="flex items-center gap-md text-on-surface-variant p-md hover:bg-surface-container-high transition-all rounded-lg cursor-not-allowed opacity-60">
+<span class="material-symbols-outlined">person</span>
+<span>Personal Information</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md hover:bg-surface-container-high transition-all rounded-lg cursor-not-allowed opacity-60">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span>Football Profile</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md hover:bg-surface-container-high transition-all rounded-lg cursor-not-allowed opacity-60">
+<span class="material-symbols-outlined">movie_filter</span>
+<span>Media</span>
+</div>
+<!-- ACTIVE TAB -->
+<div class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg p-md shadow-sm border border-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work_history</span>
+<span class="font-bold">Career Information</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md hover:bg-surface-container-high transition-all rounded-lg cursor-default">
+<span class="material-symbols-outlined">fact_check</span>
+<span>Review</span>
+</div>
+</nav>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-xl overflow-y-auto scrollbar-hide">
+<div class="max-w-4xl mx-auto">
+<header class="mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-xs">Histórico de Carreira</h1>
+<p class="text-on-surface-variant max-w-xl">Registre sua trajetória profissional. Comece pelo seu clube atual e adicione passagens anteriores relevantes.</p>
+</header>
+<!-- Current Club Section -->
+<section class="glass-panel rounded-xl p-lg mb-xl border border-primary/10">
+<div class="flex items-center justify-between mb-lg">
+<div class="flex items-center gap-md">
+<div class="p-sm bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary">stadium</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface">Clube Atual</h2>
+</div>
+<span class="text-label-sm font-label-sm bg-primary/20 text-primary px-sm py-1 rounded">EM CONTRATO</span>
+</div>
+<div class="grid grid-cols-12 gap-md items-end">
+<div class="col-span-12 md:col-span-5 space-y-xs">
+<label class="text-label-sm text-on-surface-variant ml-1">NOME DO CLUBE</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant focus:border-primary rounded-lg p-md text-on-surface outline-none transition-all" placeholder="Ex: S.L. Benfica" type="text"/>
+</div>
+<div class="col-span-6 md:col-span-3 space-y-xs">
+<label class="text-label-sm text-on-surface-variant ml-1">INÍCIO</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant focus:border-primary rounded-lg p-md text-on-surface outline-none transition-all" type="month"/>
+</div>
+<div class="col-span-6 md:col-span-4 space-y-xs">
+<label class="text-label-sm text-on-surface-variant ml-1">JOGOS / GOLS</label>
+<div class="flex gap-xs">
+<input class="w-1/2 bg-surface-container-lowest border border-outline-variant focus:border-primary rounded-lg p-md text-on-surface outline-none transition-all" placeholder="Jogos" type="number"/>
+<input class="w-1/2 bg-surface-container-lowest border border-outline-variant focus:border-primary rounded-lg p-md text-on-surface outline-none transition-all" placeholder="Gols" type="number"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Previous Clubs Section -->
+<section class="space-y-md mb-xl">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<div class="p-sm bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-secondary">history</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface">Clubes Anteriores</h2>
+</div>
+<button class="flex items-center gap-xs text-primary font-bold hover:brightness-110 transition-all text-body-md">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                            ADICIONAR CLUBE
+                        </button>
+</div>
+<!-- Club List / Table -->
+<div class="glass-panel rounded-xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 border-b border-outline-variant">
+<th class="p-md text-label-sm text-on-surface-variant">CLUBE / ESCUDO</th>
+<th class="p-md text-label-sm text-on-surface-variant">TEMPORADA</th>
+<th class="p-md text-label-sm text-on-surface-variant text-center">JOGOS</th>
+<th class="p-md text-label-sm text-on-surface-variant text-center">GOLS</th>
+<th class="p-md text-label-sm text-on-surface-variant text-right">AÇÕES</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high/20 transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-contain p-1 opacity-80" data-alt="A minimalist vector-style football club crest featuring a clean eagle emblem in silver and white, set against a dark textured surface. The graphic follows a modern sports branding aesthetic with sharp lines and high-contrast professional design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUA-1Rn5IVppm-Br3H0uEAESVyFt1wTNu9vZRMbwQWxAZyAxM1zRRaXj_R_qm4ei1qB9Pdx3Hm-HsAqQK_SWPpIc6-uBhm5lQggLGyUgZFdft19t9K4OtR74wM3OR86ftetvHW59hjb56FYWK7MrjXBDosjVL6TIVqiVairt3BAnVCPd2WJYdKsYbp0oooeQVfO3l8B6eYv5ChP7ErRlWWuJ2FhnAP3C88FKVQ_tp7h-ehB6T36sJ-BDS5tfW2KlILFqCL61U6xcs"/>
+</div>
+<span class="font-body-md text-on-surface">C.R. Flamengo</span>
+</td>
+<td class="p-md text-on-surface-variant">2021 — 2023</td>
+<td class="p-md text-center text-on-surface">42</td>
+<td class="p-md text-center text-on-surface">15</td>
+<td class="p-md text-right">
+<button class="text-on-surface-variant hover:text-error transition-colors p-1">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-high/20 transition-colors">
+<td class="p-md flex items-center gap-md">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-contain p-1 opacity-80" data-alt="A professional football team logo on a dark background, featuring geometric patterns in subtle shades of teal and grey. The logo is clean, modern, and stylized for a high-performance football data dashboard, emphasizing digital reliability and elite athletic standards." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3iYvXcBgTvrFGzOOkTICsNxGuZhIv1iZNi17ovqVzthRSl_P1SpkgTKl3tWdxa-YvXG1_rwXMFbXg2IUHrBXXswy3CcgnKdrUWl-niyg0vEIv6l-ZUslVHSlusm5nqMhsQ7W5s-USr4MInwJBCZndw1i5neu0Qkw4BKefmw9BtIJSVKW8nWQu_JmnQpUG9hFD5gNURa7TijCOx_5jV1YvSOaXpDPfTqg1Z195jTQ0giLs6QuABEuFRjwDxTkbdPcgRNXDnTO0xJc"/>
+</div>
+<span class="font-body-md text-on-surface">Santos FC</span>
+</td>
+<td class="p-md text-on-surface-variant">2019 — 2021</td>
+<td class="p-md text-center text-on-surface">68</td>
+<td class="p-md text-center text-on-surface">22</td>
+<td class="p-md text-right">
+<button class="text-on-surface-variant hover:text-error transition-colors p-1">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Data Verification Prompt -->
+<div class="p-md bg-tertiary-container/10 border border-tertiary/20 rounded-xl flex items-start gap-md mb-xl">
+<span class="material-symbols-outlined text-tertiary mt-1">info</span>
+<div>
+<p class="text-on-tertiary-container text-body-md font-bold mb-1">Verificação Automática</p>
+<p class="text-on-tertiary-container text-label-sm opacity-80">Nossos sistemas cruzam dados com o Transfermarkt e FIFA Connect. Informações precisas aumentam seu score de visibilidade para olheiros.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-16rem)] bg-surface-container dark:bg-surface-container font-title-md text-title-md border-t border-outline-variant shadow-md z-40">
+<div class="flex justify-between items-center px-xl py-lg w-full">
+<div class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Bolayetu Performance Systems</div>
+<div class="flex items-center gap-md">
+<button class="bg-outline-variant text-on-surface px-xl py-md rounded-xl hover:brightness-110 transition-all Active: scale-98">
+                    Back
+                </button>
+<button class="bg-primary text-on-primary rounded-xl px-xl py-md font-bold hover:brightness-110 transition-all Active: scale-98">
+                    Continue
+                </button>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for input focus
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label')?.classList.add('text-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label')?.classList.remove('text-primary');
+            });
+        });
+
+        // Animated progress simulation on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const progressBar = document.querySelector('.bg-primary');
+            if(progressBar) {
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = '80%';
+                }, 300);
+            }
+        });
+    </script>
+</body></html>

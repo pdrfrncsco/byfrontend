@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu | Onboarding - Football Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pitch-gradient {
+            background: radial-gradient(circle at center, #1b2b3f 0%, #031427 100%);
+        }
+        .pitch-line {
+            border: 1px solid rgba(148, 211, 193, 0.2);
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .position-node {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .position-node:hover {
+            transform: scale(1.2);
+            background-color: #94d3c1;
+            color: #00382e;
+        }
+        .position-node.active {
+            background-color: #94d3c1;
+            color: #00382e;
+            box-shadow: 0 0 15px rgba(148, 211, 193, 0.5);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#e9c349",
+                        "surface-container-low": "#0b1c30",
+                        "outline-variant": "#3f4945",
+                        "on-surface": "#d3e4fe",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#3f465c",
+                        "on-secondary": "#283044",
+                        "tertiary-container": "#cca730",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#131b2e",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-background": "#d3e4fe",
+                        "on-tertiary": "#3c2f00",
+                        "primary-fixed-dim": "#94d3c1",
+                        "primary-container": "#004d40",
+                        "outline": "#89938f",
+                        "surface-container": "#102034",
+                        "inverse-surface": "#d3e4fe",
+                        "on-primary-fixed-variant": "#065043",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-primary-fixed": "#00201a",
+                        "surface-tint": "#94d3c1",
+                        "surface-container-lowest": "#000f21",
+                        "secondary-fixed": "#dae2fd",
+                        "surface-container-high": "#1b2b3f",
+                        "on-secondary-container": "#adb4ce",
+                        "background": "#031427",
+                        "tertiary": "#e9c349",
+                        "surface-dim": "#031427",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "secondary": "#bec6e0",
+                        "on-surface-variant": "#bfc9c4",
+                        "on-tertiary-container": "#4f3e00",
+                        "primary-fixed": "#afefdd",
+                        "inverse-primary": "#29695b",
+                        "on-tertiary-fixed": "#241a00",
+                        "surface-bright": "#2a3a4f",
+                        "surface-variant": "#26364a",
+                        "on-primary": "#00382e",
+                        "inverse-on-surface": "#213145",
+                        "surface": "#031427",
+                        "on-primary-container": "#7ebdac",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-highest": "#26364a",
+                        "primary": "#94d3c1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "container-max": "1440px",
+                        "gutter": "20px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "48px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "display-lg": ["Archivo Narrow"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "data-tabular": ["JetBrains Mono"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-primary w-full top-0 sticky z-50 border-b border-outline-variant">
+<div class="flex justify-between items-center px-lg py-md w-full max-w-container-max mx-auto">
+<h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter">Bolayetu</h1>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined hover:text-primary transition-colors duration-200" data-icon="help">help</button>
+<button class="material-symbols-outlined hover:text-primary transition-colors duration-200" data-icon="notifications">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a young athlete for a football player profile. The lighting is dramatic and athletic, focusing on the face with a shallow depth of field. The background is a blurred high-tech stadium interior with deep midnight blue and neon teal accents, matching the Bolayetu brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2n2Hi57lp1uW-dyCVjJg4I2agDJwYWf32aLh3i3v02_ndAfwDGpwaMa1bdhSXeWJrKtH2kSxzaHsBQsCjDUqFz3OxYdHWpreU87md7THpFc5c-hildQGKUmxWZ8VpBtakjOxgI8FcO84LL13JQcfCNiMiLEBx4hKB3qbKahoHvL-5s5IQKdGsyyfHUpap9s0b-W1Y89btfhOfwVShwXLUvaCtNdTcJX35VqmWPm6ZnlBBAKrGW7A_T9Q1jcmwBSKz3gCKHtZagcw"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-140px)]">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant hidden md:flex flex-col py-xl px-md gap-sm">
+<div class="mb-xl">
+<h2 class="font-title-md text-title-md text-on-surface mb-xs">Onboarding Progress</h2>
+<div class="flex items-center gap-sm">
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[40%]"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">40%</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-sm">Step 2 of 5</p>
+</div>
+<nav class="flex flex-col gap-sm">
+<div class="flex items-center gap-md text-on-surface-variant p-md opacity-60">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Personal Information</span>
+</div>
+<div class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg p-md">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Football Profile</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md">
+<span class="material-symbols-outlined" data-icon="movie_filter">movie_filter</span>
+<span class="font-label-sm text-label-sm">Media</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md">
+<span class="material-symbols-outlined" data-icon="work_history">work_history</span>
+<span class="font-label-sm text-label-sm">Career Information</span>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant p-md">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-label-sm text-label-sm">Review</span>
+</div>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 flex-1 p-xl pb-32">
+<div class="max-w-4xl mx-auto">
+<header class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Football Profile</h2>
+<p class="text-on-surface-variant body-md">Defina seus atributos físicos e táticos fundamentais para o sistema.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+<!-- Technical Attributes -->
+<div class="space-y-lg">
+<section class="bg-surface-container p-lg rounded-xl border border-outline-variant">
+<h3 class="font-title-md text-title-md text-primary mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="straighten">straighten</span>
+                                Biometria
+                            </h3>
+<div class="grid grid-cols-2 gap-md">
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs block">Altura (cm)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-outline-variant text-on-surface font-data-tabular rounded-lg p-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="185" type="number"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">cm</span>
+</div>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs block">Peso (kg)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-outline-variant text-on-surface font-data-tabular rounded-lg p-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="78" type="number"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">kg</span>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-container p-lg rounded-xl border border-outline-variant">
+<h3 class="font-title-md text-title-md text-primary mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="settings_accessibility">settings_accessibility</span>
+                                Preferências Táticas
+                            </h3>
+<div class="mb-md">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs block">Posição Primária</label>
+<select class="w-full bg-surface-container-lowest border-outline-variant text-on-surface rounded-lg p-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none">
+<option>Selecione uma posição</option>
+<option value="GK">Goleiro (GK)</option>
+<option value="CB">Zagueiro (CB)</option>
+<option value="LB">Lateral Esquerdo (LB)</option>
+<option value="RB">Lateral Direito (RB)</option>
+<option value="CDM">Volante (CDM)</option>
+<option value="CM">Meio-Campo (CM)</option>
+<option value="CAM">Meia Ofensivo (CAM)</option>
+<option value="LW">Ponta Esquerda (LW)</option>
+<option value="RW">Ponta Direita (RW)</option>
+<option value="ST">Centroavante (ST)</option>
+</select>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-sm block">Pé Preferido</label>
+<div class="flex p-xs bg-surface-container-lowest rounded-lg border border-outline-variant">
+<button class="flex-1 py-sm rounded-md font-label-sm text-label-sm transition-all bg-primary-container text-on-primary-container">DIREITO</button>
+<button class="flex-1 py-sm rounded-md font-label-sm text-label-sm transition-all text-on-surface-variant hover:text-on-surface">ESQUERDO</button>
+<button class="flex-1 py-sm rounded-md font-label-sm text-label-sm transition-all text-on-surface-variant hover:text-on-surface">AMBOS</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Visual Pitch Selector -->
+<div class="relative">
+<section class="bg-surface-container p-lg rounded-xl border border-outline-variant h-full flex flex-col">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+                                    Mapa de Campo
+                                </h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Selecione no campo</span>
+</div>
+<div class="flex-1 relative rounded-lg overflow-hidden pitch-gradient border border-outline-variant flex items-center justify-center p-md">
+<!-- Pitch Markings -->
+<div class="absolute inset-4 pitch-line pointer-events-none opacity-40"></div>
+<div class="absolute inset-x-4 top-4 h-1/4 border-b border-outline-variant opacity-40"></div>
+<div class="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-16 border-x border-b border-outline-variant opacity-40"></div>
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-16 border-x border-t border-outline-variant opacity-40"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-outline-variant opacity-40"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full border-t border-outline-variant opacity-20"></div>
+<!-- Position Nodes -->
+<div class="relative w-full h-full grid grid-cols-3 grid-rows-5 gap-4">
+<!-- GK -->
+<div class="col-start-2 row-start-5 flex items-end justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'GK')">GK</button>
+</div>
+<!-- Defense -->
+<div class="col-start-1 row-start-4 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'LB')">LB</button>
+</div>
+<div class="col-start-2 row-start-4 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'CB')">CB</button>
+</div>
+<div class="col-start-3 row-start-4 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'RB')">RB</button>
+</div>
+<!-- Midfield -->
+<div class="col-start-2 row-start-3 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px] active" onclick="selectPos(this, 'CM')">CM</button>
+</div>
+<div class="col-start-1 row-start-2 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'LW')">LW</button>
+</div>
+<div class="col-start-3 row-start-2 flex items-center justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'RW')">RW</button>
+</div>
+<!-- Forward -->
+<div class="col-start-2 row-start-1 flex items-start justify-center">
+<button class="position-node w-10 h-10 rounded-full border border-primary/50 bg-background/80 flex items-center justify-center font-data-tabular text-[10px]" onclick="selectPos(this, 'ST')">ST</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] border-t border-outline-variant shadow-md z-40">
+<div class="flex justify-between items-center px-xl py-lg w-full">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sistema Bolayetu</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-50">© 2024 Performance Systems</span>
+</div>
+<div class="flex gap-md">
+<button class="bg-outline-variant text-on-surface px-xl py-md rounded-xl font-title-md hover:brightness-110 transition-all active:scale-95 duration-150">Back</button>
+<button class="bg-primary text-on-primary rounded-xl px-xl py-md font-bold font-title-md hover:brightness-110 transition-all active:scale-95 duration-150">Continue</button>
+</div>
+</div>
+</footer>
+<script>
+        function selectPos(element, posCode) {
+            // Remove active class from all nodes
+            document.querySelectorAll('.position-node').forEach(node => {
+                node.classList.remove('active');
+            });
+            // Add active class to clicked node
+            element.classList.add('active');
+            
+            // Update the dropdown for sync (mock)
+            const select = document.querySelector('select');
+            if (select) {
+                const options = Array.from(select.options);
+                const matchingOption = options.find(opt => opt.value === posCode);
+                if (matchingOption) select.value = posCode;
+            }
+        }
+    </script>
+</body></html>

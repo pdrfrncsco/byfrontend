@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu - Competições Favoritas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#3f465c",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#000f21",
+                    "outline-variant": "#3f4945",
+                    "on-surface": "#d3e4fe",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "tertiary-fixed": "#ffe088",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-background": "#d3e4fe",
+                    "on-error": "#690005",
+                    "secondary": "#bec6e0",
+                    "primary-container": "#004d40",
+                    "surface-tint": "#94d3c1",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-container-highest": "#26364a",
+                    "surface-variant": "#26364a",
+                    "tertiary-container": "#cca730",
+                    "background": "#031427",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-secondary": "#283044",
+                    "tertiary": "#e9c349",
+                    "on-secondary-fixed": "#131b2e",
+                    "primary-fixed": "#afefdd",
+                    "surface-dim": "#031427",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-high": "#1b2b3f",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#0b1c30",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-container": "#adb4ce",
+                    "on-primary": "#00382e",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "inverse-primary": "#29695b",
+                    "on-primary-container": "#7ebdac",
+                    "inverse-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "secondary-fixed": "#dae2fd",
+                    "primary": "#94d3c1",
+                    "outline": "#89938f",
+                    "surface": "#031427",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed": "#00201a",
+                    "inverse-on-surface": "#213145",
+                    "on-primary-fixed-variant": "#065043"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xl": "48px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #031427; color: #d3e4fe; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .competition-card:hover .selection-glow { opacity: 0.1; }
+        .competition-card.active { border-color: #94d3c1; background-color: rgba(0, 77, 64, 0.2); }
+        .competition-card.active .selection-check { display: flex; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 2px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-hidden">
+<!-- Top App Bar -->
+<header class="bg-background fixed top-0 w-full z-50 border-b border-outline-variant/10">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
+<span class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Bolayetu</span>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors">help_outline</button>
+<button class="material-symbols-outlined p-sm rounded-full text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors">account_circle</button>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-16">
+<!-- Side Navigation (Onboarding Focus) -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low border-r border-outline-variant/10 h-screen w-64 fixed left-0 top-16">
+<div class="px-lg mb-xl">
+<h2 class="font-title-md text-title-md text-primary">Onboarding</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mt-xs">Step 4 of 5</p>
+</div>
+<nav class="flex-1 space-y-xs px-sm">
+<div class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-60">
+<span class="material-symbols-outlined">person</span>
+<span class="font-title-md text-title-md">Profile</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-60">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-title-md text-title-md">Clubs</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant opacity-60">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-title-md text-title-md">Players</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm rounded-lg text-primary font-bold border-r-2 border-primary bg-primary-container/10">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-title-md text-title-md">Leagues</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-title-md text-title-md">Review</span>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 overflow-y-auto custom-scrollbar bg-background">
+<div class="max-w-4xl mx-auto px-gutter py-xl">
+<header class="mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-xs">Competições Favoritas</h1>
+<p class="text-on-surface-variant max-w-xl">Selecione as ligas e torneios que deseja acompanhar de perto. Isso personalizará os seus relatórios de desempenho e feeds de dados.</p>
+</header>
+<!-- Search/Filter Bar -->
+<div class="flex gap-md mb-lg">
+<div class="flex-1 relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg py-md pl-12 pr-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-outline-variant/60" placeholder="Procurar competição..." type="text"/>
+</div>
+<button class="flex items-center gap-sm px-lg py-md border border-outline-variant/30 rounded-lg text-on-surface-variant hover:bg-surface-container-highest/30 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+<span class="font-title-md text-title-md">Filtros</span>
+</button>
+</div>
+<!-- Bento Grid of Competitions -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Competition Card (Template) -->
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">emoji_events</span>
+</div>
+<div class="selection-check hidden items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Girabola</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Angola • 1ª Divisão</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden active" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">trophy</span>
+</div>
+<div class="selection-check flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Liga dos Campeões CAF</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">África • Continental</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">sports_soccer</span>
+</div>
+<div class="selection-check hidden items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Premier League</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Inglaterra • 1ª Divisão</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">stars</span>
+</div>
+<div class="selection-check hidden items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">UEFA Champions League</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Europa • Continental</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">workspace_premium</span>
+</div>
+<div class="selection-check hidden items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">La Liga</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Espanha • 1ª Divisão</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden active" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">military_tech</span>
+</div>
+<div class="selection-check flex items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Brasileirão Série A</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Brasil • 1ª Divisão</p>
+</div>
+<div class="competition-card relative group flex flex-col p-lg bg-surface-container-low border border-outline-variant/20 rounded-xl cursor-pointer transition-all duration-300 active:scale-95 hover:border-primary/40 overflow-hidden" onclick="toggleSelection(this)">
+<div class="selection-glow absolute inset-0 bg-primary opacity-0 transition-opacity"></div>
+<div class="flex justify-between items-start mb-md">
+<div class="p-sm bg-surface-container-highest rounded-lg">
+<span class="material-symbols-outlined text-tertiary">emoji_events</span>
+</div>
+<div class="selection-check hidden items-center justify-center w-6 h-6 rounded-full bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mb-xs">Taça de Angola</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Angola • Taça Nacional</p>
+</div>
+<!-- Placeholder for adding more -->
+<div class="flex flex-col items-center justify-center p-lg bg-surface-container-lowest border border-dashed border-outline-variant/40 rounded-xl cursor-pointer hover:border-primary/60 transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors text-3xl mb-sm">add_circle</span>
+<span class="font-title-md text-title-md text-on-surface-variant group-hover:text-primary transition-colors">Explorar mais</span>
+</div>
+</div>
+<!-- Spacer for Footer -->
+<div class="h-32"></div>
+</div>
+</main>
+</div>
+<!-- Sticky Navigation Footer -->
+<footer class="fixed bottom-0 w-full bg-surface-container-low border-t border-outline-variant/10 z-50">
+<div class="flex justify-between items-center px-gutter py-md max-w-container-max mx-auto w-full">
+<button class="flex items-center gap-sm px-lg py-md text-on-surface-variant hover:text-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="font-title-md text-title-md">Voltar</span>
+</button>
+<div class="hidden sm:flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary/20"></span>
+<span class="w-2 h-2 rounded-full bg-primary/20"></span>
+<span class="w-2 h-2 rounded-full bg-primary/20"></span>
+<span class="w-8 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-primary/20"></span>
+</div>
+<button class="flex items-center gap-sm px-xl py-md bg-primary text-on-primary rounded-lg font-bold hover:brightness-110 shadow-lg shadow-primary/10 transition-all active:scale-95 group">
+<span class="font-title-md text-title-md">Continuar</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</footer>
+<!-- Background Atmospheric Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-tertiary/5 blur-[100px] rounded-full"></div>
+</div>
+<script>
+        function toggleSelection(card) {
+            card.classList.toggle('active');
+            const check = card.querySelector('.selection-check');
+            if(card.classList.contains('active')) {
+                check.classList.remove('hidden');
+                check.classList.add('flex');
+            } else {
+                check.classList.add('hidden');
+                check.classList.remove('flex');
+            }
+        }
+
+        // Search highlight interaction (mock)
+        document.querySelector('input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.competition-card');
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                if(title.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body></html>

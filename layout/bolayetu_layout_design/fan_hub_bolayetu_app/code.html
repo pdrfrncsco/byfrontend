@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu Fan Engagement Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600;700&amp;family=JetBrains+Mono:wght@450&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&amp;family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-card {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .active-indicator {
+            view-transition-name: active-tab;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#89938f",
+                        "secondary-container": "#3f465c",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-background": "#d3e4fe",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-primary-fixed-variant": "#065043",
+                        "surface-bright": "#2a3a4f",
+                        "on-tertiary-container": "#4f3e00",
+                        "inverse-primary": "#29695b",
+                        "background": "#031427",
+                        "surface-container-high": "#1b2b3f",
+                        "on-primary-container": "#7ebdac",
+                        "tertiary-fixed": "#ffe088",
+                        "on-tertiary": "#3c2f00",
+                        "primary-fixed": "#afefdd",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "primary-container": "#004d40",
+                        "error": "#ffb4ab",
+                        "on-surface": "#d3e4fe",
+                        "tertiary-container": "#cca730",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary": "#00382e",
+                        "inverse-on-surface": "#213145",
+                        "surface-tint": "#94d3c1",
+                        "outline-variant": "#3f4945",
+                        "surface-container-highest": "#26364a",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "secondary": "#bec6e0",
+                        "surface-container-lowest": "#000f21",
+                        "on-secondary": "#283044",
+                        "tertiary": "#e9c349",
+                        "surface": "#031427",
+                        "surface-container": "#102034",
+                        "on-primary-fixed": "#00201a",
+                        "surface-dim": "#031427",
+                        "surface-variant": "#26364a",
+                        "inverse-surface": "#d3e4fe",
+                        "primary": "#94d3c1",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "primary-fixed-dim": "#94d3c1",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "secondary-fixed": "#dae2fd",
+                        "on-surface-variant": "#bfc9c4",
+                        "surface-container-low": "#0b1c30",
+                        "on-tertiary-fixed": "#241a00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px",
+                        "gutter": "20px",
+                        "container-max": "1440px",
+                        "xs": "4px",
+                        "xl": "48px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Geist"],
+                        "display-lg": ["Archivo Narrow"],
+                        "headline-lg-mobile": ["Archivo Narrow"],
+                        "data-tabular": ["JetBrains Mono"],
+                        "label-sm": ["Geist"],
+                        "title-md": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-24">
+<!-- Top AppBar (Mobile Implementation) -->
+<header class="sticky top-0 z-50 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant px-md py-sm flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">B</div>
+<h1 class="font-display-lg text-headline-lg-mobile text-primary tracking-widest uppercase">Bolayetu</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a passionate Angolan football fan wearing a green jersey. The lighting is dramatic and moody, characteristic of a high-end sports broadcast aesthetic, with deep blues and primary green accents. The background is softly blurred, showing the vibrant atmosphere of a digital sports hub." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO4RaQVgyVo-bRkQi2pVWu8B83J0TM13qW_rWAw5ooq5_NiL_v2aX9EVA61N04gfvS4h0mNinGZV5XKtK3ljAviuKNzYBhZVYYkkj8bzoej1UBNd8HCxZu9DEhhEuBX-pyAJxULy9p-GnxvO-nyJlh-HBy_tnX1qzXzG3r7f9pXn7nEO16Z0Wx08pdT3VUc_3nmf48yJgv-pws-J_WQlYN2FWME3NFycBQCNSwOV1gcU_r9H8WGrtRLymSGGXMX8oqdtrmaI8bGlw"/>
+</div>
+</div>
+</header>
+<main class="w-full space-y-lg py-md">
+<!-- Live Score Bar Section -->
+<section class="space-y-sm px-md overflow-hidden">
+<div class="flex items-center justify-between">
+<h2 class="font-title-md text-title-md flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                    Live Matches
+                </h2>
+<button class="text-primary font-label-sm uppercase tracking-wider">See All</button>
+</div>
+<div class="flex gap-md overflow-x-auto no-scrollbar pb-base">
+<!-- Match Card 1 -->
+<div class="flex-shrink-0 w-[280px] p-md glass-card rounded-xl border-l-4 border-l-primary">
+<div class="flex justify-between items-center mb-sm">
+<span class="text-label-sm font-data-tabular text-on-surface-variant uppercase tracking-widest">Girabola • 78'</span>
+<span class="text-error font-bold text-label-sm px-sm bg-error/10 rounded">LIVE</span>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px]">PA</div>
+<span class="font-title-md">Petro de Luanda</span>
+</div>
+<span class="font-data-tabular text-title-md font-bold text-primary">2</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px]">DA</div>
+<span class="font-title-md">1º de Agosto</span>
+</div>
+<span class="font-data-tabular text-title-md font-bold text-primary">1</span>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="flex-shrink-0 w-[280px] p-md glass-card rounded-xl">
+<div class="flex justify-between items-center mb-sm">
+<span class="text-label-sm font-data-tabular text-on-surface-variant uppercase tracking-widest">CAF CL • 15'</span>
+<span class="text-error font-bold text-label-sm px-sm bg-error/10 rounded">LIVE</span>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px]">MA</div>
+<span class="font-title-md">Mamelodi Sundowns</span>
+</div>
+<span class="font-data-tabular text-title-md font-bold">0</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-sm">
+<div class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px]">AH</div>
+<span class="font-title-md">Al Ahly</span>
+</div>
+<span class="font-data-tabular text-title-md font-bold">0</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Loyalty / Points Section -->
+<section class="px-md">
+<div class="relative overflow-hidden p-lg rounded-xl bg-gradient-to-br from-primary-container to-surface-container-highest border border-primary/20 group">
+
+<div class="relative z-10 flex items-center justify-between">
+<div>
+<p class="text-label-sm font-label-sm text-primary uppercase tracking-widest mb-xs">BOLA LOYALTY</p>
+<h3 class="font-display-lg text-headline-lg-mobile text-on-primary-container">12,450 <span class="text-body-md font-body-md font-normal opacity-70">PTS</span></h3>
+<p class="text-body-md text-on-surface-variant mt-sm">You are 550 pts away from "Legend" status.</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 rounded-full border-4 border-primary/30 border-t-primary flex items-center justify-center relative">
+<span class="material-symbols-outlined text-primary scale-125" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<span class="text-label-sm mt-xs font-bold text-primary">ELITE III</span>
+</div>
+</div>
+<div class="mt-md h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4 rounded-full"></div>
+</div>
+</div>
+</section>
+<!-- Fan Zone: Predict the Score -->
+<section class="px-md space-y-sm">
+<h2 class="font-title-md text-title-md">Fan Zone: Predictor</h2>
+<div class="glass-card rounded-xl p-md border-t-4 border-t-tertiary">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-tertiary">quiz</span>
+<p class="text-body-md font-bold">Who wins the Luanda Derby this weekend?</p>
+</div>
+<div class="space-y-sm">
+<button class="w-full p-md bg-surface-container-high rounded-lg flex items-center justify-between group hover:border-primary transition-all">
+<span class="font-body-md">Petro de Luanda</span>
+<span class="text-label-sm text-on-surface-variant font-data-tabular">42%</span>
+</button>
+<button class="w-full p-md bg-surface-container-high border border-primary/30 rounded-lg flex items-center justify-between group">
+<div class="flex items-center gap-sm">
+<span class="font-body-md font-bold text-primary">1º de Agosto</span>
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="text-label-sm text-primary font-data-tabular">51%</span>
+</button>
+<button class="w-full p-md bg-surface-container-high rounded-lg flex items-center justify-between group">
+<span class="font-body-md">Draw</span>
+<span class="text-label-sm text-on-surface-variant font-data-tabular">7%</span>
+</button>
+</div>
+<p class="text-label-sm text-on-surface-variant mt-md text-center">8,421 fans have predicted so far.</p>
+</div>
+</section>
+<!-- News Feed Section -->
+<section class="space-y-md px-md">
+<div class="flex items-center justify-between">
+<h2 class="font-title-md text-title-md">Personalised Feed</h2>
+<button class="text-on-surface-variant"><span class="material-symbols-outlined">tune</span></button>
+</div>
+<!-- News Item 1 (Main Story) -->
+<div class="space-y-sm group">
+<div class="aspect-video w-full rounded-xl overflow-hidden relative border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-contrast wide shot of an Angolan football stadium at sunset. The floodlights are beginning to glow against a deep orange and purple sky. The pitch is pristine green, and the atmosphere is electric with a slight haze of smoke from fan pyrotechnics. The aesthetic is clean, professional, and evocative of elite sports coverage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhuYGTYXw8svU53oWMNVl-LJjDclmWoQ4_PI6qBY-jMJ7CcWj2Gjmk-Z5hjLcKZL-pPNcwQt5aQ4GwxmsEC5hYCLnJEvSPBQfYB2Okv7ufrFQHS-wa3aTSE6EDZJuOOqxaOvkmnrtBh0YtoLkFzgviys6gm32B483f3Y9va2ly91ScQzFiaDs5NzCmgI7LHyvNnIWNnwXnLFN_p2HDoReg4A2EmWyz6CAKwPbpF2zxNnYeEuFdbLV6SJ5PzFr9Ckpr4KaMNTeJPG4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-md left-md right-md">
+<span class="bg-primary text-on-primary text-label-sm px-sm py-xs rounded font-bold uppercase tracking-wider mb-sm inline-block">Transfer News</span>
+<h3 class="font-headline-lg-mobile text-on-surface group-hover:text-primary transition-colors">Angolan Star Eyes European Move</h3>
+</div>
+</div>
+<div class="flex items-center gap-md text-on-surface-variant text-label-sm px-xs">
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-sm">schedule</span> 2h ago</span>
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-sm">comment</span> 42</span>
+<span class="flex items-center gap-xs"><span class="material-symbols-outlined text-sm">favorite</span> 128</span>
+</div>
+</div>
+<!-- News Item 2 (Social Post Style) -->
+<div class="glass-card rounded-xl p-md space-y-md border border-outline-variant">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold">PL</div>
+<div>
+<p class="font-body-md font-bold">Petro de Luanda Official</p>
+<p class="text-label-sm text-on-surface-variant">@PetroLuanda • 5h ago</p>
+</div>
+<button class="ml-auto material-symbols-outlined text-on-surface-variant">more_horiz</button>
+</div>
+<p class="text-body-md">Preparations are complete for the weekend. The squad is ready to defend the colors. Força Petro! 🦁🇦🇴 #Girabola #PetroLuanda</p>
+<div class="rounded-lg overflow-hidden border border-outline-variant aspect-square">
+<img class="w-full h-full object-cover" data-alt="A dynamic action shot of a professional football team training session in Angola. Players are wearing vibrant green training bibs, captured in mid-motion during a drill. The morning sun casts sharp, long shadows across the grass. The image has a high-shutter speed crispness, highlighting sweat and intensity, in a premium sports-photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByma8_oHBEifJ-J0zYN1QJU0-i5D6Utt2R_l1-nX9uer8TP-xJfeGX4DY6ny7KoMBqpKFlectKtqADoUpxcvQesWVrN73YapwiyCulLXfjk_Y_Jx_8Zo-swy5YN0DjFUvKFBBAQ2HxS3zyLGY63OlpSvcSsAYCpKVKreCNlfwt9HcapkxFuqLr6a8kKog3GCYy51rHx5UEIPEZQkiN6L9dEjX9DrTS-KQckWy0yQPHcqWU072S_pKv6eacVnQQKEq4qJnoJsj-aUM"/>
+</div>
+<div class="flex justify-between items-center pt-sm border-t border-outline-variant">
+<button class="flex items-center gap-xs text-on-surface-variant"><span class="material-symbols-outlined">favorite</span> 1.2k</button>
+<button class="flex items-center gap-xs text-on-surface-variant"><span class="material-symbols-outlined">chat_bubble</span> 89</button>
+<button class="flex items-center gap-xs text-on-surface-variant"><span class="material-symbols-outlined">share</span></button>
+</div>
+</div>
+<!-- News Item 3 (Article List) -->
+<div class="flex gap-md group">
+<div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a football tactical board with magnets and drawn arrows showing a complex play. The lighting is focused and technical, with a dark navy background and neon primary green markings. The image represents deep data analysis and scouting precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9j8sKvmv9WkjDm7-B0TV_6Fvx8tZ7uA1RI2uWNonJgOGkzpRKnKqL8auYxKgSswyhg4NSVdSe_gGVP-9Q2Q60bVG6TvQWorE4mBweD9W_G_FqBte65rdCw5qTXFKHU3Pm2klrWLdgdLissM1ceApdFmkuQhmf6JAvqN5pckv0jM9JQfL3X0djxu8ysHQNejH4BUvhTqVi8KZycShUBwqdQHsvXZ93xVsVNS2Z2rZah6Xi9wtVt1DS3G51zTvzrdgKBhQufvlrFtw"/>
+</div>
+<div class="flex flex-col justify-center gap-xs">
+<span class="text-label-sm text-primary font-bold uppercase tracking-widest">Analytics</span>
+<h4 class="font-title-md text-on-surface leading-tight group-hover:text-primary transition-colors">Tactical Breakdown: How Petro's high press dismantled Sagrada</h4>
+<span class="text-label-sm text-on-surface-variant">8 min read</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-surface-container-highest/95 backdrop-blur-lg border-t border-outline-variant shadow-lg h-16 flex justify-around items-center px-md pb-safe">
+<button class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Clubs</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Players</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant active:scale-95 transition-transform">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('nav button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('nav button').forEach(btn => {
+                    btn.classList.remove('text-primary', 'font-bold');
+                    btn.classList.add('text-on-surface-variant');
+                    const icon = btn.querySelector('.material-symbols-outlined');
+                    if(icon) icon.style.fontVariationSettings = "'FILL' 0";
+                });
+                this.classList.add('text-primary', 'font-bold');
+                this.classList.remove('text-on-surface-variant');
+                const activeIcon = this.querySelector('.material-symbols-outlined');
+                if(activeIcon) activeIcon.style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+    </script>
+</body></html>

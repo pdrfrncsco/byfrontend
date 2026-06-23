@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#3f465c",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#000f21",
+                        "outline-variant": "#3f4945",
+                        "on-surface": "#d3e4fe",
+                        "primary-fixed-dim": "#94d3c1",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffe088",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-background": "#d3e4fe",
+                        "on-error": "#690005",
+                        "secondary": "#bec6e0",
+                        "primary-container": "#004d40",
+                        "surface-tint": "#94d3c1",
+                        "on-surface-variant": "#bfc9c4",
+                        "surface-container-highest": "#26364a",
+                        "surface-variant": "#26364a",
+                        "tertiary-container": "#cca730",
+                        "background": "#031427",
+                        "on-tertiary-container": "#4f3e00",
+                        "on-secondary": "#283044",
+                        "tertiary": "#e9c349",
+                        "on-secondary-fixed": "#131b2e",
+                        "primary-fixed": "#afefdd",
+                        "surface-dim": "#031427",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#1b2b3f",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#0b1c30",
+                        "surface-bright": "#2a3a4f",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary": "#00382e",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "inverse-primary": "#29695b",
+                        "on-primary-container": "#7ebdac",
+                        "inverse-surface": "#d3e4fe",
+                        "surface-container": "#102034",
+                        "secondary-fixed": "#dae2fd",
+                        "primary": "#94d3c1",
+                        "outline": "#89938f",
+                        "surface": "#031427",
+                        "on-tertiary": "#3c2f00",
+                        "on-primary-fixed": "#00201a",
+                        "inverse-on-surface": "#213145",
+                        "on-primary-fixed-variant": "#065043"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "xl": "48px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["JetBrains Mono"],
+                        "label-sm": ["Geist"],
+                        "title-md": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "display-lg": ["Archivo Narrow"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .club-card-selected {
+            border-color: #94d3c1 !important;
+            background-color: rgba(148, 211, 193, 0.05);
+        }
+        .club-card-selected .check-badge {
+            display: flex !important;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f4945;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/10">
+<div class="px-lg mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-primary">Bolayetu</h1>
+<div class="mt-md">
+<p class="font-title-md text-title-md text-primary">Onboarding</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Step 2 of 5</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-xs">
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant transition-all duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-title-md text-title-md">Profile</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-primary font-bold border-r-2 border-primary bg-primary-container/10 transition-all duration-200">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-title-md text-title-md">Clubs</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-title-md text-title-md">Players</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-title-md text-title-md">Leagues</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-title-md text-title-md">Review</span>
+</div>
+</nav>
+<div class="mt-auto px-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Bolayetu</p>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component Integration) -->
+<header class="bg-background dark:bg-background border-b border-outline-variant/10 sticky top-0 z-50">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full">
+<div class="md:hidden">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary tracking-tight">Bolayetu</span>
+</div>
+<div class="hidden md:block">
+<!-- Space for desktop search if needed, but instructed hidden -->
+</div>
+<div class="flex items-center gap-md">
+<button class="p-base hover:bg-surface-container-highest/50 transition-colors rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">help_outline</span>
+</button>
+<button class="p-base hover:bg-surface-container-highest/50 transition-colors rounded-full active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Content Section -->
+<section class="flex-1 flex flex-col p-lg md:p-xl max-w-5xl mx-auto w-full animate-in fade-in duration-700">
+<!-- Header Group -->
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mb-xs">Clubes Favoritos</h2>
+<p class="font-title-md text-title-md text-on-surface-variant">Seleciona os clubes que acompanhas</p>
+</div>
+<!-- Search Bar -->
+<div class="relative mb-lg">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl py-md pl-12 pr-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md" placeholder="Procurar clube ou cidade..." type="text"/>
+</div>
+<!-- Clubs Bento-ish Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-md overflow-y-auto custom-scrollbar pr-xs mb-xl">
+<!-- Club Card 1 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A circular football club crest for Petro de Luanda featuring bold yellow and blue colors with a symbolic torch emblem. The style is minimalist and modern, set against a dark, high-performance sports technology background with a subtle digital grain texture. Cinematic studio lighting emphasizes the sharp edges and premium brand identity of Angolan football." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4u7cUN-9E4Xn7NzO2O-qZO9KPYDeYRSOoH-vmzhUJUR_WRYxF3bOUeyOncGHPCBTWy2S3GlUh2k72OKF0eurBtKehpQ8TK-6HPg8Aca5lHnipOnGrlPdtDP1HgXIVfR4TuNrS8dDqth9jjrGDOW2qWNVZr5DBYGtq34LuQOA7lcwbvsjnHxLg9feqEzpUDaJZ1kb3xV8hY5mox5fLja4hMq_iAadQsO-4JNAA475UBhrloGTDuEtXQfZc_AnKUkXAJQCaEtIbenE"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Petro de Luanda</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Luanda</p>
+</div>
+<!-- Club Card 2 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A sophisticated football club logo for Primeiro de Agosto showing red and black stripes with a golden star. The design is rendered in a sleek, corporate modern aesthetic with glossy 3D depth. It is positioned centrally in a minimalist digital space with soft ambient lighting and a high-end SaaS interface feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcvbNT6lM5F9NO21IqH-09VfXfrXOIhIIDD4BMCTuQkc5nmVxakiaet7t1kGhqu1T9c9i6qh7NOVdtDsN7u8TMFcn24Bu7dnf2mko4Huy8sP7XCsvb7F8iNXT2K8lxGM0wbrRtvPmZJ6wY9X_LyV1WbKnra7zRPtHsWqmwhTV9fBNR92eMo6nbxDIv5vmkGCFQH7wYOCJdmW3qDSxWhfojj1wgDcFHCEQt_UWqa616mlIVCcWjJVkxdYdNca2NLbkCPzf_NzIwqr8"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">1º de Agosto</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Luanda</p>
+</div>
+<!-- Club Card 3 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A professional football emblem for Sagrada Esperança featuring green and white geometric patterns. The style is athletic and high-precision, reminiscent of luxury sports broadcasting graphics. The crest is set against a dark navy blue background with fine technical details and a monospaced font aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTKOxkt5MTmkuOHCvR1LQPmDsJZ59WRte7SGQdLmW1sAiTMuxdc6DS492gqiEiCKbYZ411ffbLoDx9utPnu0V1ra4Cyfd9PxVq9iuJAeS71R6ACZXNOHy7XCNGIBLrBdBY_YJPkSDZ0Wh0NenK579-TEKG-piKX8YY_uH4a_TW9IVqr7ggqFjQI5ytuNdOX_O55XsK1yg3l0Vby8ZZZQxsXQ5G2gLeVAearMnot4Mo4fMgZwDpIz19iM2WS_mdUqb8V711zlDju1Q"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Sagrada Esperança</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Lunda Norte</p>
+</div>
+<!-- Club Card 4 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="The football club badge for Interclube Luanda displayed with blue and black professional branding. The visual style is premium and authoritative, featuring crisp lines and high-contrast lighting. The image captures a sense of institutional reliability and modern sports data science, focused on player performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ7t6i7EuSTgX6zEtmD5TUXX_mFjZUJhuO_E7pCAdrk2qzPTLu-apNdEdAkf_HPzrmMc7zoONFqcV370p9wALgJVaee2Yad_YUtsFnhASu9qtMOedv-04CbDWCObvMshahkr50oEFt_VmobGyipqaPNmYVvr5kW1EJmDsbG1D-mkUSuW5J1QH2whwkksXiQ8iLTobs5UJAOmL3S_AH2gEaF2J9cJNWwhEIw1vwXW7YjWJr82nm_8f_c11J9kyXUnvCywTknfc83zo"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Interclube</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Luanda</p>
+</div>
+<!-- Club Card 5 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A minimalist logo for FC Bravos do Maquis with deep blue and white accents. The design focuses on sports technology aesthetics, with sharp geometric shapes and a matte finish. It is displayed on a high-density dashboard background with subtle glow effects and architectural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbAsUdk3_P2gvIxywkodrGj6x6jKHi1dtE2rzUpc67NtcLdQ7GjIoSpI_n8WeSXFw0jy3pXlxZNnQcUcrAB9qd1EjkLNqxIvf3LmtfeDLhEcGAVWzmfKvIv3DIrpupNArbWcyDQpzHU_sLJ8yYBJVDBta9uUyvIklHs-CIR-0suMs-3K5u4g3vphpOkg5odKRssK2ZGpFbCVVfRUb9UqVfspW9w5hn_J-w5ueneeflqHcqbqgDkcZ0Brj04lGkXj9-I9QSLulELsE"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Bravos do Maquis</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Moxico</p>
+</div>
+<!-- Club Card 6 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A modern football club shield for Wiliete SC Benguela featuring light blue and white. The aesthetic is clean and minimalist, set within a dark mode professional athlete management system. The lighting is soft and diffuse, highlighting the elegant simplicity of the club's identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcJP-sArdXEhERKpY7-vy0zwoZEu_2PhQqiHfKnwoF9oX_aAUVxs3JjO1VfhmRyLEie4c1ewidkEp9cxPA34SrBPSK7u9KKc-BuN15fkpx18ATLZtct-CtZJjELACAT228K0N6TSq2PnMephkK_9mY3QQrLWZ0UJMYz30Ips4nPhU7UcYN1hbGVhtKMZeV6CW5VteVReWDAueSIfMuMGJ2ogCCQK8z-Lyd2ouwSpottWW-J6nWP0gImRGEjk1kg2zN2DnD1u2UudI"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Wiliete SC</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Benguela</p>
+</div>
+<!-- Club Card 7 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A vibrant red and white football crest for Desportivo da Huíla. The logo is rendered with a focus on sports energy and technical precision. The background features a subtle midnight blue gradient with faint data grid lines, embodying a high-performance analytics platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCulqBiZxWoq0-8qYcsUQoNkSEQxfivqXBHHzfhHujtlWOmkX32f51FMo9e_JPoDNxPWLRO6TnADOVTu46JlIwt-N83PvxWxaklpU4D3Uq5UTZhgCj-GsN41c2SQX_Kks-bTFJn2fXwCkuLeSQ8BkOZ1Yedk2cbsOmJGUxU3mq9_nncEQDsfhFxPZdB-qTbUM9-F_aAgNLaqppsPzDT7H4P9DViUn6w7BXVn_Qbkt-48yh8-9SpZ25vig7uUj37tu1_1qbov47G8P0"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Desp. da Huíla</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Huíla</p>
+</div>
+<!-- Club Card 8 -->
+<div class="group relative flex flex-col items-center justify-center p-lg bg-surface-container-low border border-outline-variant/10 rounded-xl cursor-pointer hover:bg-surface-container-high transition-all duration-300 active:scale-98" onclick="toggleSelection(this)">
+<div class="check-badge hidden absolute top-sm right-sm w-6 h-6 bg-primary text-on-primary rounded-full items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'wght' 700">check</span>
+</div>
+<div class="w-16 h-16 mb-md flex items-center justify-center bg-surface-container rounded-full overflow-hidden border border-outline-variant/10">
+<img class="w-12 h-12 object-contain" data-alt="A professional football club emblem for Académica do Lobito with black and yellow diagonal stripes. The visual style is authoritative and performance-focused, shown in a clean, dark-themed SaaS interface. Technical monospaced text indicators are visible in the surrounding blurred UI elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD9wB58jeSHmjCuZ68jzi1ObCOklRjjwkA2NgokyJEbRpn3tqx36JWu223QCtSglOAr0JQeIJNedzxWsekiG1bOtwXO5XdTznuBteKXWFrKc8MxYYxWLMs9ndFvFTQu04WlBotbPJ5HfxkdN3Di5TvzR24w8SSd0pkyRPrFJBUJI4e8HgT_-t6Pk3kMIZLwBs2Z_8GRq7F2f-_Q4Tlqsyvz0heFnwIcdfU1u8BIU2kfBdus6zOtcCV7gIk6EXUTn2Iv1J_DvZNcIQ"/>
+</div>
+<p class="font-title-md text-title-md text-on-surface text-center mb-xs">Acad. do Lobito</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Benguela</p>
+</div>
+</div>
+<!-- Action Navigation -->
+<div class="flex items-center justify-between mt-auto pt-lg border-t border-outline-variant/10 bg-background/80 backdrop-blur-md sticky bottom-0">
+<button class="px-xl py-md text-primary font-title-md text-title-md rounded-xl hover:bg-primary/5 transition-all active:scale-95 flex items-center gap-sm">
+<span class="material-symbols-outlined">arrow_back</span>
+                    Voltar
+                </button>
+<div class="flex items-center gap-md">
+<span class="hidden md:inline font-label-sm text-label-sm text-on-surface-variant">Selecionado: <span class="text-primary font-bold" id="selection-count">0</span> clubes</span>
+<button class="px-xl py-md bg-primary/20 text-on-primary-container font-bold font-title-md text-title-md rounded-xl transition-all cursor-not-allowed opacity-50 flex items-center gap-sm" disabled="" id="btn-continue">
+                        Continuar
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Footer (Shared Component) -->
+<footer class="bg-background dark:bg-background border-t border-outline-variant/10 mt-auto">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto w-full py-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Bolayetu Performance Systems</p>
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        let selectedCount = 0;
+        const countDisplay = document.getElementById('selection-count');
+        const continueBtn = document.getElementById('btn-continue');
+
+        function toggleSelection(card) {
+            card.classList.toggle('club-card-selected');
+            
+            if (card.classList.contains('club-card-selected')) {
+                selectedCount++;
+            } else {
+                selectedCount--;
+            }
+
+            countDisplay.innerText = selectedCount;
+
+            if (selectedCount > 0) {
+                continueBtn.disabled = false;
+                continueBtn.classList.remove('bg-primary/20', 'text-on-primary-container', 'cursor-not-allowed', 'opacity-50');
+                continueBtn.classList.add('bg-primary', 'text-on-primary', 'active:scale-95', 'hover:shadow-lg', 'hover:shadow-primary/20');
+            } else {
+                continueBtn.disabled = true;
+                continueBtn.classList.add('bg-primary/20', 'text-on-primary-container', 'cursor-not-allowed', 'opacity-50');
+                continueBtn.classList.remove('bg-primary', 'text-on-primary', 'active:scale-95', 'hover:shadow-lg', 'hover:shadow-primary/20');
+            }
+        }
+    </script>
+</body></html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu | Zito Luvumbo Professional Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&amp;family=Geist:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#89938f",
+                    "secondary-container": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "on-background": "#d3e4fe",
+                    "on-secondary-fixed": "#131b2e",
+                    "on-primary-fixed-variant": "#065043",
+                    "surface-bright": "#2a3a4f",
+                    "on-tertiary-container": "#4f3e00",
+                    "inverse-primary": "#29695b",
+                    "background": "#031427",
+                    "surface-container-high": "#1b2b3f",
+                    "on-primary-container": "#7ebdac",
+                    "tertiary-fixed": "#ffe088",
+                    "on-tertiary": "#3c2f00",
+                    "primary-fixed": "#afefdd",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "primary-container": "#004d40",
+                    "error": "#ffb4ab",
+                    "on-surface": "#d3e4fe",
+                    "tertiary-container": "#cca730",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#adb4ce",
+                    "on-primary": "#00382e",
+                    "inverse-on-surface": "#213145",
+                    "surface-tint": "#94d3c1",
+                    "outline-variant": "#3f4945",
+                    "surface-container-highest": "#26364a",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "secondary": "#bec6e0",
+                    "surface-container-lowest": "#000f21",
+                    "on-secondary": "#283044",
+                    "tertiary": "#e9c349",
+                    "surface": "#031427",
+                    "surface-container": "#102034",
+                    "on-primary-fixed": "#00201a",
+                    "surface-dim": "#031427",
+                    "surface-variant": "#26364a",
+                    "inverse-surface": "#d3e4fe",
+                    "primary": "#94d3c1",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "secondary-fixed": "#dae2fd",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-container-low": "#0b1c30",
+                    "on-tertiary-fixed": "#241a00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "sm": "8px",
+                    "base": "4px",
+                    "md": "16px",
+                    "gutter": "20px",
+                    "container-max": "1440px",
+                    "xs": "4px",
+                    "xl": "48px"
+            },
+            "fontFamily": {
+                    "body-md": ["Geist"],
+                    "display-lg": ["Archivo Narrow"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"],
+                    "headline-lg": ["Archivo Narrow"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .player-card-gradient {
+            background: linear-gradient(135deg, rgba(16,32,52,1) 0%, rgba(3,20,39,1) 100%);
+            border: 1px solid rgba(233, 195, 73, 0.2);
+        }
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(233, 195, 73, 0.15);
+        }
+        .heatmap-cell {
+            transition: all 0.3s ease;
+        }
+        .heatmap-cell:hover {
+            filter: brightness(1.2);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 bg-surface-container-low border-b border-outline-variant">
+<div class="flex justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-xl">
+<span class="font-display-lg text-headline-lg-mobile text-primary tracking-widest">BOLAYETU</span>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Directory</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Live Matches</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Scouting</a>
+<a class="font-title-md text-title-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Transfers</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:bg-surface-container-high rounded-full p-sm transition-all">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate football executive, clean shaven with a focused expression, wearing a navy blue blazer. The background is a blurred high-tech stadium control room with glowing blue displays. The lighting is crisp and professional, using a cool color palette with primary green accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApsChfBxT0M3ZldaFxUzcMC1-sGGyJYmnE1ROlGFnZA_v-AfkZfBnITrPp_ifFAciBtaWgH4n-IEHbHaaD0qLRXhrl4-91e8dapo5fyaP0xGl_osO0sxF3RwazFrQNw1MPtCNi4qGVozx2ycvnW6wUVoE9j4BpbHCG1ej77keDdshLqzIOYRCEXBGHr6GtcSDeOiLjbqarCKA4lqKb7RxHEV1cqxRxJlN_6xuRoeQ36iRHSRg7uxfioLqeeINGMSpw30b_HcHhG2g"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col border-r border-outline-variant bg-surface py-lg z-40 mt-[73px]">
+<div class="flex flex-col gap-xs px-sm">
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-md text-body-md">Ecosystem</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">domain</span>
+<span class="font-body-md text-body-md">Organizations</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-body-md text-body-md">Clubs</span>
+</a>
+<a class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm font-bold" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="font-body-md text-body-md">Players</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Fan Zone</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</div>
+<div class="mt-auto border-t border-outline-variant pt-md px-sm">
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors hover:bg-surface-container-highest rounded-lg" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 p-md md:p-xl max-w-container-max mx-auto pb-32">
+<!-- Player Hero Section -->
+<section class="relative player-card-gradient rounded-xl overflow-hidden mb-lg gold-glow">
+<div class="absolute inset-0 opacity-10">
+
+</div>
+<div class="relative z-10 grid md:grid-cols-12 gap-lg p-xl items-end">
+<div class="md:col-span-4 flex flex-col items-center justify-center">
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-t from-tertiary to-transparent rounded-lg blur opacity-25"></div>
+<img class="relative w-full aspect-[3/4] object-cover rounded-lg border border-tertiary/30 shadow-2xl" data-alt="A high-action professional football player portrait of Zito Luvumbo in his athletic prime. He is wearing the vibrant red and yellow jersey of Petro de Luanda. The lighting is cinematic, highlighting his athletic build and determined facial expression against a dark, moody stadium background with golden light leaks. The style is ultra-realistic and premium sports photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKqnkXCudS-7ybVsUjlf2xgIFI-IMzkNgWIGCE5H_2d9eFGo5tfiWYmu6aPSad7Pcn7UncIQjIEcF4_jqnasWbO4OkqIiX5EasMmee_AYYgGkA8On4yEMmBBWvOnQjGVgC1YRwJRu_4irpzD6FurMULR_JYHpCENGTht0vXnAEvegYbg1F48WsDlgWOjz5J57Iz8RuOi-J8Av-9mR3E5lit5VRzDGCdej-BO8g8bi0VI99qNarF_Iu4YwrPF27twkVNAMw8hY2mas"/>
+</div>
+</div>
+<div class="md:col-span-8 flex flex-col gap-md">
+<div class="flex flex-wrap items-center gap-md">
+<img class="h-16 w-16 object-contain" data-alt="The official club crest of Petro de Luanda, featuring a clean, modern vector design with bold primary colors of yellow, blue, and red. The emblem is presented on a transparent background with a slight metallic texture to suggest a premium embroidered patch feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4GtBTABfvYQXYKURwxeTZS75B-vsUXN-g6C_y86LFRtRWVb98iKYtdHDtKgJyS_UwVTJoUYw7nnq-OstCkqIOaz_Jm8ZbXsqi83yCne3jFOOO8WJbgzBSHHaBbs-3SjhFnfL4ZoBkOsdDgXvnqni_68nBBS1N6vwqq_cI_Kx6ZTYRUwWHUl4JG0Fx9Qh3LSgeZMbWC7GvWBVXbtRZF2KZGq6UUIdW4oQl8hlxH2RlcD-5aBMMBhUH5hWnJtv1VDKF3r71qt74OO8"/>
+<img class="h-16 w-16 object-contain" data-alt="The national football federation emblem of Angola, featuring the iconic machete and gear elements in a stylized, modern crest. The colors are deep red and bright gold, rendered in high definition with a subtle glassmorphism effect and sharp vector lines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ7ejy9zAFj94e8kPtROx-1lrCaoLegevktMC9zcW44bnZ2RxxdHJXc-T7tm09VLOoJ2TFUeNOBclcB11znyrgKNS1_e5iJ7y3EnBf_bg8iP5r-tnNglRW4OnSVQ47b5c-mr8meIsfZwwpMfqNuE-VOV9L4LwJTuLE1YUfqbJvwT2tx_iwgOx8BsLvAM2-ynBLThqfk9Lfu9xhDzevY9vkih2-6LlXfdpnVYW9aeBcqzQmIfXepVkQc57lVIoVdnifbi8mYMBLorI"/>
+<div class="ml-auto flex gap-sm">
+<span class="bg-primary-container text-on-primary-container px-md py-xs rounded-full font-label-sm text-label-sm uppercase tracking-wider">Professional CV</span>
+<span class="bg-tertiary text-on-tertiary px-md py-xs rounded-full font-label-sm text-label-sm uppercase tracking-wider font-bold">Elite Status</span>
+</div>
+</div>
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface uppercase leading-none">Zito Luvumbo</h1>
+<p class="font-title-md text-title-md text-tertiary flex items-center gap-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stars</span>
+                                Winger / Forward • Petro de Luanda • Angola
+                            </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md pt-md border-t border-outline-variant/30">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Market Value</p>
+<p class="font-headline-lg text-headline-lg text-primary">€4.50m</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Age</p>
+<p class="font-headline-lg text-headline-lg text-on-surface">22</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Contract Until</p>
+<p class="font-headline-lg text-headline-lg text-on-surface">2027</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Foot</p>
+<p class="font-headline-lg text-headline-lg text-on-surface">Left</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Hero & Physical Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+<!-- Performance Stats -->
+<div class="md:col-span-2 bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-lg">
+<div class="flex justify-between items-center">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">query_stats</span>
+                            Season Performance
+                        </h2>
+<span class="font-data-tabular text-data-tabular text-on-surface-variant">2023/24 Campaign</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="bg-surface-container p-md rounded-lg text-center border border-outline-variant/10">
+<span class="font-display-lg text-display-lg text-on-surface leading-none">12</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-xs">Goals</p>
+</div>
+<div class="bg-surface-container p-md rounded-lg text-center border border-outline-variant/10">
+<span class="font-display-lg text-display-lg text-on-surface leading-none">08</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-xs">Assists</p>
+</div>
+<div class="bg-surface-container p-md rounded-lg text-center border border-outline-variant/10">
+<span class="font-display-lg text-display-lg text-primary leading-none">34.8</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-xs">Top Speed (km/h)</p>
+</div>
+<div class="bg-surface-container p-md rounded-lg text-center border border-outline-variant/10">
+<span class="font-display-lg text-display-lg text-on-surface leading-none">82%</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mt-xs">Pass Acc.</p>
+</div>
+</div>
+<div class="mt-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-sm">Attacking Activity Heatmap</p>
+<div class="aspect-video rounded-lg border border-outline-variant relative overflow-hidden bg-surface-container-highest">
+<div class="absolute inset-0 grid grid-cols-8 grid-rows-5 p-xs gap-xs">
+<!-- Simulated Heatmap Cells -->
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/20 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/15 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/20 rounded-xs"></div>
+<!-- Heatmap High Intensity -->
+<div class="heatmap-cell bg-primary/30 rounded-xs"></div>
+<div class="heatmap-cell bg-tertiary/40 rounded-xs"></div>
+<div class="heatmap-cell bg-tertiary/60 rounded-xs border border-tertiary/30 shadow-[0_0_10px_rgba(233,195,73,0.3)]"></div>
+<div class="heatmap-cell bg-tertiary/40 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/40 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/20 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<!-- Dynamic Rows -->
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/15 rounded-xs"></div>
+<div class="heatmap-cell bg-tertiary/50 rounded-xs"></div>
+<div class="heatmap-cell bg-tertiary/70 rounded-xs border border-tertiary/30"></div>
+<div class="heatmap-cell bg-tertiary/50 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/30 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/20 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/30 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/40 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/20 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/10 rounded-xs"></div>
+<div class="heatmap-cell bg-primary/5 rounded-xs"></div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+<span class="material-symbols-outlined text-[120px]">sports_soccer</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Physical Stats & Key Attributes -->
+<div class="flex flex-col gap-md">
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-md">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">fitness_center</span>
+                            Physical Profile
+                        </h2>
+<div class="space-y-sm">
+<div class="flex justify-between items-center py-xs border-b border-outline-variant/30">
+<span class="text-on-surface-variant font-label-sm">Height</span>
+<span class="font-data-tabular">179 cm</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-outline-variant/30">
+<span class="text-on-surface-variant font-label-sm">Weight</span>
+<span class="font-data-tabular">72 kg</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-outline-variant/30">
+<span class="text-on-surface-variant font-label-sm">Body Fat %</span>
+<span class="font-data-tabular">8.2%</span>
+</div>
+<div class="flex justify-between items-center py-xs">
+<span class="text-on-surface-variant font-label-sm">Explosiveness</span>
+<div class="flex gap-1">
+<div class="h-2 w-4 bg-primary rounded-full"></div>
+<div class="h-2 w-4 bg-primary rounded-full"></div>
+<div class="h-2 w-4 bg-primary rounded-full"></div>
+<div class="h-2 w-4 bg-primary rounded-full"></div>
+<div class="h-2 w-4 bg-outline-variant rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg flex flex-col gap-md flex-1">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">military_tech</span>
+                            Scouting Tags
+                        </h2>
+<div class="flex flex-wrap gap-sm">
+<span class="bg-surface-container-highest px-sm py-xs rounded border border-outline-variant/30 text-label-sm font-label-sm uppercase">Elite Dribbler</span>
+<span class="bg-surface-container-highest px-sm py-xs rounded border border-outline-variant/30 text-label-sm font-label-sm uppercase">Pace Abuser</span>
+<span class="bg-surface-container-highest px-sm py-xs rounded border border-outline-variant/30 text-label-sm font-label-sm uppercase">Inverted Winger</span>
+<span class="bg-surface-container-highest px-sm py-xs rounded border border-outline-variant/30 text-label-sm font-label-sm uppercase">High Presser</span>
+<span class="bg-surface-container-highest px-sm py-xs rounded border border-outline-variant/30 text-label-sm font-label-sm uppercase">Vertical Specialist</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Career Timeline -->
+<section class="bg-surface-container-low border border-outline-variant rounded-xl p-lg mb-lg">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined">timeline</span>
+                    Professional Career Path
+                </h2>
+<div class="relative space-y-md">
+<div class="absolute left-6 top-0 bottom-0 w-px bg-outline-variant"></div>
+<!-- Entry 1 -->
+<div class="relative pl-12">
+<div class="absolute left-4 top-1 w-4 h-4 rounded-full bg-primary ring-4 ring-background border-2 border-primary"></div>
+<div class="bg-surface-container p-md rounded-lg flex justify-between items-center border border-outline-variant/10">
+<div>
+<h3 class="font-title-md text-title-md">Petro de Luanda</h3>
+<p class="text-on-surface-variant font-body-md">Girabola, Angola</p>
+</div>
+<div class="text-right">
+<p class="font-bold text-primary">2021 - Present</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">65 Apps • 18 Goals</p>
+</div>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="relative pl-12">
+<div class="absolute left-5 top-2 w-2 h-2 rounded-full bg-outline ring-4 ring-background"></div>
+<div class="bg-surface-container p-md rounded-lg flex justify-between items-center border border-outline-variant/10 opacity-70">
+<div>
+<h3 class="font-title-md text-title-md">Primeiro de Agosto</h3>
+<p class="text-on-surface-variant font-body-md">Youth Academy</p>
+</div>
+<div class="text-right">
+<p class="font-bold">2018 - 2021</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Youth Development</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Match Highlights Video Grid -->
+<section class="mb-lg">
+<div class="flex justify-between items-end mb-md">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">videocam</span>
+                        Match Highlights &amp; Reels
+                    </h2>
+<a class="text-primary font-label-sm hover:underline flex items-center gap-xs" href="#">
+                        View All Media <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+<div class="group relative aspect-video rounded-xl overflow-hidden border border-outline-variant bg-surface-container-highest cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A cinematic capture of a football player celebrating a goal in a packed stadium under bright floodlights. The image has a slow-motion feel with motion blur on the grass and water droplets. The color grading is rich and saturated, with primary green and deep midnight blue tones dominant." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSVU-sAJXADasfvPeELLKSgxYVcpguerLlS6_tX7WXBt_wEUI6K_-fg6066fHnkvloqzuRaVjv-pUliPL8AlKco3NFL40RgKTDBuZp72xmcPlOr4IXPSiO8BgT3NjgQByyFppA5DVdq8D792GlU5b1fQ-5eUfSpufiAUzs2j0hJSBA6ajAcIZDXbwZPlILWVcxNmzzolev_5sYXhE9NlG7O4KZkfLeKVqL7a_n-Y6Qkq2Hn0S4coIwNgFmN7d46E6riYsMVOWjjkk"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover:bg-black/20 transition-all">
+<span class="material-symbols-outlined text-surface text-5xl drop-shadow-lg" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-md bg-gradient-to-t from-black/80 to-transparent">
+<p class="font-label-sm text-label-sm text-on-primary">Solo Goal vs Sagrada Esperança</p>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">2:45 • Girabola 23/24</span>
+</div>
+</div>
+<div class="group relative aspect-video rounded-xl overflow-hidden border border-outline-variant bg-surface-container-highest cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-speed action shot of a football player dribbling past two defenders on a lush green pitch. The stadium crowd is blurred in the background, creating a shallow depth of field. The lighting is bright and clear, with an emphasis on professional sports broadcast quality and high-performance intensity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYSSPKB8STUtQfpoue2-7xDvcTL385_aXjiutGGpHRzSpqpsC8fvuRVFzxUslL3IuqnDPlGj6W3LoJWHYRphwpcWGYiglY0JKJN0bLpg49NPszdlN1Z3yMtzk3ggBdGlfgPADjoqAMVbklxY7Hx0o-JqV-GDglHfqmTgNc11fYdIiQTgjlw_7NGypicTOkiOg4jUWZ--RcHSkrVaD7QEaoFiVeD0Ofpzrkkf7k10vY6nQSbaGKR7z7ge8f8DUhAd5iSMiZ0oxXZ0M"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover:bg-black/20 transition-all">
+<span class="material-symbols-outlined text-surface text-5xl drop-shadow-lg" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-md bg-gradient-to-t from-black/80 to-transparent">
+<p class="font-label-sm text-label-sm text-on-primary">Dribbling Masterclass - National Team</p>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">4:12 • AFCON Qualifiers</span>
+</div>
+</div>
+<div class="group relative aspect-video rounded-xl overflow-hidden border border-outline-variant bg-surface-container-highest cursor-pointer hidden lg:block">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A crisp, professional sports photograph of a winger crossing the ball into the penalty area. The focus is sharp on the ball and the player's intense concentration. The background is a modern stadium with glowing LED advertising boards in shades of blue and green, enhancing the digital sports tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBasWP4P1xr1yDB_8XBmuzmvm1mUOtpVtqFcz3IjSopeRLmh1zdF56isPkodANrMxNtQw3d1WP5oocGnU6HD7z2NEjotrZOb8Im-PiWSPEb7SRaYBTwHQK5MRkSco6lEKdlCz4iPkxH7FWEIjz0IEhZP0CZsSVbfTjUd1Qft_Wp8rDjSnk0rpV5g7x_zGZHAvgdP6MKm-tbqJVjAOppUnnharLCNo2EaZaTO_kW7_6iJRKTKOvpCkonrvs1QwHeUolCpPQ4k9yXmok"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover:bg-black/20 transition-all">
+<span class="material-symbols-outlined text-surface text-5xl drop-shadow-lg" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-md bg-gradient-to-t from-black/80 to-transparent">
+<p class="font-label-sm text-label-sm text-on-primary">Season Assists Compilation</p>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">5:50 • Overall 2023</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Endorsements -->
+<section class="bg-surface-container-low border border-outline-variant rounded-xl p-lg">
+<h2 class="font-title-md text-title-md text-primary flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined">verified</span>
+                    Professional Endorsements
+                </h2>
+<div class="grid md:grid-cols-2 gap-lg">
+<div class="bg-surface-container p-md rounded-lg border border-outline-variant/10 relative">
+<span class="material-symbols-outlined absolute top-2 right-4 text-tertiary/20 text-5xl">format_quote</span>
+<p class="font-body-md text-body-md text-on-surface-variant italic relative z-10">
+                            "Zito is arguably the most exciting talent currently playing on the continent. His raw pace combined with his technical ability in tight spaces makes him a nightmare for defenders."
+                        </p>
+<div class="mt-md flex items-center gap-md">
+<div class="h-10 w-10 rounded-full bg-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a seasoned African football coach with graying hair and an authoritative presence. He is wearing a technical team tracksuit in deep navy and primary green. The portrait is close-up, lit with soft natural light against a blurred training ground background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi3P3SQuKwYJmOOFYKs17Ml97qgAE8NLeGpKkYsBavNnVNiDwLPbYzLe0FBYodkw5ihU1mYPTVXbAXgx0vq7_J2H48ljHcIit7NFKk_FJ3BFb-_-XYUa63bP9woU92_PANRJLHQO1hvu6GPi60ZjVbhwU43MR-bE5T17QfL91t-zrVcR6Rb8fJzFA43DJKwWLAi7BcPiNoLpzSYRShlseTpzZtfUSvgb6wKUv1t-oO6cQeYKLnLVO-qHFzid49pUJBx79adzFX9Nw"/>
+</div>
+<div>
+<p class="font-label-sm text-label-sm font-bold">Gonçalo Ramos</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Technical Director, Bolayetu Scouting</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container p-md rounded-lg border border-outline-variant/10 relative">
+<span class="material-symbols-outlined absolute top-2 right-4 text-tertiary/20 text-5xl">format_quote</span>
+<p class="font-body-md text-body-md text-on-surface-variant italic relative z-10">
+                            "A player of extreme discipline. His physical metrics during training are consistently in the 95th percentile for his age group. Ready for European level football."
+                        </p>
+<div class="mt-md flex items-center gap-md">
+<div class="h-10 w-10 rounded-full bg-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a sports scientist in a modern clinic, wearing a white coat over a black polo shirt. He is holding a digital tablet displaying biometrics. The environment is high-tech with medical monitoring equipment in the background, styled with a clinical, premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVftotQzF5hQB-fxShMCu2EU_btfp0K4By847SlJAZdWLL7AOkiPenxmT8bWbuczGYBBBFpOFhoU_S4NMWt5br4zm8M-OBl6jAs5R3dUVDOyE9TqQYOiZA0BWS7mNK7VcfLEBB_OfdlMnktnZVTQPTVXJJwgMnKVtibtVsAMEN-vun_9-FYxnuoWSrA9dzX2UNmCjOJ5pYIo95Q3ufFW4z6Oz-O_Ok7l2XxeI6BMxZWi99WXBgRKl3e_4Rgzs97gmNyG3cYU6v5IM"/>
+</div>
+<div>
+<p class="font-label-sm text-label-sm font-bold">Dr. Andre Vaz</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Performance Specialist</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-surface-container-highest border-t border-outline-variant shadow-lg h-16 flex justify-around items-center px-md pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Clubs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Players</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- FAB -->
+<button class="fixed bottom-24 right-6 md:bottom-8 md:right-8 bg-tertiary text-on-tertiary h-14 w-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-105 transition-transform active:scale-95 z-50">
+<span class="material-symbols-outlined text-3xl">download</span>
+</button>
+<script>
+        // Micro-interactions for heatmap cells
+        const cells = document.querySelectorAll('.heatmap-cell');
+        cells.forEach(cell => {
+            cell.addEventListener('mouseover', () => {
+                cell.style.filter = 'brightness(1.5)';
+            });
+            cell.addEventListener('mouseout', () => {
+                cell.style.filter = 'none';
+            });
+        });
+    </script>
+</body></html>

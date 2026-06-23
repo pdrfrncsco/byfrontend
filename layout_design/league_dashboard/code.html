@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOLA YETU | Girabola Executive Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@300;400;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#7ebdac",
+                        "surface": "#031427",
+                        "primary-fixed-dim": "#94d3c1",
+                        "primary-container": "#004d40",
+                        "on-surface-variant": "#bfc9c4",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#213145",
+                        "surface-container-highest": "#26364a",
+                        "surface-container": "#102034",
+                        "on-primary-fixed-variant": "#065043",
+                        "surface-variant": "#26364a",
+                        "surface-tint": "#94d3c1",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#dae2fd",
+                        "on-primary-fixed": "#00201a",
+                        "surface-container-high": "#1b2b3f",
+                        "surface-bright": "#2a3a4f",
+                        "tertiary-container": "#cca730",
+                        "on-surface": "#d3e4fe",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-background": "#d3e4fe",
+                        "on-secondary-container": "#adb4ce",
+                        "on-tertiary-container": "#4f3e00",
+                        "on-primary": "#00382e",
+                        "secondary-container": "#3f465c",
+                        "outline": "#89938f",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#000f21",
+                        "primary-fixed": "#afefdd",
+                        "inverse-surface": "#d3e4fe",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-low": "#0b1c30",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-tertiary": "#3c2f00",
+                        "outline-variant": "#3f4945",
+                        "secondary": "#bec6e0",
+                        "on-tertiary-fixed": "#241a00",
+                        "on-secondary-fixed": "#131b2e",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "background": "#031427",
+                        "primary": "#94d3c1",
+                        "surface-dim": "#031427",
+                        "inverse-primary": "#29695b",
+                        "tertiary": "#e9c349",
+                        "on-secondary": "#283044"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xl": "48px",
+                        "md": "16px",
+                        "base": "4px",
+                        "container-max": "1440px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "display-lg": ["Archivo Narrow"],
+                        "data-tabular": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Archivo Narrow"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-row:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .glow-green {
+            box-shadow: 0 0 15px rgba(148, 211, 193, 0.2);
+        }
+        .glow-gold {
+            box-shadow: 0 0 15px rgba(233, 195, 73, 0.2);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #031427;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1b2b3f;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-screen flex flex-col p-md z-50 bg-surface-container border-r border-surface-variant w-64 hidden md:flex">
+<div class="mb-xl px-sm flex flex-col items-center">
+<img alt="Girabola" class="w-32 h-32 mb-md object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz9f-qRKh7Zbj1G4Q5iqJCckbETNGHjWrRoU1Y1W-15edKyjElIms63meXqE7Y7q86vhEfZ_6B3Op6zlhE47YTKlBGP6s93lFnDadIP_SHZA_X86VowyiKByP-wBoa97p1WmieP3jWX6lkMuiEH-a6u7WvaQhORuEF4A6z-RQg-KpwHMBvhgvQRAL7UwARs93dHHA577Y-9e2RztvqJf2HERrIp3zovuVNOBrP1FnqZ2yNfqpHR05cIOkMdP9oRTE26IccxL5QbiU"/>
+<div class="text-center">
+<h2 class="font-headline-lg text-headline-lg text-primary uppercase">Active Tenant</h2>
+<p class="font-body-md text-on-surface-variant opacity-70">Elite Division</p>
+</div>
+</div>
+<nav class="flex-1 space-y-sm">
+<a class="flex items-center gap-md p-md rounded text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="font-body-md text-body-md">Scouting</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-body-md text-body-md">Transfers</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-body-md text-body-md">Medical</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md text-body-md">Academy</span>
+</a>
+<a class="flex items-center gap-md p-md rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-md text-body-md">Finance</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-surface-variant space-y-sm">
+<div class="p-md rounded bg-tertiary/10 border border-tertiary/20 text-center mb-md">
+<p class="font-label-sm text-tertiary mb-sm uppercase tracking-wider">Premium Access</p>
+<button class="w-full bg-tertiary text-on-tertiary font-title-md text-[14px] py-sm rounded-lg hover:opacity-90 transition-opacity">Upgrade Plan</button>
+</div>
+<a class="flex items-center gap-md p-md text-on-surface-variant hover:text-on-surface" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-md p-md text-error hover:opacity-80" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen relative">
+<!-- Top Nav Bar Shell -->
+<header class="flex justify-between items-center w-full px-lg h-16 sticky top-0 z-40 bg-surface-container-low border-b border-surface-variant">
+<div class="flex items-center gap-xl">
+<h1 class="font-display-lg text-display-lg text-primary uppercase tracking-tighter leading-none">BOLA YETU</h1>
+<div class="hidden lg:flex gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-title-md text-title-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Analytics</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden sm:flex items-center bg-surface-container px-md py-sm rounded-lg border border-surface-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-48 text-on-surface" placeholder="Search League Data..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/30">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a high-level sports executive, wearing a tailored charcoal suit against a clean, minimalist architectural background. The lighting is dramatic and moody, reflecting a prestigious dark-mode corporate aesthetic. The overall style is modern and authoritative, fitting for a elite sports management application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1hQUcK2vihEuUm-rKd8_xKLsKiOWXwePZjO311mWSDrPqggL_-wH4Ta8ll7d8OMNynmv92bLzSWdGKtDEuVub6plldUltVUfUVniqawc4HfaHtksZiiW26DKv-I_CPjNSuD6lhHKHuqZmvbEZhJybAtBMJ05hH-NsMn8jmNGOBAnqoEDfmU6rebSCOCOJlrcNIaVsaCqkzmTZzKTRCrZFRBabP2u7V4oaUhtxD0rDoyJEC_5eHHFpYfxC6XFc0n2lVEFgEP1bYY8"/>
+</div>
+<button class="bg-primary text-on-primary font-title-md text-[14px] px-md py-sm rounded-lg hover:opacity-90 transition-opacity hidden sm:block">Manage Tenant</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-lg max-w-[1440px] mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">League Overview</h2>
+<p class="font-body-md text-on-surface-variant">Season 2023/24 • Matchday 22 of 30</p>
+</div>
+<div class="flex gap-sm">
+<div class="flex items-center gap-xs px-md py-sm bg-surface-container-high rounded border border-surface-variant">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-sm text-primary uppercase">Live Operations</span>
+</div>
+</div>
+</div>
+<!-- Top Row: Bento Grid Style -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg mb-lg">
+<!-- Standing Quick View -->
+<div class="md:col-span-8 glass-panel rounded-xl p-lg overflow-hidden relative">
+<div class="flex justify-between items-center mb-md border-b border-surface-variant/30 pb-sm">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">format_list_numbered</span>
+                            Girabola Standings
+                        </h3>
+<button class="text-primary font-label-sm hover:underline">View All Clubs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="text-on-surface-variant font-label-sm border-b border-surface-variant/50">
+<th class="py-sm">Pos</th>
+<th class="py-sm">Club</th>
+<th class="py-sm text-center">P</th>
+<th class="py-sm text-center">W</th>
+<th class="py-sm text-center">D</th>
+<th class="py-sm text-center">L</th>
+<th class="py-sm text-center">GD</th>
+<th class="py-sm text-center text-primary font-bold">PTS</th>
+</tr>
+</thead>
+<tbody class="font-data-tabular text-data-tabular">
+<tr class="data-row">
+<td class="py-md">01</td>
+<td class="py-md font-bold text-on-surface flex items-center gap-sm">
+<div class="w-6 h-6 bg-primary/20 rounded-full"></div>
+                                        Petro de Luanda
+                                    </td>
+<td class="py-md text-center">21</td>
+<td class="py-md text-center">15</td>
+<td class="py-md text-center">4</td>
+<td class="py-md text-center">2</td>
+<td class="py-md text-center">+28</td>
+<td class="py-md text-center text-primary font-bold text-lg">49</td>
+</tr>
+<tr class="data-row">
+<td class="py-md">02</td>
+<td class="py-md font-bold text-on-surface flex items-center gap-sm">
+<div class="w-6 h-6 bg-tertiary/20 rounded-full"></div>
+                                        Sagrada Esperança
+                                    </td>
+<td class="py-md text-center">22</td>
+<td class="py-md text-center">14</td>
+<td class="py-md text-center">5</td>
+<td class="py-md text-center">3</td>
+<td class="py-md text-center">+19</td>
+<td class="py-md text-center text-primary font-bold text-lg">47</td>
+</tr>
+<tr class="data-row">
+<td class="py-md">03</td>
+<td class="py-md font-bold text-on-surface flex items-center gap-sm">
+<div class="w-6 h-6 bg-white/10 rounded-full"></div>
+                                        1º de Agosto
+                                    </td>
+<td class="py-md text-center">21</td>
+<td class="py-md text-center">12</td>
+<td class="py-md text-center">6</td>
+<td class="py-md text-center">3</td>
+<td class="py-md text-center">+15</td>
+<td class="py-md text-center text-primary font-bold text-lg">42</td>
+</tr>
+<tr class="data-row">
+<td class="py-md">04</td>
+<td class="py-md font-bold text-on-surface flex items-center gap-sm">
+<div class="w-6 h-6 bg-on-secondary/20 rounded-full"></div>
+                                        Lunda Sul
+                                    </td>
+<td class="py-md text-center">22</td>
+<td class="py-md text-center">11</td>
+<td class="py-md text-center">7</td>
+<td class="py-md text-center">4</td>
+<td class="py-md text-center">+8</td>
+<td class="py-md text-center text-primary font-bold text-lg">40</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- TV Rights Revenue -->
+<div class="md:col-span-4 glass-panel rounded-xl p-lg flex flex-col justify-between border-l-4 border-tertiary">
+<div>
+<div class="flex justify-between items-start mb-lg">
+<h3 class="font-title-md text-title-md">TV Rights Revenue</h3>
+<span class="material-symbols-outlined text-tertiary">tv</span>
+</div>
+<div class="mb-lg">
+<span class="font-display-lg text-display-lg text-on-surface">$12.4M</span>
+<div class="flex items-center gap-xs text-primary mt-xs">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-label-sm">+8.4% vs Last Season</span>
+</div>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">Domestic Rights</span>
+<span class="font-data-tabular">$7.2M</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-tertiary h-full w-[60%]"></div>
+</div>
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">International Syndication</span>
+<span class="font-data-tabular">$5.2M</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-primary h-full w-[40%]"></div>
+</div>
+</div>
+</div>
+<button class="mt-xl w-full border border-tertiary/40 text-tertiary font-title-md py-sm rounded hover:bg-tertiary/10 transition-colors">Finance Audit Report</button>
+</div>
+</div>
+<!-- Second Row -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-lg">
+<!-- Disciplinary Committee Status -->
+<div class="md:col-span-4 glass-panel rounded-xl p-lg border-l-4 border-error">
+<h3 class="font-title-md text-title-md mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-error">gavel</span>
+                        Disciplinary Status
+                    </h3>
+<div class="space-y-lg">
+<div class="bg-surface-container-high p-md rounded border border-error/20">
+<div class="flex justify-between mb-sm">
+<span class="font-label-sm text-error uppercase">Active Cases</span>
+<span class="font-data-tabular text-on-surface">12</span>
+</div>
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-error-container/40 flex items-center justify-center text-[10px]">P.L</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px]">S.E</div>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-bright flex items-center justify-center text-[10px]">W.A</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="text-center p-md bg-surface-container rounded">
+<p class="font-label-sm text-on-surface-variant mb-xs">Red Cards</p>
+<p class="font-headline-lg text-headline-lg text-on-surface">42</p>
+</div>
+<div class="text-center p-md bg-surface-container rounded">
+<p class="font-label-sm text-on-surface-variant mb-xs">Inquiry Panel</p>
+<p class="font-headline-lg text-headline-lg text-tertiary">03</p>
+</div>
+</div>
+<div class="p-md bg-error/5 rounded text-body-md text-error-container flex gap-md items-start">
+<span class="material-symbols-outlined">warning</span>
+<p>High-risk match flagged: Petro vs 1º de Agosto (Referee safety protocol active).</p>
+</div>
+</div>
+</div>
+<!-- Matchday Operations -->
+<div class="md:col-span-8 glass-panel rounded-xl overflow-hidden flex flex-col">
+<div class="p-lg bg-surface-container-highest/30 border-b border-surface-variant/30 flex justify-between items-center">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">stadium</span>
+                            Matchday Operations
+                        </h3>
+<div class="flex gap-md font-label-sm text-on-surface-variant">
+<span class="flex items-center gap-xs"><div class="w-2 h-2 rounded-full bg-primary"></div> STABLE</span>
+<span class="flex items-center gap-xs"><div class="w-2 h-2 rounded-full bg-tertiary"></div> DELAYED</span>
+<span class="flex items-center gap-xs"><div class="w-2 h-2 rounded-full bg-error"></div> ALERT</span>
+</div>
+</div>
+<div class="flex-1 p-lg grid grid-cols-1 sm:grid-cols-2 gap-lg">
+<!-- Match Card 1 -->
+<div class="p-md bg-surface-container rounded-lg border border-surface-variant relative overflow-hidden">
+<div class="absolute top-0 right-0 p-sm">
+<span class="px-sm py-[2px] bg-primary/20 text-primary text-[10px] font-bold rounded">LIVE 67'</span>
+</div>
+<div class="flex justify-between items-center mb-md mt-sm">
+<div class="text-center w-1/3">
+<div class="w-10 h-10 bg-primary/20 rounded-full mx-auto mb-xs"></div>
+<p class="font-label-sm truncate">INTERCLUBE</p>
+</div>
+<div class="text-center">
+<p class="font-headline-lg text-headline-lg">1 - 0</p>
+</div>
+<div class="text-center w-1/3">
+<div class="w-10 h-10 bg-secondary/20 rounded-full mx-auto mb-xs"></div>
+<p class="font-label-sm truncate">DESPORTIVO</p>
+</div>
+</div>
+<div class="space-y-sm text-body-md border-t border-surface-variant/30 pt-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">groups</span> Attendance</span>
+<span class="font-data-tabular">18,240 / 25k</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">broadcast_on_personal</span> VAR Stream</span>
+<span class="text-primary font-bold">OPTIMAL</span>
+</div>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="p-md bg-surface-container rounded-lg border border-surface-variant relative overflow-hidden opacity-80">
+<div class="absolute top-0 right-0 p-sm">
+<span class="px-sm py-[2px] bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded">UPCOMING</span>
+</div>
+<div class="flex justify-between items-center mb-md mt-sm">
+<div class="text-center w-1/3">
+<div class="w-10 h-10 bg-tertiary/20 rounded-full mx-auto mb-xs"></div>
+<p class="font-label-sm truncate">KABUSCORP</p>
+</div>
+<div class="text-center">
+<p class="font-title-md text-on-surface-variant">19:30</p>
+</div>
+<div class="text-center w-1/3">
+<div class="w-10 h-10 bg-on-primary-container/20 rounded-full mx-auto mb-xs"></div>
+<p class="font-label-sm truncate">LIBOLO</p>
+</div>
+</div>
+<div class="space-y-sm text-body-md border-t border-surface-variant/30 pt-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">location_on</span> Stadium</span>
+<span class="font-data-tabular">Estádio dos Coqueiros</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">visibility</span> Logistics</span>
+<span class="text-tertiary font-bold">ONGOING</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats Widgets Row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-lg mt-lg">
+<div class="glass-panel p-md rounded-xl flex items-center gap-md">
+<div class="p-sm bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">sports_soccer</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase">Total Goals</p>
+<p class="font-headline-lg text-headline-lg">482</p>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex items-center gap-md">
+<div class="p-sm bg-tertiary/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase">Ticket Sales</p>
+<p class="font-headline-lg text-headline-lg">1.2M</p>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex items-center gap-md">
+<div class="p-sm bg-on-primary-container/10 rounded-lg text-on-primary-container">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase">Registered Players</p>
+<p class="font-headline-lg text-headline-lg">614</p>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex items-center gap-md">
+<div class="p-sm bg-error/10 rounded-lg text-error">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<p class="font-label-sm text-on-surface-variant uppercase">Safety Score</p>
+<p class="font-headline-lg text-headline-lg">94%</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container h-16 flex justify-around items-center z-50 border-t border-surface-variant">
+<a class="flex flex-col items-center gap-xs text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] uppercase font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-[10px] uppercase">Scouting</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="text-[10px] uppercase">Transfers</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-[10px] uppercase">Finance</span>
+</a>
+<a class="flex flex-col items-center gap-xs text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="text-[10px] uppercase">More</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and Lightweight Atmospheric Effects
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'all 0.4s ease';
+                card.classList.add('shadow-[0_0_30px_rgba(148,211,193,0.05)]');
+                card.style.borderColor = 'rgba(148, 211, 193, 0.3)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('shadow-[0_0_30px_rgba(148,211,193,0.05)]');
+                card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            });
+        });
+
+        // Tabular Data Hover Effect
+        document.querySelectorAll('.data-row').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.background = 'rgba(148, 211, 193, 0.05)';
+                row.style.cursor = 'pointer';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.background = 'transparent';
+                if(row.parentElement.querySelector('tr:nth-child(even)') === row) {
+                    row.style.background = 'rgba(255, 255, 255, 0.02)';
+                }
+            });
+        });
+    </script>
+</body></html>

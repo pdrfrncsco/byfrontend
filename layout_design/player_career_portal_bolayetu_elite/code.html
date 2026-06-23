@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ELITE PORTAL | Player Career Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@450&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#000f21",
+                    "on-secondary-container": "#adb4ce",
+                    "surface-tint": "#94d3c1",
+                    "primary": "#94d3c1",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-error-container": "#ffdad6",
+                    "tertiary": "#e9c349",
+                    "surface-bright": "#2a3a4f",
+                    "surface-container-highest": "#26364a",
+                    "tertiary-container": "#cca730",
+                    "surface-variant": "#26364a",
+                    "surface": "#031427",
+                    "error": "#ffb4ab",
+                    "secondary-container": "#3f465c",
+                    "outline": "#89938f",
+                    "inverse-primary": "#29695b",
+                    "surface-container-high": "#1b2b3f",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed-variant": "#065043",
+                    "inverse-surface": "#d3e4fe",
+                    "inverse-on-surface": "#213145",
+                    "on-background": "#d3e4fe",
+                    "secondary-fixed": "#dae2fd",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "surface-dim": "#031427",
+                    "on-primary-container": "#7ebdac",
+                    "on-primary-fixed": "#00201a",
+                    "surface-container": "#102034",
+                    "outline-variant": "#3f4945",
+                    "on-surface": "#d3e4fe",
+                    "primary-fixed": "#afefdd",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-surface-variant": "#bfc9c4",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "tertiary-fixed": "#ffe088",
+                    "on-primary": "#00382e",
+                    "surface-container-low": "#0b1c30",
+                    "secondary": "#bec6e0",
+                    "on-secondary": "#283044",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-secondary-fixed": "#131b2e",
+                    "background": "#031427",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-error": "#690005",
+                    "primary-container": "#004d40"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "base": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "gutter": "20px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "container-max": "1440px"
+            },
+            "fontFamily": {
+                    "title-md": ["Geist"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #94d3c1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/10 bg-surface-container-low z-50 hidden md:flex flex-col py-md px-sm">
+<div class="px-md mb-lg">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tighter">BOLAYETU</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">ELITE PORTAL</p>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
+<!-- Nav Item: Ecosystem (Active) -->
+<a class="flex items-center gap-3 px-md py-sm text-primary font-bold border-r-4 border-primary bg-primary/5 duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-label-sm text-label-sm">Ecosystem</span>
+</a>
+<!-- Nav Items -->
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-label-sm text-label-sm">Organizations</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Clubs</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+<span class="font-label-sm text-label-sm">Players</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-sm text-label-sm">Fan Zone</span>
+</a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant/50 hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/10 pt-md px-sm">
+<div class="flex items-center gap-3 px-md py-md bg-surface-container rounded-lg mb-md">
+<div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of an African football player with determined expression, cinematic studio lighting, sharp focus on facial features, dark navy and teal atmospheric background, high performance sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0rBeDdDbEUhbjRFM0yodAc2V3i954w_XJYSUimhyJgoLMR0d7ShCTnKaRsPSMZiHp3eCDhcFJ-a0tTfzIUVKwCSV8guOKotETEkpCcOAHdSnGxzRAheMd1wbTUjzfpyTRccGu_2e27np0CC9QXOj_S4BmbYgUfrg1i2Zenf4dgmdwjrKekqQ7enN5kspwmsfFX3qVkZG56zrF-g6fXoVLYOAYb_5p_Ub5BHSkkSExqk5XH_iggcG-2Yjz53FuuAFt--1_nyecMx4"/>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface font-bold">Zito Luvumbo</p>
+<p class="text-[10px] text-primary">Elite Professional</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-title-md py-sm rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 mb-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+                Manage Transfers
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-md py-xs text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-sm text-label-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-md py-xs text-error/80 hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-sm text-label-sm">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="w-full sticky top-0 z-50 border-b border-outline-variant/10 bg-surface/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-lg py-sm w-full max-w-container-max mx-auto">
+<div class="flex items-center gap-lg">
+<div class="flex items-center bg-surface-container-high px-md py-xs rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm text-on-surface placeholder:text-on-surface-variant w-48 lg:w-64" placeholder="Search Directory, Transfers..." type="text"/>
+</div>
+<nav class="hidden lg:flex items-center gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Directory</a>
+<a class="font-label-sm text-label-sm text-primary font-bold border-b-2 border-primary pb-1" href="#">Live Matches</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Scouting</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Transfers</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="relative p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-variant border border-outline-variant/30 overflow-hidden ml-2">
+<img class="w-full h-full object-cover" data-alt="Small circular profile avatar of an athlete, sharp features, athletic build, subtle highlights on the face, dark high-tech background, professional sports management UI asset." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrS60m_9cqLne9YQgDW9eFdDWaqPWsPqvuD611dCtDjSa_Pbbmbps0wj08xiNcWtuXwjJ7LXas0l5XMDKjyMYZgY6bASzDI0eHfAgaH5hatE1XzTnVO_cKIVR_GHYiefIcN7zi2sD1XhhNtoV2LPMLG-S41oQV0Cu5AtxGPp4j3zcnDy4j2v86yHZB_-vVnebbZ44y0_Trd_KxROR-CdEcF_1QEJRmZZdmJnWTXl4FeLJ7lXiV9Ckk0JE6BRQI4k6DCZGAu1WdFSc"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-md lg:p-lg space-y-gutter max-w-[1440px] mx-auto w-full">
+<!-- Hero Section: Professional CV Card -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="lg:col-span-8 glass-panel rounded-xl overflow-hidden relative group">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105" data-alt="Professional athlete Zito Luvumbo in a dynamic soccer action shot, mid-stride on a professional pitch, dramatic stadium floodlights in the background creating high contrast and lens flare, vibrant grass green and deep nocturnal blues, ultra-high resolution photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwYmkFgVQY9eKvyufbqNVm8aW4kWgelFb_7nUnBsqE-YVLl7lzngW5odeIh0lOoUNs0eaeXX0YjzYXqPqW1g1y8TNIpMvcaEdKahrMDfJJrJ5eOLW46QLM07Yspzth7a0B9FLUjbi6kMONRvUH6mYQevDVEGED3ZLRF8iB2nZ4H4_hvBw41LV5gK1Mp85u_23pggX6sU8C5eumbZQPg4FXEpsWbyNPnTZ2H1HxElqEOKA--5RNSPboBsnsgxjaRXGkH-_ZxyhiyDQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-surface to-transparent"></div>
+</div>
+<div class="relative z-10 p-xl h-full flex flex-col justify-end min-h-[400px]">
+<div class="flex flex-wrap gap-2 mb-md">
+<span class="px-3 py-1 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest rounded-full">Elite Status</span>
+<span class="px-3 py-1 bg-surface/80 text-primary border border-primary/30 text-[10px] font-bold uppercase tracking-widest rounded-full">Professional CV Verified</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-white mb-2 leading-tight">ZITO LUVUMBO</h2>
+<div class="flex items-center gap-lg text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-title-md text-title-md">Petro de Luanda</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
+<span class="font-title-md text-title-md text-on-surface">€4.50m <span class="text-xs font-normal text-on-surface-variant ml-1">(Market Value)</span></span>
+</div>
+</div>
+<div class="mt-lg grid grid-cols-2 md:grid-cols-4 gap-md pt-lg border-t border-white/10 max-w-2xl">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Age</p>
+<p class="font-title-md text-title-md">22 yrs</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Position</p>
+<p class="font-title-md text-title-md">RW / LW</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Contract Until</p>
+<p class="font-title-md text-title-md">Jun 30, 2026</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Agent</p>
+<p class="font-title-md text-title-md text-primary">Elite Management</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Performance Highlights Sidebar -->
+<div class="lg:col-span-4 grid grid-cols-2 lg:grid-cols-1 gap-sm">
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-primary">
+<div>
+<span class="material-symbols-outlined text-primary mb-2" data-icon="speed">speed</span>
+<p class="text-on-surface-variant font-label-sm text-label-sm">TOP SPEED</p>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="font-display-lg text-[32px] text-on-surface">34.8 <span class="text-sm font-normal text-on-surface-variant">km/h</span></h3>
+<span class="text-primary font-data-tabular flex items-center text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span> 1.2%
+                            </span>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl flex flex-col justify-between border-l-4 border-tertiary">
+<div>
+<span class="material-symbols-outlined text-tertiary mb-2" data-icon="star">star</span>
+<p class="text-on-surface-variant font-label-sm text-label-sm">PASS ACCURACY</p>
+</div>
+<div class="flex items-end justify-between">
+<h3 class="font-display-lg text-[32px] text-on-surface">82 <span class="text-sm font-normal text-on-surface-variant">%</span></h3>
+<span class="text-tertiary font-data-tabular flex items-center text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="horizontal_rule">horizontal_rule</span> 0%
+                            </span>
+</div>
+</div>
+<div class="glass-panel p-md rounded-xl hidden lg:flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase">Season Goals</p>
+<h3 class="font-display-lg text-[40px] text-on-surface leading-none mt-1">12</h3>
+</div>
+<div class="text-right">
+<p class="text-on-surface-variant font-label-sm text-label-sm uppercase">Assists</p>
+<h3 class="font-display-lg text-[40px] text-tertiary leading-none mt-1">08</h3>
+</div>
+</div>
+<div class="mt-4 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant mt-2">Performance vs League Average: +18%</p>
+</div>
+</div>
+</section>
+<!-- Middle Section: Career Analytics & Progress -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Market Value Evolution -->
+<div class="lg:col-span-8 glass-panel p-lg rounded-xl">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Market Value Evolution</h4>
+<p class="text-on-surface-variant text-xs">Estimated valuation based on performance and club status</p>
+</div>
+<select class="bg-surface-container border-outline-variant/20 rounded-md text-xs font-label-sm px-sm py-xs focus:ring-primary text-on-surface">
+<option>Career High</option>
+<option>Last 12 Months</option>
+</select>
+</div>
+<!-- Chart Placeholder -->
+<div class="h-64 w-full relative flex items-end justify-between gap-2 px-2">
+<!-- Simplified Visualization Bars -->
+<div class="w-full h-24 bg-surface-container-highest/30 rounded-t-sm group relative">
+<div class="absolute bottom-0 w-full bg-primary/20 h-1/2 group-hover:bg-primary/40 transition-all"></div>
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-data-tabular opacity-0 group-hover:opacity-100">€1.2m</span>
+</div>
+<div class="w-full h-32 bg-surface-container-highest/30 rounded-t-sm group relative">
+<div class="absolute bottom-0 w-full bg-primary/20 h-2/3 group-hover:bg-primary/40 transition-all"></div>
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-data-tabular opacity-0 group-hover:opacity-100">€1.8m</span>
+</div>
+<div class="w-full h-40 bg-surface-container-highest/30 rounded-t-sm group relative">
+<div class="absolute bottom-0 w-full bg-primary/30 h-3/4 group-hover:bg-primary/50 transition-all"></div>
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-data-tabular opacity-0 group-hover:opacity-100">€2.5m</span>
+</div>
+<div class="w-full h-52 bg-surface-container-highest/30 rounded-t-sm group relative border-t border-primary/50">
+<div class="absolute bottom-0 w-full bg-primary/40 h-full group-hover:bg-primary/60 transition-all"></div>
+<div class="absolute top-0 w-full h-1 bg-primary shadow-[0_0_10px_#94d3c1]"></div>
+<span class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary font-data-tabular">€4.5m</span>
+</div>
+<!-- Axis Labels -->
+<div class="absolute -bottom-6 left-0 w-full flex justify-between px-2 text-[10px] text-on-surface-variant font-data-tabular">
+<span>2021</span>
+<span>2022</span>
+<span>2023</span>
+<span>Current</span>
+</div>
+</div>
+</div>
+<!-- Career Progress Tracker -->
+<div class="lg:col-span-4 glass-panel p-lg rounded-xl flex flex-col">
+<h4 class="font-title-md text-title-md text-on-surface mb-md">Career Milestones</h4>
+<div class="space-y-md flex-1">
+<div class="relative pl-6 border-l border-outline-variant/20 pb-md">
+<div class="absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_8px_#94d3c1]"></div>
+<p class="font-label-sm text-label-sm text-on-surface">Pro Contract Renewal</p>
+<p class="text-[10px] text-on-surface-variant">Petro de Luanda • Jan 2024</p>
+</div>
+<div class="relative pl-6 border-l border-outline-variant/20 pb-md">
+<div class="absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-tertiary"></div>
+<p class="font-label-sm text-label-sm text-on-surface">CAF Champions League Debut</p>
+<p class="text-[10px] text-on-surface-variant">Continental Stage • Oct 2023</p>
+</div>
+<div class="relative pl-6 border-l border-outline-variant/20 pb-md">
+<div class="absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-on-surface-variant"></div>
+<p class="font-label-sm text-label-sm text-on-surface">National Team Call-up</p>
+<p class="text-[10px] text-on-surface-variant">Angola Senior Squad • Sept 2023</p>
+</div>
+<div class="relative pl-6 border-l border-outline-variant/20">
+<div class="absolute left-[-5px] top-1 w-2.5 h-2.5 rounded-full bg-on-surface-variant opacity-30"></div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Potential European Transfer</p>
+<p class="text-[10px] text-on-surface-variant">Projected • Summer 2025</p>
+</div>
+</div>
+<button class="mt-lg w-full py-2 rounded-lg bg-surface-container-highest border border-outline-variant/20 text-on-surface text-xs font-bold hover:bg-surface-variant transition-colors">
+                        View Detailed Timeline
+                    </button>
+</div>
+</section>
+<!-- Lower Section: Management Suite & Media -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Club Applications -->
+<div class="glass-panel rounded-xl flex flex-col">
+<div class="p-md border-b border-outline-variant/10 flex justify-between items-center">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Active Applications</h4>
+<span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded font-bold">3 ACTIVE</span>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<div class="p-md flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-sm" data-icon="domain">domain</span>
+</div>
+<div>
+<p class="text-sm font-bold">Lille OSC</p>
+<p class="text-[10px] text-on-surface-variant">Ligue 1, France</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded">IN REVIEW</span>
+</div>
+<div class="p-md flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-sm" data-icon="domain">domain</span>
+</div>
+<div>
+<p class="text-sm font-bold">Sporting CP</p>
+<p class="text-[10px] text-on-surface-variant">Liga Portugal</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded">TRIAL OFFERED</span>
+</div>
+<div class="p-md flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-sm" data-icon="domain">domain</span>
+</div>
+<div>
+<p class="text-sm font-bold">Almería</p>
+<p class="text-[10px] text-on-surface-variant">Segunda División, Spain</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-white/10 text-on-surface-variant text-[10px] font-bold rounded">APPLIED</span>
+</div>
+</div>
+<a class="p-sm text-center text-[10px] text-on-surface-variant hover:text-primary transition-colors mt-auto" href="#">Browse more clubs</a>
+</div>
+<!-- Transfer Opportunities (Scouting) -->
+<div class="glass-panel rounded-xl flex flex-col">
+<div class="p-md border-b border-outline-variant/10 flex justify-between items-center">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Scouting Matches</h4>
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="info">info</span>
+</div>
+<div class="p-md space-y-md">
+<div class="bg-surface-container-highest/50 p-sm rounded-lg border border-primary/20">
+<div class="flex justify-between items-start mb-2">
+<p class="text-xs font-bold text-primary">High Profile Match: Basel FC</p>
+<span class="text-[10px] bg-primary text-on-primary px-1 rounded">94% Match</span>
+</div>
+<p class="text-[10px] text-on-surface-variant mb-2">Looking for: U23 Right Winger with pace & high dribbling success rate.</p>
+<button class="w-full py-1.5 bg-primary/20 hover:bg-primary/30 text-primary text-[10px] font-bold rounded transition-colors uppercase">Submit Portfolio</button>
+</div>
+<div class="bg-surface-container-highest/50 p-sm rounded-lg border border-outline-variant/10">
+<div class="flex justify-between items-start mb-2">
+<p class="text-xs font-bold text-on-surface">Club Brugge</p>
+<span class="text-[10px] bg-surface-variant text-on-surface-variant px-1 rounded">88% Match</span>
+</div>
+<p class="text-[10px] text-on-surface-variant">Looking for: Technical wingers with continental experience.</p>
+</div>
+</div>
+</div>
+<!-- Media & Documents -->
+<div class="glass-panel rounded-xl flex flex-col">
+<div class="p-md border-b border-outline-variant/10">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Media & Documents</h4>
+</div>
+<div class="p-md space-y-sm">
+<div class="flex items-center gap-3 p-2 bg-surface-container rounded hover:bg-surface-container-highest transition-colors cursor-pointer group">
+<div class="w-12 h-12 bg-black rounded relative overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover opacity-60" data-alt="Screenshot from a football highlight video, Zito Luvumbo sprinting with the ball, high contrast, cinematic sports footage aesthetic, play button overlay." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlidQYfPg1-at8VrU0Ph1Fhe4FeftAchQmDPX7SHRV7L3mDeMZnmUFkV9HNO4TdiICyIRkC61YcKUGzjL_VmjbFcn6BfSezvBt6DUb-mvwD7EW6i-AwQXTpb-uRMCUq8YPWG_Sa3c-40HkNFIvgIB-P58sPfmyWPtAup7RuygB1ObfZvzsSHHRLRY6FpeefQT0iZ8FvCOyohjpWYcR4Q1W655gYHfNskNFd1KOQ4Dv6JucZbMuNqfPAEX1oYM_Pwh-WZahpYJPn98"/>
+<span class="material-symbols-outlined absolute inset-0 flex items-center justify-center text-white group-hover:scale-125 transition-transform" data-icon="play_circle">play_circle</span>
+</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">23/24 Goals & Skills Reel</p>
+<p class="text-[10px] text-on-surface-variant">04:12 • 4K Quality</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm pt-2">
+<button class="flex flex-col items-center justify-center p-md bg-surface-container rounded-lg border border-outline-variant/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary mb-1" data-icon="description">description</span>
+<span class="text-[10px] font-bold">Contract</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container rounded-lg border border-outline-variant/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-tertiary mb-1" data-icon="medical_services">medical_services</span>
+<span class="text-[10px] font-bold">Medical Report</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container rounded-lg border border-outline-variant/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mb-1" data-icon="credit_card">credit_card</span>
+<span class="text-[10px] font-bold">Visa Status</span>
+</button>
+<button class="flex flex-col items-center justify-center p-md bg-surface-container rounded-lg border border-outline-variant/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mb-1" data-icon="upload">upload</span>
+<span class="text-[10px] font-bold">Upload New</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Sticky Mobile Nav (Visible on Small Screens) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-low border-t border-outline-variant/10 px-lg py-sm flex justify-around items-center z-50">
+<a class="flex flex-col items-center text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-[10px]">Stats</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="transfer_within_a_station">transfer_within_a_station</span>
+<span class="text-[10px]">Market</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px]">Profile</span>
+</a>
+</nav>
+</main>
+<script>
+        // Micro-interaction: Chart Bar Hover Effect
+        const bars = document.querySelectorAll('.group.relative');
+        bars.forEach(bar => {
+            bar.addEventListener('mouseenter', () => {
+                bar.style.filter = 'brightness(1.2)';
+            });
+            bar.addEventListener('mouseleave', () => {
+                bar.style.filter = 'brightness(1)';
+            });
+        });
+
+        // Atmospheric effect: Subtle mouse-following glow for glass panels
+        document.addEventListener('mousemove', (e) => {
+            const panels = document.querySelectorAll('.glass-panel');
+            panels.forEach(panel => {
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+                    panel.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(148, 211, 193, 0.05) 0%, rgba(16, 32, 52, 0.6) 50%)`;
+                } else {
+                    panel.style.background = 'rgba(16, 32, 52, 0.6)';
+                }
+            });
+        });
+    </script>
+</body></html>

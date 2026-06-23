@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu - Jogadores Favoritos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#3f465c",
+                    "error-container": "#93000a",
+                    "surface-container-lowest": "#000f21",
+                    "outline-variant": "#3f4945",
+                    "on-surface": "#d3e4fe",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "tertiary-fixed": "#ffe088",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-background": "#d3e4fe",
+                    "on-error": "#690005",
+                    "secondary": "#bec6e0",
+                    "primary-container": "#004d40",
+                    "surface-tint": "#94d3c1",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-container-highest": "#26364a",
+                    "surface-variant": "#26364a",
+                    "tertiary-container": "#cca730",
+                    "background": "#031427",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-secondary": "#283044",
+                    "tertiary": "#e9c349",
+                    "on-secondary-fixed": "#131b2e",
+                    "primary-fixed": "#afefdd",
+                    "surface-dim": "#031427",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-high": "#1b2b3f",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#0b1c30",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-container": "#adb4ce",
+                    "on-primary": "#00382e",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "inverse-primary": "#29695b",
+                    "on-primary-container": "#7ebdac",
+                    "inverse-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "secondary-fixed": "#dae2fd",
+                    "primary": "#94d3c1",
+                    "outline": "#89938f",
+                    "surface": "#031427",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed": "#00201a",
+                    "inverse-on-surface": "#213145",
+                    "on-primary-fixed-variant": "#065043"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "xl": "48px",
+                    "base": "4px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #94d3c1;
+            border-radius: 2px;
+        }
+        .glass-card {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen flex">
+<!-- Sidebar Navigation (Predicted Component) -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low border-r border-outline-variant/10 h-screen w-64 fixed left-0 top-0 z-50">
+<div class="px-lg mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Bolayetu</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Onboarding: Passo 3 de 5</p>
+</div>
+<nav class="flex-1 flex flex-col gap-base">
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-title-md text-title-md">Profile</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-title-md text-title-md">Clubs</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-primary font-bold border-r-2 border-primary bg-primary-container/10 transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_soccer</span>
+<span class="font-title-md text-title-md">Players</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-title-md text-title-md">Leagues</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-title-md text-title-md">Review</span>
+</div>
+</nav>
+<div class="px-lg mt-auto pt-lg border-t border-outline-variant/10">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-label-sm text-label-sm">Centro de Ajuda</span>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 min-h-screen relative flex flex-col bg-background">
+<!-- Header / Top Bar -->
+<header class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto w-full border-b border-outline-variant/10 sticky top-0 bg-background/80 backdrop-blur-md z-40">
+<div class="md:hidden">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary tracking-tight">Bolayetu</span>
+</div>
+<div class="hidden md:block">
+<span class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Jogadores Favoritos</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors active:scale-95">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors active:scale-95">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<section class="flex-1 w-full max-w-4xl mx-auto px-gutter py-xl">
+<!-- Page Identity -->
+<div class="mb-xl">
+<h2 class="font-display-lg text-display-lg text-on-background mb-xs md:hidden">Jogadores Favoritos</h2>
+<p class="font-title-md text-title-md text-on-surface-variant">Segue os teus ídolos para receberes atualizações</p>
+</div>
+<!-- Search Area -->
+<div class="relative group mb-xl">
+<div class="absolute inset-y-0 left-md flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl py-lg pl-xl pr-md text-on-surface focus:outline-none focus:border-primary transition-all font-title-md text-title-md placeholder:text-on-surface-variant/50" placeholder="Pesquisar jogadores (ex: Zito Luvumbo)" type="text"/>
+</div>
+<!-- Bento Layout for Results and Suggestions -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Main Results Column -->
+<div class="lg:col-span-2 flex flex-col gap-md">
+<h3 class="font-title-md text-title-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">trending_up</span>
+                        Resultados da Pesquisa
+                    </h3>
+<div class="space-y-sm">
+<!-- Player Card 1 -->
+<div class="glass-card p-md flex items-center justify-between group hover:border-primary/30 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-outline-variant/20 bg-surface-container-highest relative">
+<img class="w-full h-full object-cover" data-alt="Close-up professional studio portrait of a young African football player with a determined expression. He wears a sleek, modern sports jersey in deep blue and white. The lighting is cinematic with a strong side light that highlights his facial features against a dark, minimalist background. The style is crisp and high-performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4jaQCypWH4otrSuKo650TPf5tzRmodNJmbzXjueaPbDu-jE63t7T4SupOg9rtBI5Z-Dsm7tyUFbtqwd56g8WJg4C429H0ccjLOHSiuOhaccRZY50--jUNsdWu1Ur4lopmwbKW72q01VX89f63eBUOIMKLZ0mr9WPrh4mR6GCSMD1QQpG7cDmoSIOXeKdJGfWz0lDuo9qrlQy6w3C-daPY2E-bctRDiilhtRYrg8BOwVWS8H_k7CbQFgzPpIV2X64NfRQuq1GZkYQ"/>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Zito Luvumbo</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="text-tertiary">EXTREMO</span> • Cagliari Calcio
+                                    </p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-sm text-label-sm hover:brightness-110 active:scale-95 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">add</span>
+                                Seguir
+                            </button>
+</div>
+<!-- Player Card 2 -->
+<div class="glass-card p-md flex items-center justify-between group hover:border-primary/30 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-outline-variant/20 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Action portrait of a athletic footballer in a red and white team kit. He has a focused look, short cropped hair, and is captured in a high-contrast sports broadcast aesthetic. Background is a soft-focus stadium environment with cool night tones and vibrant stadium lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwjophz3TXlyMugUvMAHxTLTxK-YRJpUYBnwT8gs324j6YlmMqdYFkSTuYBDCGOTik301pz0nKF9S9ccKl1R15FR52gWZNx_4xUFygt6FmCaIiZP1RcKXk9bDN6w4Ty6Z6SwhVVfkrzckp_TXHiW494OvD2fiubn2i8dt1lWY9zp15MiW0xrZHxRpZmpJ8cAsaw3UeQsNmcVNUJKdO63z571x2y9xO-l0cKd0hbrxupMVniaJunyhH7dOW3stFNhwfeucEfB_G4Nc"/>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Mabululu</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="text-tertiary">AVANÇADO</span> • Al-Ittihad Alexandria
+                                    </p>
+</div>
+</div>
+<button class="border border-primary text-primary px-lg py-sm rounded-full font-label-sm text-label-sm hover:bg-primary/10 active:scale-95 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">check</span>
+                                Seguindo
+                            </button>
+</div>
+<!-- Player Card 3 -->
+<div class="glass-card p-md flex items-center justify-between group hover:border-primary/30 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-outline-variant/20 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Dynamic portrait of a professional footballer in a technical training top, looking straight into the camera. The image has a clean, high-end commercial feel with sharp details and a modern midnight blue color palette. The background features subtle digital data visualizations of player metrics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz0qvIrQvDQLo56QU6TUl-Rflb68zaxmQiVCtB5RdaNMsRS8zfirzhC3bczwFD7rfrNUhh6vJkhDCaZQQbyovjemb7XzuvzohYsIAtNawgOEIS77kDfUZuqqgW0usalbADqdGnpEU34tpeRnR3V82UdFwKPfKr77Ivu9_pUxT-lJg910RIS-fmo9SzoLMu6LLoB1LLYBOed3_AK9YXcuXyctEVsqodpMOTJNUK36Y6V1js2AYQ2MASo-vaD-370qTpukfyO_RRv5c"/>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">Gelson Dala</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-xs">
+<span class="text-tertiary">AVANÇADO</span> • Al-Wakrah
+                                    </p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-sm text-label-sm hover:brightness-110 active:scale-95 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">add</span>
+                                Seguir
+                            </button>
+</div>
+</div>
+</div>
+<!-- Suggestions Column -->
+<div class="flex flex-col gap-md">
+<h3 class="font-title-md text-title-md text-tertiary flex items-center gap-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        Sugestões para ti
+                    </h3>
+<div class="glass-card p-md flex flex-col gap-lg border-tertiary/10">
+<!-- Suggestion 1 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Studio portrait of a sports star with dramatic high-key lighting. The style is clean and professional, emphasizing strength and performance. The background is a flat, deep navy blue matching the corporate sports brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm3TjkPop46_VcZrL54KibATzWj2iPzePVMNgVLbu91Q12HaYo0Pr6cNqAq3HV7XRH25bwF9QVLUM-4lZsIeVGHdNehPsVqp-Fh1yVwsAFfy2WeG8NDA_268W5ZtgKHk63y_AKUkTorRNan3crY_pL_5PJugns6vf41R3VnqAaq1MW-EKDj_6Amszfa0s6Uw1HN5RgZwvzqv-HNuMPquQGTns_0IFoNOXVe9V0m6JMoKzvkRmV58j-fqWFqjs0hrd30dpTOmMk91w"/>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-sm text-label-sm text-on-surface truncate">Show Quala</h4>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">Maccabi Haifa</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+<!-- Suggestion 2 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="High-resolution portrait of a football athlete in profile, lit by a neon green ambient light that reflects the primary brand color. The player's expression is focused and intense. The overall image has a digital, data-driven aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbtrGPJ9w5ovGf34qHUyXy2s6HMXnMm808HgCvhnkosKQjdSbdi3UZLHUyXBlw_DLUjojtHwPeJX5KsT10O6_uktE3mbgUdTPR__ZJbZq-_2j1HAmpyhfzEdQWeVPXoIHTNhgkeRB7F6O-Tp1TBT41M9Er9Yq_02VwT19P9cVd3N8NK6O7iQsL9UQi4I2L2l5fjBuOkZ2iJnzrsuMNJdSO3qemkWbqjQL_u-b-aJBhQD6Ozq3F0cUPWqq6nlUn79QZSg1PRzPVbLE"/>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-sm text-label-sm text-on-surface truncate">Zini</h4>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">AEK Athens</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+<!-- Suggestion 3 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Modern sports photography portrait showing a player in a sleek grey training jersey. The aesthetic is minimalist with sharp lines and a focus on the athlete's professional demeanor. Background is a technical grey with soft gradients." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSjJNUSa8vNPeqNGLPmjstuGT-SDD-A3dpIPKWOPrLR3CqM9DnJYxHBQTMvUo0ri3hNdPU32LXTssGw7AsWtbgOw_v3B4TAUfjIiWBEf6gBHYpC1sJx0w0zJMbcXD0Q3ug6zq0wNXdTJZoa4gtiTYX04WmjblMCR18UU4eKRZjGLCRFtz5HkYCqIJq6rC7HTp8Cir8s6q_oKsvNIflrBXVzRF4UpYREaaVjTKNk79yTdsdfhwxVWbx5vyJ5hivLFKro0hYCSMtBGA"/>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-label-sm text-label-sm text-on-surface truncate">Fredy</h4>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">Eyüpspor</p>
+</div>
+<button class="text-primary hover:bg-primary/10 p-xs rounded transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+</button>
+</div>
+<button class="mt-md text-primary font-label-sm text-label-sm text-center hover:underline">Ver mais sugestões</button>
+</div>
+<!-- Statistics Insight Card -->
+<div class="bg-primary-container/20 border border-primary/20 p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Insight do Dia</span>
+<span class="material-symbols-outlined text-primary text-sm">info</span>
+</div>
+<p class="font-body-md text-body-md text-on-primary-container">
+                            Seguir <span class="font-bold">Zito Luvumbo</span> permite-te ver as suas métricas de dribles progressivos em tempo real durante a Serie A.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Sticky Navigation Actions -->
+<div class="mt-xl pt-lg border-t border-outline-variant/10 flex justify-between items-center gap-md">
+<button class="flex items-center gap-sm px-xl py-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest/30 transition-all font-title-md text-title-md rounded-lg active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+                    Voltar
+                </button>
+<div class="flex items-center gap-md">
+<span class="hidden md:block font-label-sm text-label-sm text-on-surface-variant">2 jogadores selecionados</span>
+<button class="flex items-center gap-sm bg-primary text-on-primary px-xl py-md rounded-lg font-title-md text-title-md hover:brightness-110 shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                        Continuar
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Footer (Predicted Component) -->
+<footer class="mt-auto border-t border-outline-variant/10 bg-background w-full">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto py-md w-full">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Bolayetu Performance Systems</p>
+<div class="flex gap-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    // Subtle hover logic could go here
+                });
+            });
+
+            const searchInput = document.querySelector('input');
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-1', 'ring-primary/50');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-1', 'ring-primary/50');
+            });
+        });
+    </script>
+</body></html>

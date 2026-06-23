@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Escolha o seu Perfil - Ecosystem Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&amp;family=Geist:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b",
+                    "surface-bright": "#2a3a4f",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#26364a",
+                    "inverse-on-surface": "#213145",
+                    "surface-container": "#102034",
+                    "surface-variant": "#26364a",
+                    "error-container": "#93000a",
+                    "on-secondary": "#283044",
+                    "on-primary": "#00382e",
+                    "secondary-fixed": "#dae2fd",
+                    "on-primary-fixed-variant": "#065043",
+                    "on-primary-fixed": "#00201a",
+                    "primary-fixed-dim": "#94d3c1",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "primary-fixed": "#afefdd",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-error": "#690005",
+                    "primary": "#94d3c1",
+                    "secondary": "#bec6e0",
+                    "background": "#031427",
+                    "outline": "#89938f",
+                    "tertiary-container": "#cca730",
+                    "secondary-container": "#3f465c",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-primary-container": "#7ebdac",
+                    "on-background": "#d3e4fe",
+                    "primary-container": "#004d40",
+                    "on-tertiary": "#3c2f00",
+                    "on-surface-variant": "#bfc9c4",
+                    "surface-dim": "#031427",
+                    "outline-variant": "#3f4945",
+                    "surface-container-lowest": "#000f21",
+                    "tertiary": "#e9c349",
+                    "surface": "#031427",
+                    "surface-container-low": "#0b1c30",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-tint": "#94d3c1",
+                    "on-surface": "#d3e4fe",
+                    "tertiary-fixed": "#ffe088",
+                    "inverse-surface": "#d3e4fe",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-secondary-container": "#adb4ce"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "24px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "container-max": "1440px",
+                    "base": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Geist"],
+                    "title-md": ["Geist"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #031427;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .role-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .role-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 0 20px rgba(148, 211, 193, 0.15);
+      }
+      .role-card.selected {
+        border-color: #94d3c1;
+        background-color: rgba(0, 77, 64, 0.2);
+        box-shadow: 0 0 30px rgba(148, 211, 193, 0.25);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0b1c30;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #3f4945;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-on-primary min-h-screen flex flex-col">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/30">
+<div class="flex justify-between items-center w-full px-gutter py-md max-w-container-max mx-auto">
+<div class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">
+                Bolayetu
+            </div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors p-sm" data-icon="help_outline">help_outline</button>
+<div class="h-4 w-px bg-outline-variant/50"></div>
+<button class="flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors">
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Login</span>
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex items-center justify-center pt-32 pb-xl px-gutter relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="max-w-6xl w-full z-10">
+<!-- Header Section -->
+<div class="text-center mb-xl">
+<h1 class="font-headline-lg text-headline-lg md:text-display-lg md:font-display-lg text-on-background mb-sm tracking-tight">
+                    Como deseja participar?
+                </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto opacity-80">
+                    Selecione o perfil que melhor define a sua atuação no ecossistema do futebol. Você poderá alterar ou adicionar novos perfis futuramente.
+                </p>
+</div>
+<!-- Bento-style Role Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<!-- Card 1: Organização -->
+<div class="role-card group relative bg-surface-container-low border border-outline-variant/40 rounded-xl p-lg cursor-pointer flex flex-col h-full" onclick="selectRole(this, 'organizacao')">
+<div class="flex justify-between items-start mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="corporate_fare">corporate_fare</span>
+</div>
+<div class="check-icon opacity-0 scale-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-background mb-xs">Organização</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md leading-relaxed">Gerencie competições e clubes com ferramentas de nível executivo.</p>
+<div class="mt-auto space-y-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="verified">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Controle de licenciamento</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="stadium">stadium</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Gestão de ligas</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Relatórios executivos</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Clube -->
+<div class="role-card group relative bg-surface-container-low border border-outline-variant/40 rounded-xl p-lg cursor-pointer flex flex-col h-full" onclick="selectRole(this, 'clube')">
+<div class="flex justify-between items-start mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="sports_soccer">sports_soccer</span>
+</div>
+<div class="check-icon opacity-0 scale-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-background mb-xs">Clube</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md leading-relaxed">Gerencie plantéis e equipa técnica com análise de dados profunda.</p>
+<div class="mt-auto space-y-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="analytics">analytics</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Análise de performance</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="history_edu">history_edu</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Gestão de contratos</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="search_insights">search_insights</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Scouting avançado</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Atleta -->
+<div class="role-card group relative bg-surface-container-low border border-outline-variant/40 rounded-xl p-lg cursor-pointer flex flex-col h-full" onclick="selectRole(this, 'atleta')">
+<div class="flex justify-between items-start mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="person">person</span>
+</div>
+<div class="check-icon opacity-0 scale-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-background mb-xs">Atleta</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md leading-relaxed">Otimize a sua carreira profissional e visibilidade no mercado.</p>
+<div class="mt-auto space-y-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="badge">badge</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Perfil profissional</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="swap_horiz">swap_horiz</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Histórico de transferências</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="dashboard_customize">dashboard_customize</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dashboard de stats</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Adepto -->
+<div class="role-card group relative bg-surface-container-low border border-outline-variant/40 rounded-xl p-lg cursor-pointer flex flex-col h-full" onclick="selectRole(this, 'adepto')">
+<div class="flex justify-between items-start mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" data-icon="groups">groups</span>
+</div>
+<div class="check-icon opacity-0 scale-0 transition-all duration-300">
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md text-on-background mb-xs">Adepto</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md leading-relaxed">Conecte-se ao jogo e receba atualizações em tempo real.</p>
+<div class="mt-auto space-y-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="live_tv">live_tv</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Match Center tempo real</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Notificações personalizadas</span>
+</div>
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-primary/60 text-[18px]" data-icon="stars">stars</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Conteúdo exclusivo</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex flex-col items-center gap-md">
+<button class="group relative px-xl py-md rounded-full bg-outline-variant text-on-surface/50 font-title-md text-title-md min-w-[240px] transition-all duration-300 flex items-center justify-center gap-sm overflow-hidden disabled:cursor-not-allowed" disabled="" id="continue-btn">
+<span class="relative z-10">Continuar</span>
+<span class="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+<div class="absolute inset-0 bg-primary translate-y-full group-enabled:group-hover:translate-y-0 transition-transform duration-300"></div>
+</button>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">
+                    Você pode alterar seu tipo de conta nas configurações de perfil.
+                </p>
+</div>
+</div>
+</main>
+<!-- Footer Meta -->
+<footer class="mt-auto border-t border-outline-variant/20 py-lg">
+<div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-md opacity-60">
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Políticas de Privacidade</a>
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Termos de Serviço</a>
+</div>
+<div class="font-data-tabular text-data-tabular">
+                © 2024 Bolayetu Ecosystem Hub. Todos os direitos reservados.
+            </div>
+</div>
+</footer>
+<script>
+        let selectedRoleId = null;
+
+        function selectRole(element, roleId) {
+            // Remove selection from all cards
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('selected');
+                const check = card.querySelector('.check-icon');
+                check.classList.add('opacity-0', 'scale-0');
+            });
+
+            // Add selection to clicked card
+            element.classList.add('selected');
+            const check = element.querySelector('.check-icon');
+            check.classList.remove('opacity-0', 'scale-0');
+            check.classList.add('opacity-100', 'scale-100');
+
+            selectedRoleId = roleId;
+
+            // Enable Continue Button
+            const btn = document.getElementById('continue-btn');
+            btn.disabled = false;
+            btn.classList.remove('bg-outline-variant', 'text-on-surface/50');
+            btn.classList.add('bg-primary-container', 'text-on-primary-container', 'hover:shadow-[0_0_20px_rgba(148,211,193,0.3)]');
+        }
+
+        // Micro-interaction for mouse movement over background (atmospheric effect)
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            const blur = document.querySelector('.absolute.top-1/2.left-1/2');
+            if(blur) {
+                blur.style.transform = `translate(${(x - 0.5) * 40}px, ${(y - 0.5) * 40}px) translate(-50%, -50%)`;
+            }
+        });
+    </script>
+</body></html>

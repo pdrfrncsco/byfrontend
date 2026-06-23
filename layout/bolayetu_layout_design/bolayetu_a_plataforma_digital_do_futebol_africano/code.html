@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-PT"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu | Ecossistema de Futebol Africano</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#26364a",
+                    "tertiary": "#e9c349",
+                    "surface-bright": "#2a3a4f",
+                    "on-error-container": "#ffdad6",
+                    "primary": "#94d3c1",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "surface-tint": "#94d3c1",
+                    "surface-container-lowest": "#000f21",
+                    "on-secondary-container": "#adb4ce",
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b",
+                    "secondary-container": "#3f465c",
+                    "outline": "#89938f",
+                    "error": "#ffb4ab",
+                    "surface": "#031427",
+                    "surface-variant": "#26364a",
+                    "tertiary-container": "#cca730",
+                    "on-surface": "#d3e4fe",
+                    "surface-container": "#102034",
+                    "outline-variant": "#3f4945",
+                    "on-primary-fixed": "#00201a",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "surface-dim": "#031427",
+                    "on-primary-container": "#7ebdac",
+                    "secondary-fixed": "#dae2fd",
+                    "on-background": "#d3e4fe",
+                    "inverse-on-surface": "#213145",
+                    "inverse-surface": "#d3e4fe",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed-variant": "#065043",
+                    "primary-container": "#004d40",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-error": "#690005",
+                    "primary-fixed-dim": "#94d3c1",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-secondary-fixed": "#131b2e",
+                    "background": "#031427",
+                    "on-secondary": "#283044",
+                    "error-container": "#93000a",
+                    "surface-container-low": "#0b1c30",
+                    "secondary": "#bec6e0",
+                    "tertiary-fixed": "#ffe088",
+                    "on-primary": "#00382e",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "on-surface-variant": "#bfc9c4",
+                    "primary-fixed": "#afefdd",
+                    "on-tertiary-container": "#4f3e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "xs": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "container-max": "1440px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "title-md": ["Geist"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 211, 193, 0.1);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 77, 64, 0.15) 0%, rgba(3, 20, 39, 1) 70%);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(148, 211, 193, 0.2);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #031427; }
+        ::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary-fixed overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 bg-surface-container-low border-b border-outline-variant">
+<nav class="flex justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-lg">
+<span class="font-display-lg text-headline-lg-mobile text-primary tracking-widest">BOLAYETU</span>
+<div class="hidden md:flex gap-md ml-xl font-title-md text-title-md">
+<a class="text-primary border-b-2 border-primary pb-base font-bold" href="#">Directory</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Live Matches</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Scouting</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors" href="#">Transfers</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="hidden lg:block text-on-surface hover:bg-surface-container-high px-md py-sm rounded-full transition-all font-title-md text-title-md">Enterprise Login</button>
+<button class="bg-primary text-on-primary-fixed font-bold px-lg py-sm rounded-full hover:bg-opacity-90 transition-all font-title-md text-title-md">Join Ecosystem</button>
+<div class="flex items-center gap-sm ml-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">account_circle</span>
+</div>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex flex-col items-center justify-center pt-xl hero-gradient px-gutter">
+<div class="max-w-4xl text-center z-10">
+<span class="inline-block py-1 px-4 rounded-full border border-primary/30 bg-primary/5 text-primary font-label-sm text-label-sm mb-md tracking-widest uppercase">Tecnologia para o Elite do Futebol</span>
+<h1 class="font-display-lg text-6xl md:text-8xl text-on-surface mb-lg uppercase tracking-tighter leading-none">Digitalize o <span class="text-primary">Futebol Africano</span></h1>
+<p class="font-title-md text-xl md:text-2xl text-on-surface-variant mb-xl max-w-2xl mx-auto">A plataforma unificada que conecta federações, clubes e atletas com tecnologia de ponta para gestão, análise e scouting.</p>
+<div class="flex flex-col sm:flex-row gap-md justify-center mb-20">
+<button class="bg-primary text-on-primary-fixed px-xl py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-lg">Começar Agora</button>
+<button class="border border-outline-variant text-on-surface px-xl py-md font-bold rounded-lg hover:bg-surface-container-high transition-colors text-lg flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">play_circle</span> Ver Demonstração
+                    </button>
+</div>
+</div>
+<!-- Dashboard Mockup -->
+<div class="relative w-full max-w-5xl mx-auto px-gutter group">
+<div class="absolute inset-0 bg-primary/10 blur-[120px] rounded-full group-hover:bg-primary/20 transition-all duration-700"></div>
+<div class="relative glass-panel rounded-xl overflow-hidden shadow-2xl border border-outline-variant transform group-hover:-translate-y-2 transition-transform duration-500">
+<div class="h-8 bg-surface-container-highest border-b border-outline-variant flex items-center px-md gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-error/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-tertiary/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary/40"></div>
+</div>
+<div class="flex h-[500px]">
+<!-- Sidebar Mockup -->
+<div class="w-48 bg-surface-container-lowest/50 border-r border-outline-variant p-md space-y-md">
+<div class="h-4 bg-surface-container-highest rounded w-3/4"></div>
+<div class="space-y-sm">
+<div class="h-2 bg-surface-container-highest rounded w-full"></div>
+<div class="h-2 bg-surface-container-highest rounded w-5/6"></div>
+<div class="h-2 bg-surface-container-highest rounded w-full"></div>
+</div>
+</div>
+<!-- Content Mockup -->
+<div class="flex-1 p-lg bg-surface-container-lowest/20">
+<div class="grid grid-cols-3 gap-md mb-lg">
+<div class="h-32 bg-primary/5 rounded-lg border border-primary/20"></div>
+<div class="h-32 bg-surface-container-highest/30 rounded-lg border border-outline-variant"></div>
+<div class="h-32 bg-surface-container-highest/30 rounded-lg border border-outline-variant"></div>
+</div>
+<div class="h-64 bg-surface-container-highest/20 rounded-lg border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary/40 text-6xl">bar_chart</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trusted By -->
+<section class="py-xl bg-surface-container-low border-y border-outline-variant">
+<div class="max-w-container-max mx-auto px-gutter text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-lg uppercase tracking-widest">Confiança das Maiores Instituições</p>
+<div class="flex flex-wrap justify-center items-center gap-xl grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+<img class="h-12 md:h-16 w-auto object-contain" data-alt="Official logo of a major African football federation, minimalist vector design in white and grey tones, representing prestige and governance on a dark sports UI background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4a7NvS7_sPw37wKTSIce416QogfebaIR6O3vwJMlTNobYsasXCRClsIryv7oAaQJyXQBcOoL1Za45Z7IR2RR0-UPLEo-xtHnmyqQhSw55Qpd0cqUtOMQaJJ-FGjaQzWNFxe_LURiHMHHZ4voaNWV4QNIIDq9aTN2IIUXhKPpvDqTOQJfEe_N34zJeDcYZsQnMK7DP7t9dAdPlkh4qgOzIb6oFO-TE7r4OA6DhUxn2D-TY0O3pqT0idtezDLJDqyRV2r0tkTPJCR8"/>
+<img class="h-12 md:h-16 w-auto object-contain" data-alt="Logo of a prominent Angolan professional football league, featuring sharp geometric lines and a shield motif, styled for a high-end corporate sports platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6ihIpu2eJQJ115AZYWtkldGU5ZkM30Ile4P-rmCV_HNgt1BLhUIF637uBgj7YDXjgJ7ex5eUWKZNNX1UKa3Jd76uvDaRJ21ldugzwC1WSQkoAhprnXDezBQbc_-IO2eGahZShVblWnujF9TE6XYmZ-XBw080nTcARspl9na9P8AuHIh-uUA7Zkbs3CL-fJ5BGoX4SKMiWaSTiZlG_nIolmos6A4pJ8wCt_ZTmuIdN_ZKFcYO4UB6MtWM2xOZ00YZchQjjP3-V0sY"/>
+<img class="h-12 md:h-16 w-auto object-contain" data-alt="A professional sports organization logo representing African club competition, minimalist graphic style with metallic silver accents on dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_K9yANI2-9it0d0X3DNxfOuXTwFOoSD9oByXnQsSNrnN_ZO-njNzNW1prjArappTWtyJ7joN1UQ-amKk9uoS2M60QGcEJWSQZiUtdEfxqSAcAJymQmeaolA43BdjcKqHXwRaTyvPo52OeOCmqd7bJfGA2fto4gl1p-qcelEDMMofGfWALh_Euz5c9Ax0xiOA4yeVHsU4DWZoFBBR5OsAJsvDmBowBXVwtNC5Ixbb8Xwh20PGMjcb30RrCizS-buUFJKaPTq882-8"/>
+<img class="h-12 md:h-16 w-auto object-contain" data-alt="Elite football academy official crest, clean modern vector design, representing athlete development and excellence in an international sports ecosystem." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf-KvjbqFsQsMdBTUNqNhcYO0Qwukkzchp91W2O-pdHD2xSpQobN7-Q1YV-ssYNQWtUZ7HQyVxBERjRiVGOHK2r8hbHBo8GNjR6vK2cEtfOPJx7gR3Idn0-a2lfQFe0LK0eyq-5FNzCdsg7I8QefuwWFsgkEefU3uRshE3lCcbl6pbpCh_9VGX886mHTp0JpWxtNl4Cf1MG7o-6tlp3f66buZXUM4E8-rx_CR_-nnf31C3iRge7KZqVx6LBaNcVJ5qTZ9H2QlaCAA"/>
+<img class="h-12 md:h-16 w-auto object-contain" data-alt="Continental African sports agency logo, modern sans-serif typography with a subtle football motif, professional grey-scale for a dark UI dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqw8fkChanRidWKonvkNcu-UxCONgUd5BXGKx7t_d3JyKtJn1qqTdgvC6HSOIVU6CBJPa9Zap1L9dmW6KV_ZyxDV5AlFxKKy0yL7W9Wq6ikUkzNUVmFwcf4FoN3n4_bYvrVWa-PH_RP0DZR3dZTiKD2PkBgR_6R2TeTuT3Nb3HV_08aSIFpRrHPWWazNVPAw5gxQ5k7AGkJPRIPrcclyOTINBg7iLIoC7pwwkS_cdEGpqosoaZK5CEJT_pYzMFW6E459UGfCy_Mfo"/>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-xl max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-xl">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-sm">Funcionalidades de Elite</h2>
+<p class="font-body-md text-on-surface-variant max-w-xl mx-auto">Ferramentas desenhadas por profissionais para transformar a gestão desportiva.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg h-auto">
+<div class="md:col-span-2 glass-panel rounded-xl p-lg flex flex-col justify-between hover:border-primary/40 transition-colors">
+<div>
+<span class="material-symbols-outlined text-primary text-4xl mb-md">trophy</span>
+<h3 class="font-title-md text-2xl text-on-surface mb-sm">Gestão de Competições</h3>
+<p class="font-body-md text-on-surface-variant max-w-md">Calendários automatizados, registo de súmulas digitais e tabelas classificativas em tempo real para qualquer liga ou torneio.</p>
+</div>
+<div class="mt-xl h-48 bg-surface-container-highest/40 rounded-lg border border-outline-variant overflow-hidden relative">
+<div class="absolute inset-0 p-md">
+<div class="space-y-xs">
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded">
+<span class="font-data-tabular">Petro Luanda vs Sagrada Esperança</span>
+<span class="text-primary font-bold">2 - 1</span>
+</div>
+<div class="flex justify-between items-center p-sm bg-surface-container-low rounded opacity-60">
+<span class="font-data-tabular">Primeiro de Agosto vs Bravos do Maquis</span>
+<span class="text-primary font-bold">0 - 0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-lg border border-outline-variant hover:border-tertiary/40 transition-colors">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-md">person_search</span>
+<h3 class="font-title-md text-2xl text-on-surface mb-sm">Scouting Avançado</h3>
+<p class="font-body-md text-on-surface-variant mb-lg">Base de dados centralizada com perfis detalhados de atletas e mapas térmicos de performance.</p>
+<div class="h-40 rounded-lg bg-cover bg-center border border-outline-variant" data-alt="Close-up of a high-tech scouting report interface showing a football player's statistics and skill polygons, glowing green lines against a deep navy background, technical and precise aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDxJ-49uY7Tt8NJvkhsGjMKBWD-ZV_0cHtjS1-iyrZlI_Al0y7DS5kfbdF9P2TSScMWVUxTtolYB_GtTQ8-jmHu-6Tn1k1DZCxdZ0y_va3OZ8x1xw058MAdaHfMlZZExJ7CIduu8BYJoiKlJymCPDkTakNEwv8wP4q99RLgNxKQ08WcSZc9Zr2Nup4tXmHqCIWA41D_1rnBXcIPYHsu-qZAkA3zJOr6O43mhr1ISy6Uf4AxtQjx_nHGNcyShdUc3ce2WHws36dSI2s')"></div>
+</div>
+<div class="glass-panel rounded-xl p-lg border border-outline-variant hover:border-primary/40 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl mb-md">fitness_center</span>
+<h3 class="font-title-md text-2xl text-on-surface mb-sm">Desenvolvimento de Atletas</h3>
+<p class="font-body-md text-on-surface-variant">Monitorização de carga de treino, relatórios médicos e acompanhamento nutricional personalizado.</p>
+</div>
+<div class="md:col-span-2 glass-panel rounded-xl p-lg flex flex-col md:flex-row gap-lg hover:border-primary/40 transition-colors">
+<div class="flex-1">
+<span class="material-symbols-outlined text-primary text-4xl mb-md">campaign</span>
+<h3 class="font-title-md text-2xl text-on-surface mb-sm">Engajamento de Fãs</h3>
+<p class="font-body-md text-on-surface-variant">Apps personalizadas para clubes, venda de bilhetes digital e conteúdos exclusivos para a massa associativa.</p>
+</div>
+<div class="flex-1 bg-surface-container-highest/40 rounded-lg border border-outline-variant flex items-center justify-center p-md">
+<div class="w-full space-y-sm">
+<div class="h-3 bg-primary/20 rounded w-full"></div>
+<div class="h-3 bg-primary/20 rounded w-4/5"></div>
+<div class="h-3 bg-primary/20 rounded w-1/2"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="py-xl bg-surface-container-low overflow-hidden">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-xl">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-sm">Como Funciona</h2>
+</div>
+<div class="flex flex-col md:flex-row justify-between gap-xl relative">
+<!-- Progress Line -->
+<div class="hidden md:block absolute top-1/4 left-0 w-full h-[2px] bg-outline-variant -z-0"></div>
+<div class="flex-1 z-10 group">
+<div class="w-16 h-16 rounded-full bg-primary text-on-primary-fixed flex items-center justify-center font-display-lg text-2xl mb-lg group-hover:scale-110 transition-transform shadow-lg">1</div>
+<h4 class="font-title-md text-xl text-on-surface mb-sm">Registo</h4>
+<p class="font-body-md text-on-surface-variant">Criação da conta institucional e verificação de credenciais pela federação local.</p>
+</div>
+<div class="flex-1 z-10 group">
+<div class="w-16 h-16 rounded-full bg-primary text-on-primary-fixed flex items-center justify-center font-display-lg text-2xl mb-lg group-hover:scale-110 transition-transform shadow-lg">2</div>
+<h4 class="font-title-md text-xl text-on-surface mb-sm">Integração de Dados</h4>
+<p class="font-body-md text-on-surface-variant">Importação automatizada de histórico de atletas, contratos e registos de competições passadas.</p>
+</div>
+<div class="flex-1 z-10 group">
+<div class="w-16 h-16 rounded-full bg-primary text-on-primary-fixed flex items-center justify-center font-display-lg text-2xl mb-lg group-hover:scale-110 transition-transform shadow-lg">3</div>
+<h4 class="font-title-md text-xl text-on-surface mb-sm">Gestão e Análise</h4>
+<p class="font-body-md text-on-surface-variant">Acesso total às ferramentas de análise preditiva e otimização de processos diários.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Statistics -->
+<section class="py-20 relative">
+
+<div class="max-w-container-max mx-auto px-gutter relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-xl text-center">
+<div>
+<p class="font-display-lg text-6xl text-primary mb-sm">1,200+</p>
+<p class="font-title-md text-on-surface-variant uppercase tracking-widest">Clubes Registados</p>
+</div>
+<div>
+<p class="font-display-lg text-6xl text-primary mb-sm">45,000+</p>
+<p class="font-title-md text-on-surface-variant uppercase tracking-widest">Jogadores Verificados</p>
+</div>
+<div>
+<p class="font-display-lg text-6xl text-primary mb-sm">10+</p>
+<p class="font-title-md text-on-surface-variant uppercase tracking-widest">Federações</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Ecosystem Section -->
+<section class="py-xl max-w-container-max mx-auto px-gutter">
+<div class="flex flex-col lg:flex-row items-center gap-xl">
+<div class="lg:w-1/2">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-lg leading-tight">O Ecossistema <span class="text-primary">BOLA</span>YETU</h2>
+<p class="font-body-md text-lg text-on-surface-variant mb-xl">Criamos uma rede inteligente onde todos os intervenientes do futebol beneficiam de dados centralizados e processos transparentes.</p>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md glass-panel rounded-lg hover:border-primary/50 transition-all cursor-default">
+<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">hub</span>
+<div>
+<h4 class="font-title-md text-on-surface">Organizações</h4>
+<p class="text-label-sm text-on-surface-variant">Federações gerem o futebol nacional com visibilidade total.</p>
+</div>
+</div>
+<div class="flex items-start gap-md p-md glass-panel rounded-lg hover:border-primary/50 transition-all cursor-default">
+<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">groups</span>
+<div>
+<h4 class="font-title-md text-on-surface">Clubes &amp; Academias</h4>
+<p class="text-label-sm text-on-surface-variant">Otimização de recursos e descoberta de novos talentos.</p>
+</div>
+</div>
+<div class="flex items-start gap-md p-md glass-panel rounded-lg hover:border-primary/50 transition-all cursor-default">
+<span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">person</span>
+<div>
+<h4 class="font-title-md text-on-surface">Jogadores &amp; Staff</h4>
+<p class="text-label-sm text-on-surface-variant">Passaporte desportivo digital e histórico de performance.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full aspect-square relative">
+<div class="absolute inset-0 bg-primary/5 rounded-full border border-primary/20 animate-pulse"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-xl bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-xl">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-sm">Planos de Subscrição</h2>
+<p class="font-body-md text-on-surface-variant">Soluções escaláveis para cada nível do jogo.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Base -->
+<div class="glass-panel rounded-xl p-xl border border-outline-variant flex flex-col hover:-translate-y-2 transition-transform">
+<h3 class="font-title-md text-xl mb-base">Base</h3>
+<p class="text-on-surface-variant mb-lg">Para pequenos clubes</p>
+<p class="font-display-lg text-4xl mb-xl">Grátis <span class="text-sm font-body-md opacity-50">/mês</span></p>
+<ul class="space-y-md mb-auto">
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Registo de até 25 jogadores</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Gestão básica de treinos</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Calendário de jogos</li>
+</ul>
+<button class="mt-xl w-full border border-outline text-on-surface py-md font-bold rounded hover:bg-surface-container-highest">Escolher Base</button>
+</div>
+<!-- Professional -->
+<div class="bg-primary/5 rounded-xl p-xl border border-primary relative flex flex-col hover:-translate-y-2 transition-transform shadow-[0_0_40px_rgba(148,211,193,0.1)]">
+<span class="absolute top-0 right-0 bg-primary text-on-primary-fixed text-[10px] px-3 py-1 font-bold uppercase rounded-bl-lg">Mais Popular</span>
+<h3 class="font-title-md text-xl mb-base text-primary">Profissional</h3>
+<p class="text-on-surface-variant mb-lg">Para equipas de elite</p>
+<p class="font-display-lg text-4xl mb-xl">49.99€ <span class="text-sm font-body-md opacity-50">/mês</span></p>
+<ul class="space-y-md mb-auto">
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Atletas ilimitados</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Módulo de Scouting Pro</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Análise de Vídeo Integrada</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Suporte 24/7</li>
+</ul>
+<button class="mt-xl w-full bg-primary text-on-primary-fixed py-md font-bold rounded">Começar Agora</button>
+</div>
+<!-- Enterprise -->
+<div class="glass-panel rounded-xl p-xl border border-outline-variant flex flex-col hover:-translate-y-2 transition-transform">
+<h3 class="font-title-md text-xl mb-base">Enterprise</h3>
+<p class="text-on-surface-variant mb-lg">Para federações e ligas</p>
+<p class="font-display-lg text-4xl mb-xl">Custom</p>
+<ul class="space-y-md mb-auto">
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Infraestrutura dedicada</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> API de Integração Total</li>
+<li class="flex items-center gap-sm text-sm"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Business Intelligence</li>
+</ul>
+<button class="mt-xl w-full border border-outline text-on-surface py-md font-bold rounded hover:bg-surface-container-highest">Contactar Vendas</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="py-xl max-w-container-max mx-auto px-gutter">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-xl text-center">Vozes do Campo</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="glass-panel p-lg rounded-xl border-l-4 border-primary">
+<span class="material-symbols-outlined text-primary text-4xl mb-md">format_quote</span>
+<p class="font-title-md text-lg italic mb-lg">"A Bolayetu revolucionou a forma como gerimos os dados dos nossos jogadores. A transparência e facilidade de scouting nunca foram tão eficientes em Angola."</p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a professional African football technical director in a suit, modern lighting, professional corporate photography style for a sports technology website." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQZsFo4ZOmioq2kl5neMyNBadKuH_zc0vX44e3VtXmlQPf4J72wZni6NRxQU3M0CDua7rjFQh6Y0YmG8EPF0v0_WCNyEjnggQl3M4vQphED7__H3xDRO4KklAKJmT4x1naCJi9rMeueprI7n_7fPZTftm2Mt7Fz081sPni1czbp3qYPZR-3DvkSb5u5CPy3h6hBu73NN6tSp7U-fGiXHfeIJC32FzcQg64gdyKz7mWbKRJ-4xK9iwWwkzOAVmYBie34thcYJHNmvg"/>
+</div>
+<div>
+<p class="font-bold">António Silva</p>
+<p class="text-label-sm text-on-surface-variant">Diretor Técnico, Clube Elite Luanda</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-lg rounded-xl border-l-4 border-tertiary">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-md">format_quote</span>
+<p class="font-title-md text-lg italic mb-lg">"Finalmente uma plataforma que entende os desafios do futebol africano e oferece soluções tecnológicas de nível mundial."</p>
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional portrait of a football federation president, high-end studio lighting, sophisticated professional aesthetic, clean sports-tech vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4p3_uw5rAkB_aIpnauTxe5egPmu3knWZHflL9GptMLmtsRuIfzTYLka0yupphfnBf8rZLE_YGg2ZdYQKBYtbW_uudiDxxAGPcK7MKnJjkM8q0Mhzku8NLxGUX83Jlf3YM4JaNLqF3FgVs91BI8MpGo5UJBMAkuXJ4SlstyUlMZLAmz6wA4fRn7CV42CRGEIRJMBJVMYcKvIZKOSnvXLk4mHZKPRZC2MQzjVtMhyNC6Dor4rGW09jaWruN0i9BrQbN__e74JvtMtA"/>
+</div>
+<div>
+<p class="font-bold">Dr. Manuel Costa</p>
+<p class="text-label-sm text-on-surface-variant">Presidente, Federação Regional</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ -->
+<section class="py-xl bg-surface-container-lowest">
+<div class="max-w-3xl mx-auto px-gutter">
+<h2 class="font-display-lg text-headline-lg text-on-surface uppercase mb-xl text-center">Perguntas Frequentes</h2>
+<div class="space-y-md">
+<details class="group glass-panel rounded-lg border border-outline-variant overflow-hidden" open="">
+<summary class="flex justify-between items-center p-lg cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="font-title-md text-on-surface">Os dados dos jogadores estão seguros?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-lg pt-0 text-on-surface-variant border-t border-outline-variant/30">
+                            Sim, utilizamos encriptação de nível bancário e conformidade total com o GDPR e regulamentos locais de proteção de dados.
+                        </div>
+</details>
+<details class="group glass-panel rounded-lg border border-outline-variant overflow-hidden">
+<summary class="flex justify-between items-center p-lg cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="font-title-md text-on-surface">É possível integrar com outros softwares?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-lg pt-0 text-on-surface-variant border-t border-outline-variant/30">
+                            Nossa API robusta permite integração com a maioria dos sistemas de análise de vídeo e hardware de monitorização GPS.
+                        </div>
+</details>
+<details class="group glass-panel rounded-lg border border-outline-variant overflow-hidden">
+<summary class="flex justify-between items-center p-lg cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="font-title-md text-on-surface">Quais os custos de implementação inicial?</span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="p-lg pt-0 text-on-surface-variant border-t border-outline-variant/30">
+                            O plano Base não tem custos de implementação. Para planos Enterprise, oferecemos onboarding personalizado com orçamentos sob consulta.
+                        </div>
+</details>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant pt-xl pb-lg">
+<div class="max-w-container-max mx-auto px-gutter grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-xl mb-xl">
+<div class="col-span-2 lg:col-span-2">
+<span class="font-display-lg text-3xl text-primary tracking-widest block mb-md">BOLAYETU</span>
+<p class="text-on-surface-variant max-w-sm font-body-md">Empoderando o futuro do futebol em África através de inovação tecnológica e conectividade.</p>
+<div class="flex gap-md mt-lg">
+<a class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface hover:bg-primary hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined">face_nod</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface hover:bg-primary hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">1k</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface hover:bg-primary hover:text-on-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-bold mb-md uppercase text-label-sm tracking-widest text-primary">Plataforma</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Gestão de Clubes</a></li>
+<li><a class="hover:text-primary" href="#">Scouting</a></li>
+<li><a class="hover:text-primary" href="#">Federações</a></li>
+<li><a class="hover:text-primary" href="#">Live Stats</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-md uppercase text-label-sm tracking-widest text-primary">Empresa</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Sobre Nós</a></li>
+<li><a class="hover:text-primary" href="#">Carreiras</a></li>
+<li><a class="hover:text-primary" href="#">Imprensa</a></li>
+<li><a class="hover:text-primary" href="#">Contacto</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-md uppercase text-label-sm tracking-widest text-primary">Recursos</h5>
+<ul class="space-y-sm text-sm text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Documentação</a></li>
+<li><a class="hover:text-primary" href="#">Centro de Ajuda</a></li>
+<li><a class="hover:text-primary" href="#">Privacidade</a></li>
+<li><a class="hover:text-primary" href="#">Termos</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-gutter pt-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-label-sm text-on-surface-variant">© 2024 Bolayetu Technologies. Todos os direitos reservados.</p>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-sm">language</span>
+<span class="text-label-sm">Português (AO)</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar for Mobile -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-surface-container-highest border-t border-outline-variant shadow-lg flex justify-around items-center h-16 px-md pb-safe">
+<a class="flex flex-col items-center justify-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="text-label-sm">Clubes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-sm">Jogadores</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-label-sm">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+<span class="text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and effects
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Simple visibility observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.glass-panel').forEach(el => {
+            el.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-10');
+            observer.observe(el);
+        });
+    </script>
+</body></html>

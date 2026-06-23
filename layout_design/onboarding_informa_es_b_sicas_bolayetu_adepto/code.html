@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&family=Geist:wght@400;600&family=JetBrains+Mono:wght@450&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#3f465c",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#000f21",
+                        "outline-variant": "#3f4945",
+                        "on-surface": "#d3e4fe",
+                        "primary-fixed-dim": "#94d3c1",
+                        "on-tertiary-fixed": "#241a00",
+                        "tertiary-fixed": "#ffe088",
+                        "secondary-fixed-dim": "#bec6e0",
+                        "on-background": "#d3e4fe",
+                        "on-error": "#690005",
+                        "secondary": "#bec6e0",
+                        "primary-container": "#004d40",
+                        "surface-tint": "#94d3c1",
+                        "on-surface-variant": "#bfc9c4",
+                        "surface-container-highest": "#26364a",
+                        "surface-variant": "#26364a",
+                        "tertiary-container": "#cca730",
+                        "background": "#031427",
+                        "on-tertiary-container": "#4f3e00",
+                        "on-secondary": "#283044",
+                        "tertiary": "#e9c349",
+                        "on-secondary-fixed": "#131b2e",
+                        "primary-fixed": "#afefdd",
+                        "surface-dim": "#031427",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "on-secondary-fixed-variant": "#3f465c",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#1b2b3f",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#0b1c30",
+                        "surface-bright": "#2a3a4f",
+                        "on-secondary-container": "#adb4ce",
+                        "on-primary": "#00382e",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "inverse-primary": "#29695b",
+                        "on-primary-container": "#7ebdac",
+                        "inverse-surface": "#d3e4fe",
+                        "surface-container": "#102034",
+                        "secondary-fixed": "#dae2fd",
+                        "primary": "#94d3c1",
+                        "outline": "#89938f",
+                        "surface": "#031427",
+                        "on-tertiary": "#3c2f00",
+                        "on-primary-fixed": "#00201a",
+                        "inverse-on-surface": "#213145",
+                        "on-primary-fixed-variant": "#065043"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "xl": "48px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "data-tabular": ["JetBrains Mono"],
+                        "label-sm": ["Geist"],
+                        "title-md": ["Geist"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "display-lg": ["Archivo Narrow"],
+                        "body-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #031427;
+            color: #d3e4fe;
+            font-family: 'Geist', sans-serif;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .input-inset {
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+        }
+        .glass-effect {
+            backdrop-filter: blur(8px);
+            background: rgba(16, 32, 52, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- Top AppBar (from Shared Components) -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-background border-b border-outline-variant/10">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
+<div class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight">Bolayetu</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors p-sm rounded-full">help_outline</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-highest/50 transition-colors p-sm rounded-full">account_circle</button>
+</div>
+</div>
+</header>
+<!-- Sidebar (from Shared Components) -->
+<aside class="hidden md:flex flex-col py-lg bg-surface-container-low border-r border-outline-variant/10 h-screen w-64 fixed left-0 top-0 pt-20">
+<div class="px-lg mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-primary">Onboarding</h2>
+<p class="font-title-md text-title-md text-on-surface-variant opacity-70">Step 1 of 5</p>
+</div>
+<nav class="flex-1">
+<div class="flex flex-col">
+<div class="flex items-center gap-md px-lg py-md text-primary font-bold border-r-2 border-primary bg-primary-container/10 transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-title-md text-title-md">Profile</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-title-md text-title-md">Clubs</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">sports_soccer</span>
+<span class="font-title-md text-title-md">Players</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">emoji_events</span>
+<span class="font-title-md text-title-md">Leagues</span>
+</div>
+<div class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:text-primary hover:bg-secondary-container/20 transition-all duration-200 cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-title-md text-title-md">Review</span>
+</div>
+</div>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:pl-64 pt-20 pb-16 min-h-screen relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 rounded-full blur-[80px] pointer-events-none"></div>
+<div class="max-w-3xl mx-auto px-gutter py-xl relative z-10">
+<!-- Mobile Step Indicator -->
+<div class="md:hidden mb-lg flex flex-col gap-xs">
+<span class="font-label-sm text-label-sm text-primary tracking-widest uppercase">Etapa 1 de 5</span>
+<div class="h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/5"></div>
+</div>
+</div>
+<!-- Bento Card Container -->
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-xl overflow-hidden p-md md:p-xl">
+<div class="flex flex-col md:flex-row gap-xl">
+<!-- Left Column: Contextual Visual -->
+<div class="w-full md:w-1/3 flex flex-col gap-md">
+<div class="aspect-square rounded-lg border border-outline-variant/10 bg-surface-container relative group overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="A cinematic, high-contrast photograph of a professional football player standing alone in the center of a pitch under dramatic stadium floodlights at night. The lighting creates sharp silhouettes and long shadows, capturing an intense, athletic atmosphere. The color palette is dominated by deep navy blues and blacks, with a glowing emerald green aura around the player's feet, echoing a modern digital sports broadcast aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJtIiPW-raxv1dH1yf0OiZ4xTTldfHUr1FqPSiTkbCwsr99p1PhQyaTTJGmS249urdDSGyM-q_tRdt4zKjusUNb4ZtOSsiUEANvfUFeWRmxrZRFlg08EKbCAwNl8wnPC9uAayxJHReOqsHQTkE2X6CoLu3yauEaLWeU5SNlLPLymrrizZ4kJZnfiWXoIlonNaFzmyjnb7Ru6XZRn_mcR8mvlb3KibAoEqNo3LdwCsBm-z5ZFAfWVHJGfPjCX7l8L3K8OZJrz4tThE')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent"></div>
+</div>
+<div class="hidden md:block">
+<h3 class="font-title-md text-title-md text-primary mb-xs">Inicie sua Jornada</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Personalize sua experiência para receber análises táticas e estatísticas exclusivas dos seus clubes favoritos.</p>
+</div>
+</div>
+<!-- Right Column: Form Fields -->
+<div class="flex-1 flex flex-col justify-center">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xl">Informações Básicas</h1>
+<form class="space-y-lg">
+<!-- Full Name -->
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-xs">Nome Completo</label>
+<div class="relative group">
+<input class="w-full h-12 bg-surface-container-highest border border-outline-variant/10 rounded-lg px-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors input-inset" placeholder="Ex: João Silva" type="text"/>
+<div class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">person_edit</span>
+</div>
+</div>
+</div>
+<!-- Two Columns: Country and City -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Country Select -->
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-xs">País</label>
+<div class="relative group">
+<select class="w-full h-12 bg-surface-container-highest border border-outline-variant/10 rounded-lg px-md font-body-md text-on-surface appearance-none focus:outline-none focus:border-primary transition-colors input-inset cursor-pointer">
+<option selected="" value="ao">Angola</option>
+<option value="br">Brasil</option>
+<option value="pt">Portugal</option>
+<option value="mz">Moçambique</option>
+<option value="cv">Cabo Verde</option>
+</select>
+<div class="absolute right-md top-1/2 -translate-y-1/2 flex items-center gap-sm pointer-events-none">
+<span class="text-xl">🇦🇴</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+<!-- City -->
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant ml-xs">Cidade</label>
+<div class="relative group">
+<input class="w-full h-12 bg-surface-container-highest border border-outline-variant/10 rounded-lg px-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary transition-colors input-inset" placeholder="Ex: Luanda" type="text"/>
+<div class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Form Footer / Actions -->
+<div class="pt-xl border-t border-outline-variant/5 flex items-center justify-between">
+<div class="hidden sm:flex items-center gap-sm text-on-surface-variant">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+</div>
+<button class="bg-primary text-on-primary font-title-md text-title-md px-xl py-md rounded-lg hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center gap-md" onclick="window.location.reload()" type="button">
+                                    Continuar
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Contextual Note -->
+<div class="mt-lg flex items-start gap-md p-md bg-primary-container/5 border border-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Suas informações são utilizadas apenas para personalizar o feed de notícias e sugerir jogadores baseados na sua região.</p>
+</div>
+</div>
+</main>
+<!-- Footer (from Shared Components) -->
+<footer class="mt-auto w-full py-md border-t border-outline-variant/10 bg-background md:pl-64">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-container-max mx-auto w-full gap-md">
+<div class="font-title-md text-title-md text-on-surface opacity-80">© 2024 Bolayetu Performance Systems</div>
+<div class="flex gap-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Interactive Layer for micro-interactions -->
+<script>
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('focus', () => {
+                const parent = el.closest('.bg-surface-container-low');
+                if (parent) {
+                    parent.classList.add('border-primary/20');
+                }
+            });
+            el.addEventListener('blur', () => {
+                const parent = el.closest('.bg-surface-container-low');
+                if (parent) {
+                    parent.classList.remove('border-primary/20');
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Petro de Luanda | Club Profile - BOLAYETU</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Custom Scrollbar for High-Density UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #031427; }
+        ::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94d3c1; }
+        
+        .glass-card {
+            background: rgba(38, 54, 74, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface": "#031427",
+                      "surface-variant": "#26364a",
+                      "tertiary-container": "#cca730",
+                      "surface-container-high": "#1b2b3f",
+                      "inverse-primary": "#29695b",
+                      "secondary-container": "#3f465c",
+                      "outline": "#89938f",
+                      "error": "#ffb4ab",
+                      "surface-tint": "#94d3c1",
+                      "surface-container-lowest": "#000f21",
+                      "on-secondary-container": "#adb4ce",
+                      "surface-container-highest": "#26364a",
+                      "tertiary": "#e9c349",
+                      "surface-bright": "#2a3a4f",
+                      "on-error-container": "#ffdad6",
+                      "primary": "#94d3c1",
+                      "on-tertiary-fixed-variant": "#574500",
+                      "tertiary-fixed": "#ffe088",
+                      "on-primary": "#00382e",
+                      "secondary-fixed-dim": "#bec6e0",
+                      "on-surface-variant": "#bfc9c4",
+                      "primary-fixed": "#afefdd",
+                      "on-tertiary-container": "#4f3e00",
+                      "primary-container": "#004d40",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "on-error": "#690005",
+                      "primary-fixed-dim": "#94d3c1",
+                      "on-tertiary-fixed": "#241a00",
+                      "on-secondary-fixed": "#131b2e",
+                      "background": "#031427",
+                      "on-secondary": "#283044",
+                      "error-container": "#93000a",
+                      "surface-container-low": "#0b1c30",
+                      "secondary": "#bec6e0",
+                      "secondary-fixed": "#dae2fd",
+                      "on-background": "#d3e4fe",
+                      "inverse-on-surface": "#213145",
+                      "inverse-surface": "#d3e4fe",
+                      "on-tertiary": "#3c2f00",
+                      "on-primary-fixed-variant": "#065043",
+                      "on-surface": "#d3e4fe",
+                      "surface-container": "#102034",
+                      "outline-variant": "#3f4945",
+                      "on-primary-fixed": "#00201a",
+                      "tertiary-fixed-dim": "#e9c349",
+                      "surface-dim": "#031427",
+                      "on-primary-container": "#7ebdac"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "base": "4px",
+                      "xl": "48px",
+                      "md": "16px",
+                      "gutter": "20px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Archivo Narrow"],
+                      "display-lg": ["Archivo Narrow"],
+                      "label-sm": ["Geist"],
+                      "body-md": ["Geist"],
+                      "title-md": ["Geist"],
+                      "data-tabular": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md">
+<!-- Top Navigation -->
+<header class="bg-surface border-b border-outline-variant/20 fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-lg max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-xl">
+<span class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">BOLAYETU</span>
+<nav class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Scouting</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Leagues</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Transfers</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="hidden md:block px-md py-xs border border-primary text-primary font-title-md hover:bg-primary/10 transition-all">Club Portal</button>
+<div class="flex gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">settings</span>
+</div>
+<div class="w-8 h-8 bg-surface-variant rounded-full border border-outline-variant/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a football club executive in a sharp navy suit, looking directly at the camera with a confident expression. The background is a blurred office setting with warm architectural lighting, maintaining a high-end corporate sports aesthetic. The lighting is crisp and detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1u2f6X2fbOUy0A2DW81CYM9Icf3ZSZemWSwIFcFLWA9Q48PGkyVS1Cqu9WywgSRL8TPVvWzzg62hnRDFWMJl7nrMdfk105jZTze2XJgtwTHiPVrh-Pgv5_xSlF150KDq8m-_ahvtqCiiJI--RfRxmttLYql3dH31-d6B83CkIrw3ahAHvHqrGT1O50e8pvX-V2NM-WtFSmCuDgEtK1_azshtYeSHEzD3g2q_SHMa2zQzNdGmATtvEwawzCX66ZX3I5GsTQCoeImo"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Side Navigation -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 pt-20 pb-md border-r border-outline-variant/10 bg-surface-container-low w-64 hidden lg:flex">
+<div class="px-md mb-lg">
+<div class="flex items-center gap-sm mb-md">
+<div class="w-12 h-12 bg-white rounded-lg p-1">
+<img class="w-full h-full object-contain" data-alt="A high-resolution, professional vector logo of Petro de Luanda club crest. The design features traditional yellow, blue, and red colors with a central oil derrick symbol and a gear, representing the industrial heritage of the club. The style is clean, modern, and prestigious against a white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmi5qJM6zz6AMUwBxQmqR_u9APGKk_HI39948UdZtYooHAzi17VaqKhtLRqOxDwawzredD6h_CqkGTE5Al55Ncm_SF5wrQDMLWrSEtykcBy1hhcya6uv-ArlqwTIU1rh4507xgCeNuq1J0Dqp1mSRO7h2BuPVf8zxYbjmE_j7DhJuPTitqoWEk2BRap76eAqLTigmJ7cr6LFGDWx9hjRGvitUfA2c6S3Xe2srzzqyIlRhsaqhiU_nTkCC796HW59oAsJe0wgIzdeU"/>
+</div>
+<div>
+<h2 class="font-title-md text-on-surface leading-tight">Petro de Luanda</h2>
+<p class="text-label-sm text-outline">Girabola • Angola</p>
+</div>
+</div>
+<button class="w-full py-xs bg-primary text-on-primary font-title-md rounded hover:opacity-90 transition-all flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export Report
+                </button>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md px-md py-sm text-primary font-bold bg-primary-container/10 border-r-2 border-primary translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:bg-surface-variant/30 hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Squad</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:bg-surface-variant/30 hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="engineering">engineering</span>
+<span>Staff</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:bg-surface-variant/30 hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Finances</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:bg-surface-variant/30 hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="stadium">stadium</span>
+<span>Stadium</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:bg-surface-variant/30 hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-md border-t border-outline-variant/10">
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-secondary-container hover:text-on-surface" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 w-full">
+<!-- Club Banner Section -->
+<section class="relative h-[400px] w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A cinematic, low-angle shot of the Estádio 11 de Novembro in Luanda at dusk. The stadium lights are glowing intensely, casting a golden and primary green hue across the pitch. The atmosphere is electric with a slight mist in the air, creating a premium sports broadcasting look. High-end professional photography with deep shadows and vibrant highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUsK0nyXQaugxYl98PV00crf1lGKUZETt59vsBcrNPK2n9S_uErcw5Ix-i3BxCqyHU7r57JKc2Gk3ndOqQW5lomGRIBFT0Z0UulA4jK1leB8_qWyacxTBJNp_So-rmnFTS8CQ1HTH-mZuoaZ7NKrr-BrHudJaiTa3D5Eqe2AZsk_JKwhEcfc_uTzjYqrjhI927UDGDHIcvoNE-z8GMdgO9kCDvf0bxEINqYKTDheQcZkkVyiCalPcvW58ZqOhvcL8m2JrjhiQYBLY"/>
+<div class="relative z-20 h-full max-w-container-max mx-auto px-lg flex flex-col justify-end pb-xl">
+<div class="flex items-end gap-lg">
+<div class="w-32 h-32 bg-white rounded-xl p-2 shadow-2xl transform -rotate-3 border-4 border-surface overflow-hidden">
+<img class="w-full h-full object-contain" data-alt="Close up detailed shot of the official Petro de Luanda club badge on a high-quality textured sports jersey. The red, yellow, and blue embroidery is crisp, showing every thread and metallic shimmer. The background is a dark forest green fabric, highlighting the prestigious club identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgo_299O4Nb-ics_op33SItqjHoidOFF-YRA4s6vMW5zjmL_zvu-55sIlk7Ngc4_U0PrvQ0PlZ2nAjn6y7FvSy8_thXC822qFgGzln28HpLgLQzdZmqu8ijWNqSKHD4F-2REsqzstbSfQ6oaVIescj9TU-ZwvNSgFcgp8kAg15U6Dripc_xLECeiV8rhUxf3R0EzKDgQ9zyp5WH4aQMOGnJQ6WEkhjInp2DeNrzrTSnsINbMbWmP3o32LwCtFfLhE4qKToboTKRdc"/>
+</div>
+<div class="flex-1 pb-2">
+<div class="flex items-center gap-md mb-2">
+<span class="bg-primary-container text-on-primary-container px-sm py-0.5 text-label-sm font-bold tracking-widest uppercase">Elite Club</span>
+<span class="text-tertiary flex items-center gap-1 font-title-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    Continental Champions
+                                </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-white mb-1">PETRO DE LUANDA</h1>
+<p class="text-on-surface-variant font-title-md max-w-2xl">Atlético Petróleos de Luanda • Founded 1980 • The Giant of Angola</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Bar -->
+<section class="max-w-container-max mx-auto px-lg -mt-12 relative z-30">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="glass-card p-md border-l-4 border-primary">
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Squad Value</p>
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg text-primary font-data-tabular">€15.5M</span>
+<span class="text-label-sm text-primary">▲ 12%</span>
+</div>
+</div>
+<div class="glass-card p-md border-l-4 border-secondary">
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Matches Played</p>
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg text-white font-data-tabular">24</span>
+<span class="text-label-sm text-outline">Current Season</span>
+</div>
+</div>
+<div class="glass-card p-md border-l-4 border-tertiary">
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Wins (Rate 75%)</p>
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg text-tertiary font-data-tabular">18</span>
+<span class="text-label-sm text-tertiary">Top of League</span>
+</div>
+</div>
+<div class="glass-card p-md border-l-4 border-error">
+<p class="text-label-sm text-outline uppercase tracking-wider mb-1">Goals Scored</p>
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-lg text-headline-lg text-white font-data-tabular">45</span>
+<span class="text-label-sm text-error">+2.1 avg</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Content Grid -->
+<section class="max-w-container-max mx-auto px-lg py-xl">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-xl">
+<!-- Left Column: History & Stadium -->
+<div class="xl:col-span-4 space-y-xl">
+<!-- History Section -->
+<div class="bg-surface-container-high p-lg border border-outline-variant/10 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-lg opacity-10">
+<span class="material-symbols-outlined text-[80px]" data-icon="history">history</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-white mb-md border-b border-outline-variant/20 pb-md">Club Legacy</h3>
+<p class="text-body-md text-on-surface-variant leading-relaxed mb-md">
+                                Founded in 1980 by the Angolan oil company Sonangol, Petro de Luanda quickly rose to become the most successful football institution in Angola. With a heritage built on technical excellence and community roots, the club has secured over 15 Girabola titles, establishing a dominance that transcends domestic borders.
+                            </p>
+<p class="text-body-md text-on-surface-variant leading-relaxed">
+                                Their journey in African football is marked by legendary continental runs, representing Luanda with pride and developing some of the continent's finest talents through their prestigious youth academy.
+                            </p>
+</div>
+<!-- Stadium Section -->
+<div class="bg-surface-container-high border border-outline-variant/10 rounded-xl overflow-hidden">
+<div class="h-48 relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="A wide panoramic view of the Estádio 11 de Novembro stadium in Luanda, showing the impressive modern architecture and the sea of yellow and blue seats. The image captures the scale and grandeur of the venue under a clear blue sky, emphasizing its role as a premier footballing destination in Africa." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD88WlrZZsGb2kvQgBkjQxBEb1JTmzhcnYFgU8YLzpNCXsWglaSLXyOgSpJl15I5W9ojs4nyV2KKRu8qVMw0u8BoQQWjxJ_odCxAg_YeLWI4eQ4j1CW3XX54kFP24MdcdQH0ObWYcY2w86kqHgjCnrsvhvJ1xRJDdEZ3kBWzxO9tS6kXcDI_AKPXYuS5UjOdXUHR4-8BZGQP942tm4TRqx3r8CxSZ91ERCN-H4CwTllJ1CQbc2_2KNe2Lxm3zaKrCGLS80TlAH8OPE')"></div>
+<div class="absolute bottom-4 left-4 bg-surface/90 px-md py-sm rounded border border-primary/30">
+<p class="text-label-sm text-primary uppercase">Home Ground</p>
+<p class="font-title-md text-white">Estádio 11 de Novembro</p>
+</div>
+</div>
+<div class="p-lg">
+<div class="space-y-md">
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/10">
+<span class="text-on-surface-variant">Capacity</span>
+<span class="font-data-tabular text-white">48,500</span>
+</div>
+<div class="flex justify-between items-center py-sm border-b border-outline-variant/10">
+<span class="text-on-surface-variant">Location</span>
+<span class="text-white">Luanda, Angola</span>
+</div>
+<div class="flex justify-between items-center py-sm">
+<span class="text-on-surface-variant">Pitch</span>
+<span class="text-white">Natural Grass</span>
+</div>
+<div class="pt-md">
+<div class="w-full h-32 bg-surface-variant rounded flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-50" data-location="Luanda" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH1lpm-PGB0_0HT03n6-dD0NJy6N8rmiXMX9dOQgd0qWHzSxK4QetvaJlixfXkwVqqK2lyGgX5qunR-V2fL3UsrNuRxGZbHMpG7IF-VIFiQr4gSifeQcO8qiA6KppHDpB-nb7ka_f88JGflwAHpKf45BtOo0b09n57A3lJU83KMuGJTdVmRt1GNugKIQ1bcCIalwN5xbSOFvaYgMl1Nrl0ugRlLWY-71TfnOhr5c32LKYd199ZTtJxz5XpNbwi39UjkNjsPmQFivc"/>
+<span class="absolute text-primary-fixed font-title-md">Open Map View</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Trophy Room -->
+<div class="bg-surface-container-high p-lg border border-outline-variant/10 rounded-xl">
+<h3 class="font-headline-lg text-headline-lg text-white mb-md">Trophy Room</h3>
+<div class="grid grid-cols-2 gap-md">
+<div class="bg-surface p-md rounded border border-tertiary/20 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-tertiary text-[40px] mb-2" data-icon="emoji_events">emoji_events</span>
+<span class="text-display-lg text-3xl text-white font-bold">17</span>
+<p class="text-label-sm text-outline uppercase">Girabola Titles</p>
+</div>
+<div class="bg-surface p-md rounded border border-secondary/20 flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-secondary text-[40px] mb-2" data-icon="trophy">trophy</span>
+<span class="text-display-lg text-3xl text-white font-bold">11</span>
+<p class="text-label-sm text-outline uppercase">Angola Cups</p>
+</div>
+<div class="bg-surface p-md rounded border border-primary/20 flex flex-col items-center text-center col-span-2">
+<span class="material-symbols-outlined text-primary text-[40px] mb-2" data-icon="public">public</span>
+<span class="text-body-md text-white font-bold">CAF Champions League</span>
+<p class="text-label-sm text-outline uppercase">Semi-Finalists 2022</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Squad, Staff, News -->
+<div class="xl:col-span-8 space-y-xl">
+<!-- Squad List Table -->
+<div class="bg-surface-container-high border border-outline-variant/10 rounded-xl overflow-hidden">
+<div class="p-lg flex justify-between items-center border-b border-outline-variant/20 bg-surface-container">
+<h3 class="font-headline-lg text-headline-lg text-white">Active Squad</h3>
+<div class="flex gap-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="bg-surface-container-lowest border border-outline-variant/30 text-label-sm text-on-surface rounded pl-8 pr-md py-1 focus:border-primary outline-none transition-all" placeholder="Filter Players" type="text"/>
+</div>
+<button class="text-label-sm text-primary font-bold uppercase tracking-widest hover:underline">Full Squad</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container/50 text-label-sm text-outline border-b border-outline-variant/10">
+<th class="px-lg py-md font-bold uppercase">Player</th>
+<th class="px-lg py-md font-bold uppercase">Nat</th>
+<th class="px-lg py-md font-bold uppercase">Pos</th>
+<th class="px-lg py-md font-bold uppercase">Age</th>
+<th class="px-lg py-md font-bold uppercase">Apps</th>
+<th class="px-lg py-md font-bold uppercase text-right">Value</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-variant/20 transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Action portrait of a charismatic Angolan football striker in Petro de Luanda colors. He is celebrating a goal with a joyful expression. The background is a vibrant, blurred stadium with stadium lights creating a bokeh effect. Commercial sports photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNx-71a5TzvcoJk5AhuZ6QnkG-UiWzjzt-Cmmbc0CYQoFyFk1j3sBTkfrY2_b5bmQnd8d-ENTv0n71pNb3jM0s4EupAq5YC_0O0VcqVZBfQZNq2BEB1MO_YoMHutmhp51FZ3zB26wvOlJsnmR0BLQoZiWSTGsZJSiNLkkBGE34qizGZr6Bqx0dldG2XMPkHvxHNDbGEP9skqx6hjJlzOFmBKYQw0T3-unA1YfT-PCjtl9MBClm5kP_F88qRJHYS8izOrJ8aNrJftU"/>
+</div>
+<div>
+<p class="font-title-md text-white">Tiago Azulão</p>
+<p class="text-label-sm text-outline">Captain</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md"><span class="text-white">🇧🇷</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">CF</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">35</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">18 (12)</span></td>
+<td class="px-lg py-md text-right"><span class="font-data-tabular text-primary font-bold">€1.2M</span></td>
+</tr>
+<tr class="hover:bg-surface-variant/20 transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A focused studio portrait of a young, athletic African goalkeeper wearing professional gear. He has intense eyes and is ready for action. The lighting is high-contrast, dramatic sports style with deep shadows and rim lighting in Petro de Luanda's yellow and blue palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYNveOcJKgSfG-09ACyR_p1NL0DpmVwCldyqp6d71ABpdKQoZgmVnpuLX6mENM5aieVbw_ORvTCS_jt0JwgKtGjC2xvl1F2yPhDUC3H_7IwITWBM86fB95QwfxXbgWon-zYKXPAG51xvVwCCTyj-eJQo2yV7q4acBF6wfUDP9qt6qESVTKbjwH0PWBg8xLjQzqC8VArIdTvKaX9308w5JJo-cteLNWved_-jfztvBd8WoIF4fboNk9CS7BYpruon8D8iDJnFxLEaE"/>
+</div>
+<div>
+<p class="font-title-md text-white">Hugo Marques</p>
+<p class="text-label-sm text-outline">Vice-Captain</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md"><span class="text-white">🇦🇴</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">GK</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">37</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">22 (0)</span></td>
+<td class="px-lg py-md text-right"><span class="font-data-tabular text-primary font-bold">€450K</span></td>
+</tr>
+<tr class="hover:bg-surface-variant/20 transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Profile photo of a dynamic young midfielder in a dark green training kit. The athlete looks professional and determined, set against a sleek, modern architectural background with cool tones. High-end professional sports profile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzXeVq94qco82NUihPDpRoi5MY-ZN_gWzGhnTo-7URNqUt3A5dXtTk5P60tNoWcnZHQai9iXet5vlHkUiviHJiP2hfSzm4UnNr9c7PoFiY4PEdaOf7aXGL0ESuzDexGfyd3Fud1NAgG32SPzAsKbdYumLlEXuGFFjbNsVlDfyso0pBK9ek5uJqDdtg-nm5JjUNqDhOy2AoqLwL0rj0tlGfbPnFvr1Qb_5kA6q3xQ0epCxh1UNLrulEKiXXKfyssMRLMx5KRFi1OLk"/>
+</div>
+<div>
+<p class="font-title-md text-white">Gilberto</p>
+<p class="text-label-sm text-outline">Star Talent</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md"><span class="text-white">🇦🇴</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">RW</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">23</span></td>
+<td class="px-lg py-md"><span class="text-on-surface-variant font-data-tabular">20 (5)</span></td>
+<td class="px-lg py-md text-right"><span class="font-data-tabular text-primary font-bold">€2.8M</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Technical Staff & News Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+<!-- Technical Staff -->
+<div class="bg-surface-container-high p-lg border border-outline-variant/10 rounded-xl">
+<h3 class="font-headline-lg text-headline-lg text-white mb-md">Technical Staff</h3>
+<div class="space-y-md">
+<div class="flex items-center gap-md p-md bg-surface rounded border border-outline-variant/10">
+<div class="w-16 h-16 rounded-lg overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A portrait of a distinguished European football manager in his late 50s, wearing a tailored black polo shirt with a subtle club crest. He has a thoughtful, strategic look. The lighting is soft and professional, evoking a high-performance leadership vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXc8dssAOEbJfYmhlsNtpBZYv_wdzgWmB_lyt9i598cTjbj7lHxIYhlYVhHIpZseSZtZbytVAeHESlRt3LFdhEa48FgnmvyONqC4QItdAmtYCAYqEgJz76yQzIHhB7XLy8kBsnYvoNX-jMwpULW3m-QWrK0n_3y0SrtNvYngXrop20bNA8hgzX-_YFzvHZ-Ve4Fl1gByLAC3KA_dkM1YXTMtz94Y1L0DRNifIvM-sfE_OqVqTX-CAvjo5S1xLDLtGknJWLqE8FX7U"/>
+</div>
+<div>
+<p class="font-title-md text-white">Alexandre Santos</p>
+<p class="text-label-sm text-primary font-bold uppercase">Head Coach</p>
+<p class="text-label-sm text-outline">Joined 2021</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-md bg-surface rounded border border-outline-variant/10">
+<div class="w-16 h-16 rounded-lg overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Professional profile photo of a modern sporting director in a smart casual grey blazer. He is standing in a high-tech sports facility with blurred glass and steel elements in the background. Authoritative and sophisticated executive appearance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhTon70k9bF95ButsStnymFcUeNaFo4H7NMnmO5nfVCFWOoHZKLwIgaANwk5GXJ5VTj3WhdNgByYkpwVHyei7PemeH3mjPfC0jeaAFSgPABr0Vl-I6masEE6jLrdGJXFJMhj9sHk0nYjlRoht-4KsXQxSLzbpU_xDfFIXHPRjF3OE28H3kCbmb2guNy4y3sZf28oAOjHEYUgXZPOaItjhqCeoAkT6GXtpAKu9rHRGBBjFXkGvrEWEXsD25RyfMW0tZYKjxzVfHRvk"/>
+</div>
+<div>
+<p class="font-title-md text-white">João Paulo</p>
+<p class="text-label-sm text-secondary font-bold uppercase">Sporting Director</p>
+<p class="text-label-sm text-outline">Strategic Operations</p>
+</div>
+</div>
+</div>
+</div>
+<!-- News Feed -->
+<div class="bg-surface-container-high p-lg border border-outline-variant/10 rounded-xl">
+<h3 class="font-headline-lg text-headline-lg text-white mb-md">Club News</h3>
+<div class="space-y-md">
+<div class="group cursor-pointer">
+<p class="text-label-sm text-primary mb-1">2h ago • Official</p>
+<h4 class="font-title-md text-white group-hover:text-primary transition-colors leading-tight">Petro de Luanda Secures Girabola Partnership Extension</h4>
+<p class="text-body-md text-outline line-clamp-1">Multi-year deal signed with Sonangol for youth development infrastructure...</p>
+</div>
+<hr class="border-outline-variant/10"/>
+<div class="group cursor-pointer">
+<p class="text-label-sm text-secondary mb-1">Yesterday • Match Preview</p>
+<h4 class="font-title-md text-white group-hover:text-primary transition-colors leading-tight">CAF Champions League Quarter-Final Tickets On Sale</h4>
+<p class="text-body-md text-outline line-clamp-1">Petro to host Mamelodi Sundowns at Estádio 11 de Novembro next Saturday...</p>
+</div>
+<hr class="border-outline-variant/10"/>
+<div class="group cursor-pointer">
+<p class="text-label-sm text-tertiary mb-1">3 days ago • Injury Update</p>
+<h4 class="font-title-md text-white group-hover:text-primary transition-colors leading-tight">Captain Tiago Azulão Returns to Full Training</h4>
+<p class="text-body-md text-outline line-clamp-1">Club medical staff confirms striker is fit for upcoming league derby...</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-dim border-t border-outline-variant/10 mt-auto">
+<div class="flex justify-between items-center w-full px-lg py-md max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-title-md text-title-md text-outline">BOLAYETU</span>
+<p class="font-label-sm text-label-sm text-secondary">© 2024 BOLAYETU DIGITAL ECOSYSTEM. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-label-sm text-outline hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm text-outline hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm text-outline hover:text-primary transition-colors" href="#">API Documentation</a>
+<a class="text-label-sm text-outline hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Bottom Nav for Mobile -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container border-t border-outline-variant/20 z-50 px-lg py-sm flex justify-around items-center">
+<span class="material-symbols-outlined text-primary" data-icon="dashboard">dashboard</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="groups">groups</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="stadium">stadium</span>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</div>
+<!-- Floating Action Button for Scouting -->
+<div class="fixed bottom-20 right-8 md:bottom-8 z-50">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center group active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]" data-icon="search">search</span>
+</button>
+</div>
+</body></html>

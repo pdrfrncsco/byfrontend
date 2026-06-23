@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu Organization Portal - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&amp;family=Geist:wght@400;600&amp;family=JetBrains+Mono:wght@450&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for high-density feel */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #031427; }
+        ::-webkit-scrollbar-thumb { background: #3f4945; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94d3c1; }
+
+        .glass-card {
+            background: rgba(16, 32, 52, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(148, 211, 193, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(148, 211, 193, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(148, 211, 193, 0); }
+        }
+        .status-live { animation: pulse-green 2s infinite; }
+    </style>
+<!-- Tailwind Config Injection -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#89938f",
+                      "secondary-container": "#3f465c",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "on-background": "#d3e4fe",
+                      "on-secondary-fixed": "#131b2e",
+                      "on-primary-fixed-variant": "#065043",
+                      "surface-bright": "#2a3a4f",
+                      "on-tertiary-container": "#4f3e00",
+                      "inverse-primary": "#29695b",
+                      "background": "#031427",
+                      "surface-container-high": "#1b2b3f",
+                      "on-primary-container": "#7ebdac",
+                      "tertiary-fixed": "#ffe088",
+                      "on-tertiary": "#3c2f00",
+                      "primary-fixed": "#afefdd",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "primary-container": "#004d40",
+                      "error": "#ffb4ab",
+                      "on-surface": "#d3e4fe",
+                      "tertiary-container": "#cca730",
+                      "error-container": "#93000a",
+                      "on-secondary-container": "#adb4ce",
+                      "on-primary": "#00382e",
+                      "inverse-on-surface": "#213145",
+                      "surface-tint": "#94d3c1",
+                      "outline-variant": "#3f4945",
+                      "surface-container-highest": "#26364a",
+                      "tertiary-fixed-dim": "#e9c349",
+                      "secondary": "#bec6e0",
+                      "surface-container-lowest": "#000f21",
+                      "on-secondary": "#283044",
+                      "tertiary": "#e9c349",
+                      "surface": "#031427",
+                      "surface-container": "#102034",
+                      "on-primary-fixed": "#00201a",
+                      "surface-dim": "#031427",
+                      "surface-variant": "#26364a",
+                      "inverse-surface": "#d3e4fe",
+                      "primary": "#94d3c1",
+                      "secondary-fixed-dim": "#bec6e0",
+                      "primary-fixed-dim": "#94d3c1",
+                      "on-tertiary-fixed-variant": "#574500",
+                      "secondary-fixed": "#dae2fd",
+                      "on-surface-variant": "#bfc9c4",
+                      "surface-container-low": "#0b1c30",
+                      "on-tertiary-fixed": "#241a00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "sm": "8px",
+                      "base": "4px",
+                      "md": "16px",
+                      "gutter": "20px",
+                      "container-max": "1440px",
+                      "xs": "4px",
+                      "xl": "48px"
+              },
+              "fontFamily": {
+                      "body-md": ["Geist"],
+                      "display-lg": ["Archivo Narrow"],
+                      "headline-lg-mobile": ["Archivo Narrow"],
+                      "data-tabular": ["JetBrains Mono"],
+                      "label-sm": ["Geist"],
+                      "title-md": ["Geist"],
+                      "headline-lg": ["Archivo Narrow"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                      "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary selection:text-on-primary">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col border-r border-outline-variant bg-surface py-lg z-40">
+<div class="px-md mb-xl">
+<h1 class="font-display-lg text-headline-lg-mobile text-primary uppercase tracking-tighter">Bolayetu</h1>
+<p class="text-label-sm text-on-surface-variant mt-xs">Angolan Football Ecosystem</p>
+</div>
+<nav class="flex-1 space-y-xs overflow-y-auto">
+<div class="px-md mb-sm">
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest">Main Menu</span>
+</div>
+<a class="flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm mx-sm font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-body-md text-body-md">Ecosystem</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface px-md py-sm mx-sm transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-body-md text-body-md">Organizations</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface px-md py-sm mx-sm transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-body-md text-body-md">Clubs</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface px-md py-sm mx-sm transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person_search">person_search</span>
+<span class="font-body-md text-body-md">Players</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface px-md py-sm mx-sm transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-body-md text-body-md">Fan Zone</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface px-md py-sm mx-sm transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+</nav>
+<div class="mt-auto px-sm space-y-xs pt-lg border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-title-md py-sm rounded-lg mb-md flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Create Entry
+            </button>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant hover:text-on-surface px-md py-sm transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-30 bg-surface-container-low border-b border-outline-variant px-xl py-md flex justify-between items-center w-full">
+<div class="flex items-center gap-lg">
+<h2 class="font-title-md text-title-md text-primary">Federation Portal</h2>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="bg-surface-container-high border-none rounded-full pl-xl pr-md py-xs text-body-md focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search clubs, players, or matches..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm hover:bg-surface-container-high rounded-full transition-all relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-xs"></div>
+<div class="flex items-center gap-sm">
+<img class="w-8 h-8 rounded-full border border-primary" data-alt="A professional portrait of a senior Angolan football executive, captured in high-definition with soft cinematic lighting. The individual wears a sharp navy suit with a subtle federation crest pin on the lapel. The background is a blurred high-end sports boardroom with deep green and gold accents. The overall aesthetic is authoritative, professional, and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfMoondKkeEliYdReY2HPji4TTN57LGq2-N5qt8_t3VqPAx7Zfadb5_h4raF7UkAwvZjeJdVJLm6Kt1vAiCSvV5P9wzvLY39J5NAbDJ5yVuk8tDCYpGxrFPxdPZjpf2p6fuFoaPjqtmZTWaCzMNMbPGFpgDAMUSCAyjx9E_YGEdbrluHl_WV0RkG8yMQizBW79fV3SGE9AEDBg0NRKZwQqsy1-ETl2Ol0exkyHyV1kVWq333PT5INDU_xbYI0LbO-4JNYNsol-fBM"/>
+<div class="hidden sm:block">
+<p class="font-label-sm text-on-surface leading-tight">Admin Portal</p>
+<p class="text-[10px] text-primary">Angolan Football Fed.</p>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<section class="p-lg max-w-container-max mx-auto w-full flex-1">
+<!-- Header Stats -->
+<div class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs tracking-tight">Welcome back, Angolan Football Federation.</h1>
+<p class="text-on-surface-variant font-body-md">System state: Optimized. Sync complete for Girabola Matchday 14.</p>
+</div>
+<div class="flex gap-md">
+<div class="glass-card px-lg py-md rounded-xl flex flex-col min-w-[140px]">
+<span class="text-label-sm text-outline uppercase tracking-wider">Active Leagues</span>
+<span class="font-headline-lg text-headline-lg text-primary">5</span>
+</div>
+<div class="glass-card px-lg py-md rounded-xl flex flex-col min-w-[140px]">
+<span class="text-label-sm text-outline uppercase tracking-wider">Registered Clubs</span>
+<span class="font-headline-lg text-headline-lg text-primary">124</span>
+</div>
+<div class="glass-card px-lg py-md rounded-xl flex flex-col min-w-[140px]">
+<span class="text-label-sm text-outline uppercase tracking-wider">Players</span>
+<span class="font-headline-lg text-headline-lg text-primary">2,450</span>
+</div>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-12 gap-lg">
+<!-- Map Section (Bento Large) -->
+<div class="col-span-12 lg:col-span-8 glass-card rounded-xl overflow-hidden flex flex-col border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="map">map</span>
+                            Club Density: National Overview
+                        </h3>
+<div class="flex gap-xs">
+<span class="px-sm py-xs bg-surface-container-highest rounded text-label-sm text-primary">Luanda (High)</span>
+<span class="px-sm py-xs bg-surface-container-highest rounded text-label-sm">Benguela (Med)</span>
+</div>
+</div>
+<div class="relative h-[400px] bg-surface-container-lowest">
+<div class="w-full h-full opacity-60" data-location="Angola" style="">
+<!-- Image representing a map -->
+<div class="w-full h-full bg-cover bg-center" data-alt="A technical, high-contrast digital map of Angola presented in a dark-mode enterprise style. The map features luminous green glowing nodes representing football club clusters, with the highest density in Luanda. Subtle topographical details are visible in charcoal grays. Geometric UI elements and data callouts float above the map in a minimalist green and white aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwcR4UwCQ58wu9Ya-EBSxTHeaTBSru607-iQ_Sy6XUEd1iyZHSKepm0Fhbhmpj-HYF9GuboScKA9Eugd6pl-lVqiSlEyFpJnSbogVotwWQzoMX7eV4X8en1e0p43Lfyb0_IBcRPrucfm9D4rIaR39X8Q2aQtQexO5vb-Q-b0cLdwJ5nL5KIAie08NTmO7DuPVwLXoQf8t0OQfD3UC3Xi1QhWSAoshVx9nkn87Stl92N0O55IL9vTKUng5yR-WYQef7PuGYS0xw8ok')"></div>
+</div>
+<div class="absolute bottom-md left-md p-md glass-card rounded-lg max-w-[240px]">
+<p class="text-label-sm text-outline mb-xs">Region Highlight</p>
+<p class="font-title-md text-on-surface">Luanda Metropolitan</p>
+<div class="mt-sm flex justify-between items-center">
+<span class="text-body-md text-primary font-bold">42 Clubs</span>
+<span class="text-[10px] text-on-primary bg-primary px-sm rounded-full">ACTIVE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Transfers (Vertical Side) -->
+<div class="col-span-12 lg:col-span-4 glass-card rounded-xl flex flex-col border border-outline-variant h-full overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="swap_horiz">swap_horiz</span>
+                            Recent Transfers
+                        </h3>
+<button class="text-label-sm text-primary hover:underline">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-md">
+<!-- Transfer Item 1 -->
+<div class="flex items-center gap-md p-sm hover:bg-surface-container-high rounded transition-all group">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-primary font-bold">JD</div>
+<div class="flex-1 min-w-0">
+<p class="font-title-md text-body-md truncate">João Domingos</p>
+<p class="text-label-sm text-outline truncate">Petro de Luanda → 1º de Agosto</p>
+</div>
+<div class="text-right">
+<p class="font-data-tabular text-primary">Conf.</p>
+<p class="text-[10px] text-outline">2m ago</p>
+</div>
+</div>
+<!-- Transfer Item 2 -->
+<div class="flex items-center gap-md p-sm hover:bg-surface-container-high rounded transition-all group border-t border-outline-variant/30 pt-md">
+<div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center text-secondary font-bold">MS</div>
+<div class="flex-1 min-w-0">
+<p class="font-title-md text-body-md truncate">Mateus Simão</p>
+<p class="text-label-sm text-outline truncate">Sagrada Esperança → Académica</p>
+</div>
+<div class="text-right">
+<p class="font-data-tabular text-primary">Proc.</p>
+<p class="text-[10px] text-outline">15m ago</p>
+</div>
+</div>
+<!-- Transfer Item 3 -->
+<div class="flex items-center gap-md p-sm hover:bg-surface-container-high rounded transition-all group border-t border-outline-variant/30 pt-md">
+<div class="w-10 h-10 rounded bg-tertiary-container flex items-center justify-center text-on-tertiary-container font-bold">AL</div>
+<div class="flex-1 min-w-0">
+<p class="font-title-md text-body-md truncate">André Luvumbo</p>
+<p class="text-label-sm text-outline truncate">Wiliete SC → Petro de Luanda</p>
+</div>
+<div class="text-right">
+<p class="font-data-tabular text-primary">Conf.</p>
+<p class="text-[10px] text-outline">1h ago</p>
+</div>
+</div>
+<!-- Transfer Item 4 -->
+<div class="flex items-center gap-md p-sm hover:bg-surface-container-high rounded transition-all group border-t border-outline-variant/30 pt-md">
+<div class="w-10 h-10 rounded bg-outline flex items-center justify-center text-background font-bold">FK</div>
+<div class="flex-1 min-w-0">
+<p class="font-title-md text-body-md truncate">Félix Katongo</p>
+<p class="text-label-sm text-outline truncate">Interclube → Bravos do Maquis</p>
+</div>
+<div class="text-right">
+<p class="font-data-tabular text-primary">Conf.</p>
+<p class="text-[10px] text-outline">3h ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Competition Management Table -->
+<div class="col-span-12 glass-card rounded-xl border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="stadium">stadium</span>
+                            Active Competition Management
+                        </h3>
+<div class="flex gap-sm">
+<button class="px-md py-xs bg-primary text-on-primary rounded text-label-sm font-bold">Register New</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b border-outline-variant">
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider">Competition Name</th>
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider">Type</th>
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider">Status</th>
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider text-center">Clubs</th>
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider">Next Matchday</th>
+<th class="px-lg py-md font-label-sm text-outline uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-lg py-md">
+<p class="font-title-md">Girabola 2023/24</p>
+<p class="text-[10px] text-outline">Official National League</p>
+</td>
+<td class="px-lg py-md text-on-surface-variant font-data-tabular">Top Flight</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<span class="w-2 h-2 bg-primary rounded-full status-live"></span>
+<span class="text-primary font-bold text-label-sm uppercase tracking-tighter">Live</span>
+</div>
+</td>
+<td class="px-lg py-md text-center font-data-tabular">16/16</td>
+<td class="px-lg py-md">14 Mar 2024</td>
+<td class="px-lg py-md text-right">
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit_square">edit_square</span></button>
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-lg py-md">
+<p class="font-title-md">Super Cup (Taça)</p>
+<p class="text-[10px] text-outline">Knockout Competition</p>
+</td>
+<td class="px-lg py-md text-on-surface-variant font-data-tabular">Cup</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<span class="w-2 h-2 bg-tertiary rounded-full"></span>
+<span class="text-tertiary font-bold text-label-sm uppercase tracking-tighter">Upcoming</span>
+</div>
+</td>
+<td class="px-lg py-md text-center font-data-tabular">32/64</td>
+<td class="px-lg py-md">05 Apr 2024</td>
+<td class="px-lg py-md text-right">
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit_square">edit_square</span></button>
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-lg py-md">
+<p class="font-title-md">Segundona League</p>
+<p class="text-[10px] text-outline">Second Division</p>
+</td>
+<td class="px-lg py-md text-on-surface-variant font-data-tabular">Promotion</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<span class="w-2 h-2 bg-primary rounded-full status-live"></span>
+<span class="text-primary font-bold text-label-sm uppercase tracking-tighter">Live</span>
+</div>
+</td>
+<td class="px-lg py-md text-center font-data-tabular">18/20</td>
+<td class="px-lg py-md">16 Mar 2024</td>
+<td class="px-lg py-md text-right">
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit_square">edit_square</span></button>
+<button class="p-sm hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="more_vert">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Revenue/Registration Analytics -->
+<div class="col-span-12 glass-card rounded-xl border border-outline-variant overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-title-md text-title-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+                            Revenue &amp; Registration Analytics
+                        </h3>
+<select class="bg-surface-container-high border-none rounded text-label-sm text-on-surface focus:ring-1 focus:ring-primary">
+<option>Last 6 Months</option>
+<option>Annual View</option>
+</select>
+</div>
+<div class="p-lg grid grid-cols-1 md:grid-cols-4 gap-lg">
+<div class="col-span-3 h-64 relative flex items-end justify-between px-md pb-md">
+<!-- Simple CSS Bar Chart -->
+<div class="w-12 bg-primary-container h-[40%] rounded-t-sm group relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">1.2k</span>
+</div>
+<div class="w-12 bg-primary-container h-[55%] rounded-t-sm group relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">1.8k</span>
+</div>
+<div class="w-12 bg-primary h-[85%] rounded-t-sm group relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">2.9k</span>
+</div>
+<div class="w-12 bg-primary-container h-[60%] rounded-t-sm group relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">2.1k</span>
+</div>
+<div class="w-12 bg-primary-container h-[70%] rounded-t-sm group relative">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">2.4k</span>
+</div>
+<div class="w-12 bg-primary h-[95%] rounded-t-sm group relative border-t-2 border-primary shadow-[0_0_15px_rgba(148,211,193,0.3)]">
+<span class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-background px-xs rounded text-[10px]">3.2k</span>
+</div>
+<!-- Baseline -->
+<div class="absolute bottom-md left-0 w-full h-[1px] bg-outline-variant/30"></div>
+</div>
+<div class="space-y-md">
+<div class="p-md bg-surface-container-high rounded-lg border-l-4 border-primary">
+<p class="text-label-sm text-outline">Total Revenue</p>
+<p class="font-headline-lg text-title-md text-on-surface">Kz 4.2M</p>
+<p class="text-[10px] text-primary flex items-center gap-xs"><span class="material-symbols-outlined text-[12px]" data-icon="trending_up">trending_up</span> +12.4% vs LY</p>
+</div>
+<div class="p-md bg-surface-container-high rounded-lg border-l-4 border-tertiary">
+<p class="text-label-sm text-outline">Player Registrations</p>
+<p class="font-headline-lg text-title-md text-on-surface">2,450</p>
+<p class="text-[10px] text-primary flex items-center gap-xs"><span class="material-symbols-outlined text-[12px]" data-icon="trending_up">trending_up</span> +8.1% vs prev.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Info -->
+<footer class="p-lg border-t border-outline-variant bg-surface-container-lowest mt-xl">
+<div class="flex flex-col md:flex-row justify-between items-center gap-md opacity-60">
+<p class="text-label-sm">© 2024 Bolayetu Angolan Football Ecosystem. All Rights Reserved.</p>
+<div class="flex gap-lg">
+<a class="text-label-sm hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm hover:text-primary transition-colors" href="#">API Documentation</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Bottom Nav for Mobile -->
+<nav class="fixed bottom-0 w-full md:hidden z-50 bg-surface-container-highest border-t border-outline-variant flex justify-around items-center h-16 px-md pb-safe shadow-lg">
+<a class="flex flex-col items-center justify-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label-sm text-label-sm">Clubs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Players</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-sm text-label-sm">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for dashboard card hover
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'rgba(148, 211, 193, 0.4)';
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

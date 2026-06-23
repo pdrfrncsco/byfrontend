@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bolayetu | Login - O Pulso Digital do Futebol Africano</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&family=Geist:wght@400;600&family=JetBrains+Mono:wght@450&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#adb4ce",
+                    "surface-container": "#102034",
+                    "inverse-surface": "#d3e4fe",
+                    "outline": "#89938f",
+                    "on-surface-variant": "#bfc9c4",
+                    "secondary-fixed-dim": "#bec6e0",
+                    "primary-fixed": "#afefdd",
+                    "tertiary-fixed-dim": "#e9c349",
+                    "outline-variant": "#3f4945",
+                    "on-primary-container": "#7ebdac",
+                    "surface-dim": "#031427",
+                    "surface-variant": "#26364a",
+                    "on-tertiary-fixed": "#241a00",
+                    "on-tertiary": "#3c2f00",
+                    "on-primary-fixed-variant": "#065043",
+                    "tertiary-fixed": "#ffe088",
+                    "primary-fixed-dim": "#94d3c1",
+                    "tertiary-container": "#cca730",
+                    "surface-container-low": "#0b1c30",
+                    "on-tertiary-fixed-variant": "#574500",
+                    "on-surface": "#d3e4fe",
+                    "inverse-on-surface": "#213145",
+                    "surface-tint": "#94d3c1",
+                    "secondary": "#bec6e0",
+                    "error": "#ffb4ab",
+                    "on-secondary": "#283044",
+                    "primary": "#94d3c1",
+                    "on-tertiary-container": "#4f3e00",
+                    "on-background": "#d3e4fe",
+                    "error-container": "#93000a",
+                    "background": "#031427",
+                    "tertiary": "#e9c349",
+                    "surface": "#031427",
+                    "on-secondary-fixed": "#131b2e",
+                    "surface-bright": "#2a3a4f",
+                    "on-secondary-fixed-variant": "#3f465c",
+                    "on-primary": "#00382e",
+                    "surface-container-highest": "#26364a",
+                    "secondary-fixed": "#dae2fd",
+                    "surface-container-lowest": "#000f21",
+                    "primary-container": "#004d40",
+                    "on-primary-fixed": "#00201a",
+                    "on-error": "#690005",
+                    "on-error-container": "#ffdad6",
+                    "secondary-container": "#3f465c",
+                    "surface-container-high": "#1b2b3f",
+                    "inverse-primary": "#29695b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "xs": "4px",
+                    "xl": "48px",
+                    "md": "16px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Archivo Narrow"],
+                    "display-lg": ["Archivo Narrow"],
+                    "headline-lg-mobile": ["Archivo Narrow"],
+                    "data-tabular": ["JetBrains Mono"],
+                    "body-md": ["Geist"],
+                    "title-md": ["Geist"],
+                    "label-sm": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "data-tabular": ["13px", {"lineHeight": "16px", "fontWeight": "450"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #031427;
+            font-family: 'Geist', sans-serif;
+        }
+        .glass-card {
+            background: rgba(16, 32, 52, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .input-inset {
+            background: rgba(0, 15, 33, 0.5);
+            border: 1px solid #3f4945;
+            transition: all 0.2s ease;
+        }
+        .input-inset:focus {
+            border-color: #94d3c1;
+            box-shadow: 0 0 0 2px rgba(148, 211, 193, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+<main class="flex min-h-screen w-full flex-col md:flex-row">
+<!-- Left Side: Visual -->
+<section class="relative hidden w-1/2 flex-col justify-center overflow-hidden md:flex">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A cinematic, wide-angle shot of a state-of-the-art football stadium in Africa at dusk. The sky is a deep indigo and orange gradient, and the stadium floodlights create dramatic atmospheric rays. The aesthetic is professional, high-performance, and premium, utilizing deep navy blues and emerald green accents from the grass. The lighting is low-key and moody, emphasizing the high-stakes environment of professional club management." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDc5WIvI7flDEoyDfTlrribznwzCyIaV-q8s-I_sWH0u2u9u3-ZjUKMVQRzhdJq4LTsQhYR-vkw5REnL6HLG8x7ra68hCTKv3UgkWoAC50-gjDcoyWHYUzw4A_bjLomzbT8G3LbRa0rHk9FQbl5wk6kw0dmBDbMyhrVvkmv03L7JmBpTHgYWA2_8plw1CSb1hVI9RjhQ4mepvce18YIKdRgBY9dgX3cPylTOb17UIGu5rRDV8sUP-d5kqtiaop4F2ZRioEm4bqg1Ds')"></div>
+<!-- Dark Overlay with Gradient -->
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest via-surface-container-lowest/80 to-transparent"></div>
+<!-- Content -->
+<div class="relative z-10 p-xl max-w-2xl">
+<div class="mb-lg">
+<h1 class="font-headline-lg text-display-lg text-primary tracking-tighter uppercase">Bolayetu</h1>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-md leading-tight">
+                    O Pulso Digital do Futebol Africano
+                </h2>
+<p class="font-body-md text-title-md text-on-surface-variant leading-relaxed max-w-lg opacity-90">
+                    Conectando Organizações, Clubes, Atletas e Fãs em uma única plataforma de alta performance.
+                </p>
+<!-- Technical Detail -->
+<div class="mt-xl pt-lg border-t border-outline-variant flex gap-lg">
+<div>
+<p class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest">Sincronização</p>
+<p class="font-data-tabular text-data-tabular text-on-surface">LIVE: 24/7</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest">Protocolo</p>
+<p class="font-data-tabular text-data-tabular text-on-surface">APEX-V4.0</p>
+</div>
+</div>
+</div>
+<!-- Subtle Grid Texture -->
+<div class="absolute bottom-0 right-0 w-64 h-64 opacity-5 pointer-events-none" style="background-image: radial-gradient(#94d3c1 1px, transparent 1px); background-size: 20px 20px;"></div>
+</section>
+<!-- Right Side: Auth -->
+<section class="flex w-full flex-col items-center justify-center bg-surface-container-low px-lg py-xl md:w-1/2">
+<div class="w-full max-w-md">
+<!-- Mobile Logo (Hidden on Desktop) -->
+<div class="mb-xl text-center md:hidden">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary uppercase">Bolayetu</h1>
+</div>
+<!-- Header -->
+<div class="mb-xl">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Bem-vindo de volta</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Entre na sua conta para gerenciar seu ecossistema.</p>
+</div>
+<!-- Form -->
+<form class="space-y-md" onsubmit="event.preventDefault();">
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block mb-xs" for="email">E-mail</label>
+<input class="w-full h-12 px-md font-body-md text-body-md text-on-surface input-inset rounded-lg" id="email" placeholder="nome@exemplo.com" type="email"/>
+</div>
+<div>
+<div class="flex justify-between items-center mb-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" for="password">Palavra-passe</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-fixed-dim transition-colors" href="#">Esqueceu a palavra-passe?</a>
+</div>
+<div class="relative">
+<input class="w-full h-12 px-md font-body-md text-body-md text-on-surface input-inset rounded-lg" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center">
+<input class="w-4 h-4 rounded border-outline-variant bg-surface-container text-primary focus:ring-primary focus:ring-offset-surface-container-low" id="remember" type="checkbox"/>
+<label class="ml-sm font-body-md text-body-md text-on-surface-variant cursor-pointer" for="remember">Lembrar-me</label>
+</div>
+<button class="w-full h-12 bg-primary-container text-primary font-title-md text-title-md rounded-lg hover:bg-inverse-primary transition-all duration-300 transform active:scale-[0.98] shadow-lg shadow-primary-container/20 mt-lg" type="submit">
+                        Entrar
+                    </button>
+</form>
+<!-- Divider -->
+<div class="relative my-xl">
+<div class="absolute inset-0 flex items-center">
+<span class="w-full border-t border-outline-variant"></span>
+</div>
+<div class="relative flex justify-center text-label-sm">
+<span class="bg-surface-container-low px-md text-on-surface-variant uppercase tracking-widest font-label-sm">Ou continue com</span>
+</div>
+</div>
+<!-- Social Login -->
+<div class="grid grid-cols-3 gap-md">
+<button class="flex h-12 items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors group">
+<svg class="w-5 h-5 opacity-70 group-hover:opacity-100" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.228 1.228-3.14 2.568-6.912 2.568-6.14 0-10.956-4.96-10.956-11.1s4.816-11.1 10.956-11.1c3.312 0 5.676 1.308 7.464 3.012l2.304-2.304c-1.992-1.896-4.584-3.324-9.768-3.324-8.916 0-16 7.084-16 16s7.084 16 16 16c4.812 0 8.448-1.584 11.232-4.476 2.88-2.88 3.792-6.912 3.792-10.296 0-.984-.084-1.92-.24-2.784h-11.84z"></path>
+</svg>
+</button>
+<button class="flex h-12 items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors group">
+<svg class="w-5 h-5 opacity-70 group-hover:opacity-100" fill="currentColor" viewbox="0 0 24 24">
+<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+</svg>
+</button>
+<button class="flex h-12 items-center justify-center border border-outline-variant rounded-lg hover:bg-surface-variant transition-colors group">
+<svg class="w-5 h-5 opacity-70 group-hover:opacity-100" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.702z"></path>
+</svg>
+</button>
+</div>
+<!-- Footer Links -->
+<div class="mt-xl text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Não tem uma conta? 
+                        <a class="text-primary font-title-md hover:underline ml-xs" href="#">Criar conta</a>
+</p>
+</div>
+<!-- Legal -->
+<div class="mt-xl flex justify-center gap-lg border-t border-outline-variant pt-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Termos de Serviço</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Política de Privacidade</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Micro-interaction for inputs -->
+<script>
+        document.querySelectorAll('.input-inset').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').style.color = '#94d3c1';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').style.color = '';
+            });
+        });
+    </script>
+</body></html>
