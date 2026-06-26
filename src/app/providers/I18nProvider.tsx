@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { I18nextProvider } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
-await i18n
+i18n
   .use(LanguageDetector)
   .init({
     fallbackLng: 'pt-AO',

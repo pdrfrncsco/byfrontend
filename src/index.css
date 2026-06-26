@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* 
   BOLAYETU — Core Design System & Global Styles
   Aesthetics: Premium Sleek Dark/Light Mode, Glassmorphism, Micro-animations.
