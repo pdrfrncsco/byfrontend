@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Home, 
   Search, 
@@ -10,10 +11,13 @@ import {
   Calendar,
   ListOrdered,
   Sparkles,
-  Users
+  Users,
+  Clock
 } from 'lucide-react'
 
 export function LeagueDashboardPage() {
+  const { data, isLoading } = useDashboardOverview()
+
   const sidebarLinks = [
     { label: 'Geral', href: '#home', icon: <Home className="w-5 h-5" />, active: true },
     { label: 'Scouting', href: '#scouting', icon: <Search className="w-5 h-5" /> },
@@ -34,6 +38,25 @@ export function LeagueDashboardPage() {
     </div>
   )
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#031427] flex items-center justify-center">
+        <div className="text-center space-y-md">
+          <div className="w-12 h-12 border-4 border-[#94d3c1] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-on-surface-variant text-xs font-semibold uppercase tracking-widest mt-4">Carregando liga...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const kpis = data?.kpis || {
+    goals_total: 0,
+    avg_goals_per_match: 0,
+    matches_finished: 0,
+    total_matches: 0,
+    total_clubs: 0
+  }
+
   return (
     <DashboardLayout
       title="Consola da Liga Nacional (Girabola)"
@@ -49,7 +72,9 @@ export function LeagueDashboardPage() {
             <h4 className="font-display text-base font-bold flex items-center gap-2">
               <ListOrdered className="w-5 h-5 text-primary" /> Classificação Geral
             </h4>
-            <span className="text-[10px] text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-bold">Ronda 12 de 30</span>
+            <span className="text-[10px] text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-bold">
+              Época em Curso ({kpis.total_clubs} Clubes)
+            </span>
           </div>
           <div className="overflow-x-auto text-xs">
             <table className="w-full text-left border-collapse">
@@ -57,45 +82,28 @@ export function LeagueDashboardPage() {
                 <tr className="bg-[#1b2b3f]/40 border-b border-[#26364a]/40 text-on-surface-variant">
                   <th className="px-md py-3 text-center w-12 font-semibold">Pos</th>
                   <th className="px-md py-3 font-semibold">Clube</th>
-                  <th className="px-md py-3 text-center font-semibold">J</th>
-                  <th className="px-md py-3 text-center font-semibold">V</th>
-                  <th className="px-md py-3 text-center font-semibold">E</th>
-                  <th className="px-md py-3 text-center font-semibold">D</th>
-                  <th className="px-md py-3 text-center font-semibold">GM-GS</th>
-                  <th className="px-md py-3 text-right font-semibold pr-md">PTS</th>
+                  <th className="px-md py-3 text-center font-semibold">Atletas</th>
+                  <th className="px-md py-3 text-center font-semibold">Golos Favor</th>
+                  <th className="px-md py-3 text-right font-semibold pr-md">Acronym</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#26364a]/30 font-mono text-[11px]">
-                <tr className="hover:bg-[#1b2b3f]/20 transition-colors">
-                  <td className="px-md py-3 text-center font-display font-bold text-primary">1</td>
-                  <td className="px-md py-3 font-display font-semibold text-on-surface text-xs">Petro de Luanda</td>
-                  <td className="px-md py-3 text-center">12</td>
-                  <td className="px-md py-3 text-center">9</td>
-                  <td className="px-md py-3 text-center">2</td>
-                  <td className="px-md py-3 text-center">1</td>
-                  <td className="px-md py-3 text-center">24-6</td>
-                  <td className="px-md py-3 text-right font-display font-bold text-primary pr-md">29</td>
-                </tr>
-                <tr className="hover:bg-[#1b2b3f]/20 transition-colors">
-                  <td className="px-md py-3 text-center font-display font-bold">2</td>
-                  <td className="px-md py-3 font-display font-semibold text-on-surface text-xs">Sagrada Esperança</td>
-                  <td className="px-md py-3 text-center">12</td>
-                  <td className="px-md py-3 text-center">8</td>
-                  <td className="px-md py-3 text-center">3</td>
-                  <td className="px-md py-3 text-center">1</td>
-                  <td className="px-md py-3 text-center">19-8</td>
-                  <td className="px-md py-3 text-right font-display font-bold pr-md">27</td>
-                </tr>
-                <tr className="hover:bg-[#1b2b3f]/20 transition-colors">
-                  <td className="px-md py-3 text-center font-display font-bold">3</td>
-                  <td className="px-md py-3 font-display font-semibold text-on-surface text-xs">1º de Agosto</td>
-                  <td className="px-md py-3 text-center">12</td>
-                  <td className="px-md py-3 text-center">7</td>
-                  <td className="px-md py-3 text-center">4</td>
-                  <td className="px-md py-3 text-center">1</td>
-                  <td className="px-md py-3 text-center">18-7</td>
-                  <td className="px-md py-3 text-right font-display font-bold pr-md">25</td>
-                </tr>
+                {data?.top_clubs_by_players.map((club, idx) => (
+                  <tr key={club.id} className="hover:bg-[#1b2b3f]/20 transition-colors">
+                    <td className="px-md py-3 text-center font-display font-bold text-primary">{idx + 1}</td>
+                    <td className="px-md py-3 font-display font-semibold text-on-surface text-xs flex items-center gap-2">
+                      {club.logo ? (
+                        <img src={club.logo} alt={club.name} className="w-5 h-5 object-contain rounded" />
+                      ) : (
+                        <Trophy className="w-4 h-4 text-primary-fixed-dim" />
+                      )}
+                      {club.name}
+                    </td>
+                    <td className="px-md py-3 text-center">{club.players}</td>
+                    <td className="px-md py-3 text-center">{club.goals}</td>
+                    <td className="px-md py-3 text-right font-display font-bold pr-md uppercase">{club.acronym || '---'}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -106,30 +114,52 @@ export function LeagueDashboardPage() {
           <div>
             <div className="flex justify-between items-center border-b border-[#26364a]/50 pb-sm mb-md">
               <h4 className="font-display text-sm font-bold flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary animate-pulse" /> Jogos em Destaque
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" /> Jogos Ao Vivo
               </h4>
               <span className="w-2 h-2 bg-[#D1102B] rounded-full animate-ping"></span>
             </div>
             
             <div className="space-y-sm text-xs">
-              <div className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-2">
-                <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">GIRABOLA • LIVE</p>
-                <div className="flex justify-between items-center px-sm">
-                  <span className="font-semibold">Petro de Luanda</span>
-                  <span className="font-mono bg-primary/20 text-primary px-2.5 py-0.5 rounded font-bold">2 - 1</span>
-                  <span className="font-semibold">1º de Agosto</span>
-                </div>
-                <span className="text-[10px] text-primary block mt-1">74' (Segunda Parte)</span>
-              </div>
+              {data?.live_matches.length === 0 ? (
+                <p className="text-center text-on-surface-variant py-md text-[11px]">Nenhum jogo a decorrer neste momento.</p>
+              ) : (
+                data?.live_matches.map((match) => (
+                  <div key={match.id} className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-2">
+                    <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-widest">{match.tournament} • EM CURSO</p>
+                    <div className="flex justify-between items-center px-sm">
+                      <span className="font-semibold truncate max-w-[80px]">{match.home_name}</span>
+                      <span className="font-mono bg-primary/20 text-primary px-2.5 py-0.5 rounded font-bold">
+                        {match.home_score} - {match.away_score}
+                      </span>
+                      <span className="font-semibold truncate max-w-[80px]">{match.away_name}</span>
+                    </div>
+                  </div>
+                ))
+              )}
 
-              <div className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-2 opacity-70">
-                <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">GIRABOLA • HOJE 17:00</p>
-                <div className="flex justify-between items-center px-sm">
-                  <span className="font-semibold">Wiliete SC</span>
-                  <span className="font-mono bg-[#1b2b3f] text-on-surface-variant px-2.5 py-0.5 rounded font-bold">vs</span>
-                  <span className="font-semibold">Desp. Huíla</span>
-                </div>
-              </div>
+              {data?.upcoming_matches.length === 0 ? null : (
+                <>
+                  <div className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest pt-sm pb-xs">Próximos Confrontos</div>
+                  {data?.upcoming_matches.map((match) => {
+                    const matchDate = new Date(match.date)
+                    const timeStr = matchDate.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' })
+                    const dayStr = matchDate.toLocaleDateString('pt-AO', { day: '2-digit', month: 'short' })
+
+                    return (
+                      <div key={match.id} className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-1 opacity-80 hover:opacity-100 transition-opacity">
+                        <div className="flex justify-between items-center px-sm text-[11px]">
+                          <span className="font-semibold truncate max-w-[90px]">{match.home_name}</span>
+                          <span className="font-mono bg-[#1b2b3f] text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">VS</span>
+                          <span className="font-semibold truncate max-w-[90px]">{match.away_name}</span>
+                        </div>
+                        <span className="text-[9px] text-on-surface-variant block mt-1 flex items-center justify-center gap-1">
+                          <Clock className="w-3 h-3 text-[#94d3c1]" /> {dayStr} • {timeStr}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </>
+              )}
             </div>
           </div>
           
@@ -147,17 +177,19 @@ export function LeagueDashboardPage() {
           </div>
           <div>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Total de Golos</p>
-            <h3 className="font-display text-xl font-bold">264 Golos <span className="text-xs text-primary font-normal">(2.2 por jogo)</span></h3>
+            <h3 className="font-display text-xl font-bold">
+              {kpis.goals_total} Golos <span className="text-xs text-primary font-normal">({kpis.avg_goals_per_match} por jogo)</span>
+            </h3>
           </div>
         </div>
 
         <div className="glass-card p-md rounded-xl flex items-center gap-md">
-          <div className="p-sm bg-[#e9c349]/10 rounded-lg text-[#e9c349]">
+          <div className="p-sm bg-primary/10 rounded-lg text-primary">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Espectadores (Média)</p>
-            <h3 className="font-display text-xl font-bold">8.420 por J.</h3>
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Total Atletas Inscritos</p>
+            <h3 className="font-display text-xl font-bold">{data?.kpis.total_players || 0}</h3>
           </div>
         </div>
 
@@ -167,7 +199,9 @@ export function LeagueDashboardPage() {
           </div>
           <div>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Jogos Realizados</p>
-            <h3 className="font-display text-xl font-bold">96 de 240 J.</h3>
+            <h3 className="font-display text-xl font-bold">
+              {kpis.matches_finished} de {kpis.total_matches} J.
+            </h3>
           </div>
         </div>
       </div>

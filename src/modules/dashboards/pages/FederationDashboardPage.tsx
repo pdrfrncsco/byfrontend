@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Home, 
   Search, 
@@ -16,7 +17,10 @@ import {
   BookOpen
 } from 'lucide-react'
 
+
 export function FederationDashboardPage() {
+  const { data, isLoading } = useDashboardOverview()
+
   const sidebarLinks = [
     { label: 'Home', href: '#home', icon: <Home className="w-5 h-5" />, active: true },
     { label: 'Scouting', href: '#scouting', icon: <Search className="w-5 h-5" /> },
@@ -37,6 +41,36 @@ export function FederationDashboardPage() {
     </>
   )
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#031427] flex items-center justify-center">
+        <div className="text-center space-y-md">
+          <div className="w-12 h-12 border-4 border-[#94d3c1] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-on-surface-variant text-xs font-semibold uppercase tracking-widest mt-4">Carregando dados FAF...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const kpis = data?.kpis || {
+    total_clubs: 0,
+    total_players: 0,
+    active_tournaments: 0,
+    goals_total: 0,
+    total_revenue: 0,
+    matches_live: 0
+  }
+
+  const formatCurrency = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(2)}M`
+    }
+    if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}K`
+    }
+    return `$${value}`
+  }
+
   return (
     <DashboardLayout
       title="Visão Geral da Federação"
@@ -56,7 +90,9 @@ export function FederationDashboardPage() {
               </div>
               <div className="flex items-center gap-2 px-3 py-1 bg-[#94d3c1]/10 rounded-full border border-[#94d3c1]/20">
                 <span className="w-2 h-2 rounded-full bg-[#94d3c1] animate-pulse"></span>
-                <span className="text-[10px] text-[#94d3c1] font-bold tracking-wider">JOGOS AO VIVO</span>
+                <span className="text-[10px] text-[#94d3c1] font-bold tracking-wider">
+                  {kpis.matches_live > 0 ? `${kpis.matches_live} JOGO(S) AO VIVO` : 'NENHUM JOGO ATIVO'}
+                </span>
               </div>
             </div>
             
@@ -76,9 +112,9 @@ export function FederationDashboardPage() {
                 </div>
               </div>
               <div className="bg-[#0b1c30] p-md border border-[#26364a]/40 rounded-lg">
-                <span className="text-on-surface-variant text-[11px] uppercase tracking-wider block">Diferença de Golos</span>
+                <span className="text-on-surface-variant text-[11px] uppercase tracking-wider block">Golos Registados</span>
                 <div className="flex items-baseline gap-2 mt-2">
-                  <span className="font-display text-3xl text-on-surface font-bold">+14</span>
+                  <span className="font-display text-3xl text-on-surface font-bold">{kpis.goals_total}</span>
                   <span className="text-[#94d3c1] text-xs flex items-center gap-0.5"><Star className="w-3.5 h-3.5 fill-[#94d3c1]" /> Peak</span>
                 </div>
               </div>
@@ -275,7 +311,7 @@ export function FederationDashboardPage() {
           <div>
             <p className="text-on-surface-variant text-[11px] uppercase tracking-wider">FIFA Forward Funds</p>
             <p className="font-display text-2xl text-on-surface font-bold mt-1">
-              $2.45M <span className="text-xs text-[#94d3c1] bg-[#94d3c1]/10 px-2 py-0.5 rounded ml-1 font-semibold">Alocado</span>
+              {formatCurrency(kpis.total_revenue)} <span className="text-xs text-[#94d3c1] bg-[#94d3c1]/10 px-2 py-0.5 rounded ml-1 font-semibold">Alocado</span>
             </p>
           </div>
           <div className="w-10 h-10 bg-[#94d3c1]/10 rounded-full flex items-center justify-center text-[#94d3c1]">
@@ -287,7 +323,7 @@ export function FederationDashboardPage() {
           <div>
             <p className="text-on-surface-variant text-[11px] uppercase tracking-wider">Solidariedade de Clubes</p>
             <p className="font-display text-2xl text-on-surface font-bold mt-1">
-              $420K <span className="text-xs text-[#ffb4ab] bg-[#ffb4ab]/10 px-2 py-0.5 rounded ml-1 font-semibold">Distribuído</span>
+              {formatCurrency(kpis.total_revenue * 0.15)} <span className="text-xs text-[#ffb4ab] bg-[#ffb4ab]/10 px-2 py-0.5 rounded ml-1 font-semibold">Distribuído</span>
             </p>
           </div>
           <div className="w-10 h-10 bg-[#D1102B]/10 rounded-full flex items-center justify-center text-[#D1102B]">
@@ -299,7 +335,7 @@ export function FederationDashboardPage() {
           <div>
             <p className="text-on-surface-variant text-[11px] uppercase tracking-wider">Investimento de Base</p>
             <p className="font-display text-2xl text-on-surface font-bold mt-1">
-              $890K <span className="text-xs text-[#e9c349] bg-[#e9c349]/10 px-2 py-0.5 rounded ml-1 font-semibold">Investido</span>
+              {formatCurrency(kpis.total_revenue * 0.3)} <span className="text-xs text-[#e9c349] bg-[#e9c349]/10 px-2 py-0.5 rounded ml-1 font-semibold">Investido</span>
             </p>
           </div>
           <div className="w-10 h-10 bg-[#e9c349]/10 rounded-full flex items-center justify-center text-[#e9c349]">
