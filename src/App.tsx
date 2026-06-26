@@ -2,7 +2,14 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from '@/app/providers'
 import { LandingPage } from '@/modules/shared/pages/LandingPage'
 import { LoginPage } from '@/modules/shared/pages/LoginPage'
-import { DashboardPage } from '@/modules/shared/pages/DashboardPage'
+import { 
+  DashboardPageSelector,
+  ExecutiveDashboardPage,
+  FederationDashboardPage,
+  LeagueDashboardPage,
+  ClubDashboardPage,
+  CompetitionDashboardPage
+} from '@/modules/dashboards'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { PublicLayout } from '@/app/layouts'
 
@@ -23,8 +30,15 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
 
-          {/* Protected Routes - TODO */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={<DashboardPageSelector />} />
+          <Route path="/dashboard/executive" element={<ExecutiveDashboardPage />} />
+          <Route path="/dashboard/federation" element={<FederationDashboardPage />} />
+          <Route path="/dashboard/league" element={<LeagueDashboardPage />} />
+          <Route path="/dashboard/club" element={<ClubDashboardPage />} />
+          <Route path="/dashboard/competition" element={<CompetitionDashboardPage />} />
+
+
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
