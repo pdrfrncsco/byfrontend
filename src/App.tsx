@@ -10,6 +10,7 @@ import {
   ClubDashboardPage,
   CompetitionDashboardPage
 } from '@/modules/dashboards'
+import { OrganizationListPage, OrganizationDetailPage } from '@/modules/organizations'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { PublicLayout } from '@/app/layouts'
 
@@ -30,6 +31,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
 
+          {/* Organization Routes */}
+          <Route path="/organizations" element={<OrganizationListPage />} />
+          <Route path="/organizations/:slug" element={<OrganizationDetailPage />} />
+
           {/* Protected Routes */}
           <Route path="/dashboard" element={<DashboardPageSelector />} />
           <Route path="/dashboard/executive" element={<ExecutiveDashboardPage />} />
@@ -37,8 +42,6 @@ function App() {
           <Route path="/dashboard/league" element={<LeagueDashboardPage />} />
           <Route path="/dashboard/club" element={<ClubDashboardPage />} />
           <Route path="/dashboard/competition" element={<CompetitionDashboardPage />} />
-
-
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
