@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from '@/app/providers'
 import { LandingPage } from '@/modules/shared/pages/LandingPage'
 import { LoginPage } from '@/modules/shared/pages/LoginPage'
+import { ForgotPasswordPage } from '@/modules/shared/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '@/modules/shared/pages/ResetPasswordPage'
+import { ProfilePage } from '@/modules/shared/pages/ProfilePage'
 import { 
   DashboardPageSelector,
   ExecutiveDashboardPage,
@@ -30,6 +33,8 @@ function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Organization Routes */}
           <Route path="/organizations" element={<OrganizationListPage />} />
@@ -42,6 +47,7 @@ function App() {
           <Route path="/dashboard/league" element={<LeagueDashboardPage />} />
           <Route path="/dashboard/club" element={<ClubDashboardPage />} />
           <Route path="/dashboard/competition" element={<CompetitionDashboardPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />

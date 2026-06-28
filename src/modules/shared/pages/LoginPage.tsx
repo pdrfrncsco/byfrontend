@@ -198,9 +198,13 @@ export function LoginPage() {
             </button>
           </p>
           {!isRegisterMode && (
-            <a href="#" className="block font-body-md text-on-surface-variant hover:text-primary transition-colors text-xs">
-              Esqueceu a senha?
-            </a>
+            <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="block font-body-md text-on-surface-variant hover:text-primary transition-colors text-xs cursor-pointer bg-transparent border-0"
+            >
+              Esqueceu a palavra-passe?
+            </button>
           )}
         </div>
       </div>

@@ -1,1 +1,6 @@
 export { LandingPage } from './LandingPage'
+export { LoginPage } from './LoginPage'
+export { NotFoundPage } from './NotFoundPage'
+export { ForgotPasswordPage } from './ForgotPasswordPage'
+export { ResetPasswordPage } from './ResetPasswordPage'
+export { ProfilePage } from './ProfilePage'

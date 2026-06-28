@@ -298,11 +298,15 @@ export function DashboardLayout({
                   {user?.role || 'Executivo'}
                 </p>
               </div>
-              <img 
-                alt="Avatar" 
-                className="h-10 w-10 rounded-full border-2 border-[#94d3c1] object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB18ImT5a_f_Q1RADuBXWDDCL_ZZRnb3z_4_ehZWsOmFBeeTjEKpJQNHcsEsdfd-k01ziaxHGnAqwU8ovWSckrmg01gCZtsPr9Hw9KQAWbnLJqDNJUhUvceIuytR2KztHPUtUGArn5f2JpWT-TrdGnqqfPH-lolzO6yhdgf7D17dCpB7Wj0382Byy8BJapTA9Z2mhvDQBDd79007oVekxmxwEBRwBFIPeojPjokwrA5R0cQBLnKRy6iMC5E1FxLMhcSt4mXoWNVTYU"
-              />
+              <button
+                onClick={() => navigate('/profile')}
+                title="Ver Perfil"
+                className="w-10 h-10 rounded-full bg-[#1b2b3f] flex items-center justify-center border-2 border-[#94d3c1] hover:border-primary hover:scale-105 transition-all cursor-pointer"
+              >
+                <span className="text-sm font-bold text-[#94d3c1] uppercase">
+                  {user?.username?.charAt(0) || '?'}
+                </span>
+              </button>
             </div>
           </div>
         </header>

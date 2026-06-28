@@ -12,6 +12,14 @@ export interface TokenResponse {
   access: string
 }
 
+export interface ProfileUpdateData {
+  first_name?: string
+  last_name?: string
+  phone?: string | null
+  language?: string
+  timezone?: string
+}
+
 export const authApi = {
   /**
    * Login do usuário
@@ -47,7 +55,7 @@ export const authApi = {
   /**
    * Atualizar perfil
    */
-  async updateMe(data: Partial<User>): Promise<User> {
+  async updateMe(data: ProfileUpdateData): Promise<User> {
     const response = await client.patch<ApiResponse<User>>('/auth/me/', data)
     return response.data.data
   },
@@ -80,5 +88,23 @@ export const authApi = {
   async getMemberships(): Promise<TenantMembership[]> {
     const response = await client.get<ApiResponse<TenantMembership[]>>('/auth/me/memberships/')
     return response.data.data
+  },
+
+  /**
+   * Solicitar redefinição de palavra-passe (envia email)
+   */
+  async forgotPassword(email: string): Promise<void> {
+    await client.post('/auth/forgot-password/', { email })
+  },
+
+  /**
+   * Confirmar redefinição de palavra-passe com token do email
+   */
+  async resetPassword(data: {
+    token: string
+    new_password: string
+    new_password_confirm: string
+  }): Promise<void> {
+    await client.post('/auth/reset-password/', data)
   },
 }
