@@ -1,43 +1,12 @@
 import client from '@/lib/api-client'
-
-export interface User {
-  id: string
-  email: string
-  username: string
-  first_name: string
-  last_name: string
-  full_name: string
-  phone: string | null
-  avatar: string | null
-  tenant: string | null
-  tenant_name: string | null
-  profile_type: 'admin' | 'organization' | 'club' | 'player' | 'fan'
-  language: string
-  timezone: string
-  created_at: string
-  updated_at: string
-}
-
-export interface LoginCredentials {
-  email: string
-  password: string
-}
-
-export interface RegisterData {
-  email: string
-  username: string
-  password: string
-  password_confirm: string
-  first_name: string
-  last_name: string
-  profile_type?: string
-}
-
-export interface AuthResponse {
-  access: string
-  refresh: string
-  user: User
-}
+import {
+  ApiResponse,
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  User,
+  TenantMembership,
+} from '@/types'
 
 export interface TokenResponse {
   access: string
@@ -47,17 +16,17 @@ export const authApi = {
   /**
    * Login do usuário
    */
-  async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await client.post<AuthResponse>('/auth/login/', credentials)
-    return response.data
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
+    const response = await client.post<ApiResponse<LoginResponse>>('/auth/login/', credentials)
+    return response.data.data
   },
 
   /**
    * Registar novo usuário
    */
-  async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await client.post<AuthResponse>('/auth/register/', data)
-    return response.data
+  async register(data: RegisterRequest): Promise<LoginResponse> {
+    const response = await client.post<ApiResponse<LoginResponse>>('/auth/register/', data)
+    return response.data.data
   },
 
   /**
@@ -71,16 +40,16 @@ export const authApi = {
    * Obter perfil do usuário atual
    */
   async getMe(): Promise<User> {
-    const response = await client.get<User>('/auth/me/')
-    return response.data
+    const response = await client.get<ApiResponse<User>>('/auth/me/')
+    return response.data.data
   },
 
   /**
    * Atualizar perfil
    */
   async updateMe(data: Partial<User>): Promise<User> {
-    const response = await client.put<User>('/auth/me/', data)
-    return response.data
+    const response = await client.patch<ApiResponse<User>>('/auth/me/', data)
+    return response.data.data
   },
 
   /**
@@ -91,17 +60,25 @@ export const authApi = {
     new_password: string
     new_password_confirm: string
   }): Promise<{ message: string }> {
-    const response = await client.post<{ message: string }>('/auth/change-password/', data)
-    return response.data
+    const response = await client.post<ApiResponse<{ message: string }>>('/auth/me/change-password/', data)
+    return response.data.data
   },
 
   /**
    * Refresh token
    */
   async refreshToken(refreshToken: string): Promise<TokenResponse> {
-    const response = await client.post<TokenResponse>('/auth/refresh/', {
+    const response = await client.post<ApiResponse<TokenResponse>>('/auth/token/refresh/', {
       refresh: refreshToken,
     })
-    return response.data
+    return response.data.data
+  },
+
+  /**
+   * Obter associações/memberships do usuário a Tenants
+   */
+  async getMemberships(): Promise<TenantMembership[]> {
+    const response = await client.get<ApiResponse<TenantMembership[]>>('/auth/me/memberships/')
+    return response.data.data
   },
 }

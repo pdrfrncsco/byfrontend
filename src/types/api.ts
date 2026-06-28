@@ -1,36 +1,26 @@
 export interface ApiResponse<T> {
   success: boolean
-  data?: T
-  error?: {
-    code: string
-    message: string
-    details?: Record<string, unknown>
-  }
-  timestamp: Date
-  traceId?: string
+  message: string
+  data: T
+  errors?: Record<string, string[]>
 }
 
 export interface PaginatedResponse<T> {
-  items: T[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
 }
 
 export interface PaginationParams {
   page?: number
-  pageSize?: number
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
+  page_size?: number
+  ordering?: string
   search?: string
 }
 
 export interface ApiError {
-  code: string
+  success: boolean
   message: string
-  details?: Record<string, unknown>
-  statusCode: number
+  errors: Record<string, string[]>
 }

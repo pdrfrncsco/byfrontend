@@ -12,7 +12,7 @@ const client: AxiosInstance = axios.create({
 // Request interceptor - add auth token
 client.interceptors.request.use(
   config => {
-    const token = localStorage.getItem('auth:token')
+    const token = localStorage.getItem('bolayetu_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -27,10 +27,12 @@ client.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Handle unauthorized - clear auth and redirect to login
-      localStorage.removeItem('auth:token')
-      localStorage.removeItem('auth:user')
+      localStorage.removeItem('bolayetu_token')
+      localStorage.removeItem('bolayetu_user')
+      localStorage.removeItem('bolayetu_refresh')
       window.location.href = '/login'
     }
+
 
     if (error.response?.status === 403) {
       // Handle forbidden
