@@ -16,7 +16,7 @@ interface AuthContextType {
   token: string | null
   loading: boolean
   isAuthenticated: boolean
-  login: (accessToken: string, refreshToken: string, user: User, memberships?: TenantMembership[]) => void
+  login: (accessToken: string, refreshToken: string, user: User) => Promise<void>
   logout: () => void
   refreshUser: () => Promise<void>
 }
@@ -26,7 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   token: null,
   loading: true,
   isAuthenticated: false,
-  login: () => {},
+  login: async () => {},
   logout: () => {},
   refreshUser: async () => {},
 })

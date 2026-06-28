@@ -50,15 +50,13 @@ export function LoginPage() {
           phone: phone || undefined,
         })
 
-        // Registration successfully returns user & tokens
-        const memberships = await authApi.getMemberships()
-        login(response.access, response.refresh, response.user, memberships)
+        // login() fetches memberships internally after storing the token
+        await login(response.access, response.refresh, response.user)
         navigate('/dashboard')
       } else {
         // Login Flow
         const response = await authApi.login({ email, password })
-        const memberships = await authApi.getMemberships()
-        login(response.access, response.refresh, response.user, memberships)
+        await login(response.access, response.refresh, response.user)
         navigate('/dashboard')
       }
     } catch (err: any) {
