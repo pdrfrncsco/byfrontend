@@ -52,9 +52,9 @@ export function OrganizationDetailPage() {
           </Link>
 
           <div className="flex items-start gap-lg">
-            {organization.logoUrl ? (
+            {organization.logo_url ? (
               <img
-                src={organization.logoUrl}
+                src={organization.logo_url}
                 alt={organization.name}
                 className="w-24 h-24 rounded-lg object-cover"
               />
@@ -69,15 +69,14 @@ export function OrganizationDetailPage() {
 
             <div className="flex-1">
               <div className="flex items-center gap-md mb-sm">
-                <h1 className="font-display-lg text-headline-lg">{organization.name}</h1>
+                <h1 className="font-display-lg text-headline-lg text-primary">{organization.name}</h1>
                 {organization.verified && (
                   <span className="text-primary text-xl">✓</span>
                 )}
               </div>
 
-              <p className="text-body-md text-on-surface-variant mb-md capitalize">
-                {organization.type} • {organization.location}
-                {organization.country && `, ${organization.country}`}
+              <p className="text-body-md text-on-surface-variant mb-md">
+                {organization.type_label} • {organization.location}
               </p>
 
               {organization.description && (
@@ -97,7 +96,7 @@ export function OrganizationDetailPage() {
                 <button
                   onClick={handleUnsubscribe}
                   disabled={unsubscribeMutation.isPending}
-                  className="px-lg py-sm border border-outline text-on-surface rounded-lg hover:bg-surface-container-highest transition-colors disabled:opacity-50"
+                  className="px-lg py-sm border border-outline-variant text-on-surface rounded-lg hover:bg-surface-container-highest transition-colors disabled:opacity-50"
                 >
                   Cancelar subscrição
                 </button>
@@ -110,7 +109,7 @@ export function OrganizationDetailPage() {
       {/* KPIs */}
       {kpis && (
         <div className="max-w-7xl mx-auto px-gutter py-xl">
-          <h2 className="font-title-lg text-title-lg mb-lg">Estatísticas</h2>
+          <h2 className="font-title-lg text-title-lg mb-lg text-on-surface">Estatísticas</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md">
             <KpiCard label="Torneios Totais" value={kpis.total_tournaments} />
             <KpiCard label="Torneios Ativos" value={kpis.active_tournaments} />
@@ -125,7 +124,7 @@ export function OrganizationDetailPage() {
       {/* History */}
       {history && history.length > 0 && (
         <div className="max-w-7xl mx-auto px-gutter py-xl">
-          <h2 className="font-title-lg text-title-lg mb-lg">Histórico de Torneios</h2>
+          <h2 className="font-title-lg text-title-lg mb-lg text-on-surface">Histórico de Torneios</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -153,7 +152,7 @@ export function OrganizationDetailPage() {
 
       {/* Contact Info */}
       <div className="max-w-7xl mx-auto px-gutter py-xl">
-        <h2 className="font-title-lg text-title-lg mb-lg">Contacto</h2>
+        <h2 className="font-title-lg text-title-lg mb-lg text-on-surface">Contacto</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
           {organization.email && (
             <div className="bg-surface-container rounded-lg p-lg border border-outline-variant">

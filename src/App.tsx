@@ -15,7 +15,7 @@ import {
   ClubDashboardPage,
   CompetitionDashboardPage
 } from '@/modules/dashboards'
-import { OrganizationListPage, OrganizationDetailPage } from '@/modules/organizations'
+import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage } from '@/modules/organizations'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { PublicLayout } from '@/app/layouts'
 
@@ -51,6 +51,14 @@ function App() {
           {/* Organization Routes */}
           <Route path="/organizations" element={<OrganizationListPage />} />
           <Route path="/organizations/:slug" element={<OrganizationDetailPage />} />
+          <Route
+            path="/organization/settings"
+            element={
+              <ProtectedRoute>
+                <OrganizationSettingsPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected Routes */}
           <Route

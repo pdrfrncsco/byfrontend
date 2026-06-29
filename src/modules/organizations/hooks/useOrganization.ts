@@ -1,13 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { organizationApi } from '../services/organization.api'
 import type { OrganizationListParams, OrganizationUpdateData } from '../types'
+
+/**
+ * Query keys factory for organization queries.
+ */
+export const organizationKeys = {
+  all: ['organizations'] as const,
+  me: ['organization', 'me'] as const,
+  publicList: (params?: OrganizationListParams) =>
+    ['organizations', 'public', params] as const,
+  publicDetail: (slug: string) => ['organization', 'public', slug] as const,
+  kpis: (slug: string) => ['organization', slug, 'kpis'] as const,
+  history: (slug: string) => ['organization', slug, 'history'] as const,
+  tournaments: (slug: string) => ['organization', slug, 'tournaments'] as const,
+  clubs: (slug: string) => ['organization', slug, 'clubs'] as const,
+}
 
 /**
  * Hook para obter a organização do usuário autenticado
  */
 export function useOrganizationMe() {
   return useQuery({
-    queryKey: ['organization', 'me'],
+    queryKey: organizationKeys.me,
     queryFn: () => organizationApi.getMe(),
   })
 }
@@ -20,7 +36,7 @@ export function useUpdateOrganization() {
   return useMutation({
     mutationFn: (data: OrganizationUpdateData) => organizationApi.updateMe(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organization', 'me'] })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.me })
     },
   })
 }
@@ -33,7 +49,7 @@ export function useUploadLogo() {
   return useMutation({
     mutationFn: (file: File) => organizationApi.uploadLogo(file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organization', 'me'] })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.me })
     },
   })
 }
@@ -43,7 +59,7 @@ export function useUploadLogo() {
  */
 export function usePublicOrganizations(params?: OrganizationListParams) {
   return useQuery({
-    queryKey: ['organizations', 'public', params],
+    queryKey: organizationKeys.publicList(params),
     queryFn: () => organizationApi.listPublic(params),
   })
 }
@@ -53,7 +69,7 @@ export function usePublicOrganizations(params?: OrganizationListParams) {
  */
 export function usePublicOrganizationDetail(slug: string | undefined) {
   return useQuery({
-    queryKey: ['organization', 'public', slug],
+    queryKey: organizationKeys.publicDetail(slug || ''),
     queryFn: () => organizationApi.getPublicDetail(slug!),
     enabled: !!slug,
   })
@@ -67,7 +83,13 @@ export function useSubscribeOrganization() {
   return useMutation({
     mutationFn: (slug: string) => organizationApi.subscribe(slug),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations', 'public'] })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.all })
+      toast.success('Subscrito com sucesso.')
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || 'Erro ao subscrever.'
+      toast.error(message)
     },
   })
 }
@@ -80,7 +102,13 @@ export function useUnsubscribeOrganization() {
   return useMutation({
     mutationFn: (slug: string) => organizationApi.unsubscribe(slug),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['organizations', 'public'] })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.all })
+      toast.success('Subscrição cancelada com sucesso.')
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || 'Erro ao cancelar subscrição.'
+      toast.error(message)
     },
   })
 }
@@ -90,7 +118,7 @@ export function useUnsubscribeOrganization() {
  */
 export function useOrganizationTournaments(slug: string | undefined) {
   return useQuery({
-    queryKey: ['organization', slug, 'tournaments'],
+    queryKey: organizationKeys.tournaments(slug || ''),
     queryFn: () => organizationApi.getTournaments(slug!),
     enabled: !!slug,
   })
@@ -101,7 +129,7 @@ export function useOrganizationTournaments(slug: string | undefined) {
  */
 export function useOrganizationClubs(slug: string | undefined) {
   return useQuery({
-    queryKey: ['organization', slug, 'clubs'],
+    queryKey: organizationKeys.clubs(slug || ''),
     queryFn: () => organizationApi.getClubs(slug!),
     enabled: !!slug,
   })
@@ -112,7 +140,7 @@ export function useOrganizationClubs(slug: string | undefined) {
  */
 export function useOrganizationHistory(slug: string | undefined) {
   return useQuery({
-    queryKey: ['organization', slug, 'history'],
+    queryKey: organizationKeys.history(slug || ''),
     queryFn: () => organizationApi.getHistory(slug!),
     enabled: !!slug,
   })
@@ -123,7 +151,7 @@ export function useOrganizationHistory(slug: string | undefined) {
  */
 export function useOrganizationKpis(slug: string | undefined) {
   return useQuery({
-    queryKey: ['organization', slug, 'kpis'],
+    queryKey: organizationKeys.kpis(slug || ''),
     queryFn: () => organizationApi.getKpis(slug!),
     enabled: !!slug,
   })
