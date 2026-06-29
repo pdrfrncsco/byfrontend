@@ -1,8 +1,4 @@
 // Onboarding module public API
-export * from './components';
-export * from './hooks';
-export * from './pages';
-export * from './services';
-export * from './types';
-export * from './schemas';
-export * from './constants';
+export { default as OrganizationStep } from './pages/OrganizationStep'
+export { default as BrandingStep } from './pages/BrandingStep'
+export { default as OnboardingLayout } from './pages/OnboardingLayout'
