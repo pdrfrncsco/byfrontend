@@ -26,18 +26,18 @@ export function OrganizationSettingsPage() {
     if (organization) {
       reset({
         name: organization.name,
-        type: organization.type,
-        primary_color: organization.primary_color,
-        secondary_color: organization.secondary_color,
+        type: organization.type as any,
+        primary_color: organization.primary_color ?? '',
+        secondary_color: organization.secondary_color ?? '',
         country: organization.country,
         city: organization.city || '',
         email: organization.email || '',
         phone: organization.phone || '',
         website: organization.website || '',
         description: organization.description || '',
-        is_public: organization.is_public,
-        language: organization.language,
-        timezone: organization.timezone,
+        is_public: organization.is_public ?? false,
+        language: organization.language || '',
+        timezone: organization.timezone || '',
       })
     }
   }, [organization, reset])

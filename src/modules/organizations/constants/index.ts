@@ -4,12 +4,13 @@
 
 import type { OrganizationType, OrganizationStatus } from '../types'
 
-export const ORGANIZATION_TYPE_LABELS: Record<OrganizationType, string> = {
+export const ORGANIZATION_TYPE_LABELS: Partial<Record<OrganizationType, string>> = {
   federation: 'Federação',
   association: 'Associação',
   league: 'Liga',
   organizer: 'Organizador',
   academy: 'Academia',
+  club: 'Clube',
 }
 
 export const ORGANIZATION_STATUS_LABELS: Record<OrganizationStatus, string> = {

@@ -17,6 +17,7 @@ import {
 } from '@/modules/dashboards'
 import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage } from '@/modules/organizations'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
+import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
 import { PublicLayout } from '@/app/layouts'
 
 function App() {
@@ -117,6 +118,10 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Clubs (Public) */}
+          <Route path="/clubs" element={<ClubListPage />} />
+          <Route path="/clubs/:id" element={<ClubDetailPage />} />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
