@@ -1,6 +1,7 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { useOrganizationMe, useOrganizationKpis, useOrganizationClubs, useOrganizationTournaments } from '@/modules/organizations'
 import { MapPin } from 'lucide-react'
+import TransferItem from '../components/TransferItem'
 
 export default function OrganizationDashboardPage() {
   const { data: organization } = useOrganizationMe()
@@ -75,18 +76,8 @@ export default function OrganizationDashboardPage() {
             <button className="text-label-sm text-primary hover:underline">View All</button>
           </div>
           <div className="flex-1 overflow-y-auto p-md space-y-md">
-            {/* Placeholder items - replace with real transfers API when available */}
-            <div className="flex items-center gap-md p-sm hover:bg-surface-container-high rounded transition-all group">
-              <div className="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-primary font-bold">JD</div>
-              <div className="flex-1 min-w-0">
-                <p className="font-title-md text-body-md truncate">João Domingos</p>
-                <p className="text-label-sm text-outline truncate">Petro de Luanda → 1º de Agosto</p>
-              </div>
-              <div className="text-right">
-                <p className="font-data-tabular text-primary">Conf.</p>
-                <p className="text-[10px] text-outline">2m ago</p>
-              </div>
-            </div>
+            {/* Placeholder items - replaced with TransferItem component */}
+            <TransferItem playerName="João Domingos" fromClub="Petro de Luanda" toClub="1º de Agosto" timeAgo="2m ago" />
           </div>
         </div>
 

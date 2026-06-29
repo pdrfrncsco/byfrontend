@@ -44,6 +44,10 @@ export const API_ROUTES = {
   },
   CLUBS: {
     LIST: '/clubs',
+    PUBLIC: {
+      LIST: '/clubs/public',
+      GET: (slug: string) => `/clubs/public/${slug}`,
+    },
     GET: (id: string) => `/clubs/${id}`,
     CREATE: '/clubs',
     UPDATE: (id: string) => `/clubs/${id}`,

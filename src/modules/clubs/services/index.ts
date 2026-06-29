@@ -3,12 +3,14 @@ import { API_ROUTES } from '@/constants/routes'
 import type { Club, ClubMember } from '../types'
 
 export async function listClubs(params?: Record<string, any>) {
-  const res = await apiClient.get(API_ROUTES.CLUBS.LIST, { params })
+  // Use public clubs endpoint (supports tenant filter & search)
+  const res = await apiClient.get(API_ROUTES.CLUBS.PUBLIC.LIST, { params })
   return res.data
 }
 
-export async function getClub(id: string) {
-  const res = await apiClient.get(API_ROUTES.CLUBS.GET(id))
+export async function getClub(idOrSlug: string) {
+  // Public detail uses slug; admin endpoints may accept id/slug as identifier.
+  const res = await apiClient.get(API_ROUTES.CLUBS.PUBLIC.GET(idOrSlug))
   return res.data
 }
 
