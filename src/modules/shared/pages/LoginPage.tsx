@@ -1,81 +1,76 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { AuthLayout } from '@/app/layouts'
-import { useAuth } from '@/app/providers/AuthProvider'
-import { authApi } from '@/modules/auth/services/auth.api'
+import { useLogin, useRegister } from '@/modules/auth/hooks'
+import {
+  loginSchema,
+  registerSchema,
+  type LoginFormData,
+  type RegisterFormData,
+} from '@/modules/auth/schemas'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login } = useAuth()
-
   const isRegisterMode = location.pathname === '/register'
 
-  // Form Fields
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [phone, setPhone] = useState('')
+  const loginMutation = useLogin()
+  const registerMutation = useRegister()
 
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  /* ── Login Form ── */
+  const loginForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  })
 
-  // Reset errors when mode changes
+  /* ── Register Form ── */
+  const registerForm = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      password: '',
+      password_confirm: '',
+    },
+  })
+
+  // Reset forms when switching modes
   useEffect(() => {
-    setErrorMsg(null)
-  }, [location.pathname])
+    loginForm.reset()
+    registerForm.reset()
+  }, [location.pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setErrorMsg(null)
-
-    try {
-      if (isRegisterMode) {
-        // Register Flow
-        if (password !== passwordConfirm) {
-          setErrorMsg('As senhas não coincidem.')
-          setLoading(false)
-          return
-        }
-
-        const response = await authApi.register({
-          email,
-          password,
-          password_confirm: passwordConfirm,
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone || undefined,
-        })
-
-        // login() fetches memberships internally after storing the token
-        await login(response.access, response.refresh, response.user)
-        navigate('/dashboard')
-      } else {
-        // Login Flow
-        const response = await authApi.login({ email, password })
-        await login(response.access, response.refresh, response.user)
-        navigate('/dashboard')
-      }
-    } catch (err: any) {
-      console.error('Auth action failed:', err)
-      const backendMessage = err.response?.data?.message
-      
-      if (backendMessage) {
-        setErrorMsg(backendMessage)
-      } else {
-        setErrorMsg(
-          isRegisterMode 
-            ? 'Erro ao efetuar o registo. Verifique os dados introduzidos.' 
-            : 'Email ou palavra-passe incorretos.'
-        )
-      }
-    } finally {
-      setLoading(false)
+  const onLogin = async (data: LoginFormData) => {
+    const result = await loginMutation.mutateAsync(data)
+    if (result) {
+      navigate('/dashboard')
     }
   }
+
+  const onRegister = async (data: RegisterFormData) => {
+    const result = await registerMutation.mutateAsync({
+      email: data.email,
+      password: data.password,
+      password_confirm: data.password_confirm,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      phone: data.phone || undefined,
+    })
+    if (result) {
+      navigate('/dashboard')
+    }
+  }
+
+  const loading = isRegisterMode ? registerMutation.isPending : loginMutation.isPending
+
+  /* ── Shared input classes ── */
+  const inputClass =
+    'w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm'
+  const labelClass = 'block font-title-md text-on-surface mb-sm text-xs'
 
   return (
     <AuthLayout>
@@ -84,107 +79,145 @@ export function LoginPage() {
           {isRegisterMode ? 'Criar Conta' : 'Login'}
         </h1>
 
-        {errorMsg && (
-          <div className="mb-md p-md bg-error-container/30 border border-error text-error rounded-lg text-sm font-semibold leading-relaxed">
-            {errorMsg}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-md">
-          {/* First & Last Name in row for Register */}
-          {isRegisterMode && (
-            <div className="grid grid-cols-2 gap-sm">
-              <div>
-                <label className="block font-title-md text-on-surface mb-sm text-xs">Nome</label>
-                <input
-                  type="text"
-                  value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
-                  className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors text-sm"
-                  placeholder="Pedro"
-                  required={isRegisterMode}
-                />
-              </div>
-              <div>
-                <label className="block font-title-md text-on-surface mb-sm text-xs">Apelido</label>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={e => setLastName(e.target.value)}
-                  className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface focus:outline-none focus:border-primary transition-colors text-sm"
-                  placeholder="Francisco"
-                  required={isRegisterMode}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Email */}
-          <div>
-            <label className="block font-title-md text-on-surface mb-sm text-xs">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm"
-              placeholder="seu@email.com"
-              required
-            />
-          </div>
-
-          {/* Phone for Register */}
-          {isRegisterMode && (
+        {/* ── Login Mode ── */}
+        {!isRegisterMode && (
+          <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-md">
+            {/* Email */}
             <div>
-              <label className="block font-title-md text-on-surface mb-sm text-xs">Telemóvel (Opcional)</label>
+              <label className={labelClass}>Email</label>
               <input
-                type="tel"
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm"
-                placeholder="+244 923 000 000"
+                type="email"
+                placeholder="seu@email.com"
+                className={inputClass}
+                {...loginForm.register('email')}
               />
+              {loginForm.formState.errors.email && (
+                <p className="text-xs text-error mt-1">{loginForm.formState.errors.email.message}</p>
+              )}
             </div>
-          )}
 
-          {/* Password */}
-          <div>
-            <label className="block font-title-md text-on-surface mb-sm text-xs">Senha</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          {/* Password Confirmation for Register */}
-          {isRegisterMode && (
+            {/* Password */}
             <div>
-              <label className="block font-title-md text-on-surface mb-sm text-xs">Confirmar Senha</label>
+              <label className={labelClass}>Senha</label>
               <input
                 type="password"
-                value={passwordConfirm}
-                onChange={e => setPasswordConfirm(e.target.value)}
-                className="w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm"
                 placeholder="••••••••"
-                required={isRegisterMode}
+                className={inputClass}
+                {...loginForm.register('password')}
               />
+              {loginForm.formState.errors.password && (
+                <p className="text-xs text-error mt-1">{loginForm.formState.errors.password.message}</p>
+              )}
             </div>
-          )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {loading 
-              ? (isRegisterMode ? 'A Criar Conta...' : 'A Entrar...') 
-              : (isRegisterMode ? 'Criar Conta' : 'Entrar')}
-          </button>
-        </form>
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {loading ? 'A Entrar...' : 'Entrar'}
+            </button>
+          </form>
+        )}
+
+        {/* ── Register Mode ── */}
+        {isRegisterMode && (
+          <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-md">
+            {/* First & Last Name */}
+            <div className="grid grid-cols-2 gap-sm">
+              <div>
+                <label className={labelClass}>Nome</label>
+                <input
+                  type="text"
+                  placeholder="Pedro"
+                  className={inputClass}
+                  {...registerForm.register('first_name')}
+                />
+                {registerForm.formState.errors.first_name && (
+                  <p className="text-xs text-error mt-1">{registerForm.formState.errors.first_name.message}</p>
+                )}
+              </div>
+              <div>
+                <label className={labelClass}>Apelido</label>
+                <input
+                  type="text"
+                  placeholder="Francisco"
+                  className={inputClass}
+                  {...registerForm.register('last_name')}
+                />
+                {registerForm.formState.errors.last_name && (
+                  <p className="text-xs text-error mt-1">{registerForm.formState.errors.last_name.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className={labelClass}>Email</label>
+              <input
+                type="email"
+                placeholder="seu@email.com"
+                className={inputClass}
+                {...registerForm.register('email')}
+              />
+              {registerForm.formState.errors.email && (
+                <p className="text-xs text-error mt-1">{registerForm.formState.errors.email.message}</p>
+              )}
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className={labelClass}>Telemóvel (Opcional)</label>
+              <input
+                type="tel"
+                placeholder="+244 923 000 000"
+                className={inputClass}
+                {...registerForm.register('phone')}
+              />
+              {registerForm.formState.errors.phone && (
+                <p className="text-xs text-error mt-1">{registerForm.formState.errors.phone.message}</p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className={labelClass}>Senha</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                className={inputClass}
+                {...registerForm.register('password')}
+              />
+              {registerForm.formState.errors.password && (
+                <p className="text-xs text-error mt-1">{registerForm.formState.errors.password.message}</p>
+              )}
+            </div>
+
+            {/* Password Confirmation */}
+            <div>
+              <label className={labelClass}>Confirmar Senha</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                className={inputClass}
+                {...registerForm.register('password_confirm')}
+              />
+              {registerForm.formState.errors.password_confirm && (
+                <p className="text-xs text-error mt-1">{registerForm.formState.errors.password_confirm.message}</p>
+              )}
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {loading ? 'A Criar Conta...' : 'Criar Conta'}
+            </button>
+          </form>
+        )}
 
         {/* Links */}
         <div className="mt-lg space-y-sm text-center">

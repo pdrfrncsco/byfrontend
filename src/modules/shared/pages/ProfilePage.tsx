@@ -1,96 +1,67 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/app/providers/AuthProvider'
-import { authApi, ProfileUpdateData } from '@/modules/auth/services/auth.api'
-import { User, Save, Lock, Shield, ChevronRight, AlertTriangle, CheckCircle } from 'lucide-react'
+import { useUpdateProfile, useChangePassword, useLogout } from '@/modules/auth/hooks'
+import {
+  profileUpdateSchema,
+  changePasswordSchema,
+  type ProfileUpdateFormData,
+  type ChangePasswordFormData,
+} from '@/modules/auth/schemas'
+import { User, Save, Lock, Shield, ChevronRight } from 'lucide-react'
 
 type Tab = 'profile' | 'security' | 'memberships'
 
 export function ProfilePage() {
   const navigate = useNavigate()
-  const { user, logout, refreshUser } = useAuth()
+  const { user, logout: authLogout } = useAuth()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
 
-  // Profile form state
-  const [firstName, setFirstName] = useState(user?.username?.split(' ')[0] || '')
-  const [lastName, setLastName] = useState(user?.username?.split(' ').slice(1).join(' ') || '')
-  const [phone, setPhone] = useState('')
-  const [language, setLanguage] = useState('pt')
-  const [profileLoading, setProfileLoading] = useState(false)
-  const [profileSuccess, setProfileSuccess] = useState(false)
-  const [profileError, setProfileError] = useState<string | null>(null)
+  const updateProfileMutation = useUpdateProfile()
+  const changePasswordMutation = useChangePassword()
+  const logoutMutation = useLogout()
 
-  // Password form state
-  const [oldPassword, setOldPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState('')
-  const [passwordLoading, setPasswordLoading] = useState(false)
-  const [passwordSuccess, setPasswordSuccess] = useState(false)
-  const [passwordError, setPasswordError] = useState<string | null>(null)
+  /* ── Profile Form ── */
+  const profileForm = useForm<ProfileUpdateFormData>({
+    resolver: zodResolver(profileUpdateSchema),
+    defaultValues: {
+      first_name: user?.username?.split(' ')[0] || '',
+      last_name: user?.username?.split(' ').slice(1).join(' ') || '',
+      phone: '',
+      language: 'pt',
+    },
+  })
 
-  const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setProfileLoading(true)
-    setProfileError(null)
-    setProfileSuccess(false)
+  /* ── Password Form ── */
+  const passwordForm = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      old_password: '',
+      new_password: '',
+      new_password_confirm: '',
+    },
+  })
 
-    try {
-      const data: ProfileUpdateData = {}
-      if (firstName) data.first_name = firstName
-      if (lastName) data.last_name = lastName
-      if (phone) data.phone = phone
-      if (language) data.language = language
-
-      await authApi.updateMe(data)
-      await refreshUser()
-      setProfileSuccess(true)
-      setTimeout(() => setProfileSuccess(false), 3000)
-    } catch (err: any) {
-      setProfileError(err?.response?.data?.message || 'Erro ao atualizar perfil.')
-    } finally {
-      setProfileLoading(false)
-    }
+  const onProfileUpdate = async (data: ProfileUpdateFormData) => {
+    await updateProfileMutation.mutateAsync(data)
   }
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (newPassword !== newPasswordConfirm) {
-      setPasswordError('As novas palavras-passe não coincidem.')
-      return
-    }
-
-    setPasswordLoading(true)
-    setPasswordError(null)
-    setPasswordSuccess(false)
-
-    try {
-      await authApi.changePassword({
-        old_password: oldPassword,
-        new_password: newPassword,
-        new_password_confirm: newPasswordConfirm,
-      })
-      setPasswordSuccess(true)
-      setOldPassword('')
-      setNewPassword('')
-      setNewPasswordConfirm('')
-      setTimeout(() => setPasswordSuccess(false), 4000)
-    } catch (err: any) {
-      const data = err?.response?.data
-      if (data?.errors?.old_password) {
-        setPasswordError('A palavra-passe atual está incorreta.')
-      } else if (data?.errors?.new_password) {
-        setPasswordError(data.errors.new_password.join(' '))
-      } else {
-        setPasswordError(data?.message || 'Erro ao alterar palavra-passe.')
-      }
-    } finally {
-      setPasswordLoading(false)
+  const onPasswordChange = async (data: ChangePasswordFormData) => {
+    await changePasswordMutation.mutateAsync(data)
+    if (changePasswordMutation.isSuccess) {
+      passwordForm.reset()
     }
   }
 
   const handleLogout = () => {
-    logout()
+    const refresh = localStorage.getItem('bolayetu_refresh')
+    if (refresh) {
+      logoutMutation.mutate(refresh)
+    } else {
+      authLogout()
+    }
     navigate('/login')
   }
 
@@ -98,6 +69,21 @@ export function ProfilePage() {
     { id: 'profile', label: 'Perfil', icon: <User className="w-4 h-4" /> },
     { id: 'security', label: 'Segurança', icon: <Lock className="w-4 h-4" /> },
     { id: 'memberships', label: 'Organizações', icon: <Shield className="w-4 h-4" /> },
+  ]
+
+  /* ── Shared classes ── */
+  const inputClass =
+    'w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors'
+  const labelClass =
+    'block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider'
+
+  // Password strength indicator
+  const newPassword = passwordForm.watch('new_password')
+  const passwordRequirements: [string, boolean][] = [
+    ['Mínimo 8 caracteres', (newPassword?.length || 0) >= 8],
+    ['Uma letra maiúscula', /[A-Z]/.test(newPassword || '')],
+    ['Um dígito', /[0-9]/.test(newPassword || '')],
+    ['Um carácter especial', /[^A-Za-z0-9]/.test(newPassword || '')],
   ]
 
   return (
@@ -139,15 +125,16 @@ export function ProfilePage() {
           </div>
           <button
             onClick={handleLogout}
-            className="ml-auto text-sm text-error hover:text-error/80 transition-colors font-semibold cursor-pointer"
+            disabled={logoutMutation.isPending}
+            className="ml-auto text-sm text-error hover:text-error/80 transition-colors font-semibold cursor-pointer disabled:opacity-50"
           >
-            Terminar Sessão
+            {logoutMutation.isPending ? 'A sair...' : 'Terminar Sessão'}
           </button>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-sm border-b border-[#26364a]">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -165,73 +152,74 @@ export function ProfilePage() {
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <form onSubmit={handleProfileUpdate} className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md">
+          <form
+            onSubmit={profileForm.handleSubmit(onProfileUpdate)}
+            className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md"
+          >
             <h2 className="font-display-lg text-lg text-[#d3e4fe]">Informações Pessoais</h2>
-
-            {profileError && (
-              <div className="p-md bg-error-container/30 border border-error text-error rounded-lg text-sm flex items-center gap-sm">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                {profileError}
-              </div>
-            )}
-            {profileSuccess && (
-              <div className="p-md bg-primary/10 border border-primary/30 text-[#94d3c1] rounded-lg text-sm flex items-center gap-sm">
-                <CheckCircle className="w-4 h-4 shrink-0" />
-                Perfil atualizado com sucesso!
-              </div>
-            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
               <div>
-                <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Nome</label>
+                <label className={labelClass}>Nome</label>
                 <input
                   type="text"
-                  value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
-                  className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors"
                   placeholder="Primeiro nome"
+                  className={inputClass}
+                  {...profileForm.register('first_name')}
                 />
+                {profileForm.formState.errors.first_name && (
+                  <p className="text-xs text-error mt-1">
+                    {profileForm.formState.errors.first_name.message}
+                  </p>
+                )}
               </div>
               <div>
-                <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Apelido</label>
+                <label className={labelClass}>Apelido</label>
                 <input
                   type="text"
-                  value={lastName}
-                  onChange={e => setLastName(e.target.value)}
-                  className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors"
                   placeholder="Apelido"
+                  className={inputClass}
+                  {...profileForm.register('last_name')}
                 />
+                {profileForm.formState.errors.last_name && (
+                  <p className="text-xs text-error mt-1">
+                    {profileForm.formState.errors.last_name.message}
+                  </p>
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Email</label>
+              <label className={labelClass}>Email</label>
               <input
                 type="email"
                 value={user?.email || ''}
                 readOnly
                 className="w-full px-md py-sm bg-[#000f21]/50 border border-[#26364a]/50 rounded-lg text-on-surface-variant text-sm cursor-not-allowed"
               />
-              <p className="text-xs text-on-surface-variant opacity-50 mt-1">O email não pode ser alterado diretamente.</p>
+              <p className="text-xs text-on-surface-variant opacity-50 mt-1">
+                O email não pode ser alterado diretamente.
+              </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Telemóvel</label>
+              <label className={labelClass}>Telemóvel</label>
               <input
                 type="tel"
-                value={phone}
-                onChange={e => setPhone(e.target.value)}
-                className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors"
                 placeholder="+244 923 000 000"
+                className={inputClass}
+                {...profileForm.register('phone')}
               />
+              {profileForm.formState.errors.phone && (
+                <p className="text-xs text-error mt-1">{profileForm.formState.errors.phone.message}</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Idioma</label>
+              <label className={labelClass}>Idioma</label>
               <select
-                value={language}
-                onChange={e => setLanguage(e.target.value)}
-                className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors cursor-pointer"
+                className={`${inputClass} cursor-pointer`}
+                {...profileForm.register('language')}
               >
                 <option value="pt">🇦🇴 Português</option>
                 <option value="en">🇬🇧 English</option>
@@ -242,11 +230,11 @@ export function ProfilePage() {
             <div className="pt-sm flex justify-end">
               <button
                 type="submit"
-                disabled={profileLoading}
+                disabled={updateProfileMutation.isPending}
                 className="flex items-center gap-sm bg-primary text-on-primary-fixed px-lg py-sm font-bold rounded-lg hover:scale-[1.02] transition-transform text-sm disabled:opacity-50 cursor-pointer"
               >
                 <Save className="w-4 h-4" />
-                {profileLoading ? 'A Guardar...' : 'Guardar Alterações'}
+                {updateProfileMutation.isPending ? 'A Guardar...' : 'Guardar Alterações'}
               </button>
             </div>
           </form>
@@ -254,76 +242,64 @@ export function ProfilePage() {
 
         {/* Security Tab */}
         {activeTab === 'security' && (
-          <form onSubmit={handlePasswordChange} className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md">
+          <form
+            onSubmit={passwordForm.handleSubmit(onPasswordChange)}
+            className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md"
+          >
             <h2 className="font-display-lg text-lg text-[#d3e4fe]">Alterar Palavra-passe</h2>
 
-            {passwordError && (
-              <div className="p-md bg-error-container/30 border border-error text-error rounded-lg text-sm flex items-center gap-sm">
-                <AlertTriangle className="w-4 h-4 shrink-0" />
-                {passwordError}
-              </div>
-            )}
-            {passwordSuccess && (
-              <div className="p-md bg-primary/10 border border-primary/30 text-[#94d3c1] rounded-lg text-sm flex items-center gap-sm">
-                <CheckCircle className="w-4 h-4 shrink-0" />
-                Palavra-passe alterada com sucesso!
-              </div>
-            )}
-
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Palavra-passe Atual</label>
+              <label className={labelClass}>Palavra-passe Atual</label>
               <input
                 type="password"
-                value={oldPassword}
-                onChange={e => setOldPassword(e.target.value)}
-                className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors"
                 placeholder="••••••••"
-                required
+                className={inputClass}
+                {...passwordForm.register('old_password')}
               />
+              {passwordForm.formState.errors.old_password && (
+                <p className="text-xs text-error mt-1">
+                  {passwordForm.formState.errors.old_password.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Nova Palavra-passe</label>
+              <label className={labelClass}>Nova Palavra-passe</label>
               <input
                 type="password"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                className="w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors"
                 placeholder="••••••••"
-                required
-                minLength={8}
+                className={inputClass}
+                {...passwordForm.register('new_password')}
               />
+              {passwordForm.formState.errors.new_password && (
+                <p className="text-xs text-error mt-1">
+                  {passwordForm.formState.errors.new_password.message}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider">Confirmar Nova Palavra-passe</label>
+              <label className={labelClass}>Confirmar Nova Palavra-passe</label>
               <input
                 type="password"
-                value={newPasswordConfirm}
-                onChange={e => setNewPasswordConfirm(e.target.value)}
-                className={`w-full px-md py-sm bg-[#000f21] border rounded-lg text-[#d3e4fe] text-sm focus:outline-none transition-colors ${
-                  newPasswordConfirm && newPassword !== newPasswordConfirm
-                    ? 'border-error'
-                    : 'border-[#26364a] focus:border-[#94d3c1]'
-                }`}
                 placeholder="••••••••"
-                required
+                className={inputClass}
+                {...passwordForm.register('new_password_confirm')}
               />
-              {newPasswordConfirm && newPassword !== newPasswordConfirm && (
-                <p className="text-xs text-error mt-1">As palavras-passe não coincidem</p>
+              {passwordForm.formState.errors.new_password_confirm && (
+                <p className="text-xs text-error mt-1">
+                  {passwordForm.formState.errors.new_password_confirm.message}
+                </p>
               )}
             </div>
 
             <div className="bg-[#000f21]/60 border border-[#26364a]/50 rounded-lg p-md text-xs text-on-surface-variant space-y-1">
               <p className="font-semibold text-[#d3e4fe] mb-sm">Requisitos da palavra-passe:</p>
-              {[
-                ['Mínimo 8 caracteres', newPassword.length >= 8],
-                ['Uma letra maiúscula', /[A-Z]/.test(newPassword)],
-                ['Um dígito', /[0-9]/.test(newPassword)],
-                ['Um carácter especial', /[^A-Za-z0-9]/.test(newPassword)],
-              ].map(([label, met]) => (
+              {passwordRequirements.map(([label, met]) => (
                 <div key={label as string} className="flex items-center gap-sm">
-                  <div className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-[#94d3c1]' : 'bg-[#26364a]'}`} />
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-[#94d3c1]' : 'bg-[#26364a]'}`}
+                  />
                   <span className={met ? 'text-[#94d3c1]' : ''}>{label as string}</span>
                 </div>
               ))}
@@ -332,11 +308,11 @@ export function ProfilePage() {
             <div className="pt-sm flex justify-end">
               <button
                 type="submit"
-                disabled={passwordLoading}
+                disabled={changePasswordMutation.isPending}
                 className="flex items-center gap-sm bg-primary text-on-primary-fixed px-lg py-sm font-bold rounded-lg hover:scale-[1.02] transition-transform text-sm disabled:opacity-50 cursor-pointer"
               >
                 <Lock className="w-4 h-4" />
-                {passwordLoading ? 'A Alterar...' : 'Alterar Palavra-passe'}
+                {changePasswordMutation.isPending ? 'A Alterar...' : 'Alterar Palavra-passe'}
               </button>
             </div>
           </form>

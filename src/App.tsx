@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { AppProvider } from '@/app/providers'
+import { ProtectedRoute } from '@/app/routes'
 import { LandingPage } from '@/modules/shared/pages/LandingPage'
 import { LoginPage } from '@/modules/shared/pages/LoginPage'
 import { ForgotPasswordPage } from '@/modules/shared/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/modules/shared/pages/ResetPasswordPage'
 import { ProfilePage } from '@/modules/shared/pages/ProfilePage'
-import { 
+import {
   DashboardPageSelector,
   ExecutiveDashboardPage,
   FederationDashboardPage,
@@ -21,6 +23,16 @@ function App() {
   return (
     <BrowserRouter>
       <AppProvider>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#0b1c30',
+              border: '1px solid #26364a',
+              color: '#d3e4fe',
+            },
+          }}
+        />
         <Routes>
           {/* Public Routes */}
           <Route
@@ -41,13 +53,62 @@ function App() {
           <Route path="/organizations/:slug" element={<OrganizationDetailPage />} />
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<DashboardPageSelector />} />
-          <Route path="/dashboard/executive" element={<ExecutiveDashboardPage />} />
-          <Route path="/dashboard/federation" element={<FederationDashboardPage />} />
-          <Route path="/dashboard/league" element={<LeagueDashboardPage />} />
-          <Route path="/dashboard/club" element={<ClubDashboardPage />} />
-          <Route path="/dashboard/competition" element={<CompetitionDashboardPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPageSelector />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/executive"
+            element={
+              <ProtectedRoute>
+                <ExecutiveDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/federation"
+            element={
+              <ProtectedRoute>
+                <FederationDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/league"
+            element={
+              <ProtectedRoute>
+                <LeagueDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club"
+            element={
+              <ProtectedRoute>
+                <ClubDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/competition"
+            element={
+              <ProtectedRoute>
+                <CompetitionDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
