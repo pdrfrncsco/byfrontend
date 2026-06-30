@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import OnboardingLayout from './OnboardingLayout'
-import { useOrganizationMe, useUpdateOrganization, useUploadLogo } from '@/modules/organizations'
+import { useOrganizationMe, useUpdateOrganization, useUploadLogo, useUploadBanner } from '@/modules/organizations'
 
 export default function BrandingStep() {
   const { data: org, isLoading } = useOrganizationMe()
   const updateOrg = useUpdateOrganization()
   const uploadLogo = useUploadLogo()
+  const uploadBanner = useUploadBanner()
 
   const [primary, setPrimary] = useState('#94D3C1')
   const [secondary, setSecondary] = useState('#E9C349')
@@ -51,8 +52,7 @@ export default function BrandingStep() {
     if (!file) return
     setUploadingBanner(true)
     try {
-      // Banner upload endpoint not yet available — logo/colors are persisted today.
-      console.info('Banner upload pending backend endpoint', file.name)
+      await uploadBanner.mutateAsync(file)
     } catch (e) {
       console.error('Banner update failed', e)
     } finally {

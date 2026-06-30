@@ -34,6 +34,18 @@ export const organizationApi = {
     return response.data.data
   },
 
+  async uploadBanner(file: File): Promise<Organization> {
+    const formData = new FormData()
+    formData.append('banner', file)
+    const response = await client.post<ApiResponse<Organization>>(
+      // new banner endpoint
+      API_ROUTES.ORGANIZATIONS.BANNER,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } },
+    )
+    return response.data.data
+  },
+
   async launchPortal(): Promise<OrganizationLaunchResult> {
     const response = await client.post<ApiResponse<OrganizationLaunchResult>>(
       API_ROUTES.ORGANIZATIONS.LAUNCH,

@@ -43,6 +43,7 @@ export const API_ROUTES = {
   ORGANIZATIONS: {
     ME: '/organizations/me/',
     LOGO: '/organizations/me/logo/',
+    BANNER: '/organizations/me/banner/',
     LAUNCH: '/organizations/me/launch/',
     ONBOARDING_STATUS: '/organizations/me/onboarding-status/',
     PUBLIC: {

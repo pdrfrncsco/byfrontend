@@ -69,6 +69,17 @@ export function useUploadLogo() {
   })
 }
 
+export function useUploadBanner() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => organizationApi.uploadBanner(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: organizationKeys.me })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.onboardingStatus })
+    },
+  })
+}
+
 /**
  * Hook para lançar o portal após onboarding
  */
