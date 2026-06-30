@@ -9,6 +9,7 @@ import type { OrganizationListParams, OrganizationUpdateData } from '../types'
 export const organizationKeys = {
   all: ['organizations'] as const,
   me: ['organization', 'me'] as const,
+  onboardingStatus: ['organization', 'onboarding-status'] as const,
   publicList: (params?: OrganizationListParams) =>
     ['organizations', 'public', params] as const,
   publicDetail: (slug: string) => ['organization', 'public', slug] as const,
@@ -25,6 +26,15 @@ export function useOrganizationMe() {
   return useQuery({
     queryKey: organizationKeys.me,
     queryFn: () => organizationApi.getMe(),
+  })
+}
+
+export function useOnboardingStatus(enabled = true) {
+  return useQuery({
+    queryKey: organizationKeys.onboardingStatus,
+    queryFn: () => organizationApi.getOnboardingStatus(),
+    enabled,
+    staleTime: 30_000,
   })
 }
 
@@ -50,6 +60,7 @@ export function useUploadLogo() {
     mutationFn: (file: File) => organizationApi.uploadLogo(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: organizationKeys.me })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.onboardingStatus })
     },
   })
 }
@@ -63,6 +74,8 @@ export function useLaunchOrganization() {
     mutationFn: () => organizationApi.launchPortal(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: organizationKeys.me })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.onboardingStatus })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.all })
     },
   })
 }

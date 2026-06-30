@@ -8,6 +8,7 @@ import type {
   OrganizationListParams,
   OrganizationUpdateData,
   OrganizationLaunchResult,
+  OnboardingStatus,
 } from '../types'
 
 export const organizationApi = {
@@ -47,6 +48,13 @@ export const organizationApi = {
   async launchPortal(): Promise<OrganizationLaunchResult> {
     const response = await client.post<ApiResponse<OrganizationLaunchResult>>(
       '/organizations/me/launch/',
+    )
+    return response.data.data
+  },
+
+  async getOnboardingStatus(): Promise<OnboardingStatus> {
+    const response = await client.get<ApiResponse<OnboardingStatus>>(
+      '/organizations/me/onboarding-status/',
     )
     return response.data.data
   },

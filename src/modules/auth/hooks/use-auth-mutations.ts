@@ -5,8 +5,10 @@ import { useAuth } from '@/app/providers/AuthProvider'
 import type {
   LoginRequest,
   RegisterRequest,
+  RegisterOrganizationRequest,
   LoginResponse,
 } from '@/types'
+import { resolvePostAuthRedirect } from '@/modules/onboarding/utils/resolvePostAuthRedirect'
 
 /* ──────────────────────────────────────────────
  * useLogin
@@ -28,6 +30,13 @@ export function useLogin() {
   })
 }
 
+/**
+ * Returns redirect path after successful auth. Call after login() has completed.
+ */
+export async function getPostAuthRedirectPath(): Promise<string> {
+  return resolvePostAuthRedirect()
+}
+
 /* ──────────────────────────────────────────────
  * useRegister
  * ────────────────────────────────────────────── */
@@ -44,6 +53,29 @@ export function useRegister() {
     },
     onError: (error: any) => {
       const message = error?.response?.data?.message || 'Erro ao efetuar o registo. Verifique os dados introduzidos.'
+      toast.error(message)
+    },
+  })
+}
+
+/* ──────────────────────────────────────────────
+ * useRegisterOrganization
+ * ────────────────────────────────────────────── */
+export function useRegisterOrganization() {
+  const { login } = useAuth()
+
+  return useMutation({
+    mutationFn: (data: RegisterOrganizationRequest) => {
+      return authApi.registerOrganization(data)
+    },
+    onSuccess: async (data) => {
+      await login(data.access, data.refresh, data.user)
+      toast.success('Organização criada! Vamos configurar o seu portal.')
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message ||
+        'Erro ao registar organização. Verifique os dados introduzidos.'
       toast.error(message)
     },
   })

@@ -4,9 +4,15 @@ import {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
+  RegisterOrganizationRequest,
   User,
   TenantMembership,
 } from '@/types'
+import type { Organization } from '@/modules/organizations/types'
+
+export interface RegisterOrganizationResponse extends LoginResponse {
+  organization: Organization
+}
 
 export interface TokenResponse {
   access: string
@@ -34,6 +40,14 @@ export const authApi = {
    */
   async register(data: RegisterRequest): Promise<LoginResponse> {
     const response = await client.post<ApiResponse<LoginResponse>>('/auth/register/', data)
+    return response.data.data
+  },
+
+  async registerOrganization(data: RegisterOrganizationRequest): Promise<RegisterOrganizationResponse> {
+    const response = await client.post<ApiResponse<RegisterOrganizationResponse>>(
+      '/auth/register/organization/',
+      data,
+    )
     return response.data.data
   },
 

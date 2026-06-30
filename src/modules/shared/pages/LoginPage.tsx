@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AuthLayout } from '@/app/layouts'
-import { useLogin, useRegister } from '@/modules/auth/hooks'
+import { useLogin, useRegister, getPostAuthRedirectPath } from '@/modules/auth/hooks'
+import { ROUTES } from '@/constants/routes'
 import {
   loginSchema,
   registerSchema,
@@ -47,7 +48,8 @@ export function LoginPage() {
   const onLogin = async (data: LoginFormData) => {
     const result = await loginMutation.mutateAsync(data)
     if (result) {
-      navigate('/dashboard')
+      const redirectTo = await getPostAuthRedirectPath()
+      navigate(redirectTo)
     }
   }
 
@@ -61,7 +63,8 @@ export function LoginPage() {
       phone: data.phone || undefined,
     })
     if (result) {
-      navigate('/dashboard')
+      const redirectTo = await getPostAuthRedirectPath()
+      navigate(redirectTo)
     }
   }
 
@@ -239,6 +242,16 @@ export function LoginPage() {
               Esqueceu a palavra-passe?
             </button>
           )}
+          <p className="font-body-md text-on-surface-variant text-sm">
+            É uma organização?{' '}
+            <button
+              type="button"
+              onClick={() => navigate(ROUTES.REGISTER_ORGANIZATION)}
+              className="text-primary hover:text-primary-fixed transition-colors font-bold underline bg-transparent border-0 cursor-pointer"
+            >
+              Registar federação / liga
+            </button>
+          </p>
         </div>
       </div>
     </AuthLayout>

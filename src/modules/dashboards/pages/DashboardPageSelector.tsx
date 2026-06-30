@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useTenant } from '@/app/providers/TenantProvider'
 import { useAuth } from '@/app/providers/AuthProvider'
+import { PendingOnboardingRedirect } from '@/app/routes'
 import { ExecutiveDashboardPage } from './ExecutiveDashboardPage'
 import { FederationDashboardPage } from './FederationDashboardPage'
 import { LeagueDashboardPage } from './LeagueDashboardPage'
@@ -66,6 +67,7 @@ export function DashboardPageSelector() {
 
   return (
     <div className="relative min-h-screen">
+      <PendingOnboardingRedirect />
       {renderDashboard()}
 
       {/* Premium Developer Dashboard Preview Selector Tool */}

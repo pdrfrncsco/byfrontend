@@ -45,6 +45,13 @@ export interface RegisterRequest {
   phone?: string
 }
 
+export interface RegisterOrganizationRequest extends RegisterRequest {
+  organization_name: string
+  organization_type: 'federation' | 'association' | 'league' | 'organizer' | 'academy'
+  country?: string
+  city?: string
+}
+
 export interface AuthState {
   user: User | null
   token: string | null

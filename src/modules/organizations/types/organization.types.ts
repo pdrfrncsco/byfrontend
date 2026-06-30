@@ -94,3 +94,11 @@ export interface OrganizationLaunchResult {
   competitions_activated: number
   portal_url: string | null
 }
+
+export interface OnboardingStatus {
+  onboarding_required: boolean
+  has_organization: boolean
+  is_organization_admin: boolean
+  competitions_count: number
+  organization: Organization | null
+}

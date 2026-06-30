@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AppProvider } from '@/app/providers'
-import { ProtectedRoute } from '@/app/routes'
+import { ProtectedRoute, OnboardingGuard } from '@/app/routes'
 import { LandingPage } from '@/modules/shared/pages/LandingPage'
 import { LoginPage } from '@/modules/shared/pages/LoginPage'
+import { RegisterOrganizationPage } from '@/modules/shared/pages/RegisterOrganizationPage'
 import { ForgotPasswordPage } from '@/modules/shared/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/modules/shared/pages/ResetPasswordPage'
 import { ProfilePage } from '@/modules/shared/pages/ProfilePage'
@@ -48,6 +49,7 @@ function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LoginPage />} />
+          <Route path="/register/organization" element={<RegisterOrganizationPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
@@ -113,12 +115,14 @@ function App() {
             }
           />
 
-          {/* Onboarding (protected) */}
+          {/* Onboarding (protected + gate) */}
           <Route
             path="/onboarding"
             element={
               <ProtectedRoute>
-                <OrganizationStep />
+                <OnboardingGuard>
+                  <OrganizationStep />
+                </OnboardingGuard>
               </ProtectedRoute>
             }
           />
@@ -126,7 +130,9 @@ function App() {
             path="/onboarding/branding"
             element={
               <ProtectedRoute>
-                <BrandingStep />
+                <OnboardingGuard>
+                  <BrandingStep />
+                </OnboardingGuard>
               </ProtectedRoute>
             }
           />
@@ -134,7 +140,9 @@ function App() {
             path="/onboarding/competition"
             element={
               <ProtectedRoute>
-                <CompetitionStep />
+                <OnboardingGuard>
+                  <CompetitionStep />
+                </OnboardingGuard>
               </ProtectedRoute>
             }
           />
@@ -142,7 +150,9 @@ function App() {
             path="/onboarding/review"
             element={
               <ProtectedRoute>
-                <ReviewStep />
+                <OnboardingGuard>
+                  <ReviewStep />
+                </OnboardingGuard>
               </ProtectedRoute>
             }
           />

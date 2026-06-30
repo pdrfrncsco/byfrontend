@@ -56,6 +56,43 @@ export const registerSchema = z
 
 export type RegisterFormData = z.infer<typeof registerSchema>
 
+export const registerOrganizationSchema = z
+  .object({
+    first_name: z.string().min(1, 'O nome é obrigatório.').max(50),
+    last_name: z.string().min(1, 'O apelido é obrigatório.').max(50),
+    email: z.string().min(1, 'O email é obrigatório.').email('Introduza um email válido.'),
+    phone: z.string().optional().refine(
+      (val) => !val || /^\+?[\d\s()-]{6,20}$/.test(val),
+      'Introduza um número de telefone válido.',
+    ),
+    password: z
+      .string()
+      .min(8, 'A palavra-passe deve ter no mínimo 8 caracteres.')
+      .regex(/[A-Z]/, 'A palavra-passe deve conter pelo menos uma letra maiúscula.')
+      .regex(/[0-9]/, 'A palavra-passe deve conter pelo menos um dígito.')
+      .regex(/[^A-Za-z0-9]/, 'A palavra-passe deve conter pelo menos um carácter especial.'),
+    password_confirm: z.string().min(1, 'A confirmação da palavra-passe é obrigatória.'),
+    organization_name: z
+      .string()
+      .min(2, 'O nome da organização é obrigatório.')
+      .max(255, 'O nome não pode exceder 255 caracteres.'),
+    organization_type: z.enum([
+      'federation',
+      'association',
+      'league',
+      'organizer',
+      'academy',
+    ]),
+    country: z.string().min(1, 'O país é obrigatório.'),
+    city: z.string().optional(),
+  })
+  .refine((data) => data.password === data.password_confirm, {
+    message: 'As palavras-passe não coincidem.',
+    path: ['password_confirm'],
+  })
+
+export type RegisterOrganizationFormData = z.infer<typeof registerOrganizationSchema>
+
 /* ──────────────────────────────────────────────
  * Forgot Password Schema
  * ────────────────────────────────────────────── */
