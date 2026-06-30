@@ -49,12 +49,10 @@ export default function BrandingStep() {
 
   async function handleBanner(file?: File) {
     if (!file) return
-    // backend currently has only uploadLogo; use updateOrg endpoint to save banner_url if available
     setUploadingBanner(true)
     try {
-      // If backend supports banner upload via same endpoint, call uploadLogo or create separate service later
-      // For now emulate by uploading logo and setting banner URL on org via update
-      await updateOrg.mutateAsync({ banner_url: 'uploaded_placeholder' } as any)
+      // Banner upload endpoint not yet available — logo/colors are persisted today.
+      console.info('Banner upload pending backend endpoint', file.name)
     } catch (e) {
       console.error('Banner update failed', e)
     } finally {
@@ -111,7 +109,7 @@ export default function BrandingStep() {
             <div className="bg-surface-container rounded-xl overflow-hidden border border-white/10">
               <div className="h-36" style={{ background: `linear-gradient(90deg, ${primary}33, ${secondary}33)` }}>
                 <div className="absolute -mt-10 ml-4 w-16 h-16 bg-surface-container rounded-lg border border-white/10 flex items-center justify-center p-2">
-                  {org?.logo ? <img src={(org as any).logo} alt="logo" className="w-12 h-12 object-contain"/> : <div className="text-primary">Logo</div>}
+                  {org?.logo_url || org?.logo ? <img src={(org.logo_url || org.logo) as string} alt="logo" className="w-12 h-12 object-contain"/> : <div className="text-primary">Logo</div>}
                 </div>
               </div>
               <div className="p-md">

@@ -3,7 +3,7 @@
  * Matches backend OrganizationSerializer where possible (snake_case).
  */
 
-export type OrganizationType = 'federation' | 'association' | 'league' | 'organizer' | 'academy' | 'club'
+export type OrganizationType = 'federation' | 'association' | 'league' | 'organizer' | 'academy'
 export type OrganizationStatus = 'pending' | 'active' | 'suspended' | 'closed'
 
 export interface Organization {
@@ -37,8 +37,6 @@ export interface Organization {
 
 export interface PublicOrganization extends Organization {
   active_subscribers?: number
-  activeTournaments?: number
-  totalClubs?: number
   last_activity?: string | null
 }
 

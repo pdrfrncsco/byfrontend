@@ -1,4 +1,5 @@
 import client from '@/lib/api-client'
+import { API_ROUTES } from '@/constants/routes'
 import type { ApiResponse } from '@/types'
 import type {
   Organization,
@@ -12,131 +13,94 @@ import type {
 } from '../types'
 
 export const organizationApi = {
-  /**
-   * Obtém a organização do usuário autenticado
-   */
   async getMe(): Promise<Organization> {
-    const response = await client.get<ApiResponse<Organization>>('/organizations/me/')
+    const response = await client.get<ApiResponse<Organization>>(API_ROUTES.ORGANIZATIONS.ME)
     return response.data.data
   },
 
-  /**
-   * Atualiza a organização do usuário autenticado
-   */
   async updateMe(data: OrganizationUpdateData): Promise<Organization> {
-    const response = await client.patch<ApiResponse<Organization>>('/organizations/me/', data)
+    const response = await client.patch<ApiResponse<Organization>>(API_ROUTES.ORGANIZATIONS.ME, data)
     return response.data.data
   },
 
-  /**
-   * Upload do logo da organização
-   */
   async uploadLogo(file: File): Promise<Organization> {
     const formData = new FormData()
     formData.append('logo', file)
     const response = await client.post<ApiResponse<Organization>>(
-      '/organizations/me/logo/',
+      API_ROUTES.ORGANIZATIONS.LOGO,
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
     )
     return response.data.data
   },
 
-  /**
-   * Lança o portal da organização após o onboarding
-   */
   async launchPortal(): Promise<OrganizationLaunchResult> {
     const response = await client.post<ApiResponse<OrganizationLaunchResult>>(
-      '/organizations/me/launch/',
+      API_ROUTES.ORGANIZATIONS.LAUNCH,
     )
     return response.data.data
   },
 
   async getOnboardingStatus(): Promise<OnboardingStatus> {
     const response = await client.get<ApiResponse<OnboardingStatus>>(
-      '/organizations/me/onboarding-status/',
+      API_ROUTES.ORGANIZATIONS.ONBOARDING_STATUS,
     )
     return response.data.data
   },
 
-  /**
-   * Lista organizações públicas
-   */
   async listPublic(params?: OrganizationListParams): Promise<PublicOrganization[]> {
-    const response = await client.get<ApiResponse<PublicOrganization[]>>('/organizations/public/', {
-      params,
-    })
+    const response = await client.get<ApiResponse<PublicOrganization[]>>(
+      API_ROUTES.ORGANIZATIONS.PUBLIC.LIST,
+      { params },
+    )
     return response.data.data
   },
 
-  /**
-   * Obtém detalhes de uma organização pública por slug
-   */
   async getPublicDetail(slug: string): Promise<Organization> {
-    const response = await client.get<ApiResponse<Organization>>(`/organizations/public/${slug}/`)
+    const response = await client.get<ApiResponse<Organization>>(
+      API_ROUTES.ORGANIZATIONS.PUBLIC.GET(slug),
+    )
     return response.data.data
   },
 
-  /**
-   * Subscreve o usuário a uma organização
-   */
-  async subscribe(
-    slug: string,
-  ): Promise<{ subscribed: boolean; organization_id: string }> {
+  async subscribe(slug: string): Promise<{ subscribed: boolean; organization_id: string }> {
     const response = await client.post<
       ApiResponse<{ subscribed: boolean; organization_id: string }>
-    >(`/organizations/public/${slug}/subscribe/`)
+    >(API_ROUTES.ORGANIZATIONS.PUBLIC.SUBSCRIBE(slug))
     return response.data.data
   },
 
-  /**
-   * Cancela a subscrição do usuário a uma organização
-   */
-  async unsubscribe(
-    slug: string,
-  ): Promise<{ subscribed: boolean; organization_id: string }> {
+  async unsubscribe(slug: string): Promise<{ subscribed: boolean; organization_id: string }> {
     const response = await client.post<
       ApiResponse<{ subscribed: boolean; organization_id: string }>
-    >(`/organizations/public/${slug}/unsubscribe/`)
+    >(API_ROUTES.ORGANIZATIONS.PUBLIC.UNSUBSCRIBE(slug))
     return response.data.data
   },
 
-  /**
-   * Obtém torneios de uma organização
-   */
   async getTournaments(slug: string): Promise<unknown[]> {
     const response = await client.get<ApiResponse<unknown[]>>(
-      `/organizations/public/${slug}/tournaments/`,
+      API_ROUTES.ORGANIZATIONS.PUBLIC.TOURNAMENTS(slug),
     )
     return response.data.data
   },
 
-  /**
-   * Obtém clubes de uma organização
-   */
   async getClubs(slug: string): Promise<unknown[]> {
     const response = await client.get<ApiResponse<unknown[]>>(
-      `/organizations/public/${slug}/clubs/`,
+      API_ROUTES.ORGANIZATIONS.PUBLIC.CLUBS(slug),
     )
     return response.data.data
   },
 
-  /**
-   * Obtém histórico de uma organização
-   */
   async getHistory(slug: string): Promise<OrganizationHistoryEntry[]> {
     const response = await client.get<ApiResponse<OrganizationHistoryEntry[]>>(
-      `/organizations/public/${slug}/history/`,
+      API_ROUTES.ORGANIZATIONS.PUBLIC.HISTORY(slug),
     )
     return response.data.data
   },
 
-  /**
-   * Obtém KPIs de uma organização
-   */
   async getKpis(slug: string): Promise<OrganizationKpis> {
     const response = await client.get<ApiResponse<OrganizationKpis>>(
-      `/organizations/public/${slug}/kpis/`,
+      API_ROUTES.ORGANIZATIONS.PUBLIC.KPIS(slug),
     )
     return response.data.data
   },

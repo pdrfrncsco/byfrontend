@@ -7,9 +7,10 @@ import { FederationDashboardPage } from './FederationDashboardPage'
 import { LeagueDashboardPage } from './LeagueDashboardPage'
 import { ClubDashboardPage } from './ClubDashboardPage'
 import { CompetitionDashboardPage } from './CompetitionDashboardPage'
+import OrganizationDashboardPage from '@/modules/organizations/pages/OrganizationDashboardPage'
 import { Sliders, CheckCircle } from 'lucide-react'
 
-type DashboardType = 'federation' | 'executive' | 'league' | 'club' | 'competition'
+type DashboardType = 'federation' | 'executive' | 'league' | 'club' | 'competition' | 'organization'
 
 export function DashboardPageSelector() {
   const { tenant } = useTenant()
@@ -30,7 +31,9 @@ export function DashboardPageSelector() {
       }
     } else if (user) {
       const roles = user.roles || []
-      if (roles.includes('admin') || roles.includes('executive') || user.role === 'executive') {
+      if (roles.includes('owner') || roles.includes('admin') || user.role === 'owner' || user.role === 'admin') {
+        setResolvedType('organization')
+      } else if (roles.includes('admin') || roles.includes('executive') || user.role === 'executive') {
         setResolvedType('executive')
       } else if (roles.includes('club_admin') || user.role === 'club_admin') {
         setResolvedType('club')
@@ -60,6 +63,8 @@ export function DashboardPageSelector() {
         return <ClubDashboardPage />
       case 'competition':
         return <CompetitionDashboardPage />
+      case 'organization':
+        return <OrganizationDashboardPage />
       default:
         return <ExecutiveDashboardPage />
     }

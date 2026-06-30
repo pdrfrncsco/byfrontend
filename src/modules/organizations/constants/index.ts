@@ -10,7 +10,6 @@ export const ORGANIZATION_TYPE_LABELS: Partial<Record<OrganizationType, string>>
   league: 'Liga',
   organizer: 'Organizador',
   academy: 'Academia',
-  club: 'Clube',
 }
 
 export const ORGANIZATION_STATUS_LABELS: Record<OrganizationStatus, string> = {
@@ -32,4 +31,3 @@ export const ACCEPTED_LOGO_TYPES = [
   'image/webp',
   'image/svg+xml',
 ]
-export {}

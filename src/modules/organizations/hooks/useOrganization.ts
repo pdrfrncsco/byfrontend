@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useAuth } from '@/app/providers'
 import { organizationApi } from '../services/organization.api'
 import type { OrganizationListParams, OrganizationUpdateData } from '../types'
 
@@ -23,9 +24,11 @@ export const organizationKeys = {
  * Hook para obter a organização do usuário autenticado
  */
 export function useOrganizationMe() {
+  const { isAuthenticated } = useAuth()
   return useQuery({
     queryKey: organizationKeys.me,
     queryFn: () => organizationApi.getMe(),
+    enabled: isAuthenticated,
   })
 }
 
@@ -47,6 +50,7 @@ export function useUpdateOrganization() {
     mutationFn: (data: OrganizationUpdateData) => organizationApi.updateMe(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: organizationKeys.me })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.onboardingStatus })
     },
   })
 }
