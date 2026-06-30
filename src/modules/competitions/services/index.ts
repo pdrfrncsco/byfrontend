@@ -1,1 +1,1 @@
-export {}
+export { competitionApi } from './competition.api'

@@ -17,7 +17,7 @@ import {
 } from '@/modules/dashboards'
 import { OrganizationDashboardPage } from '@/modules/organizations'
 import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage } from '@/modules/organizations'
-import { OrganizationStep, BrandingStep } from '@/modules/onboarding'
+import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
 import { PublicLayout } from '@/app/layouts'
@@ -127,6 +127,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <BrandingStep />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding/competition"
+            element={
+              <ProtectedRoute>
+                <CompetitionStep />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding/review"
+            element={
+              <ProtectedRoute>
+                <ReviewStep />
               </ProtectedRoute>
             }
           />

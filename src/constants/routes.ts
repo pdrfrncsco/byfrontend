@@ -41,6 +41,8 @@ export const API_ROUTES = {
     CREATE: '/organizations',
     UPDATE: (id: string) => `/organizations/${id}`,
     DELETE: (id: string) => `/organizations/${id}`,
+    ME: '/organizations/me/',
+    LAUNCH: '/organizations/me/launch/',
   },
   CLUBS: {
     LIST: '/clubs',

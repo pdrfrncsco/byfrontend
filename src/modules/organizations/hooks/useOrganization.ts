@@ -55,6 +55,19 @@ export function useUploadLogo() {
 }
 
 /**
+ * Hook para lançar o portal após onboarding
+ */
+export function useLaunchOrganization() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => organizationApi.launchPortal(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: organizationKeys.me })
+    },
+  })
+}
+
+/**
  * Hook para listar organizações públicas
  */
 export function usePublicOrganizations(params?: OrganizationListParams) {

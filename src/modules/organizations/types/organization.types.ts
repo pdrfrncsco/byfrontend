@@ -88,3 +88,9 @@ export interface OrganizationUpdateData {
   language?: string
   timezone?: string
 }
+
+export interface OrganizationLaunchResult {
+  organization: Organization
+  competitions_activated: number
+  portal_url: string | null
+}

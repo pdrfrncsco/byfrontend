@@ -7,6 +7,7 @@ import type {
   OrganizationHistoryEntry,
   OrganizationListParams,
   OrganizationUpdateData,
+  OrganizationLaunchResult,
 } from '../types'
 
 export const organizationApi = {
@@ -36,6 +37,16 @@ export const organizationApi = {
       '/organizations/me/logo/',
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
+    )
+    return response.data.data
+  },
+
+  /**
+   * Lança o portal da organização após o onboarding
+   */
+  async launchPortal(): Promise<OrganizationLaunchResult> {
+    const response = await client.post<ApiResponse<OrganizationLaunchResult>>(
+      '/organizations/me/launch/',
     )
     return response.data.data
   },

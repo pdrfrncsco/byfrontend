@@ -1,1 +1,1 @@
-export {}
+export * from './competition.types'
