@@ -69,11 +69,12 @@ export const API_ROUTES = {
     DELETE: (id: string) => `/clubs/${id}`,
   },
   PLAYERS: {
-    LIST: '/players',
-    GET: (id: string) => `/players/${id}`,
-    CREATE: '/players',
-    UPDATE: (id: string) => `/players/${id}`,
-    DELETE: (id: string) => `/players/${id}`,
+    LIST: '/players/',
+    SEARCH: '/players/search/',
+    GET: (slug: string) => `/players/${slug}/`,
+    CREATE: '/players/',
+    UPDATE: (slug: string) => `/players/${slug}/`,
+    REGISTER: (slug: string) => `/players/${slug}/register/`,
   },
   COMPETITIONS: {
     LIST: '/competitions',

@@ -21,6 +21,7 @@ import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage 
 import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
+import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { PublicLayout } from '@/app/layouts'
 
 function App() {
@@ -176,6 +177,10 @@ function App() {
           {/* Clubs (Public) */}
           <Route path="/clubs" element={<ClubListPage />} />
           <Route path="/clubs/:id" element={<ClubDetailPage />} />
+
+          {/* Players (Public) */}
+          <Route path="/players" element={<PlayerListPage />} />
+          <Route path="/players/:slug" element={<PlayerDetailPage />} />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
