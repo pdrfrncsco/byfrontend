@@ -5,6 +5,9 @@ import type {
   Competition,
   CompetitionCreateData,
   CompetitionUpdateData,
+  MatchEvent,
+  MatchEventCreateData,
+  PlayerStats,
 } from '../types'
 
 export const competitionApi = {
@@ -88,5 +91,31 @@ export const competitionApi = {
       }
     )
     return response.data
+  },
+
+  async listMatchEvents(compId: string, matchId: string): Promise<MatchEvent[]> {
+    const response = await client.get<ApiResponse<MatchEvent[]>>(
+      API_ROUTES.COMPETITIONS.MATCH_EVENTS(compId, matchId)
+    )
+    return response.data.data
+  },
+
+  async addMatchEvent(compId: string, matchId: string, data: MatchEventCreateData): Promise<MatchEvent> {
+    const response = await client.post<ApiResponse<MatchEvent>>(
+      API_ROUTES.COMPETITIONS.MATCH_EVENTS(compId, matchId),
+      data
+    )
+    return response.data.data
+  },
+
+  async deleteMatchEvent(compId: string, matchId: string, eventId: string): Promise<void> {
+    await client.delete(API_ROUTES.COMPETITIONS.DELETE_EVENT(compId, matchId, eventId))
+  },
+
+  async getPlayerStats(compId: string): Promise<PlayerStats[]> {
+    const response = await client.get<ApiResponse<PlayerStats[]>>(
+      API_ROUTES.COMPETITIONS.PLAYER_STATS(compId)
+    )
+    return response.data.data
   },
 }

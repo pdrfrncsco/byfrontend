@@ -87,6 +87,9 @@ export const API_ROUTES = {
     MATCHES: (id: string) => `/competitions/${id}/matches/`,
     STANDINGS: (id: string) => `/competitions/${id}/standings/`,
     UPDATE_MATCH: (matchId: string) => `/competitions/matches/${matchId}/`,
+    MATCH_EVENTS: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/events/`,
+    DELETE_EVENT: (compId: string, matchId: string, eventId: string) => `/competitions/${compId}/matches/${matchId}/events/${eventId}/`,
+    PLAYER_STATS: (compId: string) => `/competitions/${compId}/stats/`,
   },
   MATCHES: {
     LIST: '/matches',

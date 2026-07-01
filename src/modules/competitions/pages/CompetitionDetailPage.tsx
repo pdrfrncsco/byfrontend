@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { useCompetitionMatches, useCompetitionStandings, useUpdateMatchScore } from '../hooks/useCompetitionPhase3'
 import type { Match, Standing } from '../types'
+import { MatchEventsPanel, PlayerStatsTable } from '../components'
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { icon: React.ComponentType<any>; color: string; bg: string }> = {
@@ -129,6 +130,16 @@ function MatchRow({ match, competitionId, isAdmin }: {
           )}
         </div>
       )}
+
+      {/* Toggler for Match Events (Súmula) */}
+      <div className="comp-match-row__events-toggle" style={{ gridColumn: '1 / -1', borderTop: '1px solid #f1f5f9' }}>
+        <details>
+          <summary style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '12px', color: '#64748b', fontWeight: 500, outline: 'none' }}>
+            Ver Súmula de Jogo
+          </summary>
+          <MatchEventsPanel competitionId={competitionId} match={match} isAdmin={isAdmin} />
+        </details>
+      </div>
     </div>
   )
 }
@@ -266,7 +277,7 @@ function MatchesTab({
 // ─── CompetitionDetailPage (Main) ─────────────────────────────────────────────
 export function CompetitionDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [activeTab, setActiveTab] = useState<'standings' | 'matches'>('standings')
+  const [activeTab, setActiveTab] = useState<'standings' | 'matches' | 'stats'>('standings')
 
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(id ?? '')
 
@@ -276,6 +287,7 @@ export function CompetitionDetailPage() {
   const tabs = [
     { key: 'standings', label: 'Classificação', icon: Trophy },
     { key: 'matches', label: 'Jogos', icon: Calendar },
+    { key: 'stats', label: 'Estatísticas', icon: BarChart3 },
   ]
 
   return (
@@ -314,6 +326,10 @@ export function CompetitionDetailPage() {
           isAdmin={isAdmin}
           onGenerateSchedule={() => { /* TODO: open schedule modal */ }}
         />
+      )}
+
+      {activeTab === 'stats' && (
+        <PlayerStatsTable competitionId={id ?? ''} />
       )}
     </div>
   )

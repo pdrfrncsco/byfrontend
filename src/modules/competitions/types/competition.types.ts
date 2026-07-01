@@ -75,3 +75,54 @@ export interface CompetitionRegistration {
   registered_at: string
 }
 
+export type EventType =
+  | 'goal'
+  | 'own_goal'
+  | 'yellow_card'
+  | 'red_card'
+  | 'yellow_red'
+  | 'substitution_in'
+  | 'substitution_out'
+  | 'penalty_scored'
+  | 'penalty_missed'
+
+export interface MatchEvent {
+  id: string
+  event_type: EventType
+  event_type_label: string
+  minute: number
+  extra_time: boolean
+  player: string | null
+  player_name: string | null
+  player_off: string | null
+  player_off_name: string | null
+  club: string
+  club_name: string
+  club_logo: string | null
+  notes: string
+  created_at: string
+}
+
+export interface MatchEventCreateData {
+  event_type: EventType
+  minute: number
+  extra_time?: boolean
+  club: string
+  player?: string | null
+  player_off?: string | null
+  notes?: string
+}
+
+export interface PlayerStats {
+  player_id: string
+  player__first_name: string
+  player__last_name: string
+  player__avatar: string | null
+  club_id: string
+  club__name: string
+  goals: number
+  own_goals: number
+  yellow_cards: number
+  red_cards: number
+  appearances: number
+}
