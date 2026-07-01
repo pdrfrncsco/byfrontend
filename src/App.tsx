@@ -22,6 +22,7 @@ import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/m
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
+import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { PublicLayout } from '@/app/layouts'
 
 function App() {
@@ -181,6 +182,10 @@ function App() {
           {/* Players (Public) */}
           <Route path="/players" element={<PlayerListPage />} />
           <Route path="/players/:slug" element={<PlayerDetailPage />} />
+
+          {/* Competitions (Public) */}
+          <Route path="/competitions" element={<CompetitionListPage />} />
+          <Route path="/competitions/:id" element={<CompetitionDetailPage />} />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
