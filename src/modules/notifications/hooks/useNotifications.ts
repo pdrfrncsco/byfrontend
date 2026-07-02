@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { notificationsApi } from '../services/notifications.api'
-import type { Notification } from '../types'
 
 export function useUnreadCount() {
   return useQuery({

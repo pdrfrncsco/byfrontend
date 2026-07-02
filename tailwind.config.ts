@@ -96,6 +96,7 @@ module.exports = {
     },
   },
   plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('tailwindcss/plugin')(function ({ addUtilities }) {
       addUtilities({
         '.scrollbar-hide': {

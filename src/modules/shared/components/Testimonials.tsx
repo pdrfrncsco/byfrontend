@@ -44,7 +44,7 @@ export function Testimonials() {
               }`}
             >
               {/* Quote */}
-              <p className="font-body-md text-on-surface mb-lg italic">"{testimonial.quote}"</p>
+              <p className="font-body-md text-on-surface mb-lg italic">&ldquo;{testimonial.quote}&rdquo;</p>
 
               {/* Author */}
               <div className="flex items-center gap-md">

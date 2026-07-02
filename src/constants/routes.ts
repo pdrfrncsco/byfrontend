@@ -112,4 +112,9 @@ export const API_ROUTES = {
     UPDATE: (id: string) => `/news/${id}`,
     DELETE: (id: string) => `/news/${id}`,
   },
+  NOTIFICATIONS: {
+    LIST: '/notifications/',
+    UNREAD_COUNT: '/notifications/unread-count/',
+    MARK_READ: (id: string) => `/notifications/${id}/mark-read/`,
+  },
 }
