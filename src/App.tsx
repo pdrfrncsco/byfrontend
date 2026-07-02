@@ -24,6 +24,7 @@ import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { PublicLayout } from '@/app/layouts'
+import { NotificationsPage } from '@/modules/notifications/pages/NotificationsPage'
 
 function App() {
   return (
@@ -163,6 +164,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CompetitionDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />

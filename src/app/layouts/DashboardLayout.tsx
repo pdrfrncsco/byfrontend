@@ -5,13 +5,14 @@ import { useTenant } from '@/app/providers/TenantProvider'
 import { 
   LayoutDashboard, 
   Search, 
-  Bell, 
   Settings, 
   HelpCircle, 
   LogOut, 
   Menu, 
   X
 } from 'lucide-react'
+import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
+import { NotificationsDropdown } from '@/modules/notifications/components/NotificationsDropdown'
 
 interface SidebarLink {
   label: string
@@ -42,6 +43,7 @@ export function DashboardLayout({
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const toggleNotifications = () => setNotificationsOpen(v => !v)
   const [searchQuery, setSearchQuery] = useState('')
 
   // Resolve logo based on dashboard type or tenant logo
@@ -239,6 +241,15 @@ export function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-lg">
+            {/* Notifications Bell */}
+            <div className="relative">
+              <NotificationBell onToggle={toggleNotifications} />
+              {notificationsOpen && (
+                <div className="absolute right-0 mt-2 z-50">
+                  <NotificationsDropdown />
+                </div>
+              )}
+            </div>
             {/* Search Input */}
             <div className="relative hidden lg:block w-64">
               <Search className="absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
@@ -251,40 +262,6 @@ export function DashboardLayout({
               />
             </div>
 
-            <div className="flex gap-sm">
-              {/* Notification Button */}
-              <div className="relative">
-                <button 
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
-                  className="p-2 text-on-surface-variant hover:text-[#94d3c1] transition-colors rounded-full hover:bg-[#26364a]/30"
-                >
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-[#031427]"></span>
-                </button>
-
-                {/* Notifications Dropdown Panel */}
-                {notificationsOpen && (
-                  <div className="absolute right-0 mt-2 w-80 glass-card p-0 overflow-hidden z-50 animate-fade-in shadow-2xl border border-[#26364a]">
-                    <div className="p-md bg-[#102034] border-b border-[#26364a] flex justify-between items-center">
-                      <h4 className="font-semibold text-sm">Notificações</h4>
-                      <button className="text-xs text-primary hover:underline">Limpar tudo</button>
-                    </div>
-                    <div className="divide-y divide-[#26364a]/50 max-h-64 overflow-y-auto">
-                      <div className="p-md hover:bg-[#1b2b3f]/50 transition-colors text-xs space-y-1 cursor-pointer">
-                        <p className="font-semibold">Nova Licença Submetida</p>
-                        <p className="text-on-surface-variant">O Petro de Luanda atualizou os dados do plantel.</p>
-                        <span className="text-[10px] text-primary opacity-60">Há 5 min</span>
-                      </div>
-                      <div className="p-md hover:bg-[#1b2b3f]/50 transition-colors text-xs space-y-1 cursor-pointer">
-                        <p className="font-semibold">Auditoria Periódica CAF</p>
-                        <p className="text-on-surface-variant">Conformidade do inquilino atualizada com sucesso.</p>
-                        <span className="text-[10px] text-primary opacity-60">Há 1 hora</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
 
             <div className="h-8 w-px bg-[#26364a]"></div>
 
