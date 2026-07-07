@@ -14,6 +14,7 @@ export interface Organization {
   type_label?: string
   logo?: string | null
   logo_url?: string | null
+  banner_url?: string | null
   primary_color?: string | null
   secondary_color?: string | null
   country: string
