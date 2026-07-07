@@ -1,36 +1,29 @@
-interface SkeletonProps {
-  className?: string
-}
+import { Card, Skeleton } from '@/components/ui'
 
-export function SkeletonBase({ className }: SkeletonProps) {
-  return (
-    <div
-      className={`bg-surface-bright/40 animate-pulse rounded-lg ${className}`}
-      aria-hidden="true"
-    />
-  )
+export function SkeletonBase({ className }: { className?: string }) {
+  return <Skeleton className={className} />
 }
 
 export function OrganizationListSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+    <div className="grid grid-cols-1 gap-lg md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="glass-card p-lg border border-outline-variant/30 space-y-md">
+        <Card key={i} padding="md" className="space-y-md">
           <div className="flex items-center gap-md">
-            <SkeletonBase className="w-12 h-12 rounded-lg shrink-0" />
+            <Skeleton className="h-12 w-12 shrink-0 rounded-lg" />
             <div className="flex-1 space-y-xs">
-              <SkeletonBase className="h-4 w-3/4" />
-              <SkeletonBase className="h-3 w-1/3" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/3" />
             </div>
           </div>
-          <div className="space-y-sm pt-sm border-t border-outline-variant/20">
-            <SkeletonBase className="h-3.5 w-1/2" />
-            <div className="flex justify-between items-center">
-              <SkeletonBase className="h-3.5 w-1/3" />
-              <SkeletonBase className="h-3 w-1/4" />
+          <div className="space-y-sm border-t border-outline-variant/20 pt-sm">
+            <Skeleton className="h-3.5 w-1/2" />
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-3.5 w-1/3" />
+              <Skeleton className="h-3 w-1/4" />
             </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   )
@@ -39,47 +32,44 @@ export function OrganizationListSkeleton() {
 export function OrganizationDetailSkeleton() {
   return (
     <div className="space-y-xl">
-      {/* Header Banner Skeleton */}
-      <div className="bg-surface-container border-b border-outline-variant/30 py-xl">
-        <div className="max-w-7xl mx-auto px-gutter flex items-start gap-lg">
-          <SkeletonBase className="w-24 h-24 rounded-lg shrink-0" />
+      <div className="border-b border-outline-variant/30 bg-surface-container py-xl">
+        <div className="mx-auto flex max-w-7xl items-start gap-lg px-gutter">
+          <Skeleton className="h-24 w-24 shrink-0 rounded-lg" />
           <div className="flex-1 space-y-md">
             <div className="space-y-xs">
-              <SkeletonBase className="h-8 w-1/2" />
-              <SkeletonBase className="h-4 w-1/4" />
+              <Skeleton className="h-8 w-1/2" />
+              <Skeleton className="h-4 w-1/4" />
             </div>
-            <SkeletonBase className="h-12 w-full max-w-xl" />
+            <Skeleton className="h-12 w-full max-w-xl" />
             <div className="flex gap-sm">
-              <SkeletonBase className="h-10 w-28 rounded-lg" />
-              <SkeletonBase className="h-10 w-36 rounded-lg" />
+              <Skeleton className="h-10 w-28 rounded-lg" />
+              <Skeleton className="h-10 w-36 rounded-lg" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* KPI Skeleton */}
-      <div className="max-w-7xl mx-auto px-gutter grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-md px-gutter md:grid-cols-4 lg:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="glass-card p-md border border-outline-variant/30 text-center space-y-sm">
-            <SkeletonBase className="h-8 w-1/2 mx-auto" />
-            <SkeletonBase className="h-4 w-3/4 mx-auto" />
-          </div>
+          <Card key={i} padding="md" className="space-y-sm text-center">
+            <Skeleton className="mx-auto h-8 w-1/2" />
+            <Skeleton className="mx-auto h-4 w-3/4" />
+          </Card>
         ))}
       </div>
 
-      {/* History and details Skeleton */}
-      <div className="max-w-7xl mx-auto px-gutter space-y-lg">
-        <SkeletonBase className="h-6 w-1/4" />
-        <div className="glass-card p-0 border border-outline-variant/30 space-y-sm">
-          <div className="p-md bg-surface-container-low border-b border-outline-variant/30">
-            <SkeletonBase className="h-5 w-1/3" />
+      <div className="mx-auto max-w-7xl space-y-lg px-gutter">
+        <Skeleton className="h-6 w-1/4" />
+        <Card padding="none">
+          <div className="border-b border-outline-variant/30 bg-surface-container-low p-md">
+            <Skeleton className="h-5 w-1/3" />
           </div>
-          <div className="p-lg space-y-md">
-            <SkeletonBase className="h-4 w-full" />
-            <SkeletonBase className="h-4 w-full" />
-            <SkeletonBase className="h-4 w-full" />
+          <div className="space-y-md p-lg">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )
@@ -87,30 +77,30 @@ export function OrganizationDetailSkeleton() {
 
 export function OrganizationSettingsSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-gutter py-xl space-y-lg">
-      <SkeletonBase className="h-5 w-1/6" />
-      <SkeletonBase className="h-8 w-1/3" />
-      <div className="glass-card p-lg border border-outline-variant/30 flex items-center gap-lg">
-        <SkeletonBase className="w-20 h-20 rounded-lg" />
-        <div className="space-y-sm flex-1">
-          <SkeletonBase className="h-9 w-28 rounded-lg" />
-          <SkeletonBase className="h-4.5 w-1/2" />
+    <div className="mx-auto max-w-4xl space-y-lg px-gutter py-xl">
+      <Skeleton className="h-5 w-1/6" />
+      <Skeleton className="h-8 w-1/3" />
+      <Card padding="md" className="flex items-center gap-lg">
+        <Skeleton className="h-20 w-20 rounded-lg" />
+        <div className="flex-1 space-y-sm">
+          <Skeleton className="h-9 w-28 rounded-lg" />
+          <Skeleton className="h-4.5 w-1/2" />
         </div>
-      </div>
-      <div className="glass-card p-lg border border-outline-variant/30 space-y-md">
+      </Card>
+      <Card padding="md" className="space-y-md">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-md">
+          <div key={i} className="grid grid-cols-1 gap-md md:grid-cols-2">
             <div className="space-y-sm">
-              <SkeletonBase className="h-4 w-1/4" />
-              <SkeletonBase className="h-10 w-full" />
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-10 w-full" />
             </div>
             <div className="space-y-sm">
-              <SkeletonBase className="h-4 w-1/4" />
-              <SkeletonBase className="h-10 w-full" />
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-10 w-full" />
             </div>
           </div>
         ))}
-      </div>
+      </Card>
     </div>
   )
 }
