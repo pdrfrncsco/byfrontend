@@ -10,6 +10,10 @@ import type {
   OrganizationUpdateData,
   OrganizationLaunchResult,
   OnboardingStatus,
+  OrgMember,
+  OrgMemberInviteData,
+  ClubAffiliationRequest,
+  ClubAffiliationReviewData,
 } from '../types'
 
 export const organizationApi = {
@@ -113,6 +117,56 @@ export const organizationApi = {
   async getKpis(slug: string): Promise<OrganizationKpis> {
     const response = await client.get<ApiResponse<OrganizationKpis>>(
       API_ROUTES.ORGANIZATIONS.PUBLIC.KPIS(slug),
+    )
+    return response.data.data
+  },
+
+  // ── Phase C: Member Management ──────────────────────────────────────────────
+
+  async getMembers(): Promise<OrgMember[]> {
+    const response = await client.get<ApiResponse<OrgMember[]>>(API_ROUTES.ORGANIZATIONS.MEMBERS)
+    return response.data.data
+  },
+
+  async addMember(data: OrgMemberInviteData): Promise<OrgMember> {
+    const response = await client.post<ApiResponse<OrgMember>>(
+      API_ROUTES.ORGANIZATIONS.MEMBERS,
+      data,
+    )
+    return response.data.data
+  },
+
+  async updateMember(
+    id: string,
+    data: Partial<{ role: string; is_active: boolean }>,
+  ): Promise<OrgMember> {
+    const response = await client.patch<ApiResponse<OrgMember>>(
+      API_ROUTES.ORGANIZATIONS.MEMBER_DETAIL(id),
+      data,
+    )
+    return response.data.data
+  },
+
+  async removeMember(id: string): Promise<void> {
+    await client.delete(API_ROUTES.ORGANIZATIONS.MEMBER_DETAIL(id))
+  },
+
+  // ── Phase C: Club Affiliation Requests ──────────────────────────────────────
+
+  async getClubRequests(): Promise<ClubAffiliationRequest[]> {
+    const response = await client.get<ApiResponse<ClubAffiliationRequest[]>>(
+      API_ROUTES.ORGANIZATIONS.CLUB_REQUESTS,
+    )
+    return response.data.data
+  },
+
+  async reviewClubRequest(
+    id: string,
+    data: ClubAffiliationReviewData,
+  ): Promise<ClubAffiliationRequest> {
+    const response = await client.patch<ApiResponse<ClubAffiliationRequest>>(
+      API_ROUTES.ORGANIZATIONS.CLUB_REQUEST_REVIEW(id),
+      data,
     )
     return response.data.data
   },

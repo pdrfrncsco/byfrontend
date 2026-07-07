@@ -116,3 +116,43 @@ export interface OnboardingStatus {
   competitions_count: number
   organization: Organization | null
 }
+
+// ── Phase C: Member Management ────────────────────────────────────────────────
+
+export interface OrgMember {
+  id: string
+  user: { id: string; email: string; full_name: string }
+  role: string
+  is_active: boolean
+  joined_at: string
+}
+
+export interface OrgMemberInviteData {
+  email: string
+  role?: string
+}
+
+// ── Phase C: Club Affiliation Requests ───────────────────────────────────────
+
+export interface ClubAffiliationRequest {
+  id: string
+  name: string
+  short_name?: string
+  city?: string
+  country?: string
+  email?: string
+  phone?: string
+  stadium_name?: string
+  status: string
+  status_label?: string
+  submitted_by_email?: string
+  review_notes?: string
+  reviewed_by_email?: string
+  reviewed_at?: string
+  created_at?: string
+}
+
+export interface ClubAffiliationReviewData {
+  approve: boolean
+  review_notes?: string
+}

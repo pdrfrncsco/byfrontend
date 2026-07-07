@@ -2,7 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useAuth } from '@/app/providers'
 import { organizationApi } from '../services/organization.api'
-import type { OrganizationListParams, OrganizationUpdateData } from '../types'
+import type {
+  OrganizationListParams,
+  OrganizationUpdateData,
+  OrgMemberInviteData,
+  ClubAffiliationReviewData,
+} from '../types'
 
 /**
  * Query keys factory for organization queries.
@@ -195,5 +200,115 @@ export function useOrganizationKpis(slug: string | undefined) {
     queryKey: organizationKeys.kpis(slug || ''),
     queryFn: () => organizationApi.getKpis(slug!),
     enabled: !!slug,
+  })
+}
+
+// ── Phase C: Member Management ────────────────────────────────────────────────
+
+/**
+ * Hook para listar membros da organização
+ */
+export function useOrganizationMembers() {
+  const { isAuthenticated } = useAuth()
+  return useQuery({
+    queryKey: ['organization', 'members'],
+    queryFn: () => organizationApi.getMembers(),
+    enabled: isAuthenticated,
+  })
+}
+
+/**
+ * Hook para convidar membro
+ */
+export function useAddMember() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: OrgMemberInviteData) => organizationApi.addMember(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organization', 'members'] })
+      toast.success('Membro convidado com sucesso.')
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao convidar membro.'
+      toast.error(message)
+    },
+  })
+}
+
+/**
+ * Hook para atualizar membro
+ */
+export function useUpdateMember() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<{ role: string; is_active: boolean }> }) =>
+      organizationApi.updateMember(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organization', 'members'] })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao atualizar membro.'
+      toast.error(message)
+    },
+  })
+}
+
+/**
+ * Hook para remover membro
+ */
+export function useRemoveMember() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => organizationApi.removeMember(id),
+    onSuccess: () => {
+      toast.success('Membro removido com sucesso.')
+      queryClient.invalidateQueries({ queryKey: ['organization', 'members'] })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao remover membro.'
+      toast.error(message)
+    },
+  })
+}
+
+// ── Phase C: Club Affiliation Requests ────────────────────────────────────────
+
+/**
+ * Hook para listar pedidos de filiação de clubes
+ */
+export function useOrganizationClubRequests() {
+  const { isAuthenticated } = useAuth()
+  return useQuery({
+    queryKey: ['organization', 'club-requests'],
+    queryFn: () => organizationApi.getClubRequests(),
+    enabled: isAuthenticated,
+  })
+}
+
+/**
+ * Hook para rever pedido de filiação de clube
+ */
+export function useReviewClubRequest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ClubAffiliationReviewData }) =>
+      organizationApi.reviewClubRequest(id, data),
+    onSuccess: (_result, variables) => {
+      const action = variables.data.approve ? 'aprovado' : 'rejeitado'
+      toast.success(`Pedido ${action} com sucesso.`)
+      queryClient.invalidateQueries({ queryKey: ['organization', 'club-requests'] })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao processar pedido.'
+      toast.error(message)
+    },
   })
 }
