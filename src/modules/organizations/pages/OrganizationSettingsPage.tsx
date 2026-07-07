@@ -11,6 +11,8 @@ import {
   Palette,
   Settings,
   UploadCloud,
+  Shield,
+  Trophy,
 } from 'lucide-react'
 import {
   Button,
@@ -31,6 +33,8 @@ import {
 } from '../hooks'
 import { organizationUpdateSchema, type OrganizationUpdateFormData } from '../schemas/organization.schema'
 import { OrganizationSettingsSkeleton } from '../components'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { ROUTES } from '@/constants/routes'
 
 export function OrganizationSettingsPage() {
   const { data: organization, isLoading } = useOrganizationMe()
@@ -75,6 +79,13 @@ export function OrganizationSettingsPage() {
     }
   }, [organization, reset])
 
+  const sidebarLinks = [
+    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Clubes Associados', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
+    { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" />, active: true },
+  ]
+
   const onSubmit = (data: OrganizationUpdateFormData) => {
     updateMutation.mutate(data, {
       onSuccess: () => toast.success('Organização atualizada com sucesso.'),
@@ -116,50 +127,53 @@ export function OrganizationSettingsPage() {
   }
 
   if (isLoading) {
-    return <OrganizationSettingsSkeleton />
+    return (
+      <DashboardLayout
+        title="Definições da Organização"
+        subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
+        dashboardType="federation"
+        sidebarLinks={sidebarLinks}
+      >
+        <OrganizationSettingsSkeleton />
+      </DashboardLayout>
+    )
   }
 
   if (!organization) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-lg text-center">
-        <Card padding="lg" className="max-w-md space-y-md">
-          <p className="mb-md text-on-surface-variant">
-            Não tem nenhuma organização associada a este utilizador.
-          </p>
-          <Button variant="primary" size="sm" asChild>
-            <Link to="/dashboard">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Voltar ao Dashboard</span>
-            </Link>
-          </Button>
-        </Card>
-      </div>
+      <DashboardLayout
+        title="Definições da Organização"
+        subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
+        dashboardType="federation"
+        sidebarLinks={sidebarLinks}
+      >
+        <div className="flex items-center justify-center p-lg text-center">
+          <Card padding="lg" className="max-w-md space-y-md">
+            <p className="mb-md text-on-surface-variant">
+              Não tem nenhuma organização associada a este utilizador.
+            </p>
+            <Button variant="primary" size="sm" asChild>
+              <Link to="/dashboard">
+                <ArrowLeft className="h-4 w-4" />
+                <span>Voltar ao Dashboard</span>
+              </Link>
+            </Button>
+          </Card>
+        </div>
+      </DashboardLayout>
     )
   }
 
   const firstLetter = organization.name?.charAt(0) || '?'
 
   return (
-    <div className="min-h-screen bg-background pb-xl text-on-surface">
-      <div className="glow-bg">
-        <div className="glow-circle glow-1" />
-        <div className="glow-circle glow-2" />
-      </div>
-
-      <div className="mx-auto max-w-4xl space-y-lg px-gutter py-xl">
-        <div className="space-y-sm">
-          <Button variant="ghost" size="sm" asChild className="h-auto px-0 text-xs">
-            <Link to="/dashboard">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Voltar ao Dashboard</span>
-            </Link>
-          </Button>
-          <h1 className="font-display-lg text-4xl tracking-tight text-primary">Definições da Organização</h1>
-          <p className="text-body-md text-on-surface-variant">
-            Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação.
-          </p>
-        </div>
-
+    <DashboardLayout
+      title="Definições da Organização"
+      subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
+      dashboardType="federation"
+      sidebarLinks={sidebarLinks}
+    >
+      <div className="mx-auto max-w-4xl space-y-lg pb-xl">
         <Card padding="none" className="overflow-hidden">
           <CardHeader>
             <CardTitle>
@@ -440,6 +454,6 @@ export function OrganizationSettingsPage() {
           </div>
         </form>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

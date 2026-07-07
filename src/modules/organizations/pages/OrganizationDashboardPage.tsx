@@ -23,6 +23,9 @@ import {
 import { KpiCard } from '../components'
 import { ArrowRight, PlusCircle, Settings, Shield, Trophy, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
+import { useTransfers } from '@/modules/transfers'
+import { toast } from 'sonner'
+import type { OrganizationClub } from '../types'
 
 interface OrganizationTournamentRow {
   id: string
@@ -45,6 +48,28 @@ function getStatusBadge(status: string) {
   return <Badge variant="default">Planeado</Badge>
 }
 
+function formatTimeAgo(dateString?: string | null): string {
+  if (!dateString) return 'Recentemente'
+  try {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Recentemente'
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffMins < 1) return 'Agora mesmo'
+    if (diffMins < 60) return `Há ${diffMins} min`
+    if (diffHours < 24) return `Há ${diffHours} h`
+    if (diffDays === 1) return 'Ontem'
+    if (diffDays < 30) return `Há ${diffDays} dias`
+    return date.toLocaleDateString('pt-AO', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  } catch {
+    return 'Recentemente'
+  }
+}
+
 export default function OrganizationDashboardPage() {
   const { data: org, isLoading: isLoadingOrg } = useOrganizationMe()
   const slug = org?.slug
@@ -52,10 +77,11 @@ export default function OrganizationDashboardPage() {
   const { data: kpis, isLoading: isLoadingKpis } = useOrganizationKpis(slug)
   const { data: clubs, isLoading: isLoadingClubs } = useOrganizationClubs(slug)
   const { data: tournaments, isLoading: isLoadingTournaments } = useOrganizationTournaments(slug)
+  const { data: transfers, isLoading: isLoadingTransfers } = useTransfers({ page_size: 4 })
 
   const headerActions = (
     <Button variant="primary" size="sm" asChild>
-      <Link to={ROUTES.ONBOARDING + '/competition'}>
+      <Link to={ROUTES.COMPETITIONS}>
         <PlusCircle className="h-4 w-4" />
         <span>Criar Competição</span>
       </Link>
@@ -65,11 +91,12 @@ export default function OrganizationDashboardPage() {
   const sidebarLinks = [
     { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" />, active: true },
     { label: 'Clubes Associados', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.ONBOARDING + '/competition', icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
   ]
 
-  const isLoadingAny = isLoadingOrg || isLoadingKpis || isLoadingTournaments || isLoadingClubs
+  const isLoadingKpiSection = isLoadingOrg || isLoadingKpis
+  const isLoadingTournamentsSection = isLoadingOrg || isLoadingTournaments
 
   const tournamentRows = useMemo(
     () => (Array.isArray(tournaments) ? (tournaments as OrganizationTournamentRow[]) : []),
@@ -109,6 +136,55 @@ export default function OrganizationDashboardPage() {
     [],
   )
 
+  const clubRows = useMemo(
+    () => (Array.isArray(clubs) ? (clubs as OrganizationClub[]) : []),
+    [clubs],
+  )
+
+  const clubColumns = useMemo<ColumnDef<OrganizationClub>[]>(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Clube',
+        cell: ({ row }) => (
+          <div className="flex items-center gap-sm">
+            {row.original.logo_url ? (
+              <img src={row.original.logo_url} alt={row.original.name} className="h-6 w-6 rounded-full object-cover" />
+            ) : (
+              <div className="h-6 w-6 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-[10px]">
+                {row.original.name.slice(0, 2).toUpperCase()}
+              </div>
+            )}
+            <span className="font-semibold">{row.original.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'city',
+        header: 'Cidade/Província',
+        cell: ({ row }) => <span className="text-xs text-on-surface-variant">{row.original.city || '—'}</span>,
+      },
+      {
+        accessorKey: 'stadium_name',
+        header: 'Estádio',
+        cell: ({ row }) => <span className="text-xs text-on-surface-variant">{row.original.stadium_name || '—'}</span>,
+      },
+      {
+        id: 'status',
+        header: 'Estado',
+        cell: ({ row }) => {
+          const s = row.original.status || 'active'
+          return s.toLowerCase() === 'active' ? (
+            <Badge variant="success">Ativo</Badge>
+          ) : (
+            <Badge variant="default">{row.original.status_label || 'Pendente'}</Badge>
+          )
+        },
+      },
+    ],
+    [],
+  )
+
   return (
     <DashboardLayout
       title={org ? `Portal — ${org.name}` : 'Portal da Organização'}
@@ -126,7 +202,7 @@ export default function OrganizationDashboardPage() {
         </div>
 
         <div className="flex w-full gap-md md:w-auto">
-          {isLoadingAny ? (
+          {isLoadingKpiSection ? (
             <>
               <Skeleton className="h-20 w-32 rounded-xl" />
               <Skeleton className="h-20 w-32 rounded-xl" />
@@ -142,7 +218,7 @@ export default function OrganizationDashboardPage() {
               />
               <KpiCard
                 label="Clubes"
-                value={kpis?.total_clubs ?? (Array.isArray(clubs) ? clubs.length : 0)}
+                value={kpis?.total_clubs ?? clubRows.length}
                 icon={<Shield className="h-4 w-4" />}
                 className="min-w-[120px] flex-1 py-md px-lg md:flex-none"
               />
@@ -158,6 +234,7 @@ export default function OrganizationDashboardPage() {
       </div>
 
       <div className="grid animate-fade-in grid-cols-12 gap-lg">
+        {/* Competições */}
         <Card padding="none" className="col-span-12 flex flex-col justify-between overflow-hidden lg:col-span-8">
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>
@@ -165,7 +242,7 @@ export default function OrganizationDashboardPage() {
               <span>Competições Organizacionais</span>
             </CardTitle>
             <Button variant="link" size="sm" asChild className="text-xs">
-              <Link to={ROUTES.ONBOARDING + '/competition'}>
+              <Link to={ROUTES.COMPETITIONS}>
                 <span>Ver todas</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -176,11 +253,11 @@ export default function OrganizationDashboardPage() {
             <DataTable
               columns={tournamentColumns}
               data={tournamentRows}
-              isLoading={isLoadingAny}
+              isLoading={isLoadingTournamentsSection}
               emptyMessage="Nenhuma competição configurada de momento."
               emptyAction={
                 <Button variant="primary" size="sm" asChild>
-                  <Link to={ROUTES.ONBOARDING + '/competition'}>
+                  <Link to={ROUTES.COMPETITIONS}>
                     <PlusCircle className="h-3.5 w-3.5" />
                     <span>Configurar Competição</span>
                   </Link>
@@ -190,6 +267,7 @@ export default function OrganizationDashboardPage() {
           </CardContent>
         </Card>
 
+        {/* Transferências */}
         <Card padding="none" className="col-span-12 flex flex-col justify-between lg:col-span-4">
           <div>
             <CardHeader>
@@ -202,24 +280,33 @@ export default function OrganizationDashboardPage() {
               <p className="text-xs text-on-surface-variant">
                 Registo de transferências e renovações de contratos federativos.
               </p>
-              <div className="space-y-sm">
-                <TransferItem
-                  playerName="Manuel Neto"
-                  fromClub="Atlético de Luanda"
-                  toClub="1º de Agosto"
-                  timeAgo="2 horas atrás"
-                />
-                <TransferItem
-                  playerName="Gelson Kiala"
-                  fromClub="Sagrada Esperança"
-                  toClub="Petro de Luanda"
-                  timeAgo="Ontem"
-                />
-              </div>
+              
+              {isLoadingTransfers ? (
+                <div className="space-y-sm">
+                  <Skeleton className="h-14 w-full rounded" />
+                  <Skeleton className="h-14 w-full rounded" />
+                </div>
+              ) : transfers && transfers.length > 0 ? (
+                <div className="space-y-sm">
+                  {transfers.map((transfer) => (
+                    <TransferItem
+                      key={transfer.id}
+                      playerName={transfer.player_name}
+                      fromClub={transfer.from_club_name || 'Sem Clube'}
+                      toClub={transfer.to_club_name}
+                      timeAgo={formatTimeAgo(transfer.completed_date || transfer.request_date)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-md text-center text-xs text-on-surface-variant">
+                  Nenhuma transferência recente registada.
+                </div>
+              )}
             </CardContent>
           </div>
 
-          <CardFooter className="justify-center">
+          <CardFooter className="justify-center border-t border-outline-variant/20 pt-sm">
             <Button variant="link" size="sm" asChild className="text-xs">
               <Link to={ROUTES.TRANSFERS || '/transfers'}>
                 <span>Ver painel de transferências</span>
@@ -228,6 +315,110 @@ export default function OrganizationDashboardPage() {
             </Button>
           </CardFooter>
         </Card>
+
+        {/* Clubes Associados */}
+        <Card padding="none" className="col-span-12 flex flex-col justify-between overflow-hidden lg:col-span-8">
+          <CardHeader className="flex-row items-center justify-between">
+            <CardTitle>
+              <Shield className="h-5 w-5 text-primary" aria-hidden="true" />
+              <span>Clubes Associados</span>
+            </CardTitle>
+            <Button variant="link" size="sm" asChild className="text-xs">
+              <Link to={ROUTES.CLUBS}>
+                <span>Ver todos</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </CardHeader>
+
+          <CardContent className="p-0">
+            <DataTable
+              columns={clubColumns}
+              data={clubRows}
+              isLoading={isLoadingClubs}
+              emptyMessage="Nenhum clube associado registado."
+              emptyAction={
+                <Button variant="primary" size="sm" asChild>
+                  <Link to={ROUTES.CLUBS}>
+                    <PlusCircle className="h-3.5 w-3.5" />
+                    <span>Vincular Novo Clube</span>
+                  </Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+
+        {/* Ações Rápidas & Atividade Recente */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-lg">
+          {/* Ações Rápidas */}
+          <Card className="flex-1">
+            <CardHeader className="pb-sm">
+              <CardTitle>
+                <span>Ações Rápidas</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-sm">
+              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
+                <Link to={ROUTES.CLUBS}>
+                  <PlusCircle className="h-4 w-4 text-primary" />
+                  <span>Vincular Novo Clube</span>
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
+                <Link to={ROUTES.COMPETITIONS}>
+                  <Trophy className="h-4 w-4 text-primary" />
+                  <span>Publicar Nova Competição</span>
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="justify-start gap-md"
+                onClick={() => toast.success('Gestão de Membros estará disponível na Fase C.')}
+              >
+                <Users className="h-4 w-4 text-primary" />
+                <span>Convidar Membro</span>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Atividade Recente */}
+          <Card className="flex-1">
+            <CardHeader className="pb-sm">
+              <CardTitle>
+                <span>Atividade Recente</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-sm">
+              <div className="flex gap-md text-xs items-start">
+                <span className="bg-primary-container text-primary font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Sistema</span>
+                <div>
+                  <p className="font-semibold text-on-surface">Configuração concluída</p>
+                  <p className="text-on-surface-variant text-[10px]">O portal da organização foi configurado com sucesso.</p>
+                </div>
+              </div>
+              {clubRows.length > 0 && (
+                <div className="flex gap-md text-xs items-start border-t border-outline-variant/20 pt-sm">
+                  <span className="bg-secondary-container text-[#adb4ce] font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Clubes</span>
+                  <div>
+                    <p className="font-semibold text-on-surface">Clube filiado</p>
+                    <p className="text-on-surface-variant text-[10px]">{clubRows[0].name} associado à organização.</p>
+                  </div>
+                </div>
+              )}
+              {tournamentRows.length > 0 && (
+                <div className="flex gap-md text-xs items-start border-t border-outline-variant/20 pt-sm">
+                  <span className="bg-tertiary-container text-[#4f3e00] font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Torneios</span>
+                  <div>
+                    <p className="font-semibold text-on-surface">Competição ativa</p>
+                    <p className="text-on-surface-variant text-[10px]">{tournamentRows[0].name} listado no portal.</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   )

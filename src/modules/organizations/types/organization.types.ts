@@ -71,6 +71,21 @@ export interface OrganizationListParams {
   type?: string
 }
 
+export interface OrganizationClub {
+  id: string
+  name: string
+  slug: string
+  short_name?: string | null
+  logo_url?: string | null
+  primary_color?: string | null
+  city?: string | null
+  country?: string
+  location?: string
+  stadium_name?: string | null
+  status?: string
+  status_label?: string
+}
+
 export interface OrganizationUpdateData {
   name?: string
   type?: OrganizationType | string
