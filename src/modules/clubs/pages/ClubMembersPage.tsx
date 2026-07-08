@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -82,6 +82,7 @@ export default function ClubMembersPage() {
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
   const [editingMember, setEditingMember] = useState<ClubMember | null>(null)
+  const formCardRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -117,6 +118,7 @@ export default function ClubMembersPage() {
       return matchesSearch && matchesRole
     })
   }, [members, search, roleFilter])
+  const hasFilters = search.trim() !== '' || roleFilter !== 'all'
 
   const columns = useMemo<ColumnDef<ClubMember>[]>(() => [
     {
@@ -204,6 +206,7 @@ export default function ClubMembersPage() {
       {
         onSuccess: () => {
           reset(toDefaults())
+          formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         },
       },
     )
@@ -266,7 +269,7 @@ export default function ClubMembersPage() {
         </section>
 
         <div className="grid gap-lg xl:grid-cols-[0.9fr_1.1fr]">
-          <Card variant="flat" padding="none">
+          <Card ref={formCardRef} variant="flat" padding="none">
             <CardHeader>
               <CardTitle>{editingMember ? 'Editar membro' : 'Novo membro'}</CardTitle>
             </CardHeader>
@@ -345,10 +348,28 @@ export default function ClubMembersPage() {
                 </div>
               ) : memberRows.length === 0 ? (
                 <EmptyState
-                  title="Sem membros encontrados"
-                  description="Adicione o primeiro membro ou ajuste a pesquisa para ver resultados."
+                  title={hasFilters ? 'Sem resultados' : 'Sem membros registados'}
+                  description={
+                    hasFilters
+                      ? 'Nenhum membro corresponde aos filtros atuais. Remova os filtros para ver a lista completa.'
+                      : 'Adicione o primeiro membro para começar a estruturar o clube.'
+                  }
                   icon={Users}
-                  action={{ label: 'Novo membro', onClick: () => setEditingMember(null) }}
+                    action={{
+                    label: hasFilters ? 'Limpar filtros' : 'Focar formulário',
+                    onClick: () => {
+                      if (hasFilters) {
+                        setSearch('')
+                        setRoleFilter('all')
+                        return
+                      }
+                      setEditingMember(null)
+                      formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      window.requestAnimationFrame(() => {
+                        document.getElementById('full_name')?.focus()
+                      })
+                    },
+                  }}
                 />
               ) : (
                 <DataTable columns={columns} data={memberRows} isLoading={false} emptyMessage="Sem membros." enableSorting={false} />

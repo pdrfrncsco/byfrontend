@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRightLeft, Filter, SlidersHorizontal, Trophy } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
@@ -51,6 +51,7 @@ function formatFee(value?: string | number | null) {
 }
 
 export default function ClubTransfersPage() {
+  const navigate = useNavigate()
   const { data: club, isLoading: clubLoading } = useClubMe()
   const { data: transfersData, isLoading } = useTransfers({ page_size: 50, club_id: club?.id })
   const [query, setQuery] = useState('')
@@ -80,6 +81,7 @@ export default function ClubTransfersPage() {
       return matchesSearch && matchesStatus && matchesType
     })
   }, [query, statusFilter, typeFilter, transfersData?.results])
+  const hasFilters = query.trim() !== '' || statusFilter !== 'all' || typeFilter !== 'all'
 
   const columns = useMemo<ColumnDef<Transfer>[]>(() => [
     {
@@ -214,9 +216,25 @@ export default function ClubTransfersPage() {
               </div>
             ) : rows.length === 0 ? (
               <EmptyState
-                title="Sem transferências"
-                description="Ajuste os filtros ou aguarde novos movimentos para este clube."
+                title={hasFilters ? 'Sem resultados' : 'Sem transferências'}
+                description={
+                  hasFilters
+                    ? 'Nenhuma transferência corresponde aos filtros atuais. Limpe os filtros para ver todos os movimentos.'
+                    : 'Ainda não há movimentos registados para este clube.'
+                }
                 icon={Trophy}
+                  action={{
+                  label: hasFilters ? 'Limpar filtros' : 'Ir ao dashboard',
+                  onClick: () => {
+                    if (hasFilters) {
+                      setQuery('')
+                      setStatusFilter('all')
+                      setTypeFilter('all')
+                      return
+                    }
+                    navigate(ROUTES.DASHBOARD_CLUB)
+                  },
+                }}
               />
             ) : (
               <DataTable columns={columns} data={rows} isLoading={false} emptyMessage="Sem transferências." enableSorting={false} />

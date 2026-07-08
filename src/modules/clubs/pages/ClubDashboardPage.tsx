@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   FileText,
@@ -31,6 +31,7 @@ function formatRelative(dateString?: string | null): string {
 }
 
 export default function ClubDashboardPage() {
+  const navigate = useNavigate()
   const { data: club, isLoading: clubLoading } = useClubMe()
   const slug = club?.slug
 
@@ -187,6 +188,10 @@ export default function ClubDashboardPage() {
                   title="Sem membros"
                   description="Adicione os primeiros membros para estruturar a gestão do clube."
                   icon={Users}
+                  action={{
+                    label: 'Gerir membros',
+                    onClick: () => navigate(ROUTES.DASHBOARD_CLUB_MEMBERS),
+                  }}
                 />
               ) : (
                 members?.slice(0, 5).map((member) => (
@@ -232,6 +237,10 @@ export default function ClubDashboardPage() {
                     title="Sem transferências"
                     description="Ainda não há movimentos registados para este clube."
                     icon={Trophy}
+                    action={{
+                      label: 'Ver transferências',
+                      onClick: () => navigate(ROUTES.DASHBOARD_CLUB_TRANSFERS),
+                    }}
                   />
                 ) : (
                   recentTransfers.map((transfer) => (
@@ -280,11 +289,23 @@ export default function ClubDashboardPage() {
               <CardTitle>Documentos</CardTitle>
             </CardHeader>
             <CardContent className="space-y-sm">
-              <p className="text-sm text-on-surface-variant">Total</p>
-              <p className="text-3xl font-bold text-on-surface">{totalDocuments}</p>
-              <Button asChild variant="secondary" size="sm" className="w-full">
-                <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>Gerir documentos</Link>
-              </Button>
+              {totalDocuments === 0 ? (
+                <div className="space-y-sm rounded-2xl border border-dashed border-outline-variant/30 bg-surface-container/40 p-md">
+                  <p className="font-semibold text-on-surface">Ainda sem documentos</p>
+                  <p className="text-sm text-on-surface-variant">Carregue regulamentos, contratos ou licenças.</p>
+                  <Button asChild variant="secondary" size="sm" className="w-full">
+                    <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>Gerir documentos</Link>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-on-surface-variant">Total</p>
+                  <p className="text-3xl font-bold text-on-surface">{totalDocuments}</p>
+                  <Button asChild variant="secondary" size="sm" className="w-full">
+                    <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>Gerir documentos</Link>
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -293,11 +314,23 @@ export default function ClubDashboardPage() {
               <CardTitle>Patrocinadores</CardTitle>
             </CardHeader>
             <CardContent className="space-y-sm">
-              <p className="text-sm text-on-surface-variant">Total</p>
-              <p className="text-3xl font-bold text-on-surface">{totalSponsors}</p>
-              <Button asChild variant="secondary" size="sm" className="w-full">
-                <Link to={ROUTES.DASHBOARD_CLUB_SPONSORS}>Gerir patrocinadores</Link>
-              </Button>
+              {totalSponsors === 0 ? (
+                <div className="space-y-sm rounded-2xl border border-dashed border-outline-variant/30 bg-surface-container/40 p-md">
+                  <p className="font-semibold text-on-surface">Ainda sem patrocinadores</p>
+                  <p className="text-sm text-on-surface-variant">Adicione parceiros para fortalecer a vitrine comercial.</p>
+                  <Button asChild variant="secondary" size="sm" className="w-full">
+                    <Link to={ROUTES.DASHBOARD_CLUB_SPONSORS}>Gerir patrocinadores</Link>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-on-surface-variant">Total</p>
+                  <p className="text-3xl font-bold text-on-surface">{totalSponsors}</p>
+                  <Button asChild variant="secondary" size="sm" className="w-full">
+                    <Link to={ROUTES.DASHBOARD_CLUB_SPONSORS}>Gerir patrocinadores</Link>
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

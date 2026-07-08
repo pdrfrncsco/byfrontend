@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Palette, Globe, Settings, Eye, LayoutDashboard, ArrowRightLeft, FileText, Users, Handshake } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Textarea } from '@/components/ui'
-import { ErrorState } from '@/components/ui/empty-state'
+import { EmptyState } from '@/components/ui/empty-state'
 import { ClubDetailSkeleton } from '@/modules/clubs/components/ClubSkeleton'
 import { useClubMe, useUpdateClub, useUploadClubLogo } from '@/modules/clubs/hooks/useClubs'
 import { clubSettingsSchema, type ClubSettingsFormData } from '@/modules/clubs/schemas'
@@ -31,6 +31,7 @@ function toFormDefaults(club?: ReturnType<typeof useClubMe>['data']): ClubSettin
 }
 
 export default function ClubSettingsPage() {
+  const navigate = useNavigate()
   const { data: club, isLoading } = useClubMe()
   const updateMutation = useUpdateClub()
   const uploadLogoMutation = useUploadClubLogo()
@@ -114,10 +115,14 @@ export default function ClubSettingsPage() {
         dashboardType="club"
         sidebarLinks={sidebarLinks}
       >
-        <ErrorState
+        <EmptyState
           title="Sem clube associado"
-          message="Não foi possível localizar um clube ligado a esta conta."
-          onRetry={() => window.location.reload()}
+          description="Esta conta ainda não tem um clube associado para configurar."
+          icon={Settings}
+          action={{
+            label: 'Voltar ao dashboard',
+            onClick: () => navigate(ROUTES.DASHBOARD_CLUB),
+          }}
         />
       </DashboardLayout>
     )

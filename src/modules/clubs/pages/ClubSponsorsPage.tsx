@@ -49,6 +49,7 @@ export default function ClubSponsorsPage() {
   const createMutation = useCreateClubSponsor()
   const deleteMutation = useDeleteClubSponsor()
   const logoInputRef = useRef<HTMLInputElement>(null)
+  const formCardRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -158,6 +159,7 @@ export default function ClubSponsorsPage() {
             logo: undefined,
           })
           if (logoInputRef.current) logoInputRef.current.value = ''
+          formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         },
       },
     )
@@ -214,7 +216,7 @@ export default function ClubSponsorsPage() {
         </section>
 
         <div className="grid gap-lg xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="flat" padding="none">
+          <Card ref={formCardRef} variant="flat" padding="none">
             <CardHeader>
               <CardTitle>Novo patrocinador</CardTitle>
             </CardHeader>
@@ -295,6 +297,12 @@ export default function ClubSponsorsPage() {
                   title="Sem patrocinadores"
                   description="Adicione parceiros para começar a construir a vitrine comercial do clube."
                   icon={Handshake}
+                  action={{
+                    label: 'Focar formulário',
+                    onClick: () => {
+                      document.getElementById('name')?.focus()
+                    },
+                  }}
                 />
               ) : (
                 <DataTable columns={columns} data={sponsorRows} isLoading={false} emptyMessage="Sem patrocinadores." enableSorting={false} />

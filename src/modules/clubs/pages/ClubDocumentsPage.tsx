@@ -47,6 +47,7 @@ export default function ClubDocumentsPage() {
   const createMutation = useCreateClubDocument()
   const deleteMutation = useDeleteClubDocument()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const formCardRef = useRef<HTMLDivElement>(null)
 
   const {
     register,
@@ -153,6 +154,7 @@ export default function ClubDocumentsPage() {
             document: undefined as unknown as File,
           } as ClubDocumentFormData)
           if (fileInputRef.current) fileInputRef.current.value = ''
+          formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         },
       },
     )
@@ -209,7 +211,7 @@ export default function ClubDocumentsPage() {
         </section>
 
         <div className="grid gap-lg xl:grid-cols-[0.95fr_1.05fr]">
-          <Card variant="flat" padding="none">
+          <Card ref={formCardRef} variant="flat" padding="none">
             <CardHeader>
               <CardTitle>Novo documento</CardTitle>
             </CardHeader>
@@ -286,6 +288,12 @@ export default function ClubDocumentsPage() {
                   title="Sem documentos"
                   description="Carregue o primeiro documento para começar a estruturar a biblioteca do clube."
                   icon={FileText}
+                  action={{
+                    label: 'Focar formulário',
+                    onClick: () => {
+                      document.getElementById('title')?.focus()
+                    },
+                  }}
                 />
               ) : (
                 <DataTable columns={columns} data={documentRows} isLoading={false} emptyMessage="Sem documentos." enableSorting={false} />
