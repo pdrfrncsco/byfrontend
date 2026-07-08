@@ -12,6 +12,17 @@ export {
 } from './card'
 export { DataTable, type DataTableProps } from './data-table'
 export { EmptyState, ErrorState, type EmptyStateProps, type ErrorStateProps } from './empty-state'
+export {
+  PermissionDenied,
+  NotFound,
+  ValidationError,
+  ServerError,
+  getErrorComponent,
+  type PermissionDeniedProps,
+  type NotFoundProps,
+  type ValidationErrorProps,
+  type ServerErrorProps,
+} from './error-states'
 export { FormField, type FormFieldProps } from './form-field'
 export { Input, inputVariants, type InputProps } from './input'
 export { Label, labelVariants } from './label'
