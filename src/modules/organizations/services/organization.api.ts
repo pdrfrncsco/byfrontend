@@ -72,8 +72,8 @@ export const organizationApi = {
     return response.data.data
   },
 
-  async getPublicDetail(slug: string): Promise<Organization> {
-    const response = await client.get<ApiResponse<Organization>>(
+  async getPublicDetail(slug: string): Promise<PublicOrganization> {
+    const response = await client.get<ApiResponse<PublicOrganization>>(
       API_ROUTES.ORGANIZATIONS.PUBLIC.GET(slug),
     )
     return response.data.data

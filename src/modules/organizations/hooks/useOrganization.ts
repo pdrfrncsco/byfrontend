@@ -128,8 +128,9 @@ export function useSubscribeOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (slug: string) => organizationApi.subscribe(slug),
-    onSuccess: () => {
+    onSuccess: (_data, slug) => {
       queryClient.invalidateQueries({ queryKey: organizationKeys.all })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.publicDetail(slug) })
       toast.success('Subscrito com sucesso.')
     },
     onError: (error: any) => {
@@ -147,8 +148,9 @@ export function useUnsubscribeOrganization() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (slug: string) => organizationApi.unsubscribe(slug),
-    onSuccess: () => {
+    onSuccess: (_data, slug) => {
       queryClient.invalidateQueries({ queryKey: organizationKeys.all })
+      queryClient.invalidateQueries({ queryKey: organizationKeys.publicDetail(slug) })
       toast.success('Subscrição cancelada com sucesso.')
     },
     onError: (error: any) => {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -42,7 +42,6 @@ import {
 
 export function OrganizationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const [isSubscribed, setIsSubscribed] = useState<boolean | null>(null)
 
   const {
     data: organization,
@@ -76,16 +75,17 @@ export function OrganizationDetailPage() {
 
   const handleSubscribe = () => {
     if (!slug) return
-    subscribeMutation.mutate(slug, { onSuccess: () => setIsSubscribed(true) })
+    subscribeMutation.mutate(slug)
   }
 
   const handleUnsubscribe = () => {
     if (!slug) return
-    unsubscribeMutation.mutate(slug, { onSuccess: () => setIsSubscribed(false) })
+    unsubscribeMutation.mutate(slug)
   }
 
   const primaryColor = organization.primary_color || '#1B4D3E'
   const firstLetter = organization.name?.charAt(0) || '?'
+  const isSubscribed = organization.is_subscribed ?? false
 
   return (
     <div className="relative min-h-screen bg-background pb-xl text-on-surface">

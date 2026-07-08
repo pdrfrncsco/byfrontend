@@ -18,6 +18,7 @@ import {
 } from '@/modules/dashboards'
 import { OrganizationDashboardPage } from '@/modules/organizations'
 import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage } from '@/modules/organizations'
+import { OrganizationMembersPage, OrganizationAffiliationsPage } from '@/modules/organizations'
 import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
 import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
@@ -114,6 +115,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <OrganizationDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/organization/members"
+            element={
+              <ProtectedRoute>
+                <OrganizationMembersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/organization/affiliations"
+            element={
+              <ProtectedRoute>
+                <OrganizationAffiliationsPage />
               </ProtectedRoute>
             }
           />

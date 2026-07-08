@@ -19,9 +19,10 @@ import {
   useOrganizationKpis,
   useOrganizationClubs,
   useOrganizationTournaments,
+  useLaunchOrganization,
 } from '../hooks'
 import { KpiCard } from '../components'
-import { ArrowRight, PlusCircle, Settings, Shield, Trophy, Users } from 'lucide-react'
+import { ArrowRight, CheckCircle2, PlusCircle, Rocket, Settings, Shield, Trophy, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
@@ -78,6 +79,7 @@ export default function OrganizationDashboardPage() {
   const { data: clubs, isLoading: isLoadingClubs } = useOrganizationClubs(slug)
   const { data: tournaments, isLoading: isLoadingTournaments } = useOrganizationTournaments(slug)
   const { data: transfers, isLoading: isLoadingTransfers } = useTransfers({ page_size: 4 })
+  const launchOrganization = useLaunchOrganization()
 
   const headerActions = (
     <Button variant="primary" size="sm" asChild>
@@ -92,11 +94,31 @@ export default function OrganizationDashboardPage() {
     { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" />, active: true },
     { label: 'Clubes Associados', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
     { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
+    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
     { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
   ]
 
   const isLoadingKpiSection = isLoadingOrg || isLoadingKpis
   const isLoadingTournamentsSection = isLoadingOrg || isLoadingTournaments
+  const isPendingLaunch = org?.status === 'pending'
+
+  const handleLaunchPortal = () => {
+    launchOrganization.mutate(undefined, {
+      onSuccess: (result) => {
+        toast.success('Portal lançado com sucesso.')
+        if (result.portal_url) {
+          toast.info(`Portal público: ${result.portal_url}`)
+        }
+      },
+      onError: (error: unknown) => {
+        const message =
+          (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          'Erro ao lançar portal.'
+        toast.error(message)
+      },
+    })
+  }
 
   const tournamentRows = useMemo(
     () => (Array.isArray(tournaments) ? (tournaments as OrganizationTournamentRow[]) : []),
@@ -232,6 +254,40 @@ export default function OrganizationDashboardPage() {
           )}
         </div>
       </div>
+
+      {isPendingLaunch && (
+        <Card padding="md" className="mb-lg border-primary/30 bg-primary-container/10">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex gap-md">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary-container text-primary">
+                <Rocket className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <h2 className="font-title-md text-base text-on-surface">Portal pendente de lançamento</h2>
+                <p className="mt-xs max-w-2xl text-sm text-on-surface-variant">
+                  Publique a organização para ativar o portal público e disponibilizar competições, clubes e estatísticas aos visitantes.
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleLaunchPortal}
+              loading={launchOrganization.isPending}
+              className="w-full md:w-auto"
+            >
+              {launchOrganization.isPending ? (
+                'A lançar...'
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Lançar Portal</span>
+                </>
+              )}
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <div className="grid animate-fade-in grid-cols-12 gap-lg">
         {/* Competições */}
@@ -371,14 +427,17 @@ export default function OrganizationDashboardPage() {
                   <span>Publicar Nova Competição</span>
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start gap-md"
-                onClick={() => toast.success('Gestão de Membros estará disponível na Fase C.')}
-              >
-                <Users className="h-4 w-4 text-primary" />
-                <span>Convidar Membro</span>
+              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
+                <Link to={ROUTES.DASHBOARD_ORGANIZATION_MEMBERS}>
+                  <Users className="h-4 w-4 text-primary" />
+                  <span>Convidar Membro</span>
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
+                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
+                  <Shield className="h-4 w-4 text-primary" />
+                  <span>Rever Filiações</span>
+                </Link>
               </Button>
             </CardContent>
           </Card>

@@ -38,6 +38,7 @@ export interface Organization {
 
 export interface PublicOrganization extends Organization {
   active_subscribers?: number
+  is_subscribed?: boolean
   last_activity?: string | null
 }
 

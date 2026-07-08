@@ -33,7 +33,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 interface RowNotesState {
-  [id: string]: { open: boolean; notes: string }
+  [id: string]: { open: boolean; notes: string; approve: boolean }
 }
 
 export function OrganizationAffiliationsPage() {
@@ -50,7 +50,7 @@ export function OrganizationAffiliationsPage() {
         open: !(prev[id]?.open && prev[id]?.approve === approve),
         notes: prev[id]?.notes ?? '',
         approve,
-      } as { open: boolean; notes: string; approve: boolean },
+      },
     }))
   }
 
@@ -123,7 +123,7 @@ export function OrganizationAffiliationsPage() {
         cell: ({ row }) => {
           const { id, status } = row.original
           const isPending = status?.toLowerCase() === 'pending'
-          const notesState = rowNotes[id] as { open: boolean; notes: string; approve: boolean } | undefined
+          const notesState = rowNotes[id]
           const isSubmitting = reviewRequest.isPending
 
           if (!isPending) return null
