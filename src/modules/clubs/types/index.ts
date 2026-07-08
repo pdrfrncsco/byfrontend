@@ -1,40 +1,70 @@
 // Types for Clubs module
 
+export interface ClubListParams {
+  search?: string
+  status?: ClubStatus
+  organization?: string
+  tenant?: string
+  page?: number
+  page_size?: number
+}
+
+export type ClubStatus = 'active' | 'suspended' | 'inactive'
+
 export interface Club {
   id: string
   name: string
-  slug?: string
+  slug: string
   short_name?: string | null
-  logo?: string | null
+  tenant?: string
+  tenant_name?: string
+  tenant_slug?: string
+  logo_url?: string | null
   primary_color?: string | null
   secondary_color?: string | null
   founded_year?: number | null
   stadium_name?: string | null
   stadium_capacity?: number | null
-  country?: string
+  country?: string | null
   city?: string | null
+  location?: string | null
   email?: string | null
   phone?: string | null
   website?: string | null
   description?: string | null
   is_public?: boolean
   is_verified?: boolean
-  status?: string
+  status?: ClubStatus
+  status_label?: string
   created_at?: string
   updated_at?: string
 }
+
+export type ClubMemberRole =
+  | 'player'
+  | 'coach'
+  | 'assistant_coach'
+  | 'manager'
+  | 'physio'
+  | 'staff'
+  | 'president'
 
 export interface ClubMember {
   id: string
   club: string
   user?: string | null
   full_name?: string | null
-  role?: string
+  display_name?: string
+  role?: ClubMemberRole
+  role_label?: string
   jersey_number?: number | null
   position?: string | null
+  position_label?: string
   is_active?: boolean
   joined_at?: string | null
   left_at?: string | null
+  created_at?: string
+  updated_at?: string
 }
 
 export interface ClubKpis {
@@ -50,3 +80,175 @@ export interface ClubKpis {
   active_competitions: number
 }
 
+export interface ClubSquadMember {
+  id: string
+  display_name: string
+  jersey_number?: number | null
+  position?: string | null
+  position_label?: string | null
+  joined_at?: string | null
+}
+
+export interface ClubStaffMember {
+  id: string
+  display_name: string
+  role?: string | null
+  role_label?: string | null
+  joined_at?: string | null
+}
+
+export type ClubDocumentCategory = 'contract' | 'certificate' | 'license' | 'regulation' | 'other'
+
+export interface ClubDocument {
+  id: string
+  club: string
+  tenant?: string
+  title: string
+  category: ClubDocumentCategory
+  category_label?: string
+  description?: string
+  asset?: string | null
+  asset_url?: string
+  uploaded_by?: string | null
+  uploaded_by_email?: string | null
+  is_public: boolean
+  valid_until?: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ClubDocumentCreateData {
+  title: string
+  category: ClubDocumentCategory
+  description?: string
+  document: File
+  is_public?: boolean
+  valid_until?: string
+}
+
+export type ClubSponsorType = 'main' | 'official' | 'partner' | 'technical' | 'media' | 'other'
+
+export interface ClubSponsor {
+  id: string
+  club: string
+  tenant?: string
+  name: string
+  sponsor_type: ClubSponsorType
+  sponsor_type_label?: string
+  description?: string
+  website?: string | null
+  logo_asset?: string | null
+  logo_url?: string
+  uploaded_by?: string | null
+  uploaded_by_email?: string | null
+  is_active: boolean
+  sort_order?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ClubSponsorCreateData {
+  name: string
+  sponsor_type?: ClubSponsorType
+  description?: string
+  website?: string
+  logo?: File
+  is_active?: boolean
+  sort_order?: number
+}
+
+export interface TransferPlayer {
+  id: string
+  full_name: string
+  primary_position?: string | null
+  date_of_birth?: string | null
+}
+
+export interface TransferClub {
+  id: string
+  name: string
+  slug: string
+}
+
+export type TransferType = 'permanent' | 'loan' | 'free_agent'
+export type TransferStatus = 'pending' | 'approved' | 'completed' | 'cancelled' | 'returned'
+
+export interface Transfer {
+  id: string
+  player: TransferPlayer
+  from_club?: TransferClub | null
+  to_club: TransferClub
+  transfer_type: TransferType
+  transfer_type_display?: string
+  transfer_date: string
+  status: TransferStatus
+  status_display?: string
+  loan_end_date?: string | null
+  loan_return_mandatory?: boolean
+  fee?: string | number | null
+  salary_contribution?: boolean
+  approved_at?: string | null
+  completed_at?: string | null
+  cancelled_at?: string | null
+  rejected_at?: string | null
+  returned_at?: string | null
+  notes?: string
+  created_at?: string
+}
+
+export interface TransferListParams {
+  page?: number
+  page_size?: number
+  club_id?: string
+  status?: TransferStatus
+  transfer_type?: TransferType
+}
+
+export interface TransferCreateData {
+  player_id: string
+  to_club_id: string
+  from_club_id?: string | null
+  transfer_type?: TransferType
+  transfer_date: string
+  loan_end_date?: string | null
+  salary_contribution?: boolean
+  fee?: number | string | null
+  notes?: string
+}
+
+export interface PaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
+export interface ClubCreateData {
+  name: string
+  short_name?: string
+  founded_year?: number
+  stadium_name?: string
+  stadium_capacity?: number
+  country?: string
+  city?: string
+  email?: string
+  phone?: string
+  website?: string
+  description?: string
+  primary_color?: string
+  secondary_color?: string
+  is_public?: boolean
+}
+
+export type ClubUpdateData = Partial<ClubCreateData>
+
+export interface ClubMemberCreateData {
+  user?: string
+  full_name?: string
+  role?: ClubMemberRole
+  jersey_number?: number
+  position?: string
+  is_active?: boolean
+}
+
+export type ClubMemberUpdateData = Partial<ClubMemberCreateData>
