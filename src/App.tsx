@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { AppProvider } from '@/app/providers'
@@ -20,20 +21,27 @@ import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage 
 import { OrganizationMembersPage, OrganizationAffiliationsPage } from '@/modules/organizations'
 import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
-import {
-  ClubListPage,
-  ClubDetailPage,
-  ClubDashboardPage,
-  ClubSettingsPage,
-  ClubMembersPage,
-  ClubDocumentsPage,
-  ClubSponsorsPage,
-  ClubTransfersPage,
-} from '@/modules/clubs'
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { PublicLayout } from '@/app/layouts'
 import { NotificationsPage } from '@/modules/notifications/pages/NotificationsPage'
+
+const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
+const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
+const ClubDashboardPage = lazy(() => import('@/modules/clubs/pages/ClubDashboardPage'))
+const ClubSettingsPage = lazy(() => import('@/modules/clubs/pages/ClubSettingsPage'))
+const ClubMembersPage = lazy(() => import('@/modules/clubs/pages/ClubMembersPage'))
+const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocumentsPage'))
+const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
+const ClubTransfersPage = lazy(() => import('@/modules/clubs/pages/ClubTransfersPage'))
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center px-lg text-sm text-on-surface-variant">
+      Carregando página...
+    </div>
+  )
+}
 
 function App() {
   return (
@@ -114,7 +122,9 @@ function App() {
             path="/dashboard/club"
             element={
               <ProtectedRoute>
-                <ClubDashboardPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubDashboardPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -122,7 +132,9 @@ function App() {
             path="/dashboard/club/settings"
             element={
               <ProtectedRoute>
-                <ClubSettingsPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubSettingsPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -130,7 +142,9 @@ function App() {
             path="/dashboard/club/members"
             element={
               <ProtectedRoute>
-                <ClubMembersPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubMembersPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -138,7 +152,9 @@ function App() {
             path="/dashboard/club/documents"
             element={
               <ProtectedRoute>
-                <ClubDocumentsPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubDocumentsPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -146,7 +162,9 @@ function App() {
             path="/dashboard/club/sponsors"
             element={
               <ProtectedRoute>
-                <ClubSponsorsPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubSponsorsPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -154,7 +172,9 @@ function App() {
             path="/dashboard/club/transfers"
             element={
               <ProtectedRoute>
-                <ClubTransfersPage />
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubTransfersPage />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -250,8 +270,22 @@ function App() {
           />
 
           {/* Clubs (Public) */}
-          <Route path="/clubs" element={<ClubListPage />} />
-          <Route path="/clubs/:id" element={<ClubDetailPage />} />
+          <Route
+            path="/clubs"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <ClubListPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/clubs/:id"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <ClubDetailPage />
+              </Suspense>
+            }
+          />
 
           {/* Players (Public) */}
           <Route path="/players" element={<PlayerListPage />} />
