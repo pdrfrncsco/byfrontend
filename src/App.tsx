@@ -13,7 +13,6 @@ import {
   ExecutiveDashboardPage,
   FederationDashboardPage,
   LeagueDashboardPage,
-  ClubDashboardPage,
   CompetitionDashboardPage
 } from '@/modules/dashboards'
 import { OrganizationDashboardPage } from '@/modules/organizations'
@@ -21,7 +20,16 @@ import { OrganizationListPage, OrganizationDetailPage, OrganizationSettingsPage 
 import { OrganizationMembersPage, OrganizationAffiliationsPage } from '@/modules/organizations'
 import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
 import { NotFoundPage } from '@/modules/shared/pages/NotFoundPage'
-import { ClubListPage, ClubDetailPage } from '@/modules/clubs'
+import {
+  ClubListPage,
+  ClubDetailPage,
+  ClubDashboardPage,
+  ClubSettingsPage,
+  ClubMembersPage,
+  ClubDocumentsPage,
+  ClubSponsorsPage,
+  ClubTransfersPage,
+} from '@/modules/clubs'
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { PublicLayout } from '@/app/layouts'
@@ -107,6 +115,46 @@ function App() {
             element={
               <ProtectedRoute>
                 <ClubDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/settings"
+            element={
+              <ProtectedRoute>
+                <ClubSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/members"
+            element={
+              <ProtectedRoute>
+                <ClubMembersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/documents"
+            element={
+              <ProtectedRoute>
+                <ClubDocumentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/sponsors"
+            element={
+              <ProtectedRoute>
+                <ClubSponsorsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/transfers"
+            element={
+              <ProtectedRoute>
+                <ClubTransfersPage />
               </ProtectedRoute>
             }
           />
