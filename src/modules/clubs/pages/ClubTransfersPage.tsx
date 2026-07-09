@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRightLeft, Filter, SlidersHorizontal, Trophy } from 'lucide-react'
+import { ArrowLeft, ArrowRightLeft, Filter, Plus, SlidersHorizontal, Trophy } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -143,12 +143,20 @@ export default function ClubTransfersPage() {
       dashboardType="club"
       sidebarLinks={sidebarLinks}
       headerActions={
-        <Button asChild variant="secondary" size="sm">
-          <Link to={ROUTES.DASHBOARD_CLUB}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar</span>
-          </Link>
-        </Button>
+        <div className="flex gap-sm">
+          <Button asChild variant="secondary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB}>
+              <ArrowLeft className="h-4 w-4" />
+              <span>Voltar</span>
+            </Link>
+          </Button>
+          <Button asChild variant="primary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB_TRANSFERS_CREATE}>
+              <Plus className="h-4 w-4" />
+              <span>Nova Transferência</span>
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="space-y-xl">

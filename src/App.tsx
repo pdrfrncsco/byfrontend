@@ -34,6 +34,7 @@ const ClubMembersPage = lazy(() => import('@/modules/clubs/pages/ClubMembersPage
 const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocumentsPage'))
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/clubs/pages/ClubTransfersPage'))
+const ClubTransferCreatePage = lazy(() => import('@/modules/clubs/pages/ClubTransferCreatePage'))
 
 function RouteFallback() {
   return (
@@ -174,6 +175,16 @@ function App() {
               <ProtectedRoute>
                 <Suspense fallback={<RouteFallback />}>
                   <ClubTransfersPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/club/transfers/create"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <ClubTransferCreatePage />
                 </Suspense>
               </ProtectedRoute>
             }

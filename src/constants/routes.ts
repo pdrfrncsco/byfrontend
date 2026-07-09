@@ -18,6 +18,7 @@ export const ROUTES = {
   DASHBOARD_CLUB_DOCUMENTS: '/dashboard/club/documents',
   DASHBOARD_CLUB_SPONSORS: '/dashboard/club/sponsors',
   DASHBOARD_CLUB_TRANSFERS: '/dashboard/club/transfers',
+  DASHBOARD_CLUB_TRANSFERS_CREATE: '/dashboard/club/transfers/create',
   CLUBS: '/clubs',
   PLAYERS: '/players',
   FANS: '/fans',
