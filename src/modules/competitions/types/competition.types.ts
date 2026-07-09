@@ -126,3 +126,237 @@ export interface PlayerStats {
   red_cards: number
   appearances: number
 }
+
+// ─── Lineup Types ──────────────────────────────────────────────────────────
+
+export type LineupStatus = 'draft' | 'submitted' | 'confirmed' | 'locked'
+export type LineupPlayerStatus = 'starter' | 'substitute'
+
+export interface LineupPlayer {
+  id: string
+  player: {
+    id: string
+    full_name: string
+    position: string
+    date_of_birth?: string
+    nationality?: string
+  }
+  player_id: string
+  status: LineupPlayerStatus
+  status_display?: string
+  position: string
+  position_display?: string
+  shirt_number: number
+  is_captain: boolean
+  is_goalkeeper: boolean
+  formation_position?: number
+  minutes_played?: number
+  substituted_in_minute?: number
+  substituted_out_minute?: number
+}
+
+export interface LineupSubmission {
+  id: string
+  match: string
+  club: string
+  club_name?: string
+  match_str?: string
+  formation?: string
+  status: LineupStatus
+  status_display?: string
+  submitted_at?: string
+  submitted_by?: string
+  confirmed_at?: string
+  locked_at?: string
+  lineup_players?: LineupPlayer[]
+  starters?: LineupPlayer[]
+  substitutes?: LineupPlayer[]
+  created_at?: string
+  updated_at?: string
+}
+
+export interface LineupSubmissionData {
+  formation?: string
+  players: {
+    player_id: string
+    status: LineupPlayerStatus
+    position: string
+    shirt_number: number
+    is_captain?: boolean
+    is_goalkeeper?: boolean
+    formation_position?: number
+  }[]
+}
+
+// ─── Match Report Types ────────────────────────────────────────────────────
+
+export type GoalType = 'normal' | 'penalty' | 'own_goal'
+export type MatchReportStatus = 'draft' | 'ongoing' | 'completed' | 'validated'
+
+export interface Goal {
+  id: string
+  match: string
+  player: string
+  player_name?: string
+  club: string
+  minute: number
+  goal_type: GoalType
+  goal_type_display?: string
+  assist_player?: string | null
+  created_at?: string
+}
+
+export interface GoalCreateData {
+  player_id: string
+  club_id: string
+  minute: number
+  goal_type: GoalType
+  assist_player_id?: string | null
+}
+
+export interface MatchStats {
+  id: string
+  match: string
+  club: string
+  possession?: number
+  possession_display?: string
+  shots_on_goal?: number
+  shots_off_goal?: number
+  passes?: number
+  passes_accuracy?: number
+  fouls?: number
+  yellow_cards?: number
+  red_cards?: number
+  corner_kicks?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface MatchReport {
+  id: string
+  match: string
+  status: MatchReportStatus
+  status_display?: string
+  home_score: number
+  away_score: number
+  home_goals_against?: number
+  away_goals_against?: number
+  match_duration?: number
+  goals?: Goal[]
+  home_stats?: MatchStats | null
+  away_stats?: MatchStats | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface MatchReportCreateData {
+  home_score: number
+  away_score: number
+  match_duration?: number
+}
+
+// ─── Suspension & Fair Play Types ──────────────────────────────────────────
+
+export type SuspensionType = 'yellow_cards' | 'red_card' | 'double_yellow'
+
+export interface Suspension {
+  id: string
+  player: string
+  player_name?: string
+  club: string
+  club_name?: string
+  competition: string
+  suspension_type: SuspensionType
+  matches_total: number
+  matches_served: number
+  matches_remaining: number
+  reason?: string
+  is_active: boolean
+  cancelled_at?: string
+  created_at?: string
+}
+
+export interface FairPlayRanking {
+  id: string
+  club: string
+  club_name: string
+  club_logo?: string | null
+  competition: string
+  points: number
+  yellow_cards: number
+  red_cards: number
+  fair_play_score: number
+  position: number
+}
+
+// ─── Rankings Types ────────────────────────────────────────────────────────
+
+export interface TopScorer {
+  player_id: string
+  player_name: string
+  player_avatar?: string | null
+  club_id: string
+  club_name: string
+  club_logo?: string | null
+  goals: number
+  penalties?: number
+  assists?: number
+  matches_played?: number
+}
+
+export interface SeasonRanking {
+  player_id: string
+  player_name: string
+  club_id: string
+  club_name: string
+  total_goals: number
+  total_assists: number
+  total_matches: number
+  total_yellow_cards: number
+  total_red_cards: number
+  mvp_count?: number
+}
+
+// ─── Regulation Types ──────────────────────────────────────────────────────
+
+export interface CompetitionRegulation {
+  id: string
+  competition: string
+  title: string
+  content: string
+  category?: string
+  order?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface CompetitionRegulationCreateData {
+  title: string
+  content: string
+  category?: string
+  order?: number
+}
+
+// ─── Utility Types ─────────────────────────────────────────────────────────
+
+export interface PaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
+export interface CompetitionListParams {
+  page?: number
+  page_size?: number
+  search?: string
+  competition_type?: CompetitionType
+  status?: CompetitionStatus
+  season?: string
+}
+
+export interface MatchListParams {
+  competition_id: string
+  status?: MatchStatus
+  round_number?: number
+}
