@@ -19,7 +19,7 @@ import {
 import { Badge, Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
-import { useMatchEvents, useAddMatchEvent, useDeleteMatchEvent } from '../hooks/useMatchCenter'
+import { useMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
 import type { Match, MatchEvent, MatchStatus, EventType } from '../types'
 
 // ─── Status Config ────────────────────────────────────────────────────────────
@@ -445,7 +445,7 @@ export function MatchCenterPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
 
-  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
+  const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const { data: events = [], isLoading: loadingEvents } = useMatchEvents(competitionId, matchIdValue)
 

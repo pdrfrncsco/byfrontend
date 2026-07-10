@@ -29,8 +29,12 @@ export const competitionApi = {
   // ─── Competition CRUD ────────────────────────────────────────────────────
 
   async list(params?: CompetitionListParams): Promise<Competition[]> {
-    const response = await client.get<ApiResponse<Competition[]>>(API_ROUTES.COMPETITIONS.LIST, { params })
-    return response.data.data
+    const response = await client.get<ApiResponse<any>>(API_ROUTES.COMPETITIONS.LIST, { params })
+    const data = response.data.data
+    if (data && typeof data === 'object' && 'results' in data) {
+      return data.results
+    }
+    return Array.isArray(data) ? data : []
   },
 
   async get(id: string): Promise<Competition> {

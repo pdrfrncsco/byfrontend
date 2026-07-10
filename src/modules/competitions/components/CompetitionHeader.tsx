@@ -1,4 +1,4 @@
-import { Trophy, Calendar, Loader2 } from 'lucide-react'
+import { Trophy, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui'
 import type { Competition, CompetitionStatus, CompetitionType } from '../types'
 

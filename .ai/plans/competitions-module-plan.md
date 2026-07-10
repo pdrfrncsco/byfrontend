@@ -1,4 +1,4 @@
-# Plano de Implementação — Módulo Competitions (Frontend)
+/# Plano de Implementação — Módulo Competitions (Frontend)
 
 ## Análise de Gap
 

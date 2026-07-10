@@ -17,7 +17,7 @@ import {
 import { Badge, Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
-import { useMatchReport, useAddGoal, useUpdateMatchStats } from '../hooks/useCompetitionAdvanced'
+import { useMatchReport, useAddGoal } from '../hooks/useCompetitionAdvanced'
 import type { Match, Goal, MatchStats, GoalType } from '../types'
 
 // ─── Goal Type Config ─────────────────────────────────────────────────────────
@@ -308,7 +308,7 @@ export function MatchReportPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
 
-  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
+  const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const { data: report, isLoading: loadingReport } = useMatchReport(matchIdValue)
 

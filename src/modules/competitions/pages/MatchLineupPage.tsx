@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -9,7 +8,6 @@ import {
   AlertCircle,
   Check,
   Lock,
-  Edit3,
   Goal,
 } from 'lucide-react'
 import { Badge, Button, Card } from '@/components/ui'
@@ -17,11 +15,10 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
 import {
   useLineups,
-  useSubmitLineup,
   useConfirmLineup,
   useLockLineup,
 } from '../hooks/useCompetitionAdvanced'
-import type { Match, LineupSubmission, LineupPlayer, LineupPlayerStatus } from '../types'
+import type { Match, LineupSubmission, LineupPlayer } from '../types'
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -39,12 +36,9 @@ const LINEUP_STATUS_CONFIG: Record<
 
 interface FormationFieldProps {
   starters: LineupPlayer[]
-  homeClubName: string
-  awayClubName: string
-  isHome: boolean
 }
 
-function FormationField({ starters, homeClubName, awayClubName, isHome }: FormationFieldProps) {
+function FormationField({ starters }: FormationFieldProps) {
   // Group by position for formation display
   const positionGroups: Record<string, LineupPlayer[]> = {
     GK: [],
@@ -225,12 +219,7 @@ function LineupSection({ lineup, isHome, match }: LineupSectionProps) {
 
       {/* Formation Field */}
       {starters.length > 0 && (
-        <FormationField
-          starters={starters}
-          homeClubName={match.home_club_name}
-          awayClubName={match.away_club_name}
-          isHome={isHome}
-        />
+        <FormationField starters={starters} />
       )}
 
       {/* Starters List */}
@@ -284,7 +273,7 @@ export function MatchLineupPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
 
-  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
+  const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const { data: lineups = [], isLoading: loadingLineups } = useLineups(matchIdValue)
 

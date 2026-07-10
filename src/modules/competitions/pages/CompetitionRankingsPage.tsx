@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
-import { Trophy, ChevronLeft, Loader2, Shield, Target } from 'lucide-react'
+import { Trophy, ChevronLeft, Shield, Target } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useTopScorers, useFairPlayRanking } from '../hooks/useCompetitionAdvanced'
