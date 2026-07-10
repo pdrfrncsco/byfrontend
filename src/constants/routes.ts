@@ -22,7 +22,21 @@ export const ROUTES = {
   CLUBS: '/clubs',
   PLAYERS: '/players',
   FANS: '/fans',
+  // Competition public routes
   COMPETITIONS: '/competitions',
+  COMPETITION_DETAIL: (id: string) => `/competitions/${id}`,
+  COMPETITION_RANKINGS: (id: string) => `/competitions/${id}/rankings`,
+  COMPETITION_SUSPENSIONS: (id: string) => `/competitions/${id}/suspensions`,
+  // Competition admin (dashboard) routes
+  COMPETITION_CREATE: '/dashboard/competitions/create',
+  COMPETITION_SETTINGS: (id: string) => `/dashboard/competitions/${id}/settings`,
+  COMPETITION_REGISTRATION: (id: string) => `/dashboard/competitions/${id}/registration`,
+  COMPETITION_SCHEDULE: (id: string) => `/dashboard/competitions/${id}/schedule`,
+  // Match center
+  MATCH_CENTER: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}`,
+  MATCH_LINEUP: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/lineup`,
+  MATCH_REPORT: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/report`,
+  // Other modules
   MATCHES: '/matches',
   RANKINGS: '/rankings',
   NEWS: '/news',
@@ -32,6 +46,7 @@ export const ROUTES = {
   NOTIFICATIONS: '/notifications',
   NOT_FOUND: '*',
 }
+
 
 export const API_ROUTES = {
   AUTH: {

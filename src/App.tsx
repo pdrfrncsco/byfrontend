@@ -26,6 +26,7 @@ import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitio
 import { PublicLayout } from '@/app/layouts'
 import { NotificationsPage } from '@/modules/notifications/pages/NotificationsPage'
 
+
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
 const ClubDashboardPage = lazy(() => import('@/modules/clubs/pages/ClubDashboardPage'))
@@ -35,6 +36,16 @@ const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocuments
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/clubs/pages/ClubTransfersPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/clubs/pages/ClubTransferCreatePage'))
+
+const CompetitionCreatePage = lazy(() => import('@/modules/competitions/pages/CompetitionCreatePage').then(m => ({ default: m.CompetitionCreatePage })))
+const CompetitionSettingsPage = lazy(() => import('@/modules/competitions/pages/CompetitionSettingsPage').then(m => ({ default: m.CompetitionSettingsPage })))
+const CompetitionRegistrationPage = lazy(() => import('@/modules/competitions/pages/CompetitionRegistrationPage').then(m => ({ default: m.CompetitionRegistrationPage })))
+const CompetitionSchedulePage = lazy(() => import('@/modules/competitions/pages/CompetitionSchedulePage').then(m => ({ default: m.CompetitionSchedulePage })))
+const CompetitionRankingsPage = lazy(() => import('@/modules/competitions/pages/CompetitionRankingsPage').then(m => ({ default: m.CompetitionRankingsPage })))
+const CompetitionSuspensionsPage = lazy(() => import('@/modules/competitions/pages/CompetitionSuspensionsPage').then(m => ({ default: m.CompetitionSuspensionsPage })))
+const MatchCenterPage = lazy(() => import('@/modules/competitions/pages/MatchCenterPage').then(m => ({ default: m.MatchCenterPage })))
+const MatchLineupPage = lazy(() => import('@/modules/competitions/pages/MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
+const MatchReportPage = lazy(() => import('@/modules/competitions/pages/MatchReportPage').then(m => ({ default: m.MatchReportPage })))
 
 function RouteFallback() {
   return (
@@ -305,6 +316,90 @@ function App() {
           {/* Competitions (Public) */}
           <Route path="/competitions" element={<CompetitionListPage />} />
           <Route path="/competitions/:id" element={<CompetitionDetailPage />} />
+          <Route
+            path="/competitions/:id/rankings"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <CompetitionRankingsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/competitions/:id/suspensions"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <CompetitionSuspensionsPage />
+              </Suspense>
+            }
+          />
+
+          {/* Match Center (Public) */}
+          <Route
+            path="/competitions/:compId/matches/:matchId"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <MatchCenterPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/competitions/:compId/matches/:matchId/lineup"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <MatchLineupPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/competitions/:compId/matches/:matchId/report"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <MatchReportPage />
+              </Suspense>
+            }
+          />
+
+          {/* Competitions — Admin (Protected) */}
+          <Route
+            path="/dashboard/competitions/create"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <CompetitionCreatePage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/competitions/:id/settings"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <CompetitionSettingsPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/competitions/:id/registration"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <CompetitionRegistrationPage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/competitions/:id/schedule"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<RouteFallback />}>
+                  <CompetitionSchedulePage />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
 
           {/* 404 Fallback */}
           <Route path="/404" element={<NotFoundPage />} />
