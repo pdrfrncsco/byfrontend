@@ -1,3 +1,32 @@
+# Plano de Implementação — Refatoração do Dashboard de Competições
+
+Este documento descreve o plano detalhado para refatorar o **Dashboard de Competições** (`CompetitionDashboardPage.tsx`) para usar dados reais provenientes das APIs e hooks do TanStack Query, removendo os placeholders estáticos e adicionando interatividade premium com transições e navegação dinâmica.
+
+---
+
+## 🎯 Descrição do Objetivo
+
+O ecrã do **Organizador de Competições** (`CompetitionDashboardPage.tsx`) atualmente exibe dados estáticos e ações não funcionais. O objetivo é torná-lo 100% dinâmico:
+1. **Dados Reais de Torneios:** Utilizar o hook `useCompetitions()` para listar as competições reais do inquilino.
+2. **KPIs Dinâmicos:** Calcular o total de competições, competições ativas e em rascunho em tempo real.
+3. **Fluxos de Trabalho e Ações Rápidas:**
+   - O botão "Criar Nova Competição" deve navegar para o formulário de criação `/dashboard/competitions/create`.
+   - A listagem de "Torneios Ativos" deve permitir clicar em cada torneio para ir diretamente para a sua página pública de detalhe `/competitions/:id`.
+   - O botão "Visualizar Todos os Torneios" no final da listagem deve redirecionar para a lista completa em `/competitions`.
+4. **Estados de UI Resilientes:** Adicionar suporte a loading skeleton para evitar saltos de layout e tratar estados vazios de forma amigável com um botão de ação direta.
+
+---
+
+## 🛠️ Alterações Propostas
+
+### 1. Modificar `CompetitionDashboardPage.tsx`
+**Caminho do Ficheiro:** [CompetitionDashboardPage.tsx](file:///D:/ndeascloud/boayetu/frontend/src/modules/dashboards/pages/CompetitionDashboardPage.tsx)
+
+Substituir o estado estático pelo carregamento dinâmico via React Query e associar os links corretos utilizando `<Link>` do `react-router-dom`.
+
+#### Código Proposto:
+
+```tsx
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { useCompetitions } from '@/modules/competitions/hooks/useCompetitions'
@@ -17,13 +46,13 @@ import {
   FolderOpen
 } from 'lucide-react'
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+const STATUS_CONFIG = {
   draft: { label: 'RASCUNHO', className: 'text-amber-500 bg-amber-500/10' },
   active: { label: 'EM CURSO', className: 'text-emerald-500 bg-emerald-500/10' },
   completed: { label: 'CONCLUÍDO', className: 'text-slate-400 bg-slate-500/10' },
 }
 
-const TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS = {
   league: 'Campeonato',
   tournament: 'Torneio',
   cup: 'Taça',
@@ -50,12 +79,12 @@ export function CompetitionDashboardPage() {
     </Link>
   )
 
-  // Dynamic KPIs
+  // KPIs Dinâmicos
   const totalCompetitions = competitions.length
   const activeCompetitions = competitions.filter(c => c.status === 'active').length
   const draftCompetitions = competitions.filter(c => c.status === 'draft').length
 
-  // Show only active competitions in main list (or recent ones if no active)
+  // Mostrar apenas competições ativas na secção principal (ou as mais recentes se não houver ativas)
   const activeList = competitions
     .filter(c => c.status === 'active')
     .slice(0, 3)
@@ -198,3 +227,18 @@ export function CompetitionDashboardPage() {
     </DashboardLayout>
   )
 }
+```
+
+---
+
+## 🎯 Plano de Verificação
+
+### Testes Automatizados
+* Correr o comando `npm run build` na pasta `frontend/` para validar a tipagem estática e garantir que o import do hook e constantes resolve corretamente.
+
+### Validação Manual
+O utilizador pode iniciar o servidor de desenvolvimento (`npm run dev`) e verificar:
+1. **Navegação:** Se ao clicar em "Criar Nova Competição" navega corretamente para a página de criação.
+2. **Navegação de Torneios:** Se ao clicar num torneio listado, navega para `/competitions/:id`.
+3. **KPIs:** Se os números exibidos coincidem com o número total de competições registadas no sistema.
+4. **Resiliência:** O spinner de loading é exibido enquanto os dados do TanStack Query estão a ser resolvidos.
