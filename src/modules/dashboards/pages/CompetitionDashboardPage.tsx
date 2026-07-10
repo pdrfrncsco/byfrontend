@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { useCompetitions } from '@/modules/competitions/hooks/useCompetitions'
+import { useDashboardOverview } from '../hooks/useDashboard'
 import { ROUTES } from '@/constants'
 import { 
   Home, 
@@ -11,34 +11,28 @@ import {
   ShieldAlert, 
   ArrowRight,
   TrendingUp,
-  Award,
-  PlusCircle,
   Loader2,
-  FolderOpen
+  FolderOpen,
+  Users,
+  PlusCircle
 } from 'lucide-react'
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  draft: { label: 'RASCUNHO', className: 'text-amber-500 bg-amber-500/10' },
-  active: { label: 'EM CURSO', className: 'text-emerald-500 bg-emerald-500/10' },
+  draft:     { label: 'RASCUNHO',  className: 'text-amber-500 bg-amber-500/10' },
+  active:    { label: 'EM CURSO',  className: 'text-emerald-500 bg-emerald-500/10' },
   completed: { label: 'CONCLUÍDO', className: 'text-slate-400 bg-slate-500/10' },
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  league: 'Campeonato',
-  tournament: 'Torneio',
-  cup: 'Taça',
-}
-
 export function CompetitionDashboardPage() {
-  const { data: competitions = [], isLoading } = useCompetitions()
+  const { data, isLoading } = useDashboardOverview()
 
   const sidebarLinks = [
-    { label: 'Geral', href: '#home', icon: <Home className="w-5 h-5" />, active: true },
-    { label: 'Torneios', href: '#tournaments', icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Partidas', href: '#matches', icon: <Calendar className="w-5 h-5" /> },
-    { label: 'Árbitros', href: '#referees', icon: <Gavel className="w-5 h-5" /> },
-    { label: 'Estádios', href: '#venues', icon: <MapPin className="w-5 h-5" /> },
-    { label: 'Conformidade', href: '#compliance', icon: <ShieldAlert className="w-5 h-5" /> },
+    { label: 'Geral',        href: '#home',       icon: <Home        className="w-5 h-5" />, active: true },
+    { label: 'Torneios',     href: '#tournaments', icon: <Trophy      className="w-5 h-5" /> },
+    { label: 'Partidas',     href: '#matches',     icon: <Calendar    className="w-5 h-5" /> },
+    { label: 'Árbitros',     href: '#referees',    icon: <Gavel       className="w-5 h-5" /> },
+    { label: 'Estádios',     href: '#venues',      icon: <MapPin      className="w-5 h-5" /> },
+    { label: 'Conformidade', href: '#compliance',  icon: <ShieldAlert className="w-5 h-5" /> },
   ]
 
   const headerActions = (
@@ -50,17 +44,23 @@ export function CompetitionDashboardPage() {
     </Link>
   )
 
-  // Dynamic KPIs
-  const totalCompetitions = competitions.length
-  const activeCompetitions = competitions.filter(c => c.status === 'active').length
-  const draftCompetitions = competitions.filter(c => c.status === 'draft').length
+  // Extract KPIs with safe defaults
+  const kpis = data?.kpis ?? {
+    active_tournaments:       0,
+    tournaments_upcoming:     0,
+    tournaments_completed:    0,
+    total_matches:            0,
+    total_clubs:              0,
+    total_players:            0,
+    matches_today:            0,
+    matches_live:             0,
+    goals_total:              0,
+    avg_goals_per_match:      0,
+  }
 
-  // Show only active competitions in main list (or recent ones if no active)
-  const activeList = competitions
-    .filter(c => c.status === 'active')
-    .slice(0, 3)
-
-  const displayList = activeList.length > 0 ? activeList : competitions.slice(0, 3)
+  const tournaments    = data?.tournaments       ?? []
+  const upcomingMatches = data?.upcoming_matches ?? []
+  const liveMatches     = data?.live_matches     ?? []
 
   return (
     <DashboardLayout
@@ -71,21 +71,24 @@ export function CompetitionDashboardPage() {
       headerActions={headerActions}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-lg">
-        {/* Tournament Management block */}
+
+        {/* ── Tournaments block ─────────────────────────────────────────────────── */}
         <section className="glass-card rounded-xl p-md lg:col-span-8 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center border-b border-[#26364a]/50 pb-sm mb-md">
-              <h3 className="font-display text-lg text-on-surface">Torneios Ativos</h3>
+              <h3 className="font-display text-lg text-on-surface">Torneios Recentes</h3>
               <span className="text-xs text-on-surface-variant font-semibold">
-                {activeCompetitions} Competiç{activeCompetitions === 1 ? 'ão' : 'ões'} em Curso
+                {isLoading ? '—' : (
+                  `${kpis.active_tournaments} Competiç${kpis.active_tournaments === 1 ? 'ão' : 'ões'} em Curso`
+                )}
               </span>
             </div>
-            
+
             {isLoading ? (
               <div className="flex items-center justify-center py-xl">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            ) : displayList.length === 0 ? (
+            ) : tournaments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-xl text-center text-on-surface-variant">
                 <FolderOpen className="w-10 h-10 opacity-30 mb-sm" />
                 <p className="text-sm font-semibold">Nenhuma competição registada</p>
@@ -93,25 +96,33 @@ export function CompetitionDashboardPage() {
               </div>
             ) : (
               <div className="space-y-sm text-xs">
-                {displayList.map(comp => {
+                {tournaments.slice(0, 4).map(comp => {
                   const statusCfg = STATUS_CONFIG[comp.status] ?? STATUS_CONFIG.draft
-                  const typeLabel = TYPE_LABELS[comp.competition_type] ?? comp.competition_type
-                  
                   return (
                     <Link
                       key={comp.id}
                       to={ROUTES.COMPETITION_DETAIL(comp.id)}
                       className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 flex items-center justify-between hover:border-primary/40 hover:bg-[#102034] transition-all group"
                     >
-                      <div>
-                        <p className="font-semibold text-on-surface group-hover:text-primary transition-colors">
-                          {comp.name}
-                        </p>
-                        <p className="text-[10px] text-on-surface-variant mt-0.5">
-                          Época {comp.season} • {typeLabel}
-                        </p>
+                      <div className="flex items-center gap-sm min-w-0">
+                        {comp.logo ? (
+                          <img src={comp.logo} alt={comp.name} className="w-7 h-7 rounded object-contain flex-shrink-0" />
+                        ) : (
+                          <div className="w-7 h-7 rounded bg-primary-container/20 flex items-center justify-center flex-shrink-0">
+                            <Trophy className="w-4 h-4 text-primary" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
+                            {comp.name}
+                          </p>
+                          <p className="text-[10px] text-on-surface-variant mt-0.5">
+                            {comp.teams} Equipas
+                            {comp.progress > 0 && ` • Progresso: ${comp.progress}%`}
+                          </p>
+                        </div>
                       </div>
-                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${statusCfg.className}`}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold flex-shrink-0 ml-sm ${statusCfg.className}`}>
                         {statusCfg.label}
                       </span>
                     </Link>
@@ -120,7 +131,7 @@ export function CompetitionDashboardPage() {
               </div>
             )}
           </div>
-          
+
           <Link to={ROUTES.COMPETITIONS} className="w-full mt-lg">
             <button className="w-full bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1">
               Visualizar Todos os Torneios <ArrowRight className="w-4 h-4" />
@@ -128,45 +139,96 @@ export function CompetitionDashboardPage() {
           </Link>
         </section>
 
-        {/* Referee and Technical Delegation */}
+        {/* ── Upcoming / Live Matches ───────────────────────────────────────────── */}
         <section className="glass-card rounded-xl p-md lg:col-span-4 flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center border-b border-[#26364a]/50 pb-sm mb-md">
-              <h3 className="font-display text-lg text-on-surface">Escalamento de Arbitragem</h3>
-              <Gavel className="text-primary w-5 h-5" />
+              <h3 className="font-display text-lg text-on-surface">
+                {liveMatches.length > 0 ? 'Jogos em Direto' : 'Próximos Jogos'}
+              </h3>
+              {liveMatches.length > 0 ? (
+                <span className="text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded font-bold animate-pulse">
+                  LIVE {liveMatches.length}
+                </span>
+              ) : (
+                <Calendar className="text-primary w-5 h-5" />
+              )}
             </div>
-            
-            <div className="space-y-sm text-xs">
-              <div className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30">
-                <p className="font-semibold text-on-surface">Jogo: Petro de Luanda vs 1º de Agosto</p>
-                <p className="text-[10px] text-on-surface-variant mt-1">Árbitro: Manuel Dembo (Elite FIFA)</p>
-                <span className="text-[9px] text-primary font-bold uppercase tracking-wider block mt-1">NOMEAÇÃO ATRIBUÍDA</span>
-              </div>
 
-              <div className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 opacity-70">
-                <p className="font-semibold text-on-surface">Jogo: Wiliete SC vs Desp. Huíla</p>
-                <p className="text-[10px] text-on-surface-variant mt-1">Árbitro: Teresa Kiala (VAR)</p>
-                <span className="text-[9px] text-[#e9c349] font-bold uppercase tracking-wider block mt-1">AGUARDA CONFIRMAÇÃO</span>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-xl">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
               </div>
-            </div>
+            ) : (liveMatches.length === 0 && upcomingMatches.length === 0) ? (
+              <div className="flex flex-col items-center justify-center py-lg text-center text-on-surface-variant">
+                <Calendar className="w-8 h-8 opacity-30 mb-sm" />
+                <p className="text-xs font-semibold">Sem jogos agendados</p>
+              </div>
+            ) : (
+              <div className="space-y-sm text-xs">
+                {/* Show live matches first */}
+                {liveMatches.slice(0, 2).map(match => (
+                  <div
+                    key={match.id}
+                    className="p-3 bg-emerald-900/20 rounded-lg border border-emerald-500/20 block"
+                  >
+                    <div className="flex justify-between items-center text-[10px] text-on-surface-variant mb-1">
+                      <span className="font-semibold text-emerald-400 truncate max-w-28">{match.tournament}</span>
+                      <span className="text-emerald-500 font-bold">● AO VIVO</span>
+                    </div>
+                    <div className="flex items-center justify-between text-on-surface font-semibold">
+                      <span className="truncate max-w-20">{match.home_name}</span>
+                      <span className="text-primary font-bold text-sm px-sm">
+                        {match.home_score ?? 0} – {match.away_score ?? 0}
+                      </span>
+                      <span className="truncate max-w-20 text-right">{match.away_name}</span>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Upcoming matches */}
+                {upcomingMatches.slice(0, liveMatches.length > 0 ? 1 : 3).map(match => (
+                  <div
+                    key={match.id}
+                    className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 block"
+                  >
+                    <div className="flex justify-between items-center text-[10px] text-on-surface-variant mb-1">
+                      <span className="font-semibold text-primary truncate max-w-28">{match.tournament}</span>
+                      <span>
+                        {new Date(match.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
+                        {' '}
+                        {new Date(match.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-on-surface font-semibold">
+                      <span className="truncate max-w-20">{match.home_name}</span>
+                      <span className="text-on-surface-variant text-[10px] px-sm">vs</span>
+                      <span className="truncate max-w-20 text-right">{match.away_name}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          
+
           <button className="w-full bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface py-2 rounded-lg text-xs font-semibold transition-colors mt-lg flex items-center justify-center gap-1">
+            <Gavel className="w-4 h-4" />
             Painel de Nomeação Arbitral
           </button>
         </section>
       </div>
 
-      {/* KPI Cards / Statistics */}
+      {/* ── KPI Cards ─────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-lg mt-lg">
+
         <div className="glass-card p-md rounded-xl flex items-center gap-md">
           <div className="p-sm bg-primary/10 rounded-lg text-primary">
             <Trophy className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Total Torneios</p>
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Clubes Inscritos</p>
             <h3 className="font-display text-xl font-bold">
-              {isLoading ? '...' : `${totalCompetitions} registado${totalCompetitions === 1 ? '' : 's'}`}
+              {isLoading ? '…' : `${kpis.total_clubs} Clubes`}
             </h3>
           </div>
         </div>
@@ -178,19 +240,19 @@ export function CompetitionDashboardPage() {
           <div>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Torneios Ativos</p>
             <h3 className="font-display text-xl font-bold">
-              {isLoading ? '...' : `${activeCompetitions} em curso`}
+              {isLoading ? '…' : `${kpis.active_tournaments} em curso`}
             </h3>
           </div>
         </div>
 
         <div className="glass-card p-md rounded-xl flex items-center gap-md">
           <div className="p-sm bg-primary/10 rounded-lg text-primary">
-            <Award className="w-6 h-6" />
+            <Users className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Em Rascunho</p>
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Atletas Registados</p>
             <h3 className="font-display text-xl font-bold">
-              {isLoading ? '...' : `${draftCompetitions} planeado${draftCompetitions === 1 ? '' : 's'}`}
+              {isLoading ? '…' : `${kpis.total_players} Jogadores`}
             </h3>
           </div>
         </div>
