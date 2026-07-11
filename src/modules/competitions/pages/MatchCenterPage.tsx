@@ -20,6 +20,7 @@ import { Badge, Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
 import { useMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, MatchEvent, MatchStatus, EventType } from '../types'
 
 // ─── Status Config ────────────────────────────────────────────────────────────
@@ -444,6 +445,7 @@ export function MatchCenterPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
+  const { isAdmin } = useCompetitionAccess()
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
@@ -453,9 +455,6 @@ export function MatchCenterPage() {
 
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
-
-  // TODO: derive isAdmin from auth context when available
-  const isAdmin = false
 
   if (loadingComp || loadingMatches) {
     return (

@@ -14,6 +14,7 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches, useCompetitionStandings, useGenerateSchedule } from '../hooks/useCompetitionPhase3'
 import { useRegulations } from '../hooks/useCompetitionAdvanced'
 import { useTopScorers } from '../hooks/useCompetitionAdvanced'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { CompetitionHeader, CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
 import { StandingsTable } from '../components/StandingsTable'
 import { MatchCard } from '../components/MatchCard'
@@ -197,12 +198,10 @@ function StatsTab({ competitionId }: { competitionId: string }) {
 export function CompetitionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp, isError: errorComp } = useCompetition(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
-
-  // TODO: derive isAdmin from auth context when available
-  const isAdmin = false
 
   if (errorComp) {
     return (

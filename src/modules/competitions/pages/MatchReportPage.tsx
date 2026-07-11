@@ -18,6 +18,7 @@ import { Badge, Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
 import { useMatchReport, useAddGoal } from '../hooks/useCompetitionAdvanced'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, Goal, MatchStats, GoalType } from '../types'
 
 // ─── Goal Type Config ─────────────────────────────────────────────────────────
@@ -96,7 +97,9 @@ function GoalCard({ goal, isHome }: { goal: Goal; isHome: boolean }) {
       <div className={`flex flex-1 flex-col ${isHome ? 'text-left' : 'text-right'}`}>
         <span className="text-sm font-semibold text-on-surface">{goal.player_name}</span>
         <div className="flex items-center gap-xs text-xs text-on-surface-variant">
-          <span>{goal.minute}'</span>
+          <span>
+            {goal.minute}&apos;
+          </span>
           <span>•</span>
           <span>{config.label}</span>
         </div>
@@ -307,6 +310,7 @@ export function MatchReportPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
+  const { isAdmin } = useCompetitionAccess()
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
@@ -316,9 +320,6 @@ export function MatchReportPage() {
 
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
-
-  // TODO: derive isAdmin from auth context when available
-  const isAdmin = false
 
   if (loadingComp || loadingMatches) {
     return (
@@ -409,7 +410,7 @@ export function MatchReportPage() {
                   <div className="flex flex-col items-center gap-xs">
                     <Badge variant="secondary">
                       <Clock className="mr-xs h-3 w-3" />
-                      {report?.match_duration || 90}'
+                      {report?.match_duration || 90}&apos;
                     </Badge>
                     <span className="text-2xl font-bold text-on-surface-variant">—</span>
                   </div>

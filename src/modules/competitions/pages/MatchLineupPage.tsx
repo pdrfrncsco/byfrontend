@@ -18,6 +18,7 @@ import {
   useConfirmLineup,
   useLockLineup,
 } from '../hooks/useCompetitionAdvanced'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
@@ -272,6 +273,7 @@ export function MatchLineupPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
+  const { isAdmin } = useCompetitionAccess()
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
@@ -286,9 +288,6 @@ export function MatchLineupPage() {
   // Find home and away lineups
   const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club)
   const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club)
-
-  // TODO: derive isAdmin from auth context when available
-  const isAdmin = false
 
   if (loadingComp || loadingMatches) {
     return (

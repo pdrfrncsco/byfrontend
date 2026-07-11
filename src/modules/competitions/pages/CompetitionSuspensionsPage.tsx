@@ -3,6 +3,7 @@ import { AlertTriangle, ChevronLeft, Loader2, User as UserIcon } from 'lucide-re
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useSuspensions, useCancelSuspension } from '../hooks/useCompetitionAdvanced'
 import { useCompetition } from '../hooks/useCompetitions'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Suspension, SuspensionType } from '../types'
 
 const SUSPENSION_TYPE_LABELS: Record<SuspensionType, string> = {
@@ -67,12 +68,10 @@ function SuspensionCard({ suspension, isAdmin }: SuspensionCardProps) {
 export function CompetitionSuspensionsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: suspensions = [], isLoading: loadingSuspensions } = useSuspensions(competitionId)
-
-  // TODO: derive isAdmin from auth context
-  const isAdmin = false
 
   const active = (suspensions as Suspension[]).filter(s => s.is_active)
   const past = (suspensions as Suspension[]).filter(s => !s.is_active)
