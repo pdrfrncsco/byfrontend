@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
 import { AuthLayout } from '@/app/layouts'
 import { useLogin, useRegister, getPostAuthRedirectPath } from '@/modules/auth/hooks'
 import { ROUTES } from '@/constants/routes'
@@ -15,6 +16,7 @@ import {
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
   const isRegisterMode = location.pathname === '/register'
 
   const loginMutation = useLogin()
@@ -79,7 +81,7 @@ export function LoginPage() {
     <AuthLayout>
       <div className="glass-panel rounded-xl p-xl max-w-md w-full border border-outline-variant transition-all duration-300">
         <h1 className="font-display-lg text-headline-lg text-on-surface mb-lg text-center">
-          {isRegisterMode ? 'Criar Conta' : 'Login'}
+          {isRegisterMode ? t('auth.login.registerTitle') : t('auth.login.title')}
         </h1>
 
         {/* ── Login Mode ── */}
@@ -87,7 +89,7 @@ export function LoginPage() {
           <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-md">
             {/* Email */}
             <div>
-              <label className={labelClass}>Email</label>
+              <label className={labelClass}>{t('auth.login.email')}</label>
               <input
                 type="email"
                 placeholder="seu@email.com"
@@ -101,7 +103,7 @@ export function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className={labelClass}>Senha</label>
+              <label className={labelClass}>{t('auth.login.password')}</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -119,7 +121,7 @@ export function LoginPage() {
               disabled={loading}
               className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {loading ? 'A Entrar...' : 'Entrar'}
+              {loading ? t('auth.login.submitLoginLoading') : t('auth.login.submitLogin')}
             </button>
           </form>
         )}
@@ -130,7 +132,7 @@ export function LoginPage() {
             {/* First & Last Name */}
             <div className="grid grid-cols-2 gap-sm">
               <div>
-                <label className={labelClass}>Nome</label>
+                <label className={labelClass}>{t('auth.login.firstName')}</label>
                 <input
                   type="text"
                   placeholder="Pedro"
@@ -142,7 +144,7 @@ export function LoginPage() {
                 )}
               </div>
               <div>
-                <label className={labelClass}>Apelido</label>
+                <label className={labelClass}>{t('auth.login.lastName')}</label>
                 <input
                   type="text"
                   placeholder="Francisco"
@@ -157,7 +159,7 @@ export function LoginPage() {
 
             {/* Email */}
             <div>
-              <label className={labelClass}>Email</label>
+              <label className={labelClass}>{t('auth.login.email')}</label>
               <input
                 type="email"
                 placeholder="seu@email.com"
@@ -171,7 +173,7 @@ export function LoginPage() {
 
             {/* Phone */}
             <div>
-              <label className={labelClass}>Telemóvel (Opcional)</label>
+              <label className={labelClass}>{t('auth.login.phone')}</label>
               <input
                 type="tel"
                 placeholder="+244 923 000 000"
@@ -185,7 +187,7 @@ export function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className={labelClass}>Senha</label>
+              <label className={labelClass}>{t('auth.login.password')}</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -199,7 +201,7 @@ export function LoginPage() {
 
             {/* Password Confirmation */}
             <div>
-              <label className={labelClass}>Confirmar Senha</label>
+              <label className={labelClass}>{t('auth.login.confirmPassword')}</label>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -217,7 +219,7 @@ export function LoginPage() {
               disabled={loading}
               className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {loading ? 'A Criar Conta...' : 'Criar Conta'}
+              {loading ? t('auth.login.submitRegisterLoading') : t('auth.login.submitRegister')}
             </button>
           </form>
         )}
@@ -225,12 +227,12 @@ export function LoginPage() {
         {/* Links */}
         <div className="mt-lg space-y-sm text-center">
           <p className="font-body-md text-on-surface-variant text-sm">
-            {isRegisterMode ? 'Já tem conta?' : 'Não tem conta?'}{' '}
+            {isRegisterMode ? t('auth.login.hasAccount') : t('auth.login.noAccount')}{' '}
             <button
               onClick={() => navigate(isRegisterMode ? '/login' : '/register')}
               className="text-primary hover:text-primary-fixed transition-colors font-bold underline bg-transparent border-0 cursor-pointer"
             >
-              {isRegisterMode ? 'Fazer Login' : 'Registar-se'}
+              {isRegisterMode ? t('auth.login.loginLink') : t('auth.login.registerLink')}
             </button>
           </p>
           {!isRegisterMode && (
@@ -239,17 +241,17 @@ export function LoginPage() {
               onClick={() => navigate('/forgot-password')}
               className="block font-body-md text-on-surface-variant hover:text-primary transition-colors text-xs cursor-pointer bg-transparent border-0"
             >
-              Esqueceu a palavra-passe?
+              {t('auth.login.forgotPassword')}
             </button>
           )}
           <p className="font-body-md text-on-surface-variant text-sm">
-            É uma organização?{' '}
+            {t('auth.login.organizationCta')}{' '}
             <button
               type="button"
               onClick={() => navigate(ROUTES.REGISTER_ORGANIZATION)}
               className="text-primary hover:text-primary-fixed transition-colors font-bold underline bg-transparent border-0 cursor-pointer"
             >
-              Registar federação / liga
+              {t('auth.login.organizationLink')}
             </button>
           </p>
         </div>

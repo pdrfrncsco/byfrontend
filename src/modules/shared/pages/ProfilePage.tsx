@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useUpdateProfile, useChangePassword, useLogout } from '@/modules/auth/hooks'
+import { getStoredRefreshToken } from '@/lib/storage'
 import {
   profileUpdateSchema,
   changePasswordSchema,
@@ -56,7 +57,7 @@ export function ProfilePage() {
   }
 
   const handleLogout = () => {
-    const refresh = localStorage.getItem('bolayetu_refresh')
+    const refresh = getStoredRefreshToken()
     if (refresh) {
       logoutMutation.mutate(refresh)
     } else {

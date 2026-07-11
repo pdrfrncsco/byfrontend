@@ -1,13 +1,16 @@
+import { useTranslation } from 'react-i18next'
+
 interface NavigationProps {
   onNavClick?: (path: string) => void
 }
 
 export function Navigation({ onNavClick }: NavigationProps) {
+  const { t } = useTranslation()
   const navLinks = [
-    { label: 'Directory', href: '#directory', active: true },
-    { label: 'Live Matches', href: '#matches' },
-    { label: 'Scouting', href: '#scouting' },
-    { label: 'Transfers', href: '#transfers' },
+    { label: t('nav.directory'), href: '#directory', active: true },
+    { label: t('nav.liveMatches'), href: '#matches' },
+    { label: t('nav.scouting'), href: '#scouting' },
+    { label: t('nav.transfers'), href: '#transfers' },
   ]
 
   return (
@@ -39,10 +42,10 @@ export function Navigation({ onNavClick }: NavigationProps) {
         {/* Right Side */}
         <div className="flex items-center gap-md">
           <button className="hidden lg:block text-on-surface hover:bg-surface-container-high px-md py-sm rounded-full transition-all font-title-md text-title-md">
-            Enterprise Login
+            {t('nav.enterpriseLogin')}
           </button>
           <button className="bg-primary text-on-primary-fixed font-bold px-lg py-sm rounded-full hover:bg-opacity-90 transition-all font-title-md text-title-md">
-            Join Ecosystem
+            {t('nav.joinEcosystem')}
           </button>
           <div className="flex items-center gap-sm ml-md">
             <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">

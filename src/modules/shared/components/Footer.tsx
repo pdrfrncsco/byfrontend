@@ -1,5 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 export function Footer() {
   const year = new Date().getFullYear()
+  const { t } = useTranslation()
 
   return (
     <footer className="bg-surface-container-low border-t border-outline-variant py-xl">
@@ -27,26 +30,26 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-title-md text-on-surface mb-md">Produto</h4>
+            <h4 className="font-title-md text-on-surface mb-md">{t('footer.product')}</h4>
             <ul className="space-y-sm">
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Funcionalidades
+                  {t('footer.features')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Preços
+                  {t('footer.pricing')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Documentação
+                  {t('footer.docs')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Roadmap
+                  {t('footer.roadmap')}
                 </a>
               </li>
             </ul>
@@ -54,26 +57,26 @@ export function Footer() {
 
           {/* Empresa */}
           <div>
-            <h4 className="font-title-md text-on-surface mb-md">Empresa</h4>
+            <h4 className="font-title-md text-on-surface mb-md">{t('footer.company')}</h4>
             <ul className="space-y-sm">
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Sobre
+                  {t('footer.about')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Blog
+                  {t('footer.blog')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Contacte-nos
+                  {t('footer.contact')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Carreiras
+                  {t('footer.careers')}
                 </a>
               </li>
             </ul>
@@ -81,26 +84,26 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="font-title-md text-on-surface mb-md">Legal</h4>
+            <h4 className="font-title-md text-on-surface mb-md">{t('footer.legal')}</h4>
             <ul className="space-y-sm">
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Privacidade
+                  {t('footer.privacy')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Termos de Serviço
+                  {t('footer.terms')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Cookies
+                  {t('footer.cookies')}
                 </a>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  Segurança
+                  {t('footer.security')}
                 </a>
               </li>
             </ul>
@@ -112,11 +115,11 @@ export function Footer() {
           <p className="font-body-md text-on-surface-variant">© {year} BolaYetu. Todos os direitos reservados.</p>
           <div className="flex gap-md mt-md md:mt-0">
             <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Status
+              {t('footer.status')}
             </a>
             <span className="text-outline-variant">•</span>
             <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-              Suporte
+              {t('footer.support')}
             </a>
           </div>
         </div>

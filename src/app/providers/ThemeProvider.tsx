@@ -1,6 +1,5 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
-
-type Theme = 'light' | 'dark'
+import { useEffect, type ReactNode } from 'react'
+import { useThemeStore, type Theme } from '@/app/stores/theme-store'
 
 interface ThemeContextType {
   theme: Theme
@@ -8,47 +7,22 @@ interface ThemeContextType {
   setTheme: (theme: Theme) => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+export function useTheme(): ThemeContextType {
+  const theme = useThemeStore(state => state.theme)
+  const toggleTheme = useThemeStore(state => state.toggleTheme)
+  const setTheme = useThemeStore(state => state.setTheme)
+
+  return { theme, toggleTheme, setTheme }
+}
 
 interface ThemeProviderProps {
   children: ReactNode
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem('theme') as Theme | null
-    if (stored) return stored
+  useEffect(() => {
+    useThemeStore.getState().initializeTheme()
+  }, [])
 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    return prefersDark ? 'dark' : 'light'
-  })
-
-  const toggleTheme = () => {
-    setTheme(prev => {
-      const newTheme = prev === 'light' ? 'dark' : 'light'
-      localStorage.setItem('theme', newTheme)
-      document.documentElement.classList.toggle('dark', newTheme === 'dark')
-      return newTheme
-    })
-  }
-
-  const handleSetTheme = (newTheme: Theme) => {
-    setTheme(newTheme)
-    localStorage.setItem('theme', newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme: handleSetTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider')
-  }
-  return context
+  return <>{children}</>
 }

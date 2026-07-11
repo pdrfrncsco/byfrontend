@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useTenant } from '@/app/providers/TenantProvider'
 import { 
@@ -40,6 +41,7 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const { tenant } = useTenant()
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -66,17 +68,17 @@ export function DashboardLayout({
   const getSubLabel = () => {
     switch (dashboardType) {
       case 'federation':
-        return 'Consola da Federação'
+        return t('dashboard.sublabels.federation')
       case 'executive':
-        return 'Ecrã Executivo'
+        return t('dashboard.sublabels.executive')
       case 'league':
-        return 'Painel de Liga'
+        return t('dashboard.sublabels.league')
       case 'club':
-        return 'Portal de Clubes'
+        return t('dashboard.sublabels.club')
       case 'competition':
-        return 'Organizador de Provas'
+        return t('dashboard.sublabels.competition')
       default:
-        return 'BolaYetu Portal'
+        return t('dashboard.sublabels.default')
     }
   }
 
@@ -138,21 +140,21 @@ export function DashboardLayout({
             className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
           >
             <Settings className="w-5 h-5" />
-            <span className="font-title-md text-sm">Configurações</span>
+            <span className="font-title-md text-sm">{t('dashboard.sidebar.settings')}</span>
           </a>
           <a
             href="#help"
             className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
           >
             <HelpCircle className="w-5 h-5" />
-            <span className="font-title-md text-sm">Suporte</span>
+            <span className="font-title-md text-sm">{t('dashboard.sidebar.support')}</span>
           </a>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-title-md text-sm font-semibold">Terminar Sessão</span>
+            <span className="font-title-md text-sm font-semibold">{t('dashboard.sidebar.logout')}</span>
           </button>
         </div>
       </aside>
@@ -203,7 +205,7 @@ export function DashboardLayout({
                 className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"
               >
                 <LogOut className="w-5 h-5" />
-                <span className="font-title-md text-sm font-semibold">Sair</span>
+                <span className="font-title-md text-sm font-semibold">{t('dashboard.sidebar.logout')}</span>
               </button>
             </div>
           </aside>
@@ -228,15 +230,15 @@ export function DashboardLayout({
             <div className="hidden sm:flex items-center gap-sm bg-[#26364a] px-md py-1.5 rounded-full border border-[#3f4945]">
               <span className="w-2 h-2 rounded-full bg-[#94d3c1] animate-pulse"></span>
               <span className="text-[11px] font-semibold uppercase tracking-wider text-[#d3e4fe]">
-                {tenant ? `Inquilino: ${tenant.name}` : 'Portal Global BolaYetu'}
+                {tenant ? `Inquilino: ${tenant.name}` : t('dashboard.topbar.globalTenant')}
               </span>
             </div>
 
             {/* Quick Breadcrumbs */}
             <div className="hidden md:flex gap-md text-sm">
-              <a className="text-[#94d3c1] font-bold border-b-2 border-[#94d3c1] pb-1" href="#home">Geral</a>
-              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#analytics">Análise</a>
-              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#reports">Relatórios</a>
+              <a className="text-[#94d3c1] font-bold border-b-2 border-[#94d3c1] pb-1" href="#home">{t('dashboard.topbar.general')}</a>
+              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#analytics">{t('dashboard.topbar.analytics')}</a>
+              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#reports">{t('dashboard.topbar.reports')}</a>
             </div>
           </div>
 
@@ -255,7 +257,7 @@ export function DashboardLayout({
               <Search className="absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
               <input 
                 type="text"
-                placeholder="Pesquisar..."
+                placeholder={t('dashboard.topbar.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#000f21] border border-[#3f4945] rounded-full pl-xl pr-md py-1.5 text-xs text-[#d3e4fe] focus:ring-1 focus:ring-[#94d3c1] focus:border-[#94d3c1] transition-all"

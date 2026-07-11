@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
+import { clearStoredAuthSession, getStoredRefreshToken, getStoredAuthToken, setStoredAuthToken } from '@/lib/storage'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
 
@@ -19,13 +20,11 @@ const refreshClient = axios.create({
 let refreshPromise: Promise<string | null> | null = null
 
 function clearSession() {
-  localStorage.removeItem('bolayetu_token')
-  localStorage.removeItem('bolayetu_user')
-  localStorage.removeItem('bolayetu_refresh')
+  clearStoredAuthSession()
 }
 
 async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem('bolayetu_refresh')
+  const refreshToken = getStoredRefreshToken()
 
   if (!refreshToken) {
     return null
@@ -38,7 +37,7 @@ async function refreshAccessToken() {
       })
       .then(response => {
         const accessToken = response.data.data.access
-        localStorage.setItem('bolayetu_token', accessToken)
+        setStoredAuthToken(accessToken)
         return accessToken
       })
       .catch(() => {
@@ -56,7 +55,7 @@ async function refreshAccessToken() {
 // Request interceptor - add auth token
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('bolayetu_token')
+    const token = getStoredAuthToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
