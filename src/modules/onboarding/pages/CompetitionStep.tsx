@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trophy, Users, ListOrdered, ArrowLeft, ArrowRight } from 'lucide-react'
 import OnboardingLayout from './OnboardingLayout'
+import { onboardingRoutes } from '../routes'
 import {
   useCompetitions,
   useCreateCompetition,
@@ -182,14 +183,14 @@ export default function CompetitionStep() {
 
               <div className="pt-md flex items-center gap-md">
                 <Link
-                  to="/onboarding/branding"
+                  to={onboardingRoutes.branding}
                   className="flex-1 px-lg py-md border border-outline text-on-surface font-title-md hover:bg-white/5 transition-all rounded-lg flex items-center justify-center gap-sm"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Voltar
                 </Link>
                 <Link
-                  to="/onboarding/review"
+                  to={onboardingRoutes.review}
                   className={`flex-1 px-lg py-md font-title-md transition-all rounded-lg flex items-center justify-center gap-sm ${
                     form.name.trim()
                       ? 'bg-primary text-on-primary hover:brightness-110'

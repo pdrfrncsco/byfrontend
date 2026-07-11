@@ -39,6 +39,7 @@ import {
   OrganizationHistoryTable,
   KpiCard,
 } from '../components'
+import { organizationRoutes } from '../routes'
 
 export function OrganizationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -107,7 +108,7 @@ export function OrganizationDetailPage() {
 
         <div className="absolute left-gutter top-lg mx-auto w-full max-w-7xl px-gutter">
           <Button variant="outline" size="sm" asChild className="rounded-full bg-surface-lowest/80 backdrop-blur">
-            <Link to="/organizations">
+            <Link to={organizationRoutes.list}>
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Voltar às Organizações</span>
             </Link>

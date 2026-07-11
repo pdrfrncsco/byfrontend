@@ -35,6 +35,7 @@ import { organizationUpdateSchema, type OrganizationUpdateFormData } from '../sc
 import { OrganizationSettingsSkeleton } from '../components'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
+import { organizationRoutes } from '../routes'
 
 export function OrganizationSettingsPage() {
   const { data: organization, isLoading } = useOrganizationMe()
@@ -153,7 +154,7 @@ export function OrganizationSettingsPage() {
               Não tem nenhuma organização associada a este utilizador.
             </p>
             <Button variant="primary" size="sm" asChild>
-              <Link to="/dashboard">
+              <Link to={organizationRoutes.dashboard}>
                 <ArrowLeft className="h-4 w-4" />
                 <span>Voltar ao Dashboard</span>
               </Link>

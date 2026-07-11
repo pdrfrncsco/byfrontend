@@ -14,6 +14,8 @@ import OnboardingLayout from './OnboardingLayout'
 import { useOrganizationMe, useLaunchOrganization } from '@/modules/organizations'
 import { useCompetitions } from '@/modules/competitions'
 import type { CompetitionType } from '@/modules/competitions'
+import { onboardingRoutes } from '../routes'
+import { ROUTES } from '@/constants'
 
 const COUNTRY_LABELS: Record<string, string> = {
   AO: 'Angola',
@@ -103,7 +105,7 @@ export default function ReviewStep() {
               <Building2 className="w-5 h-5 text-primary" />
               <h3 className="font-title-md text-title-md text-on-surface">Dados da Organização</h3>
             </div>
-            <Link to="/onboarding" className="text-primary hover:underline font-label-sm">
+            <Link to={onboardingRoutes.root} className="text-primary hover:underline font-label-sm">
               Editar
             </Link>
           </div>
@@ -134,7 +136,7 @@ export default function ReviewStep() {
               <Palette className="w-5 h-5 text-tertiary" />
               <h3 className="font-title-md text-title-md text-on-surface">Identidade</h3>
             </div>
-            <Link to="/onboarding/branding" className="text-primary hover:underline font-label-sm">
+            <Link to={onboardingRoutes.branding} className="text-primary hover:underline font-label-sm">
               Editar
             </Link>
           </div>
@@ -170,7 +172,7 @@ export default function ReviewStep() {
               <Trophy className="w-5 h-5 text-secondary" />
               <h3 className="font-title-md text-title-md text-on-surface">Competições Configuradas</h3>
             </div>
-            <Link to="/onboarding/competition" className="text-primary hover:underline font-label-sm">
+            <Link to={onboardingRoutes.competition} className="text-primary hover:underline font-label-sm">
               Gerenciar
             </Link>
           </div>
@@ -205,7 +207,7 @@ export default function ReviewStep() {
           ) : (
             <p className="text-on-surface-variant">
               Nenhuma competição configurada.{' '}
-              <Link to="/onboarding/competition" className="text-primary hover:underline">
+              <Link to={onboardingRoutes.competition} className="text-primary hover:underline">
                 Criar competição
               </Link>
             </p>
@@ -259,14 +261,14 @@ export default function ReviewStep() {
 
       <div className="flex justify-between mt-xl">
         <Link
-          to="/onboarding/competition"
+          to={onboardingRoutes.competition}
           className="flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span className="font-title-md">Voltar</span>
         </Link>
         <Link
-          to="/dashboard"
+          to={ROUTES.DASHBOARD}
           className="border border-outline px-xl py-md rounded-lg font-title-md hover:bg-white/5 transition-all"
         >
           Finalizar

@@ -6,7 +6,11 @@ export const ROUTES = {
   PROFILE: '/profile',
   SETTINGS: '/settings',
   ORGANIZATIONS: '/organizations',
+  ORGANIZATION_DETAIL: (slug: string) => `/organizations/${slug}`,
   ONBOARDING: '/onboarding',
+  ONBOARDING_BRANDING: '/onboarding/branding',
+  ONBOARDING_COMPETITION: '/onboarding/competition',
+  ONBOARDING_REVIEW: '/onboarding/review',
   REGISTER_ORGANIZATION: '/register/organization',
   ORGANIZATION_SETTINGS: '/organization/settings',
   DASHBOARD_ORGANIZATION: '/dashboard/organization',
@@ -26,6 +30,7 @@ export const ROUTES = {
   DASHBOARD_COMPETITIONS_SCHEDULE: (id: string) => `/dashboard/competitions/${id}/schedule`,
   CLUBS: '/clubs',
   PLAYERS: '/players',
+  PLAYER_DETAIL: (slug: string) => `/players/${slug}`,
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',
@@ -49,6 +54,7 @@ export const ROUTES = {
   TRANSFERS: '/transfers',
   SUBSCRIPTIONS: '/subscriptions',
   NOTIFICATIONS: '/notifications',
+  NOT_FOUND_PAGE: '/404',
   NOT_FOUND: '*',
 }
 

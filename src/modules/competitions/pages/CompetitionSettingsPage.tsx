@@ -6,6 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Sel
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
 import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
+import { competitionRoutes } from '../routes'
 
 /**
  * CompetitionSettingsPage — edit competition metadata and status.
@@ -46,7 +47,7 @@ export function CompetitionSettingsPage() {
     return (
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <p>Competição não encontrada.</p>
-        <Link to="/competitions">
+        <Link to={competitionRoutes.list}>
           <Button variant="secondary" size="sm">Voltar</Button>
         </Link>
       </div>
@@ -57,7 +58,7 @@ export function CompetitionSettingsPage() {
     <div className="mx-auto max-w-2xl space-y-xl p-xl">
       {/* Back */}
       <Link
-        to={`/competitions/${competitionId}`}
+        to={competitionRoutes.detail(competitionId)}
         className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
       >
         <ChevronLeft className="h-4 w-4" />

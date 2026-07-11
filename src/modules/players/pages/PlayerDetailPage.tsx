@@ -6,6 +6,7 @@ import {
 import { usePlayer } from '../hooks'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
 import type { PlayerCareerEntry } from '../types'
+import { playerRoutes } from '../routes'
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, color }: {
@@ -108,7 +109,7 @@ export function PlayerDetailPage() {
   return (
     <div className="player-detail-page">
       {/* Back Navigation */}
-      <Link to="/players" className="player-detail-back" id="player-back-link">
+      <Link to={playerRoutes.list} className="player-detail-back" id="player-back-link">
         <ArrowLeft size={16} />
         Todos os jogadores
       </Link>

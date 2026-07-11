@@ -7,5 +7,6 @@ export const sharedRoutes = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   profile: ROUTES.PROFILE,
+  notFoundPage: ROUTES.NOT_FOUND_PAGE,
   notFound: ROUTES.NOT_FOUND,
 }

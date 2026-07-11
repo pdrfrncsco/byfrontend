@@ -20,6 +20,7 @@ import { StandingsTable } from '../components/StandingsTable'
 import { MatchCard } from '../components/MatchCard'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { PlayerStatsTable } from '../components/PlayerStatsTable'
+import { competitionRoutes } from '../routes'
 import type { Match } from '../types'
 
 // ─── Matches Tab ──────────────────────────────────────────────────────────────
@@ -208,7 +209,7 @@ export function CompetitionDetailPage() {
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="font-medium text-on-surface">Competição não encontrada.</p>
-        <Link to="/competitions">
+        <Link to={competitionRoutes.list}>
           <Button variant="secondary" size="sm">Voltar às Competições</Button>
         </Link>
       </div>

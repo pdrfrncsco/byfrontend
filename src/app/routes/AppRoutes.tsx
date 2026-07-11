@@ -392,8 +392,8 @@ export function AppRoutes() {
         }
       />
 
-      <Route path="/404" element={<NotFoundPage />} />
-      <Route path={sharedRoutes.notFound} element={<Navigate to="/404" replace />} />
+      <Route path={sharedRoutes.notFoundPage} element={<NotFoundPage />} />
+      <Route path={sharedRoutes.notFound} element={<Navigate to={sharedRoutes.notFoundPage} replace />} />
     </Routes>
   )
 }

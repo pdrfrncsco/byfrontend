@@ -5,6 +5,7 @@ import { Trophy, ChevronLeft, Loader2 } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select } from '@/components/ui'
 import { useCreateCompetition } from '../hooks/useCompetitions'
 import { createCompetitionSchema, type CreateCompetitionFormData } from '../schemas'
+import { competitionRoutes } from '../routes'
 
 /**
  * CompetitionCreatePage — form to create a new competition.
@@ -29,7 +30,7 @@ export function CompetitionCreatePage() {
   const onSubmit = (data: CreateCompetitionFormData) => {
     createCompetition(data, {
       onSuccess: (competition) => {
-        navigate(`/competitions/${competition.id}`)
+        navigate(competitionRoutes.detail(competition.id))
       },
     })
   }
@@ -38,7 +39,7 @@ export function CompetitionCreatePage() {
     <div className="mx-auto max-w-2xl space-y-xl p-xl">
       {/* Back */}
       <Link
-        to="/competitions"
+        to={competitionRoutes.list}
         className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -137,7 +138,7 @@ export function CompetitionCreatePage() {
 
             {/* Actions */}
             <div className="flex items-center justify-end gap-sm pt-sm">
-              <Link to="/competitions">
+              <Link to={competitionRoutes.list}>
                 <Button type="button" variant="secondary" disabled={isPending}>
                   Cancelar
                 </Button>
