@@ -1,0 +1,16 @@
+import { ROUTES } from '@/constants'
+
+export const competitionRoutes = {
+  list: ROUTES.COMPETITIONS,
+  detail: (id: string) => ROUTES.COMPETITION_DETAIL(id),
+  rankings: (id: string) => ROUTES.COMPETITION_RANKINGS(id),
+  suspensions: (id: string) => ROUTES.COMPETITION_SUSPENSIONS(id),
+  dashboard: ROUTES.DASHBOARD_COMPETITION,
+  create: ROUTES.DASHBOARD_COMPETITIONS_CREATE,
+  settings: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_SETTINGS(id),
+  registration: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_REGISTRATION(id),
+  schedule: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_SCHEDULE(id),
+  matchCenter: (compId: string, matchId: string) => ROUTES.MATCH_CENTER(compId, matchId),
+  matchLineup: (compId: string, matchId: string) => ROUTES.MATCH_LINEUP(compId, matchId),
+  matchReport: (compId: string, matchId: string) => ROUTES.MATCH_REPORT(compId, matchId),
+}

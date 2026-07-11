@@ -1,0 +1,13 @@
+import { ROUTES } from '@/constants'
+
+export const clubRoutes = {
+  list: ROUTES.CLUBS,
+  detail: (id: string) => `/clubs/${id}`,
+  dashboard: ROUTES.DASHBOARD_CLUB,
+  settings: ROUTES.DASHBOARD_CLUB_SETTINGS,
+  members: ROUTES.DASHBOARD_CLUB_MEMBERS,
+  documents: ROUTES.DASHBOARD_CLUB_DOCUMENTS,
+  sponsors: ROUTES.DASHBOARD_CLUB_SPONSORS,
+  transfers: ROUTES.DASHBOARD_CLUB_TRANSFERS,
+  transferCreate: ROUTES.DASHBOARD_CLUB_TRANSFERS_CREATE,
+}

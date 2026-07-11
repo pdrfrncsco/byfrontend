@@ -30,6 +30,13 @@ import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/m
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { NotificationsPage } from '@/modules/notifications/pages/NotificationsPage'
+import { sharedRoutes } from '@/modules/shared/routes'
+import { organizationRoutes } from '@/modules/organizations/routes'
+import { clubRoutes } from '@/modules/clubs/routes'
+import { competitionRoutes } from '@/modules/competitions/routes'
+import { dashboardRoutes } from '@/modules/dashboards/routes'
+import { onboardingRoutes } from '@/modules/onboarding/routes'
+import { playerRoutes } from '@/modules/players/routes'
 
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
@@ -70,16 +77,16 @@ export function AppRoutes() {
           </PublicLayout>
         }
       />
-      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-      <Route path={ROUTES.REGISTER} element={<LoginPage />} />
+      <Route path={sharedRoutes.login} element={<LoginPage />} />
+      <Route path={sharedRoutes.register} element={<LoginPage />} />
       <Route path={ROUTES.REGISTER_ORGANIZATION} element={<RegisterOrganizationPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path={sharedRoutes.forgotPassword} element={<ForgotPasswordPage />} />
+      <Route path={sharedRoutes.resetPassword} element={<ResetPasswordPage />} />
 
-      <Route path={ROUTES.ORGANIZATIONS} element={<OrganizationListPage />} />
-      <Route path="/organizations/:slug" element={<OrganizationDetailPage />} />
+      <Route path={organizationRoutes.list} element={<OrganizationListPage />} />
+      <Route path={organizationRoutes.detail(':slug')} element={<OrganizationDetailPage />} />
       <Route
-        path={ROUTES.ORGANIZATION_SETTINGS}
+        path={organizationRoutes.settings}
         element={
           <ProtectedRoute>
             <OrganizationSettingsPage />
@@ -88,7 +95,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path={ROUTES.DASHBOARD}
+        path={dashboardRoutes.root}
         element={
           <ProtectedRoute>
             <DashboardPageSelector />
@@ -96,7 +103,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/executive"
+        path={dashboardRoutes.executive}
         element={
           <ProtectedRoute>
             <ExecutiveDashboardPage />
@@ -104,7 +111,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/federation"
+        path={dashboardRoutes.federation}
         element={
           <ProtectedRoute>
             <FederationDashboardPage />
@@ -112,7 +119,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/league"
+        path={dashboardRoutes.league}
         element={
           <ProtectedRoute>
             <LeagueDashboardPage />
@@ -120,7 +127,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/club"
+        path={dashboardRoutes.club}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -130,7 +137,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_SETTINGS}
+        path={clubRoutes.settings}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -140,7 +147,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_MEMBERS}
+        path={clubRoutes.members}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -150,7 +157,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_DOCUMENTS}
+        path={clubRoutes.documents}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -160,7 +167,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_SPONSORS}
+        path={clubRoutes.sponsors}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -170,7 +177,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_TRANSFERS}
+        path={clubRoutes.transfers}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -180,7 +187,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_CLUB_TRANSFERS_CREATE}
+        path={clubRoutes.transferCreate}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -190,7 +197,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/dashboard/organization"
+        path={organizationRoutes.dashboard}
         element={
           <ProtectedRoute>
             <OrganizationDashboardPage />
@@ -198,7 +205,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_ORGANIZATION_MEMBERS}
+        path={organizationRoutes.members}
         element={
           <ProtectedRoute>
             <OrganizationMembersPage />
@@ -206,7 +213,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}
+        path={organizationRoutes.affiliations}
         element={
           <ProtectedRoute>
             <OrganizationAffiliationsPage />
@@ -215,7 +222,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path={ROUTES.ONBOARDING}
+        path={onboardingRoutes.root}
         element={
           <ProtectedRoute>
             <OnboardingGuard>
@@ -225,7 +232,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/onboarding/branding"
+        path={onboardingRoutes.branding}
         element={
           <ProtectedRoute>
             <OnboardingGuard>
@@ -235,7 +242,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/onboarding/competition"
+        path={onboardingRoutes.competition}
         element={
           <ProtectedRoute>
             <OnboardingGuard>
@@ -245,7 +252,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/onboarding/review"
+        path={onboardingRoutes.review}
         element={
           <ProtectedRoute>
             <OnboardingGuard>
@@ -256,7 +263,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path="/dashboard/competition"
+        path={dashboardRoutes.competition}
         element={
           <ProtectedRoute>
             <CompetitionDashboardPage />
@@ -272,7 +279,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.PROFILE}
+        path={sharedRoutes.profile}
         element={
           <ProtectedRoute>
             <ProfilePage />
@@ -281,7 +288,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path={ROUTES.CLUBS}
+        path={clubRoutes.list}
         element={
           <Suspense fallback={<RouteFallback />}>
             <ClubListPage />
@@ -289,7 +296,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/clubs/:id"
+        path={clubRoutes.detail(':id')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <ClubDetailPage />
@@ -297,13 +304,13 @@ export function AppRoutes() {
         }
       />
 
-      <Route path={ROUTES.PLAYERS} element={<PlayerListPage />} />
-      <Route path="/players/:slug" element={<PlayerDetailPage />} />
+      <Route path={playerRoutes.list} element={<PlayerListPage />} />
+      <Route path={playerRoutes.detail(':slug')} element={<PlayerDetailPage />} />
 
-      <Route path={ROUTES.COMPETITIONS} element={<CompetitionListPage />} />
-      <Route path="/competitions/:id" element={<CompetitionDetailPage />} />
+      <Route path={competitionRoutes.list} element={<CompetitionListPage />} />
+      <Route path={competitionRoutes.detail(':id')} element={<CompetitionDetailPage />} />
       <Route
-        path={ROUTES.COMPETITION_RANKINGS(':id')}
+        path={competitionRoutes.rankings(':id')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <CompetitionRankingsPage />
@@ -311,7 +318,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.COMPETITION_SUSPENSIONS(':id')}
+        path={competitionRoutes.suspensions(':id')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <CompetitionSuspensionsPage />
@@ -320,7 +327,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path={ROUTES.MATCH_CENTER(':compId', ':matchId')}
+        path={competitionRoutes.matchCenter(':compId', ':matchId')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <MatchCenterPage />
@@ -328,7 +335,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.MATCH_LINEUP(':compId', ':matchId')}
+        path={competitionRoutes.matchLineup(':compId', ':matchId')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <MatchLineupPage />
@@ -336,7 +343,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.MATCH_REPORT(':compId', ':matchId')}
+        path={competitionRoutes.matchReport(':compId', ':matchId')}
         element={
           <Suspense fallback={<RouteFallback />}>
             <MatchReportPage />
@@ -345,7 +352,7 @@ export function AppRoutes() {
       />
 
       <Route
-        path={ROUTES.COMPETITION_CREATE}
+        path={competitionRoutes.create}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -355,7 +362,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.COMPETITION_SETTINGS(':id')}
+        path={competitionRoutes.settings(':id')}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -365,7 +372,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.COMPETITION_REGISTRATION(':id')}
+        path={competitionRoutes.registration(':id')}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -375,7 +382,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path={ROUTES.COMPETITION_SCHEDULE(':id')}
+        path={competitionRoutes.schedule(':id')}
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}>
@@ -386,7 +393,7 @@ export function AppRoutes() {
       />
 
       <Route path="/404" element={<NotFoundPage />} />
-      <Route path={ROUTES.NOT_FOUND} element={<Navigate to="/404" replace />} />
+      <Route path={sharedRoutes.notFound} element={<Navigate to="/404" replace />} />
     </Routes>
   )
 }
