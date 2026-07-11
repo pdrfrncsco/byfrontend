@@ -10,6 +10,25 @@ import {
   DollarSign,
   Clock
 } from 'lucide-react'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 export function ExecutiveDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
@@ -63,6 +82,77 @@ export function ExecutiveDashboardPage() {
     active_tournaments: 0,
     total_revenue: 0,
     players_this_month: 0
+  }
+
+  const chartData = {
+    labels: data?.goals_evolution[0]?.data.map(d => d.period) || [],
+    datasets: data?.goals_evolution.map((evol, idx) => ({
+      label: evol.tournament_name,
+      data: evol.data.map(d => d.goals),
+      backgroundColor: idx === 0 ? '#94d3c1' : idx === 1 ? '#e9c349' : '#1B4D3E',
+      borderColor: idx === 0 ? '#94d3c1' : idx === 1 ? '#e9c349' : '#1B4D3E',
+      borderWidth: 1,
+      borderRadius: 4,
+    })) || [],
+  }
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top' as const,
+        labels: {
+          color: '#bfc9c4',
+          font: {
+            family: 'Inter, sans-serif',
+            size: 10,
+            weight: 'bold' as const,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: '#102034',
+        titleColor: '#bfc9c4',
+        bodyColor: '#ffffff',
+        borderColor: '#26364a',
+        borderWidth: 1,
+        titleFont: {
+          family: 'Inter, sans-serif',
+          weight: 'bold' as const,
+        },
+        bodyFont: {
+          family: 'Inter, sans-serif',
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#bfc9c4',
+          font: {
+            family: 'Inter, sans-serif',
+            size: 9,
+          },
+        },
+      },
+      y: {
+        grid: {
+          color: 'rgba(38, 54, 74, 0.3)',
+        },
+        ticks: {
+          color: '#bfc9c4',
+          font: {
+            family: 'Inter, sans-serif',
+            size: 9,
+          },
+        },
+      },
+    },
   }
 
   return (
@@ -175,37 +265,13 @@ export function ExecutiveDashboardPage() {
           </div>
         </section>
 
-        {/* Simplified Bar Chart */}
+        {/* Chart.js Bar Chart */}
         <section className="glass-card rounded-xl flex flex-col p-0 overflow-hidden">
           <div className="p-md border-b border-[#26364a]/50 flex justify-between items-center bg-[#102034]/50">
             <h4 className="font-display text-base font-bold">Métricas de Golos por Torneio</h4>
-            <div className="flex gap-sm text-[9px] font-bold tracking-wider">
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 bg-primary rounded-full"></span>
-                <span>GOLOS REAIS</span>
-              </div>
-            </div>
           </div>
-          <div className="flex-1 p-md flex items-end gap-md relative h-48 mt-2">
-            <div className="absolute inset-0 pointer-events-none opacity-5" style={{ backgroundImage: 'linear-gradient(#bfc9c4 1px, transparent 1px), linear-gradient(90deg, #bfc9c4 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-            
-            {data?.goals_evolution.map((evol, idx) => (
-              <div key={idx} className="flex-1 flex flex-col justify-end gap-1 group cursor-pointer text-center">
-                {evol.data.map((d, dIdx) => (
-                  <div key={dIdx} className="w-full space-y-1">
-                    <div 
-                      className="bg-primary rounded-t transition-all group-hover:brightness-110 mx-auto w-12"
-                      style={{ height: `${Math.min(d.goals * 2, 120)}px` }}
-                      title={`${evol.tournament_name}: ${d.goals} golos`}
-                    ></div>
-                    <span className="text-[10px] text-on-surface-variant font-bold block">{d.goals}G</span>
-                  </div>
-                ))}
-                <span className="text-[9px] text-center text-on-surface-variant truncate mt-1 block max-w-[120px] mx-auto">
-                  {evol.tournament_name}
-                </span>
-              </div>
-            ))}
+          <div className="flex-1 p-md relative h-56 mt-2">
+            <Bar data={chartData} options={chartOptions} />
           </div>
         </section>
       </div>

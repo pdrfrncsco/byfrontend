@@ -185,8 +185,8 @@ export default function ClubTransfersPage() {
             <div className="grid gap-md md:grid-cols-3">
               <FormField label="Pesquisar" htmlFor="transfer-search">
                 <div className="relative">
-                  <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
-                  <Input id="transfer-search" value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10" placeholder="Jogador ou clube" />
+                  <Filter className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-outline" aria-hidden="true" />
+                  <Input id="transfer-search" value={query} onChange={(e) => setQuery(e.target.value)} className="pl-10" placeholder="Jogador ou clube" aria-label="Pesquisar transferências" />
                 </div>
               </FormField>
               <FormField label="Estado" htmlFor="transfer-status">

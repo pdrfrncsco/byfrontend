@@ -127,8 +127,8 @@ describe('organization management pages', () => {
       renderPage(<OrganizationDashboardPage />)
 
       expect(screen.getByText(/Bem-vindo, Federação Angolana de Futebol/i)).toBeInTheDocument()
-      expect(screen.getByText(/Torneios/i)).toBeInTheDocument()
-      expect(screen.getByText(/Clubes/i)).toBeInTheDocument()
+      expect(screen.getByText('Torneios Ativos')).toBeInTheDocument()
+      expect(screen.getByText('Clubes Associados')).toBeInTheDocument()
     })
   })
 

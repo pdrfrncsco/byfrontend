@@ -44,6 +44,7 @@ import {
   useClubSponsors,
   useTransfers,
   useUpdateClub,
+  useUploadClubLogo,
 } from '@/modules/clubs/hooks/useClubs'
 import ClubDashboardPage from '@/modules/clubs/pages/ClubDashboardPage'
 import ClubSettingsPage from '@/modules/clubs/pages/ClubSettingsPage'
@@ -55,6 +56,10 @@ function renderPage(element: ReactNode) {
 describe('club dashboard and settings pages', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(useUploadClubLogo).mockReturnValue({
+      isPending: false,
+      mutate: vi.fn(),
+    } as any)
   })
 
   it('renders club dashboard with summary actions and recent data', () => {

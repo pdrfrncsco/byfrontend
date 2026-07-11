@@ -117,6 +117,7 @@ export default function ClubSponsorsPage() {
         <Button
           variant="ghost"
           size="sm"
+          aria-label={`Eliminar patrocinador "${row.original.name}"`}
           className="text-error hover:bg-error-container/20 hover:text-error"
           onClick={() => {
             if (!slug) return
@@ -126,7 +127,7 @@ export default function ClubSponsorsPage() {
           }}
           disabled={deleteMutation.isPending}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
         </Button>
       ),
     },

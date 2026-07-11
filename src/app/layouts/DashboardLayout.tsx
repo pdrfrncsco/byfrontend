@@ -3,17 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useTenant } from '@/app/providers/TenantProvider'
-import { 
-  LayoutDashboard, 
-  Search, 
-  Settings, 
-  HelpCircle, 
-  LogOut, 
-  Menu, 
-  X
-} from 'lucide-react'
-import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
-import { NotificationsDropdown } from '@/modules/notifications/components/NotificationsDropdown'
+import { DashboardSidebar } from './components/DashboardSidebar'
+import { DashboardHeader } from './components/DashboardHeader'
+import { DashboardMobileMenu } from './components/DashboardMobileMenu'
 
 interface SidebarLink {
   label: string
@@ -96,199 +88,38 @@ export function DashboardLayout({
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="w-64 border-r border-[#26364a] bg-[#102034]/85 backdrop-blur-xl flex flex-col p-md hidden md:flex sticky top-0 h-screen z-40">
-        <div className="mb-xl px-md flex flex-col items-center text-center">
-          {getLogo() ? (
-            <img 
-              alt="Logo" 
-              className={`object-contain mb-md transition-all duration-300 ${dashboardType === 'federation' ? 'h-20 w-auto' : 'h-24 w-24'}`} 
-              src={getLogo() || ''} 
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-[#1b2b3f] flex items-center justify-center mb-md border border-[#26364a]">
-              <LayoutDashboard className="text-primary w-8 h-8" />
-            </div>
-          )}
-          <div>
-            <h1 className="font-display-lg text-2xl text-[#94d3c1] uppercase tracking-tighter leading-none">BOLA YETU</h1>
-            <p className="text-on-surface-variant text-[11px] font-semibold uppercase tracking-widest mt-1.5 opacity-70">
-              {getSubLabel()}
-            </p>
-          </div>
-        </div>
-
-        <nav className="flex-1 space-y-1 overflow-y-auto custom-scrollbar px-sm">
-          {sidebarLinks.map((link, idx) => (
-            <a
-              key={idx}
-              href={link.href}
-              className={`flex items-center gap-md p-md rounded-lg transition-all duration-200 ${
-                link.active
-                  ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                  : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
-              }`}
-            >
-              {link.icon}
-              <span className="font-title-md text-sm">{link.label}</span>
-            </a>
-          ))}
-        </nav>
-
-        <div className="pt-lg border-t border-[#26364a]/50 mt-auto space-y-1">
-          <a
-            href="#settings"
-            className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
-          >
-            <Settings className="w-5 h-5" />
-            <span className="font-title-md text-sm">{t('dashboard.sidebar.settings')}</span>
-          </a>
-          <a
-            href="#help"
-            className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
-          >
-            <HelpCircle className="w-5 h-5" />
-            <span className="font-title-md text-sm">{t('dashboard.sidebar.support')}</span>
-          </a>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-title-md text-sm font-semibold">{t('dashboard.sidebar.logout')}</span>
-          </button>
-        </div>
-      </aside>
+      <DashboardSidebar
+        logo={getLogo()}
+        dashboardType={dashboardType}
+        sidebarLinks={sidebarLinks}
+        subLabel={getSubLabel()}
+        onLogout={handleLogout}
+      />
 
       {/* Mobile Sidebar Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-[#000f21]/80 backdrop-blur-sm z-50 md:hidden flex justify-start">
-          <aside className="w-64 border-r border-[#26364a] bg-[#102034] flex flex-col p-md h-full relative animate-fade-in">
-            <button 
-              onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-md right-md p-sm text-on-surface-variant hover:text-[#d3e4fe]"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <div className="mb-xl mt-lg px-md text-center">
-              {getLogo() && (
-                <img 
-                  alt="Logo" 
-                  className={`mx-auto mb-md object-contain ${dashboardType === 'federation' ? 'h-16' : 'h-20'}`} 
-                  src={getLogo() || ''} 
-                />
-              )}
-              <h1 className="font-display-lg text-xl text-[#94d3c1] uppercase tracking-tighter">BOLA YETU</h1>
-              <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest mt-1">
-                {getSubLabel()}
-              </p>
-            </div>
-            <nav className="flex-1 space-y-1 overflow-y-auto px-sm">
-              {sidebarLinks.map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-md p-md rounded-lg transition-all ${
-                    link.active
-                      ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                      : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
-                  }`}
-                >
-                  {link.icon}
-                  <span className="font-title-md text-sm">{link.label}</span>
-                </a>
-              ))}
-            </nav>
-            <div className="pt-lg border-t border-[#26364a] mt-auto space-y-1">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"
-              >
-                <LogOut className="w-5 h-5" />
-                <span className="font-title-md text-sm font-semibold">{t('dashboard.sidebar.logout')}</span>
-              </button>
-            </div>
-          </aside>
-          <div className="flex-1" onClick={() => setMobileMenuOpen(false)}></div>
-        </div>
-      )}
+      <DashboardMobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        logo={getLogo()}
+        dashboardType={dashboardType}
+        sidebarLinks={sidebarLinks}
+        subLabel={getSubLabel()}
+        onLogout={handleLogout}
+      />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header (Top Bar) */}
-        <header className="sticky top-0 z-30 h-16 w-full flex justify-between items-center px-lg bg-[#0b1c30]/70 border-b border-[#26364a]/40 backdrop-blur-xl">
-          <div className="flex items-center gap-lg">
-            {/* Hamburger Button for mobile */}
-            <button 
-              onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-sm text-on-surface-variant hover:text-[#d3e4fe] rounded-full hover:bg-[#1b2b3f]/30"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Tenant / Workspace Active Indicator */}
-            <div className="hidden sm:flex items-center gap-sm bg-[#26364a] px-md py-1.5 rounded-full border border-[#3f4945]">
-              <span className="w-2 h-2 rounded-full bg-[#94d3c1] animate-pulse"></span>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#d3e4fe]">
-                {tenant ? `Inquilino: ${tenant.name}` : t('dashboard.topbar.globalTenant')}
-              </span>
-            </div>
-
-            {/* Quick Breadcrumbs */}
-            <div className="hidden md:flex gap-md text-sm">
-              <a className="text-[#94d3c1] font-bold border-b-2 border-[#94d3c1] pb-1" href="#home">{t('dashboard.topbar.general')}</a>
-              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#analytics">{t('dashboard.topbar.analytics')}</a>
-              <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#reports">{t('dashboard.topbar.reports')}</a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-lg">
-            {/* Notifications Bell */}
-            <div className="relative">
-              <NotificationBell onToggle={toggleNotifications} />
-              {notificationsOpen && (
-                <div className="absolute right-0 mt-2 z-50">
-                  <NotificationsDropdown />
-                </div>
-              )}
-            </div>
-            {/* Search Input */}
-            <div className="relative hidden lg:block w-64">
-              <Search className="absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
-              <input 
-                type="text"
-                placeholder={t('dashboard.topbar.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#000f21] border border-[#3f4945] rounded-full pl-xl pr-md py-1.5 text-xs text-[#d3e4fe] focus:ring-1 focus:ring-[#94d3c1] focus:border-[#94d3c1] transition-all"
-              />
-            </div>
-
-
-            <div className="h-8 w-px bg-[#26364a]"></div>
-
-            {/* Profile Avatar / Menu */}
-            <div className="flex items-center gap-md">
-              <div className="text-right hidden xl:block">
-                <p className="text-xs font-semibold text-on-surface leading-none">
-                  {user?.username || 'Utilizador Demo'}
-                </p>
-                <p className="text-[10px] text-on-surface-variant uppercase mt-1 font-bold">
-                  {user?.role || 'Executivo'}
-                </p>
-              </div>
-              <button
-                onClick={() => navigate('/profile')}
-                title="Ver Perfil"
-                className="w-10 h-10 rounded-full bg-[#1b2b3f] flex items-center justify-center border-2 border-[#94d3c1] hover:border-primary hover:scale-105 transition-all cursor-pointer"
-              >
-                <span className="text-sm font-bold text-[#94d3c1] uppercase">
-                  {user?.username?.charAt(0) || '?'}
-                </span>
-              </button>
-            </div>
-          </div>
-        </header>
+        <DashboardHeader
+          tenantName={tenant?.name}
+          username={user?.username}
+          role={user?.role}
+          notificationsOpen={notificationsOpen}
+          toggleNotifications={toggleNotifications}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onOpenMobileMenu={() => setMobileMenuOpen(true)}
+        />
 
         {/* Content canvas */}
         <main className="flex-1 p-lg max-w-container-max w-full mx-auto space-y-lg overflow-y-auto">

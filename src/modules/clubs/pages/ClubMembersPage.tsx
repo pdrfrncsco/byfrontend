@@ -150,31 +150,36 @@ export default function ClubMembersPage() {
     {
       id: 'actions',
       header: 'Ações',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setEditingMember(row.original)}
-          >
-            <Edit3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-error hover:bg-error-container/20 hover:text-error"
-            onClick={() => {
-              if (!slug) return
-              if (window.confirm(`Remover ${row.original.display_name || row.original.full_name || 'este membro'}?`)) {
-                removeMutation.mutate({ slug, memberId: row.original.id })
-              }
-            }}
-            disabled={removeMutation.isPending}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const memberName = row.original.display_name || row.original.full_name || 'membro'
+        return (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={`Editar ${memberName}`}
+              onClick={() => setEditingMember(row.original)}
+            >
+              <Edit3 className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              aria-label={`Remover ${memberName}`}
+              className="text-error hover:bg-error-container/20 hover:text-error"
+              onClick={() => {
+                if (!slug) return
+                if (window.confirm(`Remover ${memberName}?`)) {
+                  removeMutation.mutate({ slug, memberId: row.original.id })
+                }
+              }}
+              disabled={removeMutation.isPending}
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        )
+      },
     },
   ], [removeMutation, slug])
 
@@ -326,8 +331,15 @@ export default function ClubMembersPage() {
               <div className="grid gap-md md:grid-cols-[1fr_220px]">
                 <FormField label="Pesquisar" htmlFor="member-search">
                   <div className="relative">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
-                    <Input id="member-search" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" placeholder="Nome do membro" />
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-outline" aria-hidden="true" />
+                    <Input
+                      id="member-search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="pl-10"
+                      placeholder="Nome do membro"
+                      aria-label="Pesquisar membro por nome"
+                    />
                   </div>
                 </FormField>
                 <FormField label="Função" htmlFor="member-role">

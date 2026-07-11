@@ -16,6 +16,31 @@ import {
   ArrowRight,
   BookOpen
 } from 'lucide-react'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js'
+import { Line, Doughnut } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
 
 
 export function FederationDashboardPage() {
@@ -71,6 +96,71 @@ export function FederationDashboardPage() {
     return `$${value}`
   }
 
+  // Chart.js sparkline data for "Radar da Seleção Nacional"
+  const radarChartData = {
+    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+    datasets: [
+      {
+        data: [60, 62, 58, 65, 63, 67, 68],
+        borderColor: '#94d3c1',
+        backgroundColor: 'rgba(148, 211, 193, 0.1)',
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+        pointRadius: 0,
+      },
+    ],
+  }
+
+  const radarChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: true,
+      },
+    },
+    scales: {
+      x: {
+        display: false,
+      },
+      y: {
+        display: false,
+        min: 50,
+        max: 75,
+      },
+    },
+  }
+
+  // Chart.js doughnut data for "Conformidade CAF"
+  const cafChartData = {
+    labels: ['Conformidade', 'Pendente'],
+    datasets: [
+      {
+        data: [90, 10],
+        backgroundColor: ['#e9c349', 'rgba(38, 54, 74, 0.4)'],
+        borderWidth: 0,
+      },
+    ],
+  }
+
+  const cafChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '80%',
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        enabled: false,
+      },
+    },
+  }
+
   return (
     <DashboardLayout
       title="Visão Geral da Federação"
@@ -121,12 +211,8 @@ export function FederationDashboardPage() {
             </div>
           </div>
 
-          <div className="h-24 w-full mt-auto opacity-40 group-hover:opacity-85 transition-opacity duration-300">
-            {/* SVG Wave */}
-            <svg className="w-full h-full text-[#94d3c1] stroke-current fill-none" preserveAspectRatio="none" viewBox="0 0 800 100">
-              <path d="M0,50 Q100,20 200,50 T400,50 T600,50 T800,50" strokeWidth="2.5" className="animate-pulse"></path>
-              <path d="M0,60 Q100,30 200,60 T400,60 T600,60 T800,60" opacity="0.4" strokeWidth="1.5"></path>
-            </svg>
+          <div className="h-24 w-full mt-auto opacity-60 group-hover:opacity-90 transition-opacity duration-300">
+            <Line data={radarChartData} options={radarChartOptions} />
           </div>
           <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-[#D1102B]/5 rounded-full blur-3xl group-hover:bg-[#D1102B]/10 transition-all duration-300"></div>
         </div>
@@ -138,11 +224,10 @@ export function FederationDashboardPage() {
             <ShieldCheck className="text-[#e9c349] w-6 h-6" />
           </div>
           
-          <div className="flex flex-col items-center justify-center py-4 relative">
-            <svg className="w-32 h-32 transform -rotate-90">
-              <circle className="text-[#26364a]/40" cx="64" cy="64" fill="transparent" r="54" stroke="currentColor" strokeWidth="10"></circle>
-              <circle className="text-[#e9c349]" cx="64" cy="64" fill="transparent" r="54" stroke="currentColor" strokeDasharray="339.3" strokeDashoffset="33.9" strokeWidth="10" strokeLinecap="round"></circle>
-            </svg>
+          <div className="flex flex-col items-center justify-center py-4 relative h-36">
+            <div className="w-32 h-32">
+              <Doughnut data={cafChartData} options={cafChartOptions} />
+            </div>
             <div className="absolute text-center">
               <span className="font-display text-3xl font-bold block text-on-surface">90<span className="text-xs text-on-surface-variant font-normal">%</span></span>
               <span className="text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Audit Score</span>

@@ -114,6 +114,7 @@ export default function ClubDocumentsPage() {
         <Button
           variant="ghost"
           size="sm"
+          aria-label={`Eliminar documento "${row.original.title}"`}
           className="text-error hover:bg-error-container/20 hover:text-error"
           onClick={() => {
             if (!slug) return
@@ -123,7 +124,7 @@ export default function ClubDocumentsPage() {
           }}
           disabled={deleteMutation.isPending}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
         </Button>
       ),
     },
@@ -264,7 +265,7 @@ export default function ClubDocumentsPage() {
                     Publicar documento
                   </Button>
                   <div className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container px-md py-2 text-xs text-on-surface-variant">
-                    {isPublic ? <Globe className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+                    {isPublic ? <Globe className="h-3.5 w-3.5" aria-hidden="true" /> : <Lock className="h-3.5 w-3.5" aria-hidden="true" />}
                     {isPublic ? 'Será visível no perfil público' : 'Apenas uso interno'}
                   </div>
                 </div>
