@@ -17,7 +17,7 @@ type Tab = 'profile' | 'security' | 'memberships'
 
 export function ProfilePage() {
   const navigate = useNavigate()
-  const { user, logout: authLogout } = useAuth()
+  const { user, logout: authLogout, memberships, activeMembershipId, setActiveMembership } = useAuth()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
 
   const updateProfileMutation = useUpdateProfile()
@@ -327,7 +327,7 @@ export function ProfilePage() {
               Organizações às quais a sua conta está associada e os respetivos cargos.
             </p>
 
-            {user?.roles?.length === 0 || !user?.tenant_id ? (
+            {memberships.length === 0 ? (
               <div className="text-center py-xl text-on-surface-variant">
                 <Shield className="w-12 h-12 mx-auto mb-md opacity-30" />
                 <p className="text-sm">Ainda não pertence a nenhuma organização.</p>
@@ -337,22 +337,46 @@ export function ProfilePage() {
               </div>
             ) : (
               <div className="space-y-sm">
-                {user?.tenant_id && (
-                  <div className="flex items-center justify-between p-md bg-[#000f21] rounded-lg border border-[#26364a]/50">
-                    <div className="flex items-center gap-md">
-                      <div className="w-10 h-10 rounded-lg bg-[#1b2b3f] flex items-center justify-center border border-[#26364a]">
-                        <Shield className="w-5 h-5 text-[#94d3c1]" />
+                {memberships.map((membership) => {
+                  const isActive = membership.id === activeMembershipId
+
+                  return (
+                    <div
+                      key={membership.id}
+                      className={`flex items-center justify-between gap-md rounded-lg border p-md transition-colors ${
+                        isActive ? 'border-[#94d3c1] bg-[#000f21]' : 'border-[#26364a]/50 bg-[#000f21]/60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-md">
+                        <div className="w-10 h-10 rounded-lg bg-[#1b2b3f] flex items-center justify-center border border-[#26364a]">
+                          <Shield className="w-5 h-5 text-[#94d3c1]" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-[#d3e4fe]">{membership.tenant_name}</p>
+                          <p className="text-xs text-on-surface-variant">
+                            {membership.tenant_slug} · {membership.role}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[#d3e4fe]">Organização Atual</p>
-                        <p className="text-xs text-on-surface-variant">{user.tenant_id}</p>
+                      <div className="flex items-center gap-sm">
+                        {isActive && (
+                          <span className="text-xs bg-primary/20 text-[#94d3c1] border border-primary/30 px-sm py-0.5 rounded-full font-bold uppercase">
+                            Atual
+                          </span>
+                        )}
+                        {!isActive && (
+                          <button
+                            type="button"
+                            onClick={() => setActiveMembership(membership.id)}
+                            className="text-xs font-semibold text-primary hover:text-primary-fixed transition-colors"
+                          >
+                            Tornar ativa
+                          </button>
+                        )}
                       </div>
                     </div>
-                    <span className="text-xs bg-primary/20 text-[#94d3c1] border border-primary/30 px-sm py-0.5 rounded-full font-bold uppercase">
-                      {user.role}
-                    </span>
-                  </div>
-                )}
+                  )
+                })}
               </div>
             )}
           </div>
