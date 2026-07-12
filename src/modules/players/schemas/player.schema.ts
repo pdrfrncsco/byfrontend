@@ -72,7 +72,12 @@ export const playerDocumentSchema = z.object({
   valid_until: z.string().optional().or(z.literal('')),
   club: z.string().optional().or(z.literal('')),
   is_private: z.boolean(),
-  asset: z.string().min(1, 'O documento é obrigatório.'),
+  document: z
+    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
+    .optional(),
+}).refine((data) => data.document instanceof File, {
+  message: 'O documento é obrigatório.',
+  path: ['document'],
 })
 
 export type PlayerDocumentFormData = z.infer<typeof playerDocumentSchema>
@@ -90,13 +95,16 @@ export const playerVideoSchema = z.object({
   }),
   video_url: z.string().url('URL do vídeo inválida.').optional().or(z.literal('')),
   thumbnail_url: z.string().url('URL da miniatura inválida.').optional().or(z.literal('')),
+  video: z
+    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
+    .optional(),
   media_asset: z.string().optional().or(z.literal('')),
   match: z.string().optional().or(z.literal('')),
   is_featured: z.boolean(),
   order: z.union([z.coerce.number().int().min(0), z.literal('')]).optional(),
-}).refine((data) => data.video_url || data.media_asset, {
+}).refine((data) => data.video_url || data.video instanceof File, {
   message: 'Indique uma URL do vídeo ou carregue um ficheiro.',
-  path: ['video_url'],
+  path: ['video'],
 })
 
 export type PlayerVideoFormData = z.infer<typeof playerVideoSchema>

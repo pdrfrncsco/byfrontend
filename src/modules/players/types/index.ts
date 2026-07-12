@@ -143,7 +143,8 @@ export interface PlayerDocumentCreate {
   title: string
   category: DocumentCategory
   description?: string
-  asset: string
+  document?: File
+  asset?: string
   valid_from?: string
   valid_until?: string
   club?: string
@@ -201,6 +202,7 @@ export interface PlayerVideoCreate {
   video_type: VideoType
   video_url?: string
   thumbnail_url?: string
+  video?: File
   media_asset?: string
   match?: string
   is_featured?: boolean

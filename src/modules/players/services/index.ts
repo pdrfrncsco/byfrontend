@@ -166,7 +166,23 @@ export async function getPlayerDocument(slug: string, documentId: string): Promi
 }
 
 export async function createPlayerDocument(slug: string, data: PlayerDocumentCreate): Promise<PlayerDocument> {
-  const res = await apiClient.post(API_ROUTES.PLAYERS.DOCUMENTS(slug), data)
+  const formData = new FormData()
+  formData.append('title', data.title)
+  formData.append('category', data.category)
+  if (data.description) formData.append('description', data.description)
+  if (data.document) {
+    formData.append('document', data.document)
+  } else if (data.asset) {
+    formData.append('asset', data.asset)
+  }
+  if (data.valid_from) formData.append('valid_from', data.valid_from)
+  if (data.valid_until) formData.append('valid_until', data.valid_until)
+  if (data.club) formData.append('club', data.club)
+  if (data.is_private !== undefined) formData.append('is_private', String(data.is_private))
+
+  const res = await apiClient.post(API_ROUTES.PLAYERS.DOCUMENTS(slug), formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
   return unwrapData(res.data)
 }
 
@@ -201,6 +217,23 @@ export async function getPlayerVideo(slug: string, videoId: string): Promise<Pla
 }
 
 export async function createPlayerVideo(slug: string, data: PlayerVideoCreate): Promise<PlayerVideo> {
+  if (data.video) {
+    const formData = new FormData()
+    formData.append('title', data.title)
+    formData.append('video_type', data.video_type)
+    if (data.description) formData.append('description', data.description)
+    if (data.thumbnail_url) formData.append('thumbnail_url', data.thumbnail_url)
+    formData.append('video', data.video)
+    if (data.match) formData.append('match', data.match)
+    if (data.is_featured !== undefined) formData.append('is_featured', String(data.is_featured))
+    if (data.order !== undefined) formData.append('order', String(data.order))
+
+    const res = await apiClient.post(API_ROUTES.PLAYERS.VIDEOS(slug), formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return unwrapData(res.data)
+  }
+
   const res = await apiClient.post(API_ROUTES.PLAYERS.VIDEOS(slug), data)
   return unwrapData(res.data)
 }

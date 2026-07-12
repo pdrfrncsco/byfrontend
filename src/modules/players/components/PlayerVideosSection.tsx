@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Trash2, Video } from 'lucide-react'
+import { Trash2, Upload, Video } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -31,6 +31,7 @@ interface PlayerVideosSectionProps {
 
 export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
   const { t } = useTranslation()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { data: videos = [], isLoading } = usePlayerVideos(slug)
   const createMutation = useCreatePlayerVideo(slug)
   const deleteMutation = useDeletePlayerVideo(slug)
@@ -40,6 +41,8 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<PlayerVideoFormData>({
     resolver: zodResolver(playerVideoSchema),
@@ -49,13 +52,14 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
       video_type: 'highlights',
       video_url: '',
       thumbnail_url: '',
-      media_asset: '',
+      video: undefined,
       match: '',
       is_featured: false,
       order: '',
     },
   })
 
+  const watchedFile = watch('video')
   const rows = useMemo(() => (Array.isArray(videos) ? videos : []), [videos])
 
   const onSubmit = (data: PlayerVideoFormData) => {
@@ -66,13 +70,26 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
         video_type: data.video_type,
         video_url: data.video_url || undefined,
         thumbnail_url: data.thumbnail_url || undefined,
-        media_asset: data.media_asset || undefined,
+        video: data.video instanceof File ? data.video : undefined,
         match: data.match || undefined,
         is_featured: data.is_featured,
         order: data.order || undefined,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset({
+            title: '',
+            description: '',
+            video_type: 'highlights',
+            video_url: '',
+            thumbnail_url: '',
+            video: undefined,
+            match: '',
+            is_featured: false,
+            order: '',
+          })
+          if (fileInputRef.current) fileInputRef.current.value = ''
+        },
       },
     )
   }
@@ -141,20 +158,34 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
 
             <div className="grid gap-md md:grid-cols-2">
               <FormField
-                label={t('players.videos.section.mediaAsset')}
-                htmlFor="video-asset"
-                error={errors.media_asset?.message}
+                label={t('players.videos.section.file')}
+                htmlFor="video-file"
+                error={errors.video?.message}
               >
                 <Input
-                  id="video-asset"
-                  {...register('media_asset')}
-                  placeholder={t('players.documents.section.assetPlaceholder')}
+                  ref={fileInputRef}
+                  id="video-file"
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) {
+                      setValue('video', file, { shouldValidate: true })
+                      setValue('video_url', '')
+                    }
+                  }}
+                  state={errors.video ? 'error' : 'default'}
                 />
+                <p className="text-xs text-on-surface-variant">
+                  {watchedFile instanceof File ? watchedFile.name : t('players.videos.section.fileHint')}
+                </p>
               </FormField>
               <FormField label={t('players.videos.section.order')} htmlFor="video-order" error={errors.order?.message}>
                 <Input id="video-order" type="number" {...register('order')} />
               </FormField>
             </div>
+
+            <p className="text-xs text-on-surface-variant">{t('players.videos.section.sourceHint')}</p>
 
             <label className="inline-flex items-center gap-sm text-sm text-on-surface">
               <input type="checkbox" {...register('is_featured')} className="rounded border-outline-variant" />
@@ -162,6 +193,7 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
             </label>
 
             <Button type="submit" loading={createMutation.isPending}>
+              <Upload className="h-4 w-4" />
               {t('players.videos.section.save')}
             </Button>
           </form>

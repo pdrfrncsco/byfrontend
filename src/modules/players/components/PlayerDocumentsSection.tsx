@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Trash2, FileText } from 'lucide-react'
+import { ExternalLink, Trash2, FileText, Upload } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -39,6 +39,7 @@ interface PlayerDocumentsSectionProps {
 
 export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
   const { t } = useTranslation()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { data: documents = [], isLoading } = usePlayerDocuments(slug)
   const createMutation = useCreatePlayerDocument(slug)
   const deleteMutation = useDeletePlayerDocument(slug)
@@ -47,6 +48,8 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<PlayerDocumentFormData>({
     resolver: zodResolver(playerDocumentSchema),
@@ -58,13 +61,16 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
       valid_until: '',
       club: '',
       is_private: false,
-      asset: '',
+      document: undefined,
     },
   })
 
+  const watchedFile = watch('document')
   const rows = useMemo(() => (Array.isArray(documents) ? documents : []), [documents])
 
   const onSubmit = (data: PlayerDocumentFormData) => {
+    if (!(data.document instanceof File)) return
+
     createMutation.mutate(
       {
         title: data.title,
@@ -74,10 +80,22 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
         valid_until: data.valid_until || undefined,
         club: data.club || undefined,
         is_private: data.is_private,
-        asset: data.asset,
+        document: data.document,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset({
+            title: '',
+            category: 'contract',
+            description: '',
+            valid_from: '',
+            valid_until: '',
+            club: '',
+            is_private: false,
+            document: undefined,
+          })
+          if (fileInputRef.current) fileInputRef.current.value = ''
+        },
       },
     )
   }
@@ -127,7 +145,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
               <Textarea id="doc-description" rows={3} {...register('description')} />
             </FormField>
 
-            <div className="grid gap-md md:grid-cols-3">
+            <div className="grid gap-md md:grid-cols-2">
               <FormField
                 label={t('players.documents.section.validFrom')}
                 htmlFor="doc-valid-from"
@@ -142,19 +160,31 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
               >
                 <Input id="doc-valid-until" type="date" {...register('valid_until')} />
               </FormField>
-              <FormField
-                label={t('players.documents.section.assetId')}
-                htmlFor="doc-asset"
-                error={errors.asset?.message}
-                required
-              >
-                <Input
-                  id="doc-asset"
-                  {...register('asset')}
-                  placeholder={t('players.documents.section.assetPlaceholder')}
-                />
-              </FormField>
             </div>
+
+            <FormField
+              label={t('players.documents.section.file')}
+              htmlFor="doc-file"
+              error={errors.document?.message}
+              required
+            >
+              <Input
+                ref={fileInputRef}
+                id="doc-file"
+                type="file"
+                accept=".pdf,.doc,.docx,.txt,.csv,application/pdf"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) {
+                    setValue('document', file, { shouldValidate: true })
+                  }
+                }}
+                state={errors.document ? 'error' : 'default'}
+              />
+              <p className="text-xs text-on-surface-variant">
+                {watchedFile instanceof File ? watchedFile.name : t('players.documents.section.fileHint')}
+              </p>
+            </FormField>
 
             <label className="inline-flex items-center gap-sm text-sm text-on-surface">
               <input type="checkbox" {...register('is_private')} className="rounded border-outline-variant" />
@@ -162,6 +192,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
             </label>
 
             <Button type="submit" loading={createMutation.isPending}>
+              <Upload className="h-4 w-4" />
               {t('players.documents.section.save')}
             </Button>
           </form>
@@ -197,6 +228,17 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
                     <p className="text-sm text-on-surface-variant">
                       {document.description || t('players.common.noDescription')}
                     </p>
+                    {document.asset_url && (
+                      <a
+                        href={document.asset_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-xs text-sm text-primary hover:underline"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        {t('players.documents.openFile')}
+                      </a>
+                    )}
                   </div>
                   <Button
                     variant="ghost"
