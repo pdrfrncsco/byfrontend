@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
@@ -18,6 +19,7 @@ import {
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 
 export function PlayerSettingsPage() {
+  const { t } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { data: playerData, isLoading, isError } = usePlayer(slug ?? '')
@@ -90,7 +92,7 @@ export function PlayerSettingsPage() {
       <div className="space-y-lg">
         <div className="flex items-center gap-sm text-on-surface-variant">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>A carregar dados do jogador...</span>
+          <span>{t('players.settings.loading')}</span>
         </div>
         <Card variant="flat" padding="lg">
           <PlayerFormSkeleton />
@@ -105,13 +107,9 @@ export function PlayerSettingsPage() {
         <Card variant="flat" padding="lg" className="text-center">
           <div className="flex flex-col items-center gap-md py-xl">
             <AlertCircle className="h-12 w-12 text-error" />
-            <h2 className="text-xl font-semibold text-on-surface">Jogador não encontrado</h2>
-            <p className="text-on-surface-variant">
-              O jogador que procura não existe ou foi removido.
-            </p>
-            <Button onClick={() => navigate(ROUTES.PLAYERS)}>
-              Voltar aos jogadores
-            </Button>
+            <h2 className="text-xl font-semibold text-on-surface">{t('players.settings.notFoundTitle')}</h2>
+            <p className="text-on-surface-variant">{t('players.settings.notFoundDescription')}</p>
+            <Button onClick={() => navigate(ROUTES.PLAYERS)}>{t('players.settings.backToList')}</Button>
           </div>
         </Card>
       </div>
@@ -130,7 +128,7 @@ export function PlayerSettingsPage() {
         className="inline-flex items-center gap-sm text-sm text-on-surface-variant hover:text-primary transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Voltar ao perfil
+        {t('players.settings.backToProfile')}
       </Link>
 
       {/* Header */}
@@ -158,7 +156,7 @@ export function PlayerSettingsPage() {
             </Badge>
           </div>
           <p className="text-on-surface-variant">
-            Edite as informações do perfil do jogador.
+            {t('players.settings.editDescription')}
           </p>
         </div>
       </div>
@@ -166,10 +164,10 @@ export function PlayerSettingsPage() {
       {/* Tabs */}
       <Tabs defaultValue="profile">
         <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
-          <TabsTrigger value="profile">Perfil</TabsTrigger>
-          <TabsTrigger value="documents">Documentos</TabsTrigger>
-          <TabsTrigger value="videos">Vídeos</TabsTrigger>
-          <TabsTrigger value="achievements">Conquistas</TabsTrigger>
+          <TabsTrigger value="profile">{t('players.settings.tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="documents">{t('players.settings.tabs.documents')}</TabsTrigger>
+          <TabsTrigger value="videos">{t('players.settings.tabs.videos')}</TabsTrigger>
+          <TabsTrigger value="achievements">{t('players.settings.tabs.achievements')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -179,10 +177,10 @@ export function PlayerSettingsPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
             {/* Personal Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Informação Pessoal</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.personalInfo')}</h2>
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Nome"
+                  label={t('players.form.firstName')}
                   htmlFor="first_name"
                   error={errors.first_name?.message}
                   required
@@ -195,7 +193,7 @@ export function PlayerSettingsPage() {
                 </FormField>
 
                 <FormField
-                  label="Apelido"
+                  label={t('players.form.lastName')}
                   htmlFor="last_name"
                   error={errors.last_name?.message}
                   required
@@ -210,7 +208,7 @@ export function PlayerSettingsPage() {
 
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Data de Nascimento"
+                  label={t('players.form.dateOfBirth')}
                   htmlFor="date_of_birth"
                   error={errors.date_of_birth?.message}
                 >
@@ -223,7 +221,7 @@ export function PlayerSettingsPage() {
                 </FormField>
 
                 <FormField
-                  label="Nacionalidade"
+                  label={t('players.form.nationality')}
                   htmlFor="nationality"
                   error={errors.nationality?.message}
                 >
@@ -238,10 +236,10 @@ export function PlayerSettingsPage() {
 
             {/* Football Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Informação Futebolística</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.footballInfo')}</h2>
               <div className="grid gap-md md:grid-cols-3">
                 <FormField
-                  label="Posição Principal"
+                  label={t('players.form.primaryPosition')}
                   htmlFor="primary_position"
                   error={errors.primary_position?.message}
                 >
@@ -250,7 +248,7 @@ export function PlayerSettingsPage() {
                     {...register('primary_position')}
                     className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
-                    <option value="">Selecione uma posição</option>
+                    <option value="">{t('players.form.selectPosition')}</option>
                     {ALL_POSITIONS.map((pos) => (
                       <option key={pos.value} value={pos.value}>
                         {pos.fullLabel} ({pos.label})
@@ -260,7 +258,7 @@ export function PlayerSettingsPage() {
                 </FormField>
 
                 <FormField
-                  label="Pé Preferido"
+                  label={t('players.form.foot')}
                   htmlFor="foot"
                   error={errors.foot?.message}
                 >
@@ -269,15 +267,15 @@ export function PlayerSettingsPage() {
                     {...register('foot')}
                     className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
-                    <option value="">Selecione</option>
-                    <option value="left">Esquerdo</option>
-                    <option value="right">Direito</option>
-                    <option value="both">Ambos</option>
+                    <option value="">{t('players.form.select')}</option>
+                    <option value="left">{t('players.form.footLeft')}</option>
+                    <option value="right">{t('players.form.footRight')}</option>
+                    <option value="both">{t('players.form.footBoth')}</option>
                   </select>
                 </FormField>
 
                 <FormField
-                  label="Estado"
+                  label={t('players.form.status')}
                   htmlFor="status"
                   error={errors.status?.message}
                 >
@@ -297,7 +295,7 @@ export function PlayerSettingsPage() {
 
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="URL do Avatar (alternativa)"
+                  label={t('players.form.avatarUrlAlt')}
                   htmlFor="avatar"
                   error={errors.avatar?.message}
                 >
@@ -305,7 +303,7 @@ export function PlayerSettingsPage() {
                     id="avatar"
                     {...register('avatar')}
                     state={errors.avatar ? 'error' : 'default'}
-                    placeholder="Preenchido automaticamente após upload"
+                    placeholder={t('players.form.avatarAutoPlaceholder')}
                   />
                 </FormField>
               </div>
@@ -313,10 +311,10 @@ export function PlayerSettingsPage() {
 
             {/* Physical Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Dados Físicos</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.physicalInfo')}</h2>
               <div className="grid gap-md md:grid-cols-3">
                 <FormField
-                  label="Altura (cm)"
+                  label={t('players.form.height')}
                   htmlFor="height_cm"
                   error={errors.height_cm?.message}
                 >
@@ -329,7 +327,7 @@ export function PlayerSettingsPage() {
                 </FormField>
 
                 <FormField
-                  label="Peso (kg)"
+                  label={t('players.form.weight')}
                   htmlFor="weight_kg"
                   error={errors.weight_kg?.message}
                 >
@@ -345,10 +343,10 @@ export function PlayerSettingsPage() {
 
             {/* Contact Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Contacto</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Email"
+                  label={t('players.form.email')}
                   htmlFor="email"
                   error={errors.email?.message}
                 >
@@ -361,7 +359,7 @@ export function PlayerSettingsPage() {
                 </FormField>
 
                 <FormField
-                  label="Telefone"
+                  label={t('players.form.phone')}
                   htmlFor="phone"
                   error={errors.phone?.message}
                 >
@@ -377,7 +375,7 @@ export function PlayerSettingsPage() {
             {/* Bio */}
             <div className="space-y-md">
               <FormField
-                label="Biografia"
+                label={t('players.form.bio')}
                 htmlFor="bio"
                 error={errors.bio?.message}
               >
@@ -392,10 +390,8 @@ export function PlayerSettingsPage() {
             {/* Actions */}
             <div className="flex flex-wrap items-center justify-between gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/50 p-md">
               <div className="space-y-xs">
-                <p className="font-semibold text-on-surface">Guardar Alterações</p>
-                <p className="text-sm text-on-surface-variant">
-                  Verifique os dados antes de submeter.
-                </p>
+                <p className="font-semibold text-on-surface">{t('players.form.save')}</p>
+                <p className="text-sm text-on-surface-variant">{t('players.form.verifyHint')}</p>
               </div>
               <Button
                 type="submit"
@@ -403,14 +399,14 @@ export function PlayerSettingsPage() {
                 disabled={!isDirty}
               >
                 <Save className="h-4 w-4" />
-                Guardar Alterações
+                {updateMutation.isPending ? t('players.form.saving') : t('players.form.save')}
               </Button>
             </div>
 
             {/* Error Message */}
             {updateMutation.isError && (
               <div className="rounded-lg bg-error/10 border border-error/30 p-md text-sm text-error">
-                Ocorreu um erro ao atualizar o jogador. Por favor, tente novamente.
+                {t('players.form.updateError')}
               </div>
             )}
           </form>

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Activity,
   Award,
@@ -26,20 +27,21 @@ import { playerRoutes } from '../routes'
 import { POSITION_COLOR } from '../constants'
 
 export function PlayerDashboardPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: player, isLoading, isError } = usePlayerMe()
 
   const sidebarLinks = [
-    { label: 'Geral', href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" />, active: true },
-    { label: 'Configurações', href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
-    { label: 'Perfil Público', href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" />, active: true },
+    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.publicProfile'), href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
   ]
 
   if (isLoading) {
     return (
       <DashboardLayout
-        title="Portal do Jogador"
-        subtitle="A carregar a sua consola profissional..."
+        title={t('players.dashboard.title')}
+        subtitle={t('players.dashboard.loading')}
         dashboardType="player"
         sidebarLinks={sidebarLinks}
       >
@@ -58,17 +60,17 @@ export function PlayerDashboardPage() {
   if (isError || !player) {
     return (
       <DashboardLayout
-        title="Portal do Jogador"
-        subtitle="Consola profissional do atleta"
+        title={t('players.dashboard.title')}
+        subtitle={t('players.dashboard.subtitle')}
         dashboardType="player"
         sidebarLinks={sidebarLinks}
       >
         <EmptyState
           icon={Sparkles}
-          title="Perfil de jogador não encontrado"
-          description="Esta conta ainda não tem um perfil de jogador associado. Contacte o clube ou a organização para concluir o vínculo."
+          title={t('players.dashboard.notFoundTitle')}
+          description={t('players.dashboard.notFoundDescription')}
           action={{
-            label: 'Explorar jogadores',
+            label: t('players.dashboard.explorePlayers'),
             onClick: () => navigate(ROUTES.PLAYERS),
             variant: 'secondary',
           }}
@@ -82,15 +84,15 @@ export function PlayerDashboardPage() {
 
   return (
     <DashboardLayout
-      title={`Portal do Jogador • ${player.full_name}`}
-      subtitle="Acompanhe carreira, media, documentos e conquistas numa consola dedicada ao atleta."
+      title={t('players.dashboard.titleWithName', { name: player.full_name })}
+      subtitle={t('players.dashboard.subtitleActive')}
       dashboardType="player"
       sidebarLinks={sidebarLinks}
       headerActions={
         <Button asChild variant="primary" size="sm">
           <Link to={playerRoutes.dashboardSettings}>
             <Settings className="h-4 w-4" />
-            Editar perfil
+            {t('players.dashboard.editProfile')}
           </Link>
         </Button>
       }
@@ -116,14 +118,14 @@ export function PlayerDashboardPage() {
               </div>
               {player.current_club && (
                 <p className="text-sm text-on-surface-variant">
-                  Clube atual: <span className="font-semibold text-on-surface">{player.current_club.name}</span>
+                  {t('players.dashboard.currentClub')}: <span className="font-semibold text-on-surface">{player.current_club.name}</span>
                 </p>
               )}
               {player.bio && <p className="max-w-3xl text-sm leading-6 text-on-surface-variant">{player.bio}</p>}
             </div>
             <Button asChild variant="secondary">
               <Link to={playerRoutes.detail(player.slug)}>
-                Ver perfil público
+                {t('players.dashboard.publicProfile')}
                 <ExternalLink className="h-4 w-4" />
               </Link>
             </Button>
@@ -134,28 +136,28 @@ export function PlayerDashboardPage() {
           <Card variant="flat" padding="none">
             <CardContent className="space-y-xs p-lg">
               <Activity className="h-5 w-5 text-primary" />
-              <p className="text-xs uppercase tracking-wide text-on-surface-variant">Jogos</p>
+              <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.dashboard.stats.matches')}</p>
               <p className="text-3xl font-bold text-on-surface">{player.total_matches}</p>
             </CardContent>
           </Card>
           <Card variant="flat" padding="none">
             <CardContent className="space-y-xs p-lg">
               <Trophy className="h-5 w-5 text-amber-400" />
-              <p className="text-xs uppercase tracking-wide text-on-surface-variant">Golos</p>
+              <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.dashboard.stats.goals')}</p>
               <p className="text-3xl font-bold text-on-surface">{player.total_goals}</p>
             </CardContent>
           </Card>
           <Card variant="flat" padding="none">
             <CardContent className="space-y-xs p-lg">
               <Target className="h-5 w-5 text-emerald-400" />
-              <p className="text-xs uppercase tracking-wide text-on-surface-variant">Assistências</p>
+              <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.dashboard.stats.assists')}</p>
               <p className="text-3xl font-bold text-on-surface">{player.total_assists}</p>
             </CardContent>
           </Card>
           <Card variant="flat" padding="none">
             <CardContent className="space-y-xs p-lg">
               <Award className="h-5 w-5 text-primary" />
-              <p className="text-xs uppercase tracking-wide text-on-surface-variant">Conquistas</p>
+              <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.dashboard.stats.achievements')}</p>
               <p className="text-3xl font-bold text-on-surface">{player.achievements?.length ?? 0}</p>
             </CardContent>
           </Card>
@@ -164,7 +166,7 @@ export function PlayerDashboardPage() {
         <div className="grid gap-lg xl:grid-cols-2">
           <Card variant="flat" padding="none">
             <CardHeader>
-              <CardTitle>Carreira</CardTitle>
+              <CardTitle>{t('players.detail.tabs.career')}</CardTitle>
             </CardHeader>
             <CardContent>
               <PlayerCareerTimeline career={player.career_history ?? []} />
@@ -175,7 +177,7 @@ export function PlayerDashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-sm">
                 <FileText className="h-5 w-5" />
-                Documentos recentes
+                {t('players.dashboard.recentDocuments')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -187,7 +189,7 @@ export function PlayerDashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-sm">
                 <Video className="h-5 w-5" />
-                Vídeos
+                {t('players.detail.tabs.videos')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -199,7 +201,7 @@ export function PlayerDashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-sm">
                 <Trophy className="h-5 w-5" />
-                Conquistas
+                {t('players.detail.tabs.achievements')}
               </CardTitle>
             </CardHeader>
             <CardContent>

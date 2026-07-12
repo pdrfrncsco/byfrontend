@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react'
@@ -23,6 +24,7 @@ import { playerRegisterSchema, type PlayerRegisterFormData } from '../schemas'
 import type { Player } from '../types'
 
 export function ClubPlayerRegisterPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [playerSearch, setPlayerSearch] = useState('')
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
@@ -53,9 +55,9 @@ export function ClubPlayerRegisterPage() {
   }, [club?.id, setValue])
 
   const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
-    { label: 'Registar Jogador', href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <UserPlus className="h-4 w-4" />, active: true },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" /> },
+    { label: t('players.register.sidebar.general'), href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
+    { label: t('players.register.sidebar.register'), href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <UserPlus className="h-4 w-4" />, active: true },
+    { label: t('players.register.sidebar.transfers'), href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" /> },
   ]
 
   const filteredPlayers = useMemo(() => {
@@ -83,7 +85,7 @@ export function ClubPlayerRegisterPage() {
 
   if (clubLoading) {
     return (
-      <DashboardLayout title="Registar Jogador" subtitle="A carregar..." dashboardType="club" sidebarLinks={sidebarLinks}>
+      <DashboardLayout title={t('players.register.title')} subtitle={t('players.register.loading')} dashboardType="club" sidebarLinks={sidebarLinks}>
         <Skeleton className="h-64 w-full rounded-[2rem]" />
       </DashboardLayout>
     )
@@ -91,12 +93,12 @@ export function ClubPlayerRegisterPage() {
 
   if (!club) {
     return (
-      <DashboardLayout title="Registar Jogador" subtitle="Vínculo de jogador ao clube" dashboardType="club" sidebarLinks={sidebarLinks}>
+      <DashboardLayout title={t('players.register.title')} subtitle={t('players.register.subtitle')} dashboardType="club" sidebarLinks={sidebarLinks}>
         <EmptyState
           icon={Users}
-          title="Sem clube associado"
-          description="Esta conta não tem um clube associado para registar jogadores."
-          action={{ label: 'Voltar', onClick: () => navigate(ROUTES.DASHBOARD_CLUB), variant: 'secondary' }}
+          title={t('players.register.noClubTitle')}
+          description={t('players.register.noClubDescription')}
+          action={{ label: t('players.common.back'), onClick: () => navigate(ROUTES.DASHBOARD_CLUB), variant: 'secondary' }}
         />
       </DashboardLayout>
     )
@@ -104,21 +106,21 @@ export function ClubPlayerRegisterPage() {
 
   return (
     <DashboardLayout
-      title="Registar Jogador no Clube"
-      subtitle={`Crie um vínculo profissional entre um jogador global e ${club.name}.`}
+      title={t('players.register.titleFull')}
+      subtitle={t('players.register.subtitleWithClub', { club: club.name })}
       dashboardType="club"
       sidebarLinks={sidebarLinks}
       headerActions={
         <Button variant="secondary" size="sm" onClick={() => navigate(ROUTES.DASHBOARD_CLUB)}>
           <ArrowLeft className="h-4 w-4" />
-          Voltar
+          {t('players.common.back')}
         </Button>
       }
     >
       <form onSubmit={handleSubmit(onSubmit)} className="mx-auto grid max-w-5xl gap-xl">
         <Card variant="flat" padding="none">
           <CardHeader>
-            <CardTitle>1. Selecionar jogador</CardTitle>
+            <CardTitle>{t('players.register.stepSelect')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-md">
             <div className="relative">
@@ -127,7 +129,7 @@ export function ClubPlayerRegisterPage() {
                 variant="search"
                 value={playerSearch}
                 onChange={(event) => setPlayerSearch(event.target.value)}
-                placeholder="Pesquisar jogador..."
+                placeholder={t('players.register.searchPlaceholder')}
                 className="pl-10"
               />
             </div>
@@ -135,7 +137,7 @@ export function ClubPlayerRegisterPage() {
             {playersLoading ? (
               <Skeleton className="h-40 w-full rounded-2xl" />
             ) : filteredPlayers.length === 0 ? (
-              <EmptyState icon={Users} title="Nenhum jogador encontrado" description="Ajuste a pesquisa ou crie um novo perfil de jogador." />
+              <EmptyState icon={Users} title={t('players.register.emptyTitle')} description={t('players.register.emptyDescription')} />
             ) : (
               <div className="grid gap-sm md:grid-cols-2">
                 {filteredPlayers.map((player) => (
@@ -153,7 +155,7 @@ export function ClubPlayerRegisterPage() {
                       <p className="font-semibold text-on-surface">{player.full_name}</p>
                       <Badge variant="outline">{player.position_label}</Badge>
                     </div>
-                    <p className="mt-1 text-xs text-on-surface-variant">{player.nationality || 'Nacionalidade não indicada'}</p>
+                    <p className="mt-1 text-xs text-on-surface-variant">{player.nationality || t('players.register.nationalityUnknown')}</p>
                   </button>
                 ))}
               </div>
@@ -163,35 +165,35 @@ export function ClubPlayerRegisterPage() {
 
         <Card variant="flat" padding="none">
           <CardHeader>
-            <CardTitle>2. Detalhes do registo</CardTitle>
+            <CardTitle>{t('players.register.stepDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-md md:grid-cols-2">
-            <FormField label="Clube" htmlFor="club-name">
+            <FormField label={t('players.register.club')} htmlFor="club-name">
               <Input id="club-name" value={club.name} disabled />
             </FormField>
-            <FormField label="Data de entrada" htmlFor="joined-date" error={errors.joined_date?.message} required>
+            <FormField label={t('players.register.joinedDate')} htmlFor="joined-date" error={errors.joined_date?.message} required>
               <Input id="joined-date" type="date" {...register('joined_date')} />
             </FormField>
-            <FormField label="Número de camisola" htmlFor="shirt-number" error={errors.shirt_number?.message}>
+            <FormField label={t('players.register.shirtNumber')} htmlFor="shirt-number" error={errors.shirt_number?.message}>
               <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
             </FormField>
-            <FormField label="ID da competição (opcional)" htmlFor="competition-id" error={errors.competition_id?.message}>
-              <Input id="competition-id" {...register('competition_id')} placeholder="UUID da competição" />
+            <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
+              <Input id="competition-id" {...register('competition_id')} placeholder={t('players.register.competitionPlaceholder')} />
             </FormField>
           </CardContent>
         </Card>
 
         <div className="flex justify-end gap-sm">
           <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.DASHBOARD_CLUB)}>
-            Cancelar
+            {t('players.common.cancel')}
           </Button>
           <Button type="submit" loading={registerMutation.isPending} disabled={!selectedPlayer}>
-            Registar jogador
+            {t('players.register.submit')}
           </Button>
         </div>
 
         {registerMutation.isError && (
-          <p className="text-sm text-error">Não foi possível registar o jogador. Verifique os dados e tente novamente.</p>
+          <p className="text-sm text-error">{t('players.register.error')}</p>
         )}
       </form>
     </DashboardLayout>

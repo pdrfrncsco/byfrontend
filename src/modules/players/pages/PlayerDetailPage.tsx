@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Activity,
   ArrowLeft,
@@ -55,6 +56,7 @@ function DetailStat({
 }
 
 export function PlayerDetailPage() {
+  const { t } = useTranslation()
   const { slug = '' } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { data: player, isLoading, isError, refetch } = usePlayer(slug)
@@ -97,7 +99,7 @@ export function PlayerDetailPage() {
           id="player-back-link"
         >
           <ArrowLeft className="h-4 w-4" />
-          Todos os jogadores
+          {t('players.detail.back')}
         </Link>
 
         <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur">
@@ -168,7 +170,7 @@ export function PlayerDetailPage() {
                 {player.age && (
                   <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
                     <Calendar className="h-4 w-4" />
-                    {player.age} anos
+                    {t('players.common.years', { count: player.age })}
                   </span>
                 )}
                 {player.height_cm && (
@@ -186,7 +188,7 @@ export function PlayerDetailPage() {
                 {player.foot && (
                   <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
                     <Activity className="h-4 w-4" />
-                    Pé {player.foot === 'left' ? 'esquerdo' : player.foot === 'right' ? 'direito' : 'ambos'}
+                    {t(`players.detail.${player.foot === 'left' ? 'footLeft' : player.foot === 'right' ? 'footRight' : 'footBoth'}`)}
                   </span>
                 )}
               </div>
@@ -200,7 +202,7 @@ export function PlayerDetailPage() {
               <Button asChild variant="secondary">
                 <Link to={ROUTES.PLAYER_EDIT(slug)}>
                   <Settings className="h-4 w-4" />
-                  Editar perfil
+                  {t('players.detail.editProfile')}
                 </Link>
               </Button>
             </div>
@@ -208,24 +210,24 @@ export function PlayerDetailPage() {
         </section>
 
         <div className="grid gap-lg sm:grid-cols-2 xl:grid-cols-4">
-          <DetailStat icon={Activity} label="Jogos" value={player.total_matches} />
-          <DetailStat icon={Trophy} label="Golos" value={player.total_goals} color="#f59e0b" />
-          <DetailStat icon={Target} label="Assistências" value={player.total_assists} color="#10b981" />
-          <DetailStat icon={User} label="Posição" value={player.position_label} color={positionColor} />
+          <DetailStat icon={Activity} label={t('players.detail.stats.matches')} value={player.total_matches} />
+          <DetailStat icon={Trophy} label={t('players.detail.stats.goals')} value={player.total_goals} color="#f59e0b" />
+          <DetailStat icon={Target} label={t('players.detail.stats.assists')} value={player.total_assists} color="#10b981" />
+          <DetailStat icon={User} label={t('players.detail.stats.position')} value={player.position_label} color={positionColor} />
         </div>
 
         <Tabs defaultValue="career">
           <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
-            <TabsTrigger value="career">Carreira</TabsTrigger>
-            <TabsTrigger value="documents">Documentos</TabsTrigger>
-            <TabsTrigger value="videos">Vídeos</TabsTrigger>
-            <TabsTrigger value="achievements">Conquistas</TabsTrigger>
+            <TabsTrigger value="career">{t('players.detail.tabs.career')}</TabsTrigger>
+            <TabsTrigger value="documents">{t('players.detail.tabs.documents')}</TabsTrigger>
+            <TabsTrigger value="videos">{t('players.detail.tabs.videos')}</TabsTrigger>
+            <TabsTrigger value="achievements">{t('players.detail.tabs.achievements')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="career">
             <Card variant="flat" padding="none">
               <CardHeader>
-                <CardTitle>Histórico de carreira</CardTitle>
+                <CardTitle>{t('players.detail.careerHistory')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <PlayerCareerTimeline career={player.career_history ?? []} />

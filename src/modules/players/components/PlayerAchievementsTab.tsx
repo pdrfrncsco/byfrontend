@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Award, ShieldCheck, Trophy } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,15 +12,17 @@ interface PlayerAchievementsTabProps {
   fallbackAchievements?: PlayerAchievement[]
 }
 
-function formatDate(value?: string | null) {
+function formatDate(value: string | null | undefined, locale: string) {
   if (!value) return null
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('pt-AO')
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(locale)
 }
 
 export function PlayerAchievementsTab({ slug, fallbackAchievements = [] }: PlayerAchievementsTabProps) {
+  const { t, i18n } = useTranslation()
   const { data, isLoading } = usePlayerAchievements(slug)
   const achievements = data ?? fallbackAchievements
+  const locale = i18n.language || 'pt-AO'
 
   if (isLoading && achievements.length === 0) {
     return (
@@ -35,8 +38,8 @@ export function PlayerAchievementsTab({ slug, fallbackAchievements = [] }: Playe
     return (
       <EmptyState
         icon={Trophy}
-        title="Sem conquistas"
-        description="Este jogador ainda não tem conquistas registadas no perfil."
+        title={t('players.achievements.emptyTitle')}
+        description={t('players.achievements.emptyDescription')}
       />
     )
   }
@@ -59,7 +62,7 @@ export function PlayerAchievementsTab({ slug, fallbackAchievements = [] }: Playe
                 {achievement.is_verified && (
                   <Badge variant="primary">
                     <ShieldCheck className="mr-1 h-3 w-3" />
-                    Verificado
+                    {t('players.common.verified')}
                   </Badge>
                 )}
               </div>
@@ -73,9 +76,11 @@ export function PlayerAchievementsTab({ slug, fallbackAchievements = [] }: Playe
               <div className="flex flex-wrap gap-md text-xs text-on-surface-variant">
                 {achievement.competition_name && <span>{achievement.competition_name}</span>}
                 {achievement.club_name && <span>{achievement.club_name}</span>}
-                {achievement.season && <span>Época {achievement.season}</span>}
+                {achievement.season && <span>{t('players.achievements.season', { season: achievement.season })}</span>}
                 {achievement.year && <span>{achievement.year}</span>}
-                {formatDate(achievement.date_achieved) && <span>{formatDate(achievement.date_achieved)}</span>}
+                {formatDate(achievement.date_achieved, locale) && (
+                  <span>{formatDate(achievement.date_achieved, locale)}</span>
+                )}
               </div>
             </div>
           </CardContent>

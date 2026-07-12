@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Play, Star, Video } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,7 @@ function statusVariant(status: PlayerVideo['status']) {
 }
 
 export function PlayerVideosTab({ slug, fallbackVideos = [] }: PlayerVideosTabProps) {
+  const { t } = useTranslation()
   const { data, isLoading } = usePlayerVideos(slug)
   const videos = data ?? fallbackVideos
 
@@ -41,8 +43,8 @@ export function PlayerVideosTab({ slug, fallbackVideos = [] }: PlayerVideosTabPr
     return (
       <EmptyState
         icon={Video}
-        title="Sem vídeos"
-        description="Este jogador ainda não publicou vídeos no perfil."
+        title={t('players.videos.emptyTitle')}
+        description={t('players.videos.emptyDescription')}
       />
     )
   }
@@ -72,7 +74,7 @@ export function PlayerVideosTab({ slug, fallbackVideos = [] }: PlayerVideosTabPr
                 >
                   <a href={watchUrl} target="_blank" rel="noreferrer">
                     <Play className="h-4 w-4" />
-                    Ver
+                    {t('players.common.watch')}
                   </a>
                 </Button>
               )}
@@ -83,7 +85,7 @@ export function PlayerVideosTab({ slug, fallbackVideos = [] }: PlayerVideosTabPr
                 {video.is_featured && (
                   <Badge variant="primary">
                     <Star className="mr-1 h-3 w-3" />
-                    Destaque
+                    {t('players.common.featured')}
                   </Badge>
                 )}
               </div>

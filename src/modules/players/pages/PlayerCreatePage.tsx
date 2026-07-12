@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save } from 'lucide-react'
@@ -10,6 +11,7 @@ import { playerCreateSchema, type PlayerCreateFormData } from '../schemas'
 import { ALL_POSITIONS } from '../constants'
 
 export function PlayerCreatePage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const createMutation = useCreatePlayer()
 
@@ -74,15 +76,13 @@ export function PlayerCreatePage() {
         className="inline-flex items-center gap-sm text-sm text-on-surface-variant hover:text-primary transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Voltar aos jogadores
+        {t('players.create.back')}
       </button>
 
       {/* Header */}
       <div className="space-y-sm">
-        <h1 className="text-2xl font-bold text-on-surface">Novo Jogador</h1>
-        <p className="text-on-surface-variant">
-          Preencha os dados para criar um novo perfil de jogador.
-        </p>
+        <h1 className="text-2xl font-bold text-on-surface">{t('players.create.title')}</h1>
+        <p className="text-on-surface-variant">{t('players.create.subtitle')}</p>
       </div>
 
       {/* Form */}
@@ -91,10 +91,10 @@ export function PlayerCreatePage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
             {/* Personal Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Informação Pessoal</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.personalInfo')}</h2>
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Nome"
+                  label={t('players.form.firstName')}
                   htmlFor="first_name"
                   error={errors.first_name?.message}
                   required
@@ -108,7 +108,7 @@ export function PlayerCreatePage() {
                 </FormField>
 
                 <FormField
-                  label="Apelido"
+                  label={t('players.form.lastName')}
                   htmlFor="last_name"
                   error={errors.last_name?.message}
                   required
@@ -124,7 +124,7 @@ export function PlayerCreatePage() {
 
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Data de Nascimento"
+                  label={t('players.form.dateOfBirth')}
                   htmlFor="date_of_birth"
                   error={errors.date_of_birth?.message}
                 >
@@ -137,7 +137,7 @@ export function PlayerCreatePage() {
                 </FormField>
 
                 <FormField
-                  label="Nacionalidade"
+                  label={t('players.form.nationality')}
                   htmlFor="nationality"
                   error={errors.nationality?.message}
                 >
@@ -153,10 +153,10 @@ export function PlayerCreatePage() {
 
             {/* Football Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Informação Futebolística</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.footballInfo')}</h2>
               <div className="grid gap-md md:grid-cols-3">
                 <FormField
-                  label="Posição Principal"
+                  label={t('players.form.primaryPosition')}
                   htmlFor="primary_position"
                   error={errors.primary_position?.message}
                 >
@@ -165,7 +165,7 @@ export function PlayerCreatePage() {
                     {...register('primary_position')}
                     className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
-                    <option value="">Selecione uma posição</option>
+                    <option value="">{t('players.form.selectPosition')}</option>
                     {ALL_POSITIONS.map((pos) => (
                       <option key={pos.value} value={pos.value}>
                         {pos.fullLabel} ({pos.label})
@@ -175,7 +175,7 @@ export function PlayerCreatePage() {
                 </FormField>
 
                 <FormField
-                  label="Pé Preferido"
+                  label={t('players.form.foot')}
                   htmlFor="foot"
                   error={errors.foot?.message}
                 >
@@ -184,15 +184,15 @@ export function PlayerCreatePage() {
                     {...register('foot')}
                     className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
-                    <option value="">Selecione</option>
-                    <option value="left">Esquerdo</option>
-                    <option value="right">Direito</option>
-                    <option value="both">Ambos</option>
+                    <option value="">{t('players.form.select')}</option>
+                    <option value="left">{t('players.form.footLeft')}</option>
+                    <option value="right">{t('players.form.footRight')}</option>
+                    <option value="both">{t('players.form.footBoth')}</option>
                   </select>
                 </FormField>
 
                 <FormField
-                  label="URL do Avatar"
+                  label={t('players.form.avatarUrl')}
                   htmlFor="avatar"
                   error={errors.avatar?.message}
                 >
@@ -208,10 +208,10 @@ export function PlayerCreatePage() {
 
             {/* Physical Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Dados Físicos</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.physicalInfo')}</h2>
               <div className="grid gap-md md:grid-cols-3">
                 <FormField
-                  label="Altura (cm)"
+                  label={t('players.form.height')}
                   htmlFor="height_cm"
                   error={errors.height_cm?.message}
                 >
@@ -225,7 +225,7 @@ export function PlayerCreatePage() {
                 </FormField>
 
                 <FormField
-                  label="Peso (kg)"
+                  label={t('players.form.weight')}
                   htmlFor="weight_kg"
                   error={errors.weight_kg?.message}
                 >
@@ -242,10 +242,10 @@ export function PlayerCreatePage() {
 
             {/* Contact Information */}
             <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">Contacto</h2>
+              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="Email"
+                  label={t('players.form.email')}
                   htmlFor="email"
                   error={errors.email?.message}
                 >
@@ -259,7 +259,7 @@ export function PlayerCreatePage() {
                 </FormField>
 
                 <FormField
-                  label="Telefone"
+                  label={t('players.form.phone')}
                   htmlFor="phone"
                   error={errors.phone?.message}
                 >
@@ -276,7 +276,7 @@ export function PlayerCreatePage() {
             {/* Bio */}
             <div className="space-y-md">
               <FormField
-                label="Biografia"
+                label={t('players.form.bio')}
                 htmlFor="bio"
                 error={errors.bio?.message}
               >
@@ -292,14 +292,12 @@ export function PlayerCreatePage() {
             {/* Actions */}
             <div className="flex flex-wrap items-center justify-between gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/50 p-md">
               <div className="space-y-xs">
-                <p className="font-semibold text-on-surface">Criar Jogador</p>
-                <p className="text-sm text-on-surface-variant">
-                  Verifique os dados antes de submeter.
-                </p>
+                <p className="font-semibold text-on-surface">{t('players.form.create')}</p>
+                <p className="text-sm text-on-surface-variant">{t('players.form.verifyHint')}</p>
               </div>
               <div className="flex gap-sm">
                 <Button type="button" variant="outline" onClick={handleReset} disabled={!isDirty}>
-                  Limpar
+                  {t('players.form.clear')}
                 </Button>
                 <Button
                   type="submit"
@@ -307,7 +305,7 @@ export function PlayerCreatePage() {
                   disabled={!isDirty || !isValid}
                 >
                   <Save className="h-4 w-4" />
-                  Criar Jogador
+                  {createMutation.isPending ? t('players.form.creating') : t('players.form.create')}
                 </Button>
               </div>
             </div>
@@ -315,7 +313,7 @@ export function PlayerCreatePage() {
             {/* Error Message */}
             {createMutation.isError && (
               <div className="rounded-lg bg-error/10 border border-error/30 p-md text-sm text-error">
-                Ocorreu um erro ao criar o jogador. Por favor, tente novamente.
+                {t('players.form.createError')}
               </div>
             )}
           </form>

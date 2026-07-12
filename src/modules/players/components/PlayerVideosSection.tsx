@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Trash2, Video } from 'lucide-react'
@@ -22,20 +23,14 @@ import {
 } from '../hooks'
 import { playerVideoSchema, type PlayerVideoFormData } from '../schemas'
 
-const VIDEO_TYPES = [
-  { value: 'highlights', label: 'Melhores momentos' },
-  { value: 'skills', label: 'Skills' },
-  { value: 'interview', label: 'Entrevista' },
-  { value: 'match_clip', label: 'Clip de jogo' },
-  { value: 'training', label: 'Treino' },
-  { value: 'other', label: 'Outro' },
-] as const
+const VIDEO_TYPE_VALUES = ['highlights', 'skills', 'interview', 'match_clip', 'training', 'other'] as const
 
 interface PlayerVideosSectionProps {
   slug: string
 }
 
 export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
+  const { t } = useTranslation()
   const { data: videos = [], isLoading } = usePlayerVideos(slug)
   const createMutation = useCreatePlayerVideo(slug)
   const deleteMutation = useDeletePlayerVideo(slug)
@@ -86,58 +81,88 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
     <div className="space-y-lg">
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Adicionar vídeo</CardTitle>
+          <CardTitle>{t('players.videos.section.addTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-md">
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="Título" htmlFor="video-title" error={errors.title?.message} required>
+              <FormField
+                label={t('players.videos.section.title')}
+                htmlFor="video-title"
+                error={errors.title?.message}
+                required
+              >
                 <Input id="video-title" {...register('title')} state={errors.title ? 'error' : 'default'} />
               </FormField>
-              <FormField label="Tipo" htmlFor="video-type" error={errors.video_type?.message} required>
+              <FormField
+                label={t('players.videos.section.type')}
+                htmlFor="video-type"
+                error={errors.video_type?.message}
+                required
+              >
                 <select
                   id="video-type"
                   {...register('video_type')}
                   className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                 >
-                  {VIDEO_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
+                  {VIDEO_TYPE_VALUES.map((type) => (
+                    <option key={type} value={type}>
+                      {t(`players.videos.types.${type}`)}
                     </option>
                   ))}
                 </select>
               </FormField>
             </div>
 
-            <FormField label="Descrição" htmlFor="video-description" error={errors.description?.message}>
+            <FormField
+              label={t('players.videos.section.description')}
+              htmlFor="video-description"
+              error={errors.description?.message}
+            >
               <Textarea id="video-description" rows={3} {...register('description')} />
             </FormField>
 
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="URL do vídeo" htmlFor="video-url" error={errors.video_url?.message}>
+              <FormField
+                label={t('players.videos.section.videoUrl')}
+                htmlFor="video-url"
+                error={errors.video_url?.message}
+              >
                 <Input id="video-url" {...register('video_url')} placeholder="https://..." />
               </FormField>
-              <FormField label="URL da miniatura" htmlFor="video-thumbnail" error={errors.thumbnail_url?.message}>
+              <FormField
+                label={t('players.videos.section.thumbnailUrl')}
+                htmlFor="video-thumbnail"
+                error={errors.thumbnail_url?.message}
+              >
                 <Input id="video-thumbnail" {...register('thumbnail_url')} placeholder="https://..." />
               </FormField>
             </div>
 
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="ID do media asset" htmlFor="video-asset" error={errors.media_asset?.message}>
-                <Input id="video-asset" {...register('media_asset')} placeholder="UUID do media asset" />
+              <FormField
+                label={t('players.videos.section.mediaAsset')}
+                htmlFor="video-asset"
+                error={errors.media_asset?.message}
+              >
+                <Input
+                  id="video-asset"
+                  {...register('media_asset')}
+                  placeholder={t('players.documents.section.assetPlaceholder')}
+                />
               </FormField>
-              <FormField label="Ordem" htmlFor="video-order" error={errors.order?.message}>
+              <FormField label={t('players.videos.section.order')} htmlFor="video-order" error={errors.order?.message}>
                 <Input id="video-order" type="number" {...register('order')} />
               </FormField>
             </div>
 
             <label className="inline-flex items-center gap-sm text-sm text-on-surface">
               <input type="checkbox" {...register('is_featured')} className="rounded border-outline-variant" />
-              Destacar no perfil
+              {t('players.videos.section.featuredLabel')}
             </label>
 
             <Button type="submit" loading={createMutation.isPending}>
-              Guardar vídeo
+              {t('players.videos.section.save')}
             </Button>
           </form>
         </CardContent>
@@ -145,13 +170,17 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
 
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Vídeos ({rows.length})</CardTitle>
+          <CardTitle>{t('players.videos.section.listTitle', { count: rows.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-sm text-on-surface-variant">A carregar vídeos...</p>
+            <p className="text-sm text-on-surface-variant">{t('players.videos.section.loading')}</p>
           ) : rows.length === 0 ? (
-            <EmptyState icon={Video} title="Sem vídeos" description="Adicione o primeiro vídeo do jogador." />
+            <EmptyState
+              icon={Video}
+              title={t('players.videos.section.emptyTitle')}
+              description={t('players.videos.section.emptyDescription')}
+            />
           ) : (
             <div className="space-y-sm">
               {rows.map((video) => (
@@ -165,7 +194,9 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
                       <Badge variant="outline">{video.video_type_label || video.video_type}</Badge>
                       <Badge variant="secondary">{video.status_label || video.status}</Badge>
                     </div>
-                    <p className="text-sm text-on-surface-variant">{video.description || 'Sem descrição'}</p>
+                    <p className="text-sm text-on-surface-variant">
+                      {video.description || t('players.common.noDescription')}
+                    </p>
                   </div>
                   <div className="flex flex-wrap gap-sm">
                     {video.status !== 'published' && (
@@ -175,7 +206,7 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
                         loading={publishMutation.isPending}
                         onClick={() => publishMutation.mutate(video.id)}
                       >
-                        Publicar
+                        {t('players.videos.section.publish')}
                       </Button>
                     )}
                     <Button
@@ -186,7 +217,7 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
                       onClick={() => deleteMutation.mutate(video.id)}
                     >
                       <Trash2 className="h-4 w-4" />
-                      Eliminar
+                      {t('players.common.delete')}
                     </Button>
                   </div>
                 </div>

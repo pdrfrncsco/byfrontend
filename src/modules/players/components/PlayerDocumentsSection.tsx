@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { FileText, Trash2 } from 'lucide-react'
+import { Trash2, FileText } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -21,15 +22,15 @@ import {
 } from '../hooks'
 import { playerDocumentSchema, type PlayerDocumentFormData } from '../schemas'
 
-const DOCUMENT_CATEGORIES = [
-  { value: 'contract', label: 'Contrato' },
-  { value: 'passport', label: 'Passaporte' },
-  { value: 'medical', label: 'Médico' },
-  { value: 'license', label: 'Licença' },
-  { value: 'certificate', label: 'Certificado' },
-  { value: 'transfer', label: 'Transferência' },
-  { value: 'insurance', label: 'Seguro' },
-  { value: 'other', label: 'Outro' },
+const DOCUMENT_CATEGORY_VALUES = [
+  'contract',
+  'passport',
+  'medical',
+  'license',
+  'certificate',
+  'transfer',
+  'insurance',
+  'other',
 ] as const
 
 interface PlayerDocumentsSectionProps {
@@ -37,6 +38,7 @@ interface PlayerDocumentsSectionProps {
 }
 
 export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
+  const { t } = useTranslation()
   const { data: documents = [], isLoading } = usePlayerDocuments(slug)
   const createMutation = useCreatePlayerDocument(slug)
   const deleteMutation = useDeletePlayerDocument(slug)
@@ -84,52 +86,83 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
     <div className="space-y-lg">
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Adicionar documento</CardTitle>
+          <CardTitle>{t('players.documents.section.addTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-md">
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="Título" htmlFor="doc-title" error={errors.title?.message} required>
+              <FormField
+                label={t('players.documents.section.title')}
+                htmlFor="doc-title"
+                error={errors.title?.message}
+                required
+              >
                 <Input id="doc-title" {...register('title')} state={errors.title ? 'error' : 'default'} />
               </FormField>
-              <FormField label="Categoria" htmlFor="doc-category" error={errors.category?.message} required>
+              <FormField
+                label={t('players.documents.section.category')}
+                htmlFor="doc-category"
+                error={errors.category?.message}
+                required
+              >
                 <select
                   id="doc-category"
                   {...register('category')}
                   className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                 >
-                  {DOCUMENT_CATEGORIES.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
+                  {DOCUMENT_CATEGORY_VALUES.map((category) => (
+                    <option key={category} value={category}>
+                      {t(`players.documents.categories.${category}`)}
                     </option>
                   ))}
                 </select>
               </FormField>
             </div>
 
-            <FormField label="Descrição" htmlFor="doc-description" error={errors.description?.message}>
+            <FormField
+              label={t('players.documents.section.description')}
+              htmlFor="doc-description"
+              error={errors.description?.message}
+            >
               <Textarea id="doc-description" rows={3} {...register('description')} />
             </FormField>
 
             <div className="grid gap-md md:grid-cols-3">
-              <FormField label="Válido de" htmlFor="doc-valid-from" error={errors.valid_from?.message}>
+              <FormField
+                label={t('players.documents.section.validFrom')}
+                htmlFor="doc-valid-from"
+                error={errors.valid_from?.message}
+              >
                 <Input id="doc-valid-from" type="date" {...register('valid_from')} />
               </FormField>
-              <FormField label="Válido até" htmlFor="doc-valid-until" error={errors.valid_until?.message}>
+              <FormField
+                label={t('players.documents.section.validUntil')}
+                htmlFor="doc-valid-until"
+                error={errors.valid_until?.message}
+              >
                 <Input id="doc-valid-until" type="date" {...register('valid_until')} />
               </FormField>
-              <FormField label="ID do asset" htmlFor="doc-asset" error={errors.asset?.message} required>
-                <Input id="doc-asset" {...register('asset')} placeholder="UUID do media asset" />
+              <FormField
+                label={t('players.documents.section.assetId')}
+                htmlFor="doc-asset"
+                error={errors.asset?.message}
+                required
+              >
+                <Input
+                  id="doc-asset"
+                  {...register('asset')}
+                  placeholder={t('players.documents.section.assetPlaceholder')}
+                />
               </FormField>
             </div>
 
             <label className="inline-flex items-center gap-sm text-sm text-on-surface">
               <input type="checkbox" {...register('is_private')} className="rounded border-outline-variant" />
-              Documento privado
+              {t('players.documents.section.privateLabel')}
             </label>
 
             <Button type="submit" loading={createMutation.isPending}>
-              Guardar documento
+              {t('players.documents.section.save')}
             </Button>
           </form>
         </CardContent>
@@ -137,16 +170,16 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
 
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Documentos ({rows.length})</CardTitle>
+          <CardTitle>{t('players.documents.section.listTitle', { count: rows.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-sm text-on-surface-variant">A carregar documentos...</p>
+            <p className="text-sm text-on-surface-variant">{t('players.documents.section.loading')}</p>
           ) : rows.length === 0 ? (
             <EmptyState
               icon={FileText}
-              title="Sem documentos"
-              description="Adicione o primeiro documento do jogador."
+              title={t('players.documents.section.emptyTitle')}
+              description={t('players.documents.section.emptyDescription')}
             />
           ) : (
             <div className="space-y-sm">
@@ -161,7 +194,9 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
                       <Badge variant="outline">{document.category_label || document.category}</Badge>
                       <Badge variant="secondary">{document.status_label || document.status}</Badge>
                     </div>
-                    <p className="text-sm text-on-surface-variant">{document.description || 'Sem descrição'}</p>
+                    <p className="text-sm text-on-surface-variant">
+                      {document.description || t('players.common.noDescription')}
+                    </p>
                   </div>
                   <Button
                     variant="ghost"
@@ -171,7 +206,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
                     onClick={() => deleteMutation.mutate(document.id)}
                   >
                     <Trash2 className="h-4 w-4" />
-                    Eliminar
+                    {t('players.common.delete')}
                   </Button>
                 </div>
               ))}

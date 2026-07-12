@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Activity, Calendar, Clock, Target, Trophy } from 'lucide-react'
 import { EmptyState } from '@/components/ui/empty-state'
 import type { PlayerCareerEntry } from '../types'
@@ -8,12 +9,14 @@ interface PlayerCareerTimelineProps {
 }
 
 export function PlayerCareerTimeline({ career }: PlayerCareerTimelineProps) {
+  const { t } = useTranslation()
+
   if (career.length === 0) {
     return (
       <EmptyState
         icon={Clock}
-        title="Sem registos de carreira"
-        description="Este jogador ainda não tem histórico de clubes publicado."
+        title={t('players.career.emptyTitle')}
+        description={t('players.career.emptyDescription')}
       />
     )
   }
@@ -46,21 +49,21 @@ export function PlayerCareerTimeline({ career }: PlayerCareerTimelineProps) {
             <div className="flex items-center gap-1 text-sm text-on-surface-variant">
               <Calendar className="h-3.5 w-3.5" />
               {new Date(entry.joined).getFullYear()}
-              {entry.left ? ` → ${new Date(entry.left).getFullYear()}` : ' → Presente'}
+              {entry.left ? ` → ${new Date(entry.left).getFullYear()}` : ` → ${t('players.common.present')}`}
             </div>
 
             <div className="flex flex-wrap gap-md text-xs text-on-surface-variant">
               <span className="inline-flex items-center gap-1">
                 <Trophy className="h-3.5 w-3.5 text-amber-400" />
-                {entry.goals} golos
+                {entry.goals} {t('players.common.goalsShort')}
               </span>
               <span className="inline-flex items-center gap-1">
                 <Target className="h-3.5 w-3.5 text-emerald-400" />
-                {entry.assists} ass.
+                {entry.assists} {t('players.common.assistsShort')}
               </span>
               <span className="inline-flex items-center gap-1">
                 <Activity className="h-3.5 w-3.5" />
-                {entry.matches} jogos
+                {entry.matches} {t('players.common.matchesShort')}
               </span>
             </div>
           </div>

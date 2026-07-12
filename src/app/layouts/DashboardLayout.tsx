@@ -70,7 +70,7 @@ export function DashboardLayout({
       case 'competition':
         return t('dashboard.sublabels.competition')
       case 'player':
-        return 'Portal do Jogador'
+        return t('dashboard.sublabels.player')
       default:
         return t('dashboard.sublabels.default')
     }

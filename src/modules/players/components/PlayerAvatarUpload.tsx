@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUploadPlayerAvatar } from '../hooks'
@@ -18,6 +19,7 @@ export function PlayerAvatarUpload({
   accentColor = '#94d3c1',
   onUploaded,
 }: PlayerAvatarUploadProps) {
+  const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const uploadMutation = useUploadPlayerAvatar(slug)
 
@@ -41,7 +43,7 @@ export function PlayerAvatarUpload({
         style={{ background: accentColor }}
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt="Avatar do jogador" className="h-full w-full object-cover" />
+          <img src={avatarUrl} alt={t('players.avatar.alt')} className="h-full w-full object-cover" />
         ) : (
           initials
         )}
@@ -61,10 +63,10 @@ export function PlayerAvatarUpload({
         onClick={() => inputRef.current?.click()}
       >
         <Upload className="h-4 w-4" />
-        Carregar fotografia
+        {t('players.avatar.upload')}
       </Button>
       {uploadMutation.isError && (
-        <p className="text-sm text-error">Não foi possível carregar a fotografia. Tente novamente.</p>
+        <p className="text-sm text-error">{t('players.avatar.error')}</p>
       )}
     </div>
   )

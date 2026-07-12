@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Trophy, Target, User, MapPin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,6 +12,7 @@ interface PlayerCardProps {
 }
 
 export function PlayerCard({ player }: PlayerCardProps) {
+  const { t } = useTranslation()
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#6b7280'
   const statusColor = STATUS_COLOR[player.status] ?? '#6b7280'
@@ -85,7 +87,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
                 </>
               )}
               {player.age !== null && (
-                <span className="ml-2 text-xs text-on-surface-variant/70">{player.age} anos</span>
+                <span className="ml-2 text-xs text-on-surface-variant/70">
+                  {t('players.card.years', { count: player.age })}
+                </span>
               )}
             </div>
 
@@ -111,7 +115,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
                 to={`/players/${player.slug}`}
                 className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5"
               >
-                Ver perfil
+                {t('players.card.viewProfile')}
                 <span aria-hidden="true">→</span>
               </Link>
             </div>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Trash2, Trophy } from 'lucide-react'
@@ -21,30 +22,25 @@ import {
 } from '../hooks'
 import { playerAchievementSchema, type PlayerAchievementFormData } from '../schemas'
 
-const ACHIEVEMENT_TYPES = [
-  { value: 'league_title', label: 'Título de liga' },
-  { value: 'cup_title', label: 'Título de taça' },
-  { value: 'super_cup', label: 'Supertaça' },
-  { value: 'top_scorer', label: 'Melhor marcador' },
-  { value: 'best_player', label: 'Melhor jogador' },
-  { value: 'mvp', label: 'MVP' },
-  { value: 'golden_boot', label: 'Bota de ouro' },
-  { value: 'other', label: 'Outro' },
+const ACHIEVEMENT_TYPE_VALUES = [
+  'league_title',
+  'cup_title',
+  'super_cup',
+  'top_scorer',
+  'best_player',
+  'mvp',
+  'golden_boot',
+  'other',
 ] as const
 
-const ACHIEVEMENT_LEVELS = [
-  { value: 'club', label: 'Clube' },
-  { value: 'national', label: 'Nacional' },
-  { value: 'continental', label: 'Continental' },
-  { value: 'international', label: 'Internacional' },
-  { value: 'world', label: 'Mundial' },
-] as const
+const ACHIEVEMENT_LEVEL_VALUES = ['club', 'national', 'continental', 'international', 'world'] as const
 
 interface PlayerAchievementsSectionProps {
   slug: string
 }
 
 export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionProps) {
+  const { t } = useTranslation()
   const { data: achievements = [], isLoading } = usePlayerAchievements(slug)
   const createMutation = useCreatePlayerAchievement(slug)
   const deleteMutation = useDeletePlayerAchievement(slug)
@@ -96,23 +92,33 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
     <div className="space-y-lg">
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Adicionar conquista</CardTitle>
+          <CardTitle>{t('players.achievements.section.addTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-md">
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="Título" htmlFor="achievement-title" error={errors.title?.message} required>
+              <FormField
+                label={t('players.achievements.section.title')}
+                htmlFor="achievement-title"
+                error={errors.title?.message}
+                required
+              >
                 <Input id="achievement-title" {...register('title')} state={errors.title ? 'error' : 'default'} />
               </FormField>
-              <FormField label="Tipo" htmlFor="achievement-type" error={errors.achievement_type?.message} required>
+              <FormField
+                label={t('players.achievements.section.type')}
+                htmlFor="achievement-type"
+                error={errors.achievement_type?.message}
+                required
+              >
                 <select
                   id="achievement-type"
                   {...register('achievement_type')}
                   className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                 >
-                  {ACHIEVEMENT_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
+                  {ACHIEVEMENT_TYPE_VALUES.map((type) => (
+                    <option key={type} value={type}>
+                      {t(`players.achievements.types.${type}`)}
                     </option>
                   ))}
                 </select>
@@ -120,42 +126,67 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
             </div>
 
             <div className="grid gap-md md:grid-cols-3">
-              <FormField label="Nível" htmlFor="achievement-level" error={errors.level?.message} required>
+              <FormField
+                label={t('players.achievements.section.level')}
+                htmlFor="achievement-level"
+                error={errors.level?.message}
+                required
+              >
                 <select
                   id="achievement-level"
                   {...register('level')}
                   className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                 >
-                  {ACHIEVEMENT_LEVELS.map((level) => (
-                    <option key={level.value} value={level.value}>
-                      {level.label}
+                  {ACHIEVEMENT_LEVEL_VALUES.map((level) => (
+                    <option key={level} value={level}>
+                      {t(`players.achievements.levels.${level}`)}
                     </option>
                   ))}
                 </select>
               </FormField>
-              <FormField label="Data" htmlFor="achievement-date" error={errors.date_achieved?.message}>
+              <FormField
+                label={t('players.achievements.section.dateAchieved')}
+                htmlFor="achievement-date"
+                error={errors.date_achieved?.message}
+              >
                 <Input id="achievement-date" type="date" {...register('date_achieved')} />
               </FormField>
-              <FormField label="Época" htmlFor="achievement-season" error={errors.season?.message}>
+              <FormField
+                label={t('players.achievements.section.season')}
+                htmlFor="achievement-season"
+                error={errors.season?.message}
+              >
                 <Input id="achievement-season" {...register('season')} placeholder="2024/25" />
               </FormField>
             </div>
 
-            <FormField label="Descrição" htmlFor="achievement-description" error={errors.description?.message}>
+            <FormField
+              label={t('players.achievements.section.description')}
+              htmlFor="achievement-description"
+              error={errors.description?.message}
+            >
               <Textarea id="achievement-description" rows={3} {...register('description')} />
             </FormField>
 
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="URL da imagem do troféu" htmlFor="achievement-image" error={errors.trophy_image?.message}>
+              <FormField
+                label={t('players.achievements.section.trophyImage')}
+                htmlFor="achievement-image"
+                error={errors.trophy_image?.message}
+              >
                 <Input id="achievement-image" {...register('trophy_image')} placeholder="https://..." />
               </FormField>
-              <FormField label="URL do certificado" htmlFor="achievement-certificate" error={errors.certificate_url?.message}>
+              <FormField
+                label={t('players.achievements.section.certificateUrl')}
+                htmlFor="achievement-certificate"
+                error={errors.certificate_url?.message}
+              >
                 <Input id="achievement-certificate" {...register('certificate_url')} placeholder="https://..." />
               </FormField>
             </div>
 
             <Button type="submit" loading={createMutation.isPending}>
-              Guardar conquista
+              {t('players.achievements.section.save')}
             </Button>
           </form>
         </CardContent>
@@ -163,13 +194,17 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
 
       <Card variant="flat" padding="none">
         <CardHeader>
-          <CardTitle>Conquistas ({rows.length})</CardTitle>
+          <CardTitle>{t('players.achievements.section.listTitle', { count: rows.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-sm text-on-surface-variant">A carregar conquistas...</p>
+            <p className="text-sm text-on-surface-variant">{t('players.achievements.section.loading')}</p>
           ) : rows.length === 0 ? (
-            <EmptyState icon={Trophy} title="Sem conquistas" description="Adicione a primeira conquista do jogador." />
+            <EmptyState
+              icon={Trophy}
+              title={t('players.achievements.section.emptyTitle')}
+              description={t('players.achievements.section.emptyDescription')}
+            />
           ) : (
             <div className="space-y-sm">
               {rows.map((achievement) => (
@@ -182,9 +217,13 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
                       <p className="font-semibold text-on-surface">{achievement.title}</p>
                       <Badge variant="outline">{achievement.achievement_type_label || achievement.achievement_type}</Badge>
                       <Badge variant="secondary">{achievement.level_label || achievement.level}</Badge>
-                      {achievement.is_verified && <Badge variant="primary">Verificado</Badge>}
+                      {achievement.is_verified && (
+                        <Badge variant="primary">{t('players.common.verified')}</Badge>
+                      )}
                     </div>
-                    <p className="text-sm text-on-surface-variant">{achievement.description || 'Sem descrição'}</p>
+                    <p className="text-sm text-on-surface-variant">
+                      {achievement.description || t('players.common.noDescription')}
+                    </p>
                   </div>
                   <Button
                     variant="ghost"
@@ -194,7 +233,7 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
                     onClick={() => deleteMutation.mutate(achievement.id)}
                   >
                     <Trash2 className="h-4 w-4" />
-                    Eliminar
+                    {t('players.common.delete')}
                   </Button>
                 </div>
               ))}

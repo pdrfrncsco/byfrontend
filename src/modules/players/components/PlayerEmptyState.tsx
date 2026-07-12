@@ -1,4 +1,5 @@
 import { User } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { EmptyState } from '@/components/ui/empty-state'
 
 interface PlayerEmptyStateProps {
@@ -7,15 +8,17 @@ interface PlayerEmptyStateProps {
 }
 
 export function PlayerEmptyState({ onReset, message }: PlayerEmptyStateProps) {
+  const { t } = useTranslation()
+
   return (
     <EmptyState
       icon={User}
-      title="Nenhum jogador encontrado"
-      description={message || "Tente alterar a pesquisa ou limpar os filtros para ver mais resultados."}
+      title={t('players.empty.title')}
+      description={message || t('players.empty.description')}
       action={
         onReset
           ? {
-              label: 'Limpar filtros',
+              label: t('players.empty.clearFilters'),
               onClick: onReset,
               variant: 'secondary',
             }

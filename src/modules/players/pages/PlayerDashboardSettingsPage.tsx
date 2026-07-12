@@ -1,13 +1,14 @@
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowLeft, ExternalLink, LayoutDashboard, Save, Settings } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button, Card, CardContent, FormField, Input, Textarea, Badge } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ROUTES } from '@/constants/routes'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
   PlayerAchievementsSection,
   PlayerAvatarUpload,
@@ -19,17 +20,21 @@ import { usePlayerMe, useUpdatePlayerMe } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 import { playerRoutes } from '../routes'
-import { ExternalLink, LayoutDashboard, Settings } from 'lucide-react'
 
 export function PlayerDashboardSettingsPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { data: player, isLoading, isError } = usePlayerMe()
   const updateMutation = useUpdatePlayerMe()
 
   const sidebarLinks = [
-    { label: 'Geral', href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
-    { label: 'Configurações', href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" />, active: true },
-    { label: 'Perfil Público', href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" />, active: true },
+    {
+      label: t('players.dashboard.sidebar.publicProfile'),
+      href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS,
+      icon: <ExternalLink className="h-4 w-4" />,
+    },
   ]
 
   const {
@@ -85,7 +90,12 @@ export function PlayerDashboardSettingsPage() {
 
   if (isLoading) {
     return (
-      <DashboardLayout title="Configurações" subtitle="A carregar..." dashboardType="player" sidebarLinks={sidebarLinks}>
+      <DashboardLayout
+        title={t('players.dashboard.settingsTitle')}
+        subtitle={t('players.dashboard.settingsLoading')}
+        dashboardType="player"
+        sidebarLinks={sidebarLinks}
+      >
         <PlayerFormSkeleton />
       </DashboardLayout>
     )
@@ -93,11 +103,20 @@ export function PlayerDashboardSettingsPage() {
 
   if (isError || !player) {
     return (
-      <DashboardLayout title="Configurações" subtitle="Perfil do jogador" dashboardType="player" sidebarLinks={sidebarLinks}>
+      <DashboardLayout
+        title={t('players.dashboard.settingsTitle')}
+        subtitle={t('players.dashboard.subtitle')}
+        dashboardType="player"
+        sidebarLinks={sidebarLinks}
+      >
         <EmptyState
-          title="Perfil não encontrado"
-          description="Não existe um perfil de jogador associado a esta conta."
-          action={{ label: 'Voltar', onClick: () => navigate(playerRoutes.dashboard), variant: 'secondary' }}
+          title={t('players.dashboard.settingsNotFoundTitle')}
+          description={t('players.dashboard.settingsNotFoundDescription')}
+          action={{
+            label: t('players.common.back'),
+            onClick: () => navigate(playerRoutes.dashboard),
+            variant: 'secondary',
+          }}
         />
       </DashboardLayout>
     )
@@ -109,23 +128,23 @@ export function PlayerDashboardSettingsPage() {
 
   return (
     <DashboardLayout
-      title={`Configurações • ${player.full_name}`}
-      subtitle="Gira o perfil profissional, media e documentação do jogador."
+      title={t('players.dashboard.settingsTitleWithName', { name: player.full_name })}
+      subtitle={t('players.dashboard.settingsSubtitle')}
       dashboardType="player"
       sidebarLinks={sidebarLinks}
       headerActions={
         <Button variant="secondary" size="sm" onClick={() => navigate(playerRoutes.dashboard)}>
           <ArrowLeft className="h-4 w-4" />
-          Voltar
+          {t('players.common.back')}
         </Button>
       }
     >
       <Tabs defaultValue="profile">
         <TabsList className="mb-lg flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
-          <TabsTrigger value="profile">Perfil</TabsTrigger>
-          <TabsTrigger value="documents">Documentos</TabsTrigger>
-          <TabsTrigger value="videos">Vídeos</TabsTrigger>
-          <TabsTrigger value="achievements">Conquistas</TabsTrigger>
+          <TabsTrigger value="profile">{t('players.settings.tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="documents">{t('players.settings.tabs.documents')}</TabsTrigger>
+          <TabsTrigger value="videos">{t('players.settings.tabs.videos')}</TabsTrigger>
+          <TabsTrigger value="achievements">{t('players.settings.tabs.achievements')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -142,55 +161,60 @@ export function PlayerDashboardSettingsPage() {
                 <div className="space-y-sm">
                   <div className="flex flex-wrap items-center gap-sm">
                     <h2 className="text-xl font-bold text-on-surface">{player.full_name}</h2>
-                    <Badge variant="outline" style={{ borderColor: statusColor, color: statusColor, background: `${statusColor}15` }}>
+                    <Badge
+                      variant="outline"
+                      style={{ borderColor: statusColor, color: statusColor, background: `${statusColor}15` }}
+                    >
                       {player.status_label}
                     </Badge>
                   </div>
                   <Button asChild variant="ghost" size="sm">
-                    <Link to={playerRoutes.detail(player.slug)}>Ver perfil público</Link>
+                    <Link to={playerRoutes.detail(player.slug)}>{t('players.dashboard.publicProfile')}</Link>
                   </Button>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
                 <div className="grid gap-md md:grid-cols-2">
-                  <FormField label="Nome" htmlFor="first_name" error={errors.first_name?.message} required>
+                  <FormField label={t('players.form.firstName')} htmlFor="first_name" error={errors.first_name?.message} required>
                     <Input id="first_name" {...register('first_name')} />
                   </FormField>
-                  <FormField label="Apelido" htmlFor="last_name" error={errors.last_name?.message} required>
+                  <FormField label={t('players.form.lastName')} htmlFor="last_name" error={errors.last_name?.message} required>
                     <Input id="last_name" {...register('last_name')} />
                   </FormField>
                 </div>
 
                 <div className="grid gap-md md:grid-cols-3">
-                  <FormField label="Data de nascimento" htmlFor="date_of_birth" error={errors.date_of_birth?.message}>
+                  <FormField label={t('players.form.dateOfBirth')} htmlFor="date_of_birth" error={errors.date_of_birth?.message}>
                     <Input id="date_of_birth" type="date" {...register('date_of_birth')} />
                   </FormField>
-                  <FormField label="Nacionalidade" htmlFor="nationality" error={errors.nationality?.message}>
+                  <FormField label={t('players.form.nationality')} htmlFor="nationality" error={errors.nationality?.message}>
                     <Input id="nationality" {...register('nationality')} />
                   </FormField>
-                  <FormField label="Posição" htmlFor="primary_position" error={errors.primary_position?.message}>
+                  <FormField label={t('players.form.primaryPosition')} htmlFor="primary_position" error={errors.primary_position?.message}>
                     <select
                       id="primary_position"
                       {...register('primary_position')}
                       className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                     >
-                      <option value="">Selecione</option>
+                      <option value="">{t('players.form.select')}</option>
                       {ALL_POSITIONS.map((pos) => (
-                        <option key={pos.value} value={pos.value}>{pos.fullLabel}</option>
+                        <option key={pos.value} value={pos.value}>
+                          {pos.fullLabel}
+                        </option>
                       ))}
                     </select>
                   </FormField>
                 </div>
 
-                <FormField label="Biografia" htmlFor="bio" error={errors.bio?.message}>
+                <FormField label={t('players.form.bio')} htmlFor="bio" error={errors.bio?.message}>
                   <Textarea id="bio" rows={4} {...register('bio')} />
                 </FormField>
 
                 <div className="flex justify-end">
                   <Button type="submit" loading={updateMutation.isPending} disabled={!isDirty}>
                     <Save className="h-4 w-4" />
-                    Guardar alterações
+                    {updateMutation.isPending ? t('players.form.saving') : t('players.form.save')}
                   </Button>
                 </div>
               </form>

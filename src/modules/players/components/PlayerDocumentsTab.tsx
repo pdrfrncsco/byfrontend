@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { FileText, Lock, ShieldCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,10 +13,10 @@ interface PlayerDocumentsTabProps {
   fallbackDocuments?: PlayerDocument[]
 }
 
-function formatDate(value?: string | null) {
+function formatDate(value: string | null | undefined, locale: string) {
   if (!value) return '—'
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('pt-AO')
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(locale)
 }
 
 function statusVariant(status: PlayerDocument['status']) {
@@ -32,8 +33,10 @@ function statusVariant(status: PlayerDocument['status']) {
 }
 
 export function PlayerDocumentsTab({ slug, fallbackDocuments = [] }: PlayerDocumentsTabProps) {
+  const { t, i18n } = useTranslation()
   const { data, isLoading } = usePlayerDocuments(slug)
   const documents = data ?? fallbackDocuments
+  const locale = i18n.language || 'pt-AO'
 
   if (isLoading && documents.length === 0) {
     return (
@@ -49,8 +52,8 @@ export function PlayerDocumentsTab({ slug, fallbackDocuments = [] }: PlayerDocum
     return (
       <EmptyState
         icon={FileText}
-        title="Sem documentos"
-        description="Este jogador ainda não publicou documentos no perfil."
+        title={t('players.documents.emptyTitle')}
+        description={t('players.documents.emptyDescription')}
       />
     )
   }
@@ -68,27 +71,37 @@ export function PlayerDocumentsTab({ slug, fallbackDocuments = [] }: PlayerDocum
                 {document.is_private && (
                   <Badge variant="secondary">
                     <Lock className="mr-1 h-3 w-3" />
-                    Privado
+                    {t('players.common.private')}
                   </Badge>
                 )}
                 {document.status === 'verified' && (
                   <Badge variant="primary">
                     <ShieldCheck className="mr-1 h-3 w-3" />
-                    Verificado
+                    {t('players.common.verified')}
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-on-surface-variant">{document.description || 'Sem descrição'}</p>
+              <p className="text-sm text-on-surface-variant">
+                {document.description || t('players.common.noDescription')}
+              </p>
               <div className="flex flex-wrap gap-md text-xs text-on-surface-variant">
-                {document.club_name && <span>Clube: {document.club_name}</span>}
-                <span>Válido de: {formatDate(document.valid_from)}</span>
-                <span>Válido até: {formatDate(document.valid_until)}</span>
+                {document.club_name && (
+                  <span>
+                    {t('players.documents.clubLabel')}: {document.club_name}
+                  </span>
+                )}
+                <span>
+                  {t('players.documents.validFrom')}: {formatDate(document.valid_from, locale)}
+                </span>
+                <span>
+                  {t('players.documents.validUntil')}: {formatDate(document.valid_until, locale)}
+                </span>
               </div>
             </div>
             {document.asset_url && (
               <Button asChild variant="secondary" size="sm">
                 <a href={document.asset_url} target="_blank" rel="noreferrer">
-                  Abrir ficheiro
+                  {t('players.documents.openFile')}
                 </a>
               </Button>
             )}
