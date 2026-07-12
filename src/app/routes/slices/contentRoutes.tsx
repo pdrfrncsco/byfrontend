@@ -12,6 +12,13 @@ import { OrganizationListPage, OrganizationDetailPage } from '@/modules/organiza
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
 
+const PlayerCreatePage = lazy(() =>
+  import('@/modules/players/pages/PlayerCreatePage').then(m => ({ default: m.PlayerCreatePage })),
+)
+const PlayerSettingsPage = lazy(() =>
+  import('@/modules/players/pages/PlayerSettingsPage').then(m => ({ default: m.PlayerSettingsPage })),
+)
+
 const CompetitionCreatePage = lazy(() =>
   import('@/modules/competitions/pages/CompetitionCreatePage').then(m => ({ default: m.CompetitionCreatePage })),
 )
@@ -68,6 +75,22 @@ export function contentRouteElements() {
       {/* Players */}
       <Route path={playerRoutes.list} element={<PlayerListPage />} />
       <Route path={playerRoutes.detail(':slug')} element={<PlayerDetailPage />} />
+      <Route
+        path={playerRoutes.create}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><PlayerCreatePage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.edit(':slug')}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><PlayerSettingsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
 
       {/* Competitions (public browse) */}
       <Route path={competitionRoutes.list} element={<CompetitionListPage />} />

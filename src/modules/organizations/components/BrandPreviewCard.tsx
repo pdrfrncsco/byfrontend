@@ -1,4 +1,3 @@
-import React from 'react'
 import { Palette } from 'lucide-react'
 import { Card, CardHeader, CardTitle } from '@/components/ui'
 

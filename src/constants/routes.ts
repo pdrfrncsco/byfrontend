@@ -31,6 +31,8 @@ export const ROUTES = {
   CLUBS: '/clubs',
   PLAYERS: '/players',
   PLAYER_DETAIL: (slug: string) => `/players/${slug}`,
+  PLAYER_CREATE: '/players/create',
+  PLAYER_EDIT: (slug: string) => `/players/${slug}/edit`,
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',
@@ -130,6 +132,18 @@ export const API_ROUTES = {
     CREATE: '/players/',
     UPDATE: (slug: string) => `/players/${slug}/`,
     REGISTER: (slug: string) => `/players/${slug}/register/`,
+    // Documents
+    DOCUMENTS: (slug: string) => `/players/${slug}/documents/`,
+    DOCUMENT_DETAIL: (slug: string, documentId: string) => `/players/${slug}/documents/${documentId}/`,
+    DOCUMENT_VERIFY: (slug: string, documentId: string) => `/players/${slug}/documents/${documentId}/verify/`,
+    // Videos
+    VIDEOS: (slug: string) => `/players/${slug}/videos/`,
+    VIDEO_DETAIL: (slug: string, videoId: string) => `/players/${slug}/videos/${videoId}/`,
+    VIDEO_PUBLISH: (slug: string, videoId: string) => `/players/${slug}/videos/${videoId}/publish/`,
+    // Achievements
+    ACHIEVEMENTS: (slug: string) => `/players/${slug}/achievements/`,
+    ACHIEVEMENT_DETAIL: (slug: string, achievementId: string) => `/players/${slug}/achievements/${achievementId}/`,
+    ACHIEVEMENT_VERIFY: (slug: string, achievementId: string) => `/players/${slug}/achievements/${achievementId}/verify/`,
   },
   COMPETITIONS: {
     LIST: '/competitions/',
