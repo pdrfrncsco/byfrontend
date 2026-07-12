@@ -92,7 +92,7 @@ export default function ClubTransferCreatePage() {
   const selectedPlayerId = watch('player_id')
 
   // Filtrar jogadores pela pesquisa
-  const filteredPlayers = playersData?.data?.results?.filter((player: Player) =>
+  const filteredPlayers = playersData?.results?.filter((player: Player) =>
     player.full_name.toLowerCase().includes(playerSearch.toLowerCase())
   ) ?? []
 

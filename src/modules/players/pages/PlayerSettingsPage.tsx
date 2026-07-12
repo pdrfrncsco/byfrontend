@@ -4,10 +4,16 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import { Button, Card, CardContent, FormField, Input, Textarea, Badge } from '@/components/ui'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ROUTES } from '@/constants/routes'
 import { usePlayer, useUpdatePlayer } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
-import { PlayerFormSkeleton } from '../components'
+import {
+  PlayerFormSkeleton,
+  PlayerDocumentsSection,
+  PlayerVideosSection,
+  PlayerAchievementsSection,
+} from '../components'
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 
 export function PlayerSettingsPage() {
@@ -16,7 +22,7 @@ export function PlayerSettingsPage() {
   const { data: playerData, isLoading, isError } = usePlayer(slug ?? '')
   const updateMutation = useUpdatePlayer(slug ?? '')
 
-  const player = playerData?.data
+  const player = playerData
 
   const {
     register,
@@ -159,6 +165,16 @@ export function PlayerSettingsPage() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <Tabs defaultValue="profile">
+        <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
+          <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="documents">Documentos</TabsTrigger>
+          <TabsTrigger value="videos">Vídeos</TabsTrigger>
+          <TabsTrigger value="achievements">Conquistas</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
       {/* Form */}
       <Card variant="flat" padding="none">
         <CardContent className="p-lg">
@@ -402,6 +418,20 @@ export function PlayerSettingsPage() {
           </form>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <PlayerDocumentsSection slug={slug ?? ''} />
+        </TabsContent>
+
+        <TabsContent value="videos">
+          <PlayerVideosSection slug={slug ?? ''} />
+        </TabsContent>
+
+        <TabsContent value="achievements">
+          <PlayerAchievementsSection slug={slug ?? ''} />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

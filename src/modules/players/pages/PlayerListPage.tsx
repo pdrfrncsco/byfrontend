@@ -1,89 +1,15 @@
-import { useState, useCallback } from 'react'
-import { Link } from 'react-router-dom'
-import { Search, Filter, User, Trophy, Target, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
-import { usePlayers, usePlayerSearch } from '../hooks'
-import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
-import type { Player, PlayerPosition } from '../types'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, Sparkles, User } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { ErrorState } from '@/components/ui/empty-state'
+import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
+import { PlayerCard, PlayerEmptyState, PlayerListSkeleton } from '../components'
+import { usePlayers, usePlayerSearch } from '../hooks'
+import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
+import type { Player, PlayerPosition } from '../types'
 
-// ─── Position Badge ────────────────────────────────────────────────────────────
-function PositionBadge({ position, label }: { position: string; label: string }) {
-  const color = POSITION_COLOR[position] ?? '#6b7280'
-  return (
-    <span
-      className="players-position-badge"
-      style={{ background: `${color}22`, color, border: `1px solid ${color}55` }}
-    >
-      {label}
-    </span>
-  )
-}
-
-// ─── Player Card ──────────────────────────────────────────────────────────────
-function PlayerCard({ player }: { player: Player }) {
-  const statusColor = STATUS_COLOR[player.status] ?? '#6b7280'
-  const initials = `${player.first_name[0]}${player.last_name[0]}`.toUpperCase()
-
-  return (
-    <Link to={`/players/${player.slug}`} className="player-card" id={`player-${player.slug}`}>
-      {/* Avatar */}
-      <div className="player-card__avatar">
-        {player.avatar ? (
-          <img src={player.avatar} alt={player.full_name} className="player-card__avatar-img" />
-        ) : (
-          <span className="player-card__avatar-initials">{initials}</span>
-        )}
-        <span
-          className="player-card__status-dot"
-          style={{ background: statusColor }}
-          title={player.status_label}
-        />
-      </div>
-
-      {/* Info */}
-      <div className="player-card__info">
-        <div className="player-card__name">{player.full_name}</div>
-        <div className="player-card__meta">
-          {player.nationality && (
-            <span className="player-card__nationality">{player.nationality}</span>
-          )}
-          {player.age && (
-            <span className="player-card__age">{player.age} anos</span>
-          )}
-        </div>
-        <PositionBadge position={player.primary_position} label={player.position_label} />
-      </div>
-
-      {/* Stats */}
-      <div className="player-card__stats">
-        <div className="player-card__stat">
-          <Trophy size={12} />
-          <span>{player.total_goals}</span>
-        </div>
-        <div className="player-card__stat">
-          <Target size={12} />
-          <span>{player.total_assists}</span>
-        </div>
-        <div className="player-card__stat">
-          <User size={12} />
-          <span>{player.total_matches}</span>
-        </div>
-      </div>
-    </Link>
-  )
-}
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="players-empty">
-      <User size={48} className="players-empty__icon" />
-      <p>{message}</p>
-    </div>
-  )
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export function PlayerListPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPosition, setSelectedPosition] = useState<PlayerPosition | ''>('')
@@ -92,8 +18,12 @@ export function PlayerListPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   const debouncedSearch = useDebounce(searchQuery, 350)
-
   const isSearching = debouncedSearch.length >= 2
+
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch, selectedPosition, selectedNationality])
+
   const searchResult = usePlayerSearch(debouncedSearch)
   const listResult = usePlayers({
     page,
@@ -103,18 +33,22 @@ export function PlayerListPage() {
 
   const activeResult = isSearching ? searchResult : listResult
   const isLoading = activeResult.isLoading
+  const isError = activeResult.isError
 
-  // Build list of players
   const players: Player[] = isSearching
-    ? (searchResult.data?.data ?? [])
-    : (listResult.data?.data?.results ?? [])
+    ? (searchResult.data ?? [])
+    : (listResult.data?.results ?? [])
 
   const totalCount = isSearching
     ? players.length
-    : (listResult.data?.data?.count ?? 0)
+    : (listResult.data?.count ?? 0)
 
-  const hasNext = !isSearching && Boolean(listResult.data?.data?.next)
-  const hasPrev = !isSearching && Boolean(listResult.data?.data?.previous)
+  const hasNext = !isSearching && Boolean(listResult.data?.next)
+  const hasPrev = !isSearching && page > 1
+
+  const activeFilters = useMemo(() => {
+    return [selectedPosition, selectedNationality].filter(Boolean).length
+  }, [selectedPosition, selectedNationality])
 
   const handleClearFilters = useCallback(() => {
     setSelectedPosition('')
@@ -122,132 +56,200 @@ export function PlayerListPage() {
     setPage(1)
   }, [])
 
+  if (isError) {
+    return (
+      <div className="container py-xl">
+        <ErrorState
+          title="Não foi possível carregar os jogadores"
+          message="Verifique a ligação e tente novamente."
+          onRetry={() => activeResult.refetch()}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="players-page">
-      {/* Header */}
-      <div className="players-page__header">
-        <div>
-          <h1 className="players-page__title">Jogadores</h1>
-          <p className="players-page__subtitle">
-            {totalCount > 0 ? `${totalCount} jogadores encontrados` : 'Plataforma global de jogadores'}
-          </p>
-        </div>
-      </div>
-
-      {/* Search + Filter Bar */}
-      <div className="players-search-bar">
-        <div className="players-search-bar__input-wrapper">
-          <Search size={16} className="players-search-bar__icon" />
-          <input
-            id="players-search-input"
-            type="text"
-            placeholder="Pesquisar jogador por nome..."
-            value={searchQuery}
-            onChange={e => { setSearchQuery(e.target.value); setPage(1) }}
-            className="players-search-bar__input"
-          />
-        </div>
-        <button
-          id="players-filter-toggle"
-          className={`players-filter-btn ${showFilters ? 'players-filter-btn--active' : ''}`}
-          onClick={() => setShowFilters(v => !v)}
-        >
-          <Filter size={16} />
-          Filtros
-        </button>
-      </div>
-
-      {/* Filter Panel */}
-      {showFilters && (
-        <div className="players-filters">
-          <div className="players-filters__group">
-            <label className="players-filters__label">Posição</label>
-            <div className="players-filters__positions">
-              <button
-                className={`players-position-btn ${selectedPosition === '' ? 'players-position-btn--active' : ''}`}
-                onClick={() => { setSelectedPosition(''); setPage(1) }}
-              >
-                Todas
-              </button>
-              {ALL_POSITIONS.filter(p => p.value !== 'multiple').map(pos => (
-                <button
-                  key={pos.value}
-                  className={`players-position-btn ${selectedPosition === pos.value ? 'players-position-btn--active' : ''}`}
-                  style={selectedPosition === pos.value
-                    ? { background: `${POSITION_COLOR[pos.value]}33`, borderColor: POSITION_COLOR[pos.value], color: POSITION_COLOR[pos.value] }
-                    : {}}
-                  onClick={() => { setSelectedPosition(pos.value as PlayerPosition); setPage(1) }}
-                  title={pos.fullLabel}
-                >
-                  {pos.label}
-                </button>
-              ))}
+    <div className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]" />
+      <div className="container py-xl space-y-xl">
+        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/70 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur md:grid-cols-[1.4fr_0.9fr]">
+          <div className="space-y-md">
+            <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              Plataforma global de jogadores
+            </div>
+            <div className="space-y-sm">
+              <h1 className="font-title-lg text-4xl text-on-surface md:text-5xl">Jogadores</h1>
+              <p className="max-w-2xl text-base leading-7 text-on-surface-variant">
+                Explore perfis profissionais, estatísticas de carreira, documentos, vídeos e conquistas dos jogadores do ecossistema BolaYetu.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
+              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                {totalCount} jogador(es)
+              </span>
+              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                {activeFilters} filtro(s) ativos
+              </span>
+              {isSearching && (
+                <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                  Pesquisa: &quot;{debouncedSearch}&quot;
+                </span>
+              )}
             </div>
           </div>
-          <div className="players-filters__group">
-            <label className="players-filters__label" htmlFor="nationality-filter">Nacionalidade</label>
-            <input
-              id="nationality-filter"
-              type="text"
-              placeholder="ex: AO, PT, BR..."
-              value={selectedNationality}
-              onChange={e => { setSelectedNationality(e.target.value.toUpperCase()); setPage(1) }}
-              maxLength={3}
-              className="players-filters__nationality-input"
-            />
+
+          <Card variant="flat" padding="none" className="border-outline-variant/20">
+            <CardContent className="grid h-full gap-md p-lg">
+              <div className="flex items-start gap-sm">
+                <div className="rounded-2xl bg-primary-container/20 p-sm text-primary">
+                  <User className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-on-surface">Descoberta rápida</p>
+                  <p className="text-sm text-on-surface-variant">Pesquise por nome ou filtre por posição e nacionalidade.</p>
+                </div>
+              </div>
+              <div className="grid gap-sm sm:grid-cols-2">
+                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
+                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Página</p>
+                  <p className="mt-1 text-2xl font-bold text-on-surface">{page}</p>
+                </div>
+                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
+                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Resultados</p>
+                  <p className="mt-1 text-2xl font-bold text-on-surface">{isLoading ? '...' : totalCount}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        <Card variant="flat" padding="none">
+          <CardContent className="space-y-md p-lg">
+            <div className="flex flex-col gap-md lg:flex-row lg:items-end">
+              <label className="flex-1 space-y-xs">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Pesquisar</span>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
+                  <Input
+                    id="players-search-input"
+                    variant="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Pesquisar jogador por nome..."
+                    className="pl-10"
+                  />
+                </div>
+              </label>
+              <Button
+                id="players-filter-toggle"
+                variant={showFilters ? 'primary' : 'secondary'}
+                onClick={() => setShowFilters((value) => !value)}
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filtros
+              </Button>
+            </div>
+
+            {showFilters && (
+              <div className="space-y-md rounded-2xl border border-outline-variant/20 bg-surface-container p-lg">
+                <div className="space-y-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Posição</p>
+                  <div className="flex flex-wrap gap-sm">
+                    <Button
+                      size="sm"
+                      variant={selectedPosition === '' ? 'primary' : 'outline'}
+                      onClick={() => setSelectedPosition('')}
+                    >
+                      Todas
+                    </Button>
+                    {ALL_POSITIONS.filter((position) => position.value !== 'multiple').map((position) => (
+                      <Button
+                        key={position.value}
+                        size="sm"
+                        variant={selectedPosition === position.value ? 'primary' : 'outline'}
+                        style={
+                          selectedPosition === position.value
+                            ? {
+                                borderColor: POSITION_COLOR[position.value],
+                                background: `${POSITION_COLOR[position.value]}22`,
+                                color: POSITION_COLOR[position.value],
+                              }
+                            : undefined
+                        }
+                        onClick={() => setSelectedPosition(position.value as PlayerPosition)}
+                        title={position.fullLabel}
+                      >
+                        {position.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <label className="block max-w-xs space-y-xs">
+                  <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Nacionalidade</span>
+                  <Input
+                    id="nationality-filter"
+                    value={selectedNationality}
+                    onChange={(event) => setSelectedNationality(event.target.value.toUpperCase())}
+                    placeholder="ex: AO, PT, BR..."
+                    maxLength={3}
+                  />
+                </label>
+
+                {activeFilters > 0 && (
+                  <Button id="players-clear-filters" variant="ghost" onClick={handleClearFilters}>
+                    Limpar filtros
+                  </Button>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {isLoading ? (
+          <PlayerListSkeleton />
+        ) : players.length === 0 ? (
+          <PlayerEmptyState
+            message={
+              isSearching
+                ? `Sem resultados para "${debouncedSearch}"`
+                : 'Nenhum jogador encontrado com os filtros seleccionados.'
+            }
+            onReset={activeFilters > 0 ? handleClearFilters : undefined}
+          />
+        ) : (
+          <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
+            {players.map((player) => (
+              <PlayerCard key={player.id} player={player} />
+            ))}
           </div>
-          {(selectedPosition || selectedNationality) && (
-            <button id="players-clear-filters" className="players-clear-btn" onClick={handleClearFilters}>
-              Limpar filtros
-            </button>
-          )}
-        </div>
-      )}
+        )}
 
-      {/* Content */}
-      {isLoading ? (
-        <div className="players-loading">
-          <Loader2 size={32} className="players-loading__spinner" />
-          <span>A carregar jogadores...</span>
-        </div>
-      ) : players.length === 0 ? (
-        <EmptyState
-          message={
-            isSearching
-              ? `Sem resultados para "${debouncedSearch}"`
-              : 'Nenhum jogador encontrado com os filtros seleccionados.'
-          }
-        />
-      ) : (
-        <div className="players-grid">
-          {players.map(player => (
-            <PlayerCard key={player.id} player={player} />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination (list mode only) */}
-      {!isSearching && (hasPrev || hasNext) && (
-        <div className="players-pagination">
-          <button
-            id="players-page-prev"
-            className="players-pagination__btn"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={!hasPrev}
-          >
-            <ChevronLeft size={16} /> Anterior
-          </button>
-          <span className="players-pagination__info">Página {page}</span>
-          <button
-            id="players-page-next"
-            className="players-pagination__btn"
-            onClick={() => setPage(p => p + 1)}
-            disabled={!hasNext}
-          >
-            Seguinte <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
+        {!isSearching && (hasPrev || hasNext) && (
+          <div className="flex items-center justify-center gap-md">
+            <Button
+              id="players-page-prev"
+              variant="secondary"
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              disabled={!hasPrev}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+            <span className="text-sm text-on-surface-variant">Página {page}</span>
+            <Button
+              id="players-page-next"
+              variant="secondary"
+              onClick={() => setPage((current) => current + 1)}
+              disabled={!hasNext}
+            >
+              Seguinte
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

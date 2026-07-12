@@ -39,8 +39,8 @@ export function PlayerCreatePage() {
 
   // Reset form after successful creation
   useEffect(() => {
-    if (createMutation.isSuccess && createMutation.data?.data?.slug) {
-      navigate(ROUTES.PLAYER_DETAIL(createMutation.data.data.slug))
+    if (createMutation.isSuccess && createMutation.data?.slug) {
+      navigate(ROUTES.PLAYER_DETAIL(createMutation.data.slug))
     }
   }, [createMutation.isSuccess, createMutation.data, navigate])
 

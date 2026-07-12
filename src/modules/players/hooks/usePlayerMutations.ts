@@ -31,6 +31,13 @@ import type {
   PlayerAchievementUpdate,
 } from '../types'
 
+function invalidatePlayerDetail(queryClient: ReturnType<typeof useQueryClient>, slug: string) {
+  queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+  queryClient.invalidateQueries({ queryKey: playerKeys.documents(slug) })
+  queryClient.invalidateQueries({ queryKey: playerKeys.videos(slug) })
+  queryClient.invalidateQueries({ queryKey: playerKeys.achievements(slug) })
+}
+
 // ─── Player Mutations ────────────────────────────────────────────────────────
 
 export function useCreatePlayer() {
@@ -62,7 +69,7 @@ export function useRegisterPlayer(slug: string) {
   return useMutation({
     mutationFn: (data: PlayerRegisterPayload) => registerPlayer(slug, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -75,7 +82,7 @@ export function useCreatePlayerDocument(slug: string) {
   return useMutation({
     mutationFn: (data: PlayerDocumentCreate) => createPlayerDocument(slug, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -86,7 +93,7 @@ export function useUpdatePlayerDocument(slug: string, documentId: string) {
   return useMutation({
     mutationFn: (data: PlayerDocumentUpdate) => updatePlayerDocument(slug, documentId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -97,7 +104,7 @@ export function useDeletePlayerDocument(slug: string) {
   return useMutation({
     mutationFn: (documentId: string) => deletePlayerDocument(slug, documentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -108,7 +115,7 @@ export function useVerifyPlayerDocument(slug: string) {
   return useMutation({
     mutationFn: (documentId: string) => verifyPlayerDocument(slug, documentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -121,7 +128,7 @@ export function useCreatePlayerVideo(slug: string) {
   return useMutation({
     mutationFn: (data: PlayerVideoCreate) => createPlayerVideo(slug, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -132,7 +139,7 @@ export function useUpdatePlayerVideo(slug: string, videoId: string) {
   return useMutation({
     mutationFn: (data: PlayerVideoUpdate) => updatePlayerVideo(slug, videoId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -143,7 +150,7 @@ export function useDeletePlayerVideo(slug: string) {
   return useMutation({
     mutationFn: (videoId: string) => deletePlayerVideo(slug, videoId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -154,7 +161,7 @@ export function usePublishPlayerVideo(slug: string) {
   return useMutation({
     mutationFn: (videoId: string) => publishPlayerVideo(slug, videoId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -167,7 +174,7 @@ export function useCreatePlayerAchievement(slug: string) {
   return useMutation({
     mutationFn: (data: PlayerAchievementCreate) => createPlayerAchievement(slug, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -178,7 +185,7 @@ export function useUpdatePlayerAchievement(slug: string, achievementId: string) 
   return useMutation({
     mutationFn: (data: PlayerAchievementUpdate) => updatePlayerAchievement(slug, achievementId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -189,7 +196,7 @@ export function useDeletePlayerAchievement(slug: string) {
   return useMutation({
     mutationFn: (achievementId: string) => deletePlayerAchievement(slug, achievementId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
@@ -200,7 +207,7 @@ export function useVerifyPlayerAchievement(slug: string) {
   return useMutation({
     mutationFn: (achievementId: string) => verifyPlayerAchievement(slug, achievementId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
+      invalidatePlayerDetail(queryClient, slug)
     },
   })
 }
