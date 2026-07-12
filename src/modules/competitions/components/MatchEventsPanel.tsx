@@ -46,32 +46,43 @@ export function MatchEventsPanel({
           setIsAdding(false)
           setMinute('')
         },
+        onError: () => {
+          alert('Ocorreu um erro ao tentar adicionar o evento. Tente novamente.')
+        }
       }
     )
   }
 
   if (isLoading) {
     return (
-      <div className="comp-loading" style={{ padding: '20px' }}>
-        <Loader2 size={24} className="spin" />
+      <div className="flex items-center justify-center p-xl">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="comp-match-events" style={{ padding: '16px', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>Súmula de Jogo</h4>
+    <div className="border-t border-outline-variant/20 bg-surface-container-low p-md">
+      <div className="mb-md flex items-center justify-between">
+        <h4 className="text-sm font-semibold text-on-surface">Súmula de Jogo</h4>
         {isAdmin && !isAdding && (
-          <button className="comp-btn comp-btn--outline" onClick={() => setIsAdding(true)} style={{ padding: '4px 8px', fontSize: '12px' }}>
+          <button 
+            className="flex items-center gap-xs rounded-lg border border-outline-variant px-sm py-xs text-xs font-medium text-on-surface transition-colors hover:bg-surface-container-high"
+            onClick={() => setIsAdding(true)}
+          >
             <Plus size={12} /> Adicionar
           </button>
         )}
       </div>
 
       {isAdding && isAdmin && (
-        <form onSubmit={handleAdd} style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <select className="comp-input" value={eventType} onChange={e => setEventType(e.target.value as EventType)} required style={{ padding: '4px', fontSize: '13px' }}>
+        <form onSubmit={handleAdd} className="mb-md flex flex-wrap items-center gap-sm">
+          <select 
+            className="rounded-lg border border-outline-variant bg-surface px-sm py-xs text-sm text-on-surface focus:border-primary focus:outline-none" 
+            value={eventType} 
+            onChange={e => setEventType(e.target.value as EventType)} 
+            required
+          >
             <option value="goal">Golo</option>
             <option value="own_goal">Golo Contra</option>
             <option value="penalty_scored">Penálti Marcado</option>
@@ -82,67 +93,93 @@ export function MatchEventsPanel({
             <option value="substitution_in">Substituição (Entra)</option>
             <option value="substitution_out">Substituição (Sai)</option>
           </select>
+          
           <input
             type="number"
-            className="comp-input"
+            className="w-20 rounded-lg border border-outline-variant bg-surface px-sm py-xs text-sm text-on-surface focus:border-primary focus:outline-none"
             value={minute}
             onChange={e => setMinute(e.target.value)}
             placeholder="Minuto"
             min="0"
             max="120"
             required
-            style={{ width: '70px', padding: '4px', fontSize: '13px' }}
           />
-          <select className="comp-input" value={clubId} onChange={e => setClubId(e.target.value)} required style={{ padding: '4px', fontSize: '13px' }}>
+          
+          <select 
+            className="rounded-lg border border-outline-variant bg-surface px-sm py-xs text-sm text-on-surface focus:border-primary focus:outline-none" 
+            value={clubId} 
+            onChange={e => setClubId(e.target.value)} 
+            required
+          >
             <option value={match.home_club}>{match.home_club_name}</option>
             <option value={match.away_club}>{match.away_club_name}</option>
           </select>
-          <button type="submit" className="comp-btn comp-btn--primary" disabled={addEvent.isPending} style={{ padding: '4px 8px', fontSize: '12px' }}>
-            {addEvent.isPending ? <Loader2 size={12} className="spin" /> : 'Guardar'}
+          
+          <button 
+            type="submit" 
+            className="flex min-w-[70px] items-center justify-center rounded-lg bg-primary px-sm py-xs text-xs font-medium text-on-primary transition-colors hover:bg-primary/90 disabled:opacity-50" 
+            disabled={addEvent.isPending}
+          >
+            {addEvent.isPending ? <Loader2 size={12} className="animate-spin" /> : 'Guardar'}
           </button>
-          <button type="button" className="comp-btn comp-btn--ghost" onClick={() => setIsAdding(false)} style={{ padding: '4px 8px', fontSize: '12px' }}>
+          
+          <button 
+            type="button" 
+            className="rounded-lg px-sm py-xs text-xs font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high" 
+            onClick={() => setIsAdding(false)}
+          >
             Cancelar
           </button>
         </form>
       )}
 
       {events.length === 0 ? (
-        <p style={{ fontSize: '13px', color: '#64748b', margin: 0, textAlign: 'center', padding: '20px 0' }}>Nenhum evento registado nesta partida.</p>
+        <p className="py-xl text-center text-sm text-on-surface-variant">
+          Nenhum evento registado nesta partida.
+        </p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-sm">
           {(events as MatchEvent[]).map(ev => {
             const isHome = ev.club === match.home_club
             const Icon = EVENT_ICONS[ev.event_type]?.icon || ShieldAlert
             const iconColor = EVENT_ICONS[ev.event_type]?.color || '#64748b'
             
             return (
-              <div key={ev.id} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '8px 12px',
-                background: 'white',
-                borderRadius: '6px',
-                border: '1px solid #e2e8f0',
-                flexDirection: isHome ? 'row' : 'row-reverse'
-              }}>
-                <div style={{ fontWeight: 600, fontSize: '13px', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {ev.extra_time ? `${ev.minute}+'` : `${ev.minute}'`} <Clock size={12} color="#94a3b8" />
+              <div 
+                key={ev.id} 
+                className={`flex items-center gap-md rounded-lg border border-outline-variant/20 bg-surface p-sm ${isHome ? 'flex-row' : 'flex-row-reverse'}`}
+              >
+                <div className="flex items-center gap-xs text-sm font-semibold text-on-surface">
+                  {ev.extra_time ? `${ev.minute}+'` : `${ev.minute}'`} 
+                  <Clock size={12} className="text-on-surface-variant" />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: isHome ? 'flex-start' : 'flex-end' }}>
-                  <Icon size={14} color={iconColor} />
-                  <span style={{ fontSize: '13px', color: '#1e293b' }}>
+                
+                <div className={`flex flex-1 items-center gap-sm ${isHome ? 'justify-start' : 'justify-end'}`}>
+                  <Icon size={14} style={{ color: iconColor }} />
+                  <span className="text-sm text-on-surface">
                     {ev.player_name || ev.event_type_label}
                   </span>
-                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>({ev.club_name})</span>
+                  <span className="text-xs text-on-surface-variant">
+                    ({ev.club_name})
+                  </span>
                 </div>
+                
                 {isAdmin && (
                   <button
-                    onClick={() => deleteEvent.mutate(ev.id)}
+                    onClick={() => {
+                      if (window.confirm('Tem a certeza que deseja apagar este evento?')) {
+                        deleteEvent.mutate(ev.id)
+                      }
+                    }}
                     disabled={deleteEvent.isPending}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px' }}
+                    className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-red-50 disabled:opacity-50"
+                    aria-label="Apagar evento"
                   >
-                    {deleteEvent.isPending ? <Loader2 size={14} className="spin" color="#ef4444" /> : <Trash2 size={14} color="#ef4444" />}
+                    {deleteEvent.isPending ? (
+                      <Loader2 size={14} className="animate-spin text-red-500" />
+                    ) : (
+                      <Trash2 size={14} className="text-red-500" />
+                    )}
                   </button>
                 )}
               </div>

@@ -20,9 +20,9 @@ interface CompetitionHeaderProps {
 }
 
 /**
- * CompetitionHeader — hero section for the Competition Detail page.
+ * CompetitionHeader
+ * hero section for the Competition Detail page.
  * Shows name, type, season, and status badge.
- *
  * @example
  * <CompetitionHeader competition={competition} />
  */
@@ -74,7 +74,8 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
 }
 
 /**
- * CompetitionHeaderSkeleton — loading placeholder for CompetitionHeader.
+ * CompetitionHeaderSkeleton
+ * loading placeholder for CompetitionHeader.
  */
 export function CompetitionHeaderSkeleton() {
   return (
