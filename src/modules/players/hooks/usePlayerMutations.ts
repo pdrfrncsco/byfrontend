@@ -17,6 +17,8 @@ import {
   updatePlayerAchievement,
   deletePlayerAchievement,
   verifyPlayerAchievement,
+  updatePlayerMe,
+  uploadPlayerAvatar,
 } from '../services'
 import { playerKeys } from './usePlayerQueries'
 import type {
@@ -70,6 +72,32 @@ export function useRegisterPlayer(slug: string) {
     mutationFn: (data: PlayerRegisterPayload) => registerPlayer(slug, data),
     onSuccess: () => {
       invalidatePlayerDetail(queryClient, slug)
+      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
+    },
+  })
+}
+
+export function useUpdatePlayerMe() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: PlayerUpdate) => updatePlayerMe(data),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
+    },
+  })
+}
+
+export function useUploadPlayerAvatar(slug?: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (file: File) => uploadPlayerAvatar(file, slug),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
+      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
     },
   })
 }

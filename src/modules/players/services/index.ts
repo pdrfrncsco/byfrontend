@@ -105,6 +105,26 @@ export async function registerPlayer(slug: string, data: PlayerRegisterPayload):
   return unwrapData(res.data)
 }
 
+export async function getPlayerMe(): Promise<PlayerDetail> {
+  const res = await apiClient.get(API_ROUTES.PLAYERS.ME)
+  return unwrapData(res.data)
+}
+
+export async function updatePlayerMe(data: PlayerUpdate): Promise<Player> {
+  const res = await apiClient.patch(API_ROUTES.PLAYERS.ME, data)
+  return unwrapData(res.data)
+}
+
+export async function uploadPlayerAvatar(file: File, slug?: string): Promise<Player> {
+  const formData = new FormData()
+  formData.append('avatar', file)
+  const url = slug ? API_ROUTES.PLAYERS.AVATAR(slug) : API_ROUTES.PLAYERS.ME_AVATAR
+  const res = await apiClient.post(url, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return unwrapData(res.data)
+}
+
 // ─── Player Documents ────────────────────────────────────────────────────────
 
 export async function listPlayerDocuments(slug: string): Promise<PlayerDocument[]> {

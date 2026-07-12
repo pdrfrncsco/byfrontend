@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useTenant } from '@/app/providers/TenantProvider'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { PendingOnboardingRedirect } from '@/app/routes'
@@ -10,7 +10,11 @@ import { CompetitionDashboardPage } from './CompetitionDashboardPage'
 import OrganizationDashboardPage from '@/modules/organizations/pages/OrganizationDashboardPage'
 import { Sliders, CheckCircle } from 'lucide-react'
 
-type DashboardType = 'federation' | 'executive' | 'league' | 'club' | 'competition' | 'organization'
+const PlayerDashboardPage = lazy(() =>
+  import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
+)
+
+type DashboardType = 'federation' | 'executive' | 'league' | 'club' | 'competition' | 'organization' | 'player'
 
 export function DashboardPageSelector() {
   const { tenant } = useTenant()
@@ -37,6 +41,8 @@ export function DashboardPageSelector() {
         setResolvedType('executive')
       } else if (roles.includes('club_admin') || user.role === 'club_admin') {
         setResolvedType('club')
+      } else if (roles.includes('player') || user.role === 'player') {
+        setResolvedType('player')
       } else if (roles.includes('competition_organizer') || user.role === 'competition_organizer') {
         setResolvedType('competition')
       } else {
@@ -65,6 +71,12 @@ export function DashboardPageSelector() {
         return <CompetitionDashboardPage />
       case 'organization':
         return <OrganizationDashboardPage />
+      case 'player':
+        return (
+          <Suspense fallback={<div className="p-lg text-sm text-on-surface-variant">A carregar portal do jogador...</div>}>
+            <PlayerDashboardPage />
+          </Suspense>
+        )
       default:
         return <ExecutiveDashboardPage />
     }
@@ -145,6 +157,18 @@ export function DashboardPageSelector() {
                 >
                   <span>Clube (Petro de Luanda)</span>
                   {activeType === 'club' && <CheckCircle className="w-4 h-4" />}
+                </button>
+
+                <button
+                  onClick={() => setOverrideType('player')}
+                  className={`w-full flex items-center justify-between text-left p-2.5 rounded-lg border text-xs transition-colors ${
+                    activeType === 'player'
+                      ? 'bg-primary-container/20 border-[#94d3c1] text-[#94d3c1]'
+                      : 'bg-[#0b1c30] border-[#26364a] hover:border-[#3f4945]'
+                  }`}
+                >
+                  <span>Jogador</span>
+                  {activeType === 'player' && <CheckCircle className="w-4 h-4" />}
                 </button>
 
                 <button

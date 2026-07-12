@@ -8,4 +8,5 @@ export const dashboardRoutes = {
   club: ROUTES.DASHBOARD_CLUB,
   organization: ROUTES.DASHBOARD_ORGANIZATION,
   competition: ROUTES.DASHBOARD_COMPETITION,
+  player: ROUTES.DASHBOARD_PLAYER,
 }

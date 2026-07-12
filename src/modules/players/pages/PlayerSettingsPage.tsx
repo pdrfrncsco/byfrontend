@@ -13,6 +13,7 @@ import {
   PlayerDocumentsSection,
   PlayerVideosSection,
   PlayerAchievementsSection,
+  PlayerAvatarUpload,
 } from '../components'
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 
@@ -28,11 +29,15 @@ export function PlayerSettingsPage() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isDirty },
   } = useForm<PlayerUpdateFormData>({
     resolver: zodResolver(playerUpdateSchema),
     mode: 'onBlur',
   })
+
+  const avatar = watch('avatar')
 
   // Populate form when player data loads
   useEffect(() => {
@@ -130,20 +135,13 @@ export function PlayerSettingsPage() {
 
       {/* Header */}
       <div className="flex items-start gap-lg">
-        {/* Avatar Preview */}
-        <div
-          className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-outline-variant/20 text-2xl font-bold text-on-primary shadow-sm"
-          style={{
-            background: positionColor,
-            boxShadow: `0 10px 30px ${positionColor}33`,
-          }}
-        >
-          {player.avatar ? (
-            <img src={player.avatar} alt={player.full_name} className="h-full w-full rounded-3xl object-cover" />
-          ) : (
-            initials
-          )}
-        </div>
+        <PlayerAvatarUpload
+          slug={slug}
+          avatarUrl={avatar || player.avatar}
+          initials={initials}
+          accentColor={positionColor}
+          onUploaded={(url) => setValue('avatar', url, { shouldDirty: true })}
+        />
 
         <div className="space-y-sm">
           <div className="flex items-center gap-md">
@@ -299,7 +297,7 @@ export function PlayerSettingsPage() {
 
               <div className="grid gap-md md:grid-cols-2">
                 <FormField
-                  label="URL do Avatar"
+                  label="URL do Avatar (alternativa)"
                   htmlFor="avatar"
                   error={errors.avatar?.message}
                 >
@@ -307,7 +305,7 @@ export function PlayerSettingsPage() {
                     id="avatar"
                     {...register('avatar')}
                     state={errors.avatar ? 'error' : 'default'}
-                    placeholder="https://..."
+                    placeholder="Preenchido automaticamente após upload"
                   />
                 </FormField>
               </div>

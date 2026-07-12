@@ -4,6 +4,7 @@ import { ProtectedRoute } from '../ProtectedRoute'
 import { OnboardingGuard } from '../OnboardingGuard'
 import { organizationRoutes } from '@/modules/organizations/routes'
 import { clubRoutes } from '@/modules/clubs/routes'
+import { playerRoutes } from '@/modules/players/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { onboardingRoutes } from '@/modules/onboarding/routes'
 import {
@@ -28,6 +29,15 @@ const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocuments
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/clubs/pages/ClubTransfersPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/clubs/pages/ClubTransferCreatePage'))
+const PlayerDashboardPage = lazy(() =>
+  import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
+)
+const PlayerDashboardSettingsPage = lazy(() =>
+  import('@/modules/players/pages/PlayerDashboardSettingsPage').then((m) => ({ default: m.PlayerDashboardSettingsPage })),
+)
+const ClubPlayerRegisterPage = lazy(() =>
+  import('@/modules/players/pages/ClubPlayerRegisterPage').then((m) => ({ default: m.ClubPlayerRegisterPage })),
+)
 
 function RouteFallback() {
   return (
@@ -66,6 +76,34 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><ClubDashboardPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Player dashboard */}
+      <Route
+        path={playerRoutes.dashboard}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><PlayerDashboardPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.dashboardSettings}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><PlayerDashboardSettingsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Club player registration */}
+      <Route
+        path={playerRoutes.clubRegister}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><ClubPlayerRegisterPage /></Suspense>
           </ProtectedRoute>
         }
       />

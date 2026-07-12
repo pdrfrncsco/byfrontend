@@ -1,7 +1,7 @@
 // Players module — React Query query hooks
 
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { listPlayers, getPlayer, searchPlayers, listPlayerDocuments, listPlayerVideos, listPlayerAchievements } from '../services'
+import { listPlayers, getPlayer, searchPlayers, listPlayerDocuments, listPlayerVideos, listPlayerAchievements, getPlayerMe } from '../services'
 import type { PlayerListParams } from '../types'
 
 export const playerKeys = {
@@ -14,6 +14,7 @@ export const playerKeys = {
   documents: (slug: string) => [...playerKeys.all, 'documents', slug] as const,
   videos: (slug: string) => [...playerKeys.all, 'videos', slug] as const,
   achievements: (slug: string) => [...playerKeys.all, 'achievements', slug] as const,
+  me: () => [...playerKeys.all, 'me'] as const,
 }
 
 /**
@@ -85,6 +86,17 @@ export function usePlayerAchievements(slug: string) {
     queryKey: playerKeys.achievements(slug),
     queryFn: () => listPlayerAchievements(slug),
     enabled: Boolean(slug),
+    staleTime: 60_000,
+  })
+}
+
+/**
+ * Hook: get the authenticated user's linked player profile.
+ */
+export function usePlayerMe() {
+  return useQuery({
+    queryKey: playerKeys.me(),
+    queryFn: () => getPlayerMe(),
     staleTime: 60_000,
   })
 }

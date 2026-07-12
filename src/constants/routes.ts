@@ -33,6 +33,9 @@ export const ROUTES = {
   PLAYER_DETAIL: (slug: string) => `/players/${slug}`,
   PLAYER_CREATE: '/players/create',
   PLAYER_EDIT: (slug: string) => `/players/${slug}/edit`,
+  DASHBOARD_PLAYER: '/dashboard/player',
+  DASHBOARD_PLAYER_SETTINGS: '/dashboard/player/settings',
+  DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',
@@ -128,9 +131,12 @@ export const API_ROUTES = {
   PLAYERS: {
     LIST: '/players/',
     SEARCH: '/players/search/',
+    ME: '/players/me/',
+    ME_AVATAR: '/players/me/avatar/',
     GET: (slug: string) => `/players/${slug}/`,
     CREATE: '/players/',
     UPDATE: (slug: string) => `/players/${slug}/`,
+    AVATAR: (slug: string) => `/players/${slug}/avatar/`,
     REGISTER: (slug: string) => `/players/${slug}/register/`,
     // Documents
     DOCUMENTS: (slug: string) => `/players/${slug}/documents/`,

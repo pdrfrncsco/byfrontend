@@ -18,7 +18,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode
   title: string
   subtitle?: string
-  dashboardType: 'federation' | 'executive' | 'league' | 'club' | 'competition'
+  dashboardType: 'federation' | 'executive' | 'league' | 'club' | 'competition' | 'player'
   sidebarLinks: SidebarLink[]
   headerActions?: React.ReactNode
 }
@@ -69,6 +69,8 @@ export function DashboardLayout({
         return t('dashboard.sublabels.club')
       case 'competition':
         return t('dashboard.sublabels.competition')
+      case 'player':
+        return 'Portal do Jogador'
       default:
         return t('dashboard.sublabels.default')
     }
