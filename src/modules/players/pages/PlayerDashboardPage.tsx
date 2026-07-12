@@ -5,6 +5,7 @@ import {
   Award,
   ExternalLink,
   FileText,
+  Handshake,
   LayoutDashboard,
   Settings,
   Sparkles,
@@ -33,6 +34,7 @@ export function PlayerDashboardPage() {
 
   const sidebarLinks = [
     { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" />, active: true },
+    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
     { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
     { label: t('players.dashboard.sidebar.publicProfile'), href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
   ]

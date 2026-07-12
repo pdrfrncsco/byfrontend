@@ -11,6 +11,9 @@ import type {
   PlayerCreate,
   PlayerUpdate,
   PlayerRegisterPayload,
+  PlayerRegistrationRequest,
+  PlayerRegistrationRequestCreate,
+  PlayerRegistrationRequestReview,
   PlayerDocument,
   PlayerDocumentCreate,
   PlayerDocumentUpdate,
@@ -102,6 +105,31 @@ export async function updatePlayer(slug: string, data: PlayerUpdate): Promise<Pl
 
 export async function registerPlayer(slug: string, data: PlayerRegisterPayload): Promise<unknown> {
   const res = await apiClient.post(API_ROUTES.PLAYERS.REGISTER(slug), data)
+  return unwrapData(res.data)
+}
+
+export async function listMyRegistrationRequests(): Promise<PlayerRegistrationRequest[]> {
+  const res = await apiClient.get(API_ROUTES.PLAYERS.ME_REGISTRATION_REQUESTS)
+  return unwrapList(res.data)
+}
+
+export async function submitRegistrationRequest(
+  data: PlayerRegistrationRequestCreate,
+): Promise<PlayerRegistrationRequest> {
+  const res = await apiClient.post(API_ROUTES.PLAYERS.ME_REGISTRATION_REQUESTS, data)
+  return unwrapData(res.data)
+}
+
+export async function listClubPlayerRegistrationRequests(): Promise<PlayerRegistrationRequest[]> {
+  const res = await apiClient.get(API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUESTS)
+  return unwrapList(res.data)
+}
+
+export async function reviewClubPlayerRegistrationRequest(
+  requestId: string,
+  data: PlayerRegistrationRequestReview,
+): Promise<PlayerRegistrationRequest> {
+  const res = await apiClient.patch(API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUEST_REVIEW(requestId), data)
   return unwrapData(res.data)
 }
 

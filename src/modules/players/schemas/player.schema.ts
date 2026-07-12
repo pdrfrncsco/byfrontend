@@ -47,6 +47,15 @@ export const playerRegisterSchema = z.object({
 
 export type PlayerRegisterFormData = z.infer<typeof playerRegisterSchema>
 
+export const playerLinkRequestSchema = z.object({
+  club_id: z.string().min(1, 'Selecione um clube.'),
+  joined_date: z.string().min(1, 'A data de entrada é obrigatória.'),
+  shirt_number: z.union([z.coerce.number().int().min(1).max(99), z.literal('')]).optional(),
+  competition_id: z.string().optional().or(z.literal('')),
+})
+
+export type PlayerLinkRequestFormData = z.infer<typeof playerLinkRequestSchema>
+
 // ─── Player Document Schema ───────────────────────────────────────────────────
 
 export const playerDocumentSchema = z.object({

@@ -35,7 +35,9 @@ export const ROUTES = {
   PLAYER_EDIT: (slug: string) => `/players/${slug}/edit`,
   DASHBOARD_PLAYER: '/dashboard/player',
   DASHBOARD_PLAYER_SETTINGS: '/dashboard/player/settings',
+  DASHBOARD_PLAYER_LINK_CLUB: '/dashboard/player/link-club',
   DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',
+  DASHBOARD_CLUB_PLAYER_REQUESTS: '/dashboard/club/player-requests',
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',
@@ -105,6 +107,9 @@ export const API_ROUTES = {
     LIST: '/clubs/',
     ME: '/clubs/me/',
     LOGO: '/clubs/me/logo/',
+    PLAYER_REGISTRATION_REQUESTS: '/clubs/me/player-registration-requests/',
+    PLAYER_REGISTRATION_REQUEST_REVIEW: (requestId: string) =>
+      `/clubs/me/player-registration-requests/${requestId}/`,
     CREATE: '/clubs/',
     ACTIVATE: (slug: string) => `/clubs/${slug}/activate/`,
     SUSPEND: (slug: string) => `/clubs/${slug}/suspend/`,
@@ -133,6 +138,7 @@ export const API_ROUTES = {
     SEARCH: '/players/search/',
     ME: '/players/me/',
     ME_AVATAR: '/players/me/avatar/',
+    ME_REGISTRATION_REQUESTS: '/players/me/registration-requests/',
     GET: (slug: string) => `/players/${slug}/`,
     CREATE: '/players/',
     UPDATE: (slug: string) => `/players/${slug}/`,

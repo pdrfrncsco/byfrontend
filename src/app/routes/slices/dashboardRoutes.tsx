@@ -38,6 +38,14 @@ const PlayerDashboardSettingsPage = lazy(() =>
 const ClubPlayerRegisterPage = lazy(() =>
   import('@/modules/players/pages/ClubPlayerRegisterPage').then((m) => ({ default: m.ClubPlayerRegisterPage })),
 )
+const PlayerClubLinkRequestPage = lazy(() =>
+  import('@/modules/players/pages/PlayerClubLinkRequestPage').then((m) => ({ default: m.PlayerClubLinkRequestPage })),
+)
+const ClubPlayerRegistrationRequestsPage = lazy(() =>
+  import('@/modules/players/pages/ClubPlayerRegistrationRequestsPage').then((m) => ({
+    default: m.ClubPlayerRegistrationRequestsPage,
+  })),
+)
 
 function RouteFallback() {
   return (
@@ -104,6 +112,24 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><ClubPlayerRegisterPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.clubPlayerRequests}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><ClubPlayerRegistrationRequestsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Player club link request */}
+      <Route
+        path={playerRoutes.linkClub}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><PlayerClubLinkRequestPage /></Suspense>
           </ProtectedRoute>
         }
       />

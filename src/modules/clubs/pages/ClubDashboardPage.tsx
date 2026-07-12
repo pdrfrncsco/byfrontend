@@ -49,6 +49,7 @@ export default function ClubDashboardPage() {
       { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <FileText className="h-4 w-4" /> },
       { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <MessageCircleMore className="h-4 w-4" /> },
+    { label: 'Pedidos de Vínculo', href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS, icon: <Users className="h-4 w-4" /> },
     { label: 'Registar Jogador', href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <Users className="h-4 w-4" /> },
   ],
     [],
@@ -149,6 +150,12 @@ export default function ClubDashboardPage() {
               <Button asChild variant="outline" className="w-full justify-between">
                 <Link to={ROUTES.DASHBOARD_CLUB_MEMBERS}>
                   <span>Gerir membros</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-between">
+                <Link to={ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS}>
+                  <span>Pedidos de vínculo</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

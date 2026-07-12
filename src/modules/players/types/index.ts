@@ -336,3 +336,44 @@ export interface PlayerRegisterPayload {
   shirt_number?: number
   competition_id?: string
 }
+
+export type PlayerRegistrationRequestStatus = 'pending' | 'approved' | 'rejected'
+
+export interface PlayerRegistrationRequest {
+  id: string
+  player: string
+  player_name: string
+  player_slug: string
+  player_position_label?: string
+  club: string
+  club_name: string
+  club_slug: string
+  tenant: string
+  competition?: string | null
+  competition_name?: string | null
+  submitted_by?: string | null
+  submitted_by_email?: string | null
+  joined_date: string
+  shirt_number?: number | null
+  status: PlayerRegistrationRequestStatus | string
+  status_label?: string
+  review_notes?: string
+  reviewed_by?: string | null
+  reviewed_by_email?: string | null
+  reviewed_at?: string | null
+  registration?: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+export interface PlayerRegistrationRequestCreate {
+  club_id: string
+  joined_date: string
+  shirt_number?: number
+  competition_id?: string
+}
+
+export interface PlayerRegistrationRequestReview {
+  approve: boolean
+  review_notes?: string
+}
