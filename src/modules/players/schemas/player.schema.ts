@@ -134,8 +134,29 @@ export const playerAchievementSchema = z.object({
   season: z.string().max(20, 'A época não pode exceder 20 caracteres.').optional().or(z.literal('')),
   competition: z.string().optional().or(z.literal('')),
   club: z.string().optional().or(z.literal('')),
-  trophy_image: z.string().url('URL da imagem inválida.').optional().or(z.literal('')),
+  trophy_image: z
+    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione uma imagem válida.')
+    .optional(),
+  trophy_image_url: z.string().url('URL da imagem inválida.').optional().or(z.literal('')),
+  certificate: z
+    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
+    .optional(),
   certificate_url: z.string().url('URL do certificado inválida.').optional().or(z.literal('')),
+}).superRefine((data, ctx) => {
+  if (data.trophy_image instanceof File && data.trophy_image_url) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Indique uma URL ou carregue uma imagem do troféu, não ambos.',
+      path: ['trophy_image'],
+    })
+  }
+  if (data.certificate instanceof File && data.certificate_url) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Indique uma URL ou carregue um certificado, não ambos.',
+      path: ['certificate'],
+    })
+  }
 })
 
 export type PlayerAchievementFormData = z.infer<typeof playerAchievementSchema>

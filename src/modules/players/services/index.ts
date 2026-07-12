@@ -272,6 +272,28 @@ export async function createPlayerAchievement(
   slug: string,
   data: PlayerAchievementCreate,
 ): Promise<PlayerAchievement> {
+  if (data.trophy_image || data.certificate) {
+    const formData = new FormData()
+    formData.append('title', data.title)
+    formData.append('achievement_type', data.achievement_type)
+    formData.append('level', data.level)
+    if (data.description) formData.append('description', data.description)
+    if (data.date_achieved) formData.append('date_achieved', data.date_achieved)
+    if (data.season) formData.append('season', data.season)
+    if (data.competition) formData.append('competition', data.competition)
+    if (data.club) formData.append('club', data.club)
+    if (data.trophy_image) formData.append('trophy_image', data.trophy_image)
+    if (data.certificate) formData.append('certificate', data.certificate)
+    if (data.trophy_image_url) formData.append('trophy_image_url', data.trophy_image_url)
+    if (data.certificate_url) formData.append('certificate_url', data.certificate_url)
+    if (data.stats_snapshot) formData.append('stats_snapshot', JSON.stringify(data.stats_snapshot))
+
+    const res = await apiClient.post(API_ROUTES.PLAYERS.ACHIEVEMENTS(slug), formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return unwrapData(res.data)
+  }
+
   const res = await apiClient.post(API_ROUTES.PLAYERS.ACHIEVEMENTS(slug), data)
   return unwrapData(res.data)
 }

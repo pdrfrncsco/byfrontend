@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Trash2, Trophy } from 'lucide-react'
+import { Trash2, Trophy, Upload } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -26,10 +26,22 @@ const ACHIEVEMENT_TYPE_VALUES = [
   'league_title',
   'cup_title',
   'super_cup',
+  'tournament',
+  'international_club',
   'top_scorer',
   'best_player',
   'mvp',
+  'best_goalkeeper',
+  'best_young_player',
   'golden_boot',
+  'golden_ball',
+  'milestone_100_goals',
+  'milestone_500_appearances',
+  'milestone_100_caps',
+  'national_team_cap',
+  'world_cup',
+  'continental_cup',
+  'olympics',
   'other',
 ] as const
 
@@ -41,6 +53,8 @@ interface PlayerAchievementsSectionProps {
 
 export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionProps) {
   const { t } = useTranslation()
+  const trophyInputRef = useRef<HTMLInputElement>(null)
+  const certificateInputRef = useRef<HTMLInputElement>(null)
   const { data: achievements = [], isLoading } = usePlayerAchievements(slug)
   const createMutation = useCreatePlayerAchievement(slug)
   const deleteMutation = useDeletePlayerAchievement(slug)
@@ -49,6 +63,8 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<PlayerAchievementFormData>({
     resolver: zodResolver(playerAchievementSchema),
@@ -61,11 +77,15 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
       season: '',
       competition: '',
       club: '',
-      trophy_image: '',
+      trophy_image: undefined,
+      trophy_image_url: '',
+      certificate: undefined,
       certificate_url: '',
     },
   })
 
+  const watchedTrophyFile = watch('trophy_image')
+  const watchedCertificateFile = watch('certificate')
   const rows = useMemo(() => (Array.isArray(achievements) ? achievements : []), [achievements])
 
   const onSubmit = (data: PlayerAchievementFormData) => {
@@ -79,11 +99,30 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
         season: data.season || undefined,
         competition: data.competition || undefined,
         club: data.club || undefined,
-        trophy_image: data.trophy_image || undefined,
+        trophy_image: data.trophy_image instanceof File ? data.trophy_image : undefined,
+        trophy_image_url: data.trophy_image_url || undefined,
+        certificate: data.certificate instanceof File ? data.certificate : undefined,
         certificate_url: data.certificate_url || undefined,
       },
       {
-        onSuccess: () => reset(),
+        onSuccess: () => {
+          reset({
+            title: '',
+            achievement_type: 'league_title',
+            level: 'club',
+            description: '',
+            date_achieved: '',
+            season: '',
+            competition: '',
+            club: '',
+            trophy_image: undefined,
+            trophy_image_url: '',
+            certificate: undefined,
+            certificate_url: '',
+          })
+          if (trophyInputRef.current) trophyInputRef.current.value = ''
+          if (certificateInputRef.current) certificateInputRef.current.value = ''
+        },
       },
     )
   }
@@ -118,7 +157,7 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
                 >
                   {ACHIEVEMENT_TYPE_VALUES.map((type) => (
                     <option key={type} value={type}>
-                      {t(`players.achievements.types.${type}`)}
+                      {t(`players.achievements.types.${type}`, { defaultValue: type })}
                     </option>
                   ))}
                 </select>
@@ -170,22 +209,78 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
 
             <div className="grid gap-md md:grid-cols-2">
               <FormField
-                label={t('players.achievements.section.trophyImage')}
-                htmlFor="achievement-image"
-                error={errors.trophy_image?.message}
+                label={t('players.achievements.section.trophyImageUrl')}
+                htmlFor="achievement-image-url"
+                error={errors.trophy_image_url?.message}
               >
-                <Input id="achievement-image" {...register('trophy_image')} placeholder="https://..." />
+                <Input id="achievement-image-url" {...register('trophy_image_url')} placeholder="https://..." />
               </FormField>
               <FormField
                 label={t('players.achievements.section.certificateUrl')}
-                htmlFor="achievement-certificate"
+                htmlFor="achievement-certificate-url"
                 error={errors.certificate_url?.message}
               >
-                <Input id="achievement-certificate" {...register('certificate_url')} placeholder="https://..." />
+                <Input id="achievement-certificate-url" {...register('certificate_url')} placeholder="https://..." />
               </FormField>
             </div>
 
+            <div className="grid gap-md md:grid-cols-2">
+              <FormField
+                label={t('players.achievements.section.trophyImage')}
+                htmlFor="achievement-trophy-file"
+                error={errors.trophy_image?.message}
+              >
+                <Input
+                  ref={trophyInputRef}
+                  id="achievement-trophy-file"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) {
+                      setValue('trophy_image', file, { shouldValidate: true })
+                      setValue('trophy_image_url', '')
+                    }
+                  }}
+                  state={errors.trophy_image ? 'error' : 'default'}
+                />
+                <p className="text-xs text-on-surface-variant">
+                  {watchedTrophyFile instanceof File
+                    ? watchedTrophyFile.name
+                    : t('players.achievements.section.trophyImageHint')}
+                </p>
+              </FormField>
+              <FormField
+                label={t('players.achievements.section.certificateFile')}
+                htmlFor="achievement-certificate-file"
+                error={errors.certificate?.message}
+              >
+                <Input
+                  ref={certificateInputRef}
+                  id="achievement-certificate-file"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.txt,.csv,application/pdf,image/jpeg,image/png"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) {
+                      setValue('certificate', file, { shouldValidate: true })
+                      setValue('certificate_url', '')
+                    }
+                  }}
+                  state={errors.certificate ? 'error' : 'default'}
+                />
+                <p className="text-xs text-on-surface-variant">
+                  {watchedCertificateFile instanceof File
+                    ? watchedCertificateFile.name
+                    : t('players.achievements.section.certificateFileHint')}
+                </p>
+              </FormField>
+            </div>
+
+            <p className="text-xs text-on-surface-variant">{t('players.achievements.section.sourceHint')}</p>
+
             <Button type="submit" loading={createMutation.isPending}>
+              <Upload className="h-4 w-4" />
               {t('players.achievements.section.save')}
             </Button>
           </form>
