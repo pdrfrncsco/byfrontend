@@ -33,21 +33,6 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary selection:text-on-primary-fixed overflow-x-hidden">
-      {/* Global Styles for Landing */}
-      <style>{`
-        .glass-panel {
-          background: rgba(16, 32, 52, 0.6);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(148, 211, 193, 0.1);
-        }
-        .hero-gradient {
-          background: radial-gradient(circle at 50% 50%, rgba(0, 77, 64, 0.15) 0%, rgba(3, 20, 39, 1) 70%);
-        }
-        .glow-hover:hover {
-          box-shadow: 0 0 20px rgba(148, 211, 193, 0.2);
-        }
-      `}</style>
-
       {/* Navigation */}
       <Navigation onNavClick={handleNavClick} />
 

@@ -9,11 +9,11 @@
 */
 
 :root {
-  /* Brand Identity Default Tokens (CTO Architecture Blueprint) */
-  --color-primary: #1B4D3E;       /* Football Green — Deep Forest */
-  --color-primary-rgb: 27, 77, 62;
-  --color-secondary: #D4AF37;     /* Gold — Premium Accent */
-  --color-secondary-rgb: 212, 175, 55;
+  /* Brand Identity Default Tokens (aligned with Material 3 palette in tailwind.config.ts) */
+  --color-primary: #94d3c1;       /* Teal — M3 primary */
+  --color-primary-rgb: 148, 211, 193;
+  --color-secondary: #e9c349;     /* Gold — M3 tertiary */
+  --color-secondary-rgb: 233, 195, 73;
   --color-accent: #E63946;        /* Red — Action/Alert */
   --color-accent-rgb: 230, 57, 70;
 
@@ -24,7 +24,7 @@
   /* Light Theme Color System (Default) */
   --bg-app: #f4f6f8;
   --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-border: rgba(27, 77, 62, 0.1);
+  --bg-card-border: rgba(148, 211, 193, 0.1);
   --text-main: #0F1117;
   --text-muted: #64748B;
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -168,6 +168,16 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-4px);
   border-color: rgba(var(--color-primary-rgb), 0.3);
   box-shadow: var(--shadow-lg), 0 0 25px rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Landing page glass panel & hero backdrop (teal-tinted, dark surface) */
+.glass-panel {
+  background: rgba(16, 32, 52, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 211, 193, 0.1);
+}
+.hero-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 77, 64, 0.15) 0%, rgba(3, 20, 39, 1) 70%);
 }
 
 /* Premium Buttons & Hover effects */
@@ -341,15 +351,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .comp-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(27, 77, 62, 0.12);
-  border-color: rgba(27, 77, 62, 0.25);
+  box-shadow: 0 8px 24px rgba(148, 211, 193, 0.12);
+  border-color: rgba(148, 211, 193, 0.25);
 }
 
 .comp-card__icon {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: rgba(27, 77, 62, 0.1);
+  background: rgba(148, 211, 193, 0.1);
   color: var(--color-primary);
   display: flex;
   align-items: center;
@@ -438,13 +448,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .comp-tab:hover {
   color: var(--text-main);
-  background: rgba(27, 77, 62, 0.05);
+  background: rgba(148, 211, 193, 0.05);
 }
 
 .comp-tab--active {
   background: var(--color-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(27, 77, 62, 0.3);
+  box-shadow: 0 2px 8px rgba(148, 211, 193, 0.3);
 }
 
 /* ── Standings Table ───────────────────────────────────────────────────────── */
@@ -470,7 +480,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
-  background: rgba(27, 77, 62, 0.04);
+  background: rgba(148, 211, 193, 0.04);
   border-bottom: 1px solid var(--bg-card-border);
 }
 
@@ -486,7 +496,7 @@ h1, h2, h3, h4, h5, h6 {
 .comp-standing-row:last-child { border-bottom: none; }
 
 .comp-standing-row:hover {
-  background: rgba(27, 77, 62, 0.04);
+  background: rgba(148, 211, 193, 0.04);
 }
 
 .comp-standing-row--top3 {
@@ -563,7 +573,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .comp-round-header {
   padding: 0.6rem 1.25rem;
-  background: rgba(27, 77, 62, 0.06);
+  background: rgba(148, 211, 193, 0.06);
   border-bottom: 1px solid var(--bg-card-border);
   font-weight: 600;
   font-size: 0.82rem;
@@ -585,7 +595,7 @@ h1, h2, h3, h4, h5, h6 {
 .comp-match-row:last-child { border-bottom: none; }
 
 .comp-match-row:hover {
-  background: rgba(27, 77, 62, 0.03);
+  background: rgba(148, 211, 193, 0.03);
 }
 
 .comp-match-row--live {
@@ -605,7 +615,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-primary);
-  background: rgba(27, 77, 62, 0.1);
+  background: rgba(148, 211, 193, 0.1);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
 }
@@ -744,7 +754,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .comp-btn--outline:hover {
-  background: rgba(27, 77, 62, 0.08);
+  background: rgba(148, 211, 193, 0.08);
 }
 
 .comp-btn--ghost {
