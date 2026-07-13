@@ -8,6 +8,7 @@ import {
   type RegisterOrganizationFormData,
 } from '@/modules/auth/schemas'
 import { ROUTES } from '@/constants/routes'
+import { useSeo } from '@/hooks/useSeo'
 
 const inputClass =
   'w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm'
@@ -16,6 +17,12 @@ const labelClass = 'block font-title-md text-on-surface mb-sm text-xs'
 export function RegisterOrganizationPage() {
   const navigate = useNavigate()
   const registerMutation = useRegisterOrganization()
+
+  useSeo({
+    title: 'Registar organização',
+    description: 'Registe a sua federação, associação ou liga na Bolayetu e comece a gerir o seu futebol.',
+    path: '/register/organization',
+  })
 
   const form = useForm<RegisterOrganizationFormData>({
     resolver: zodResolver(registerOrganizationSchema),

@@ -6,10 +6,13 @@ import { useResetPassword } from '@/modules/auth/hooks'
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/modules/auth/schemas'
 import { cn } from '@/lib/utils'
 import { CheckCircle, KeyRound, AlertTriangle } from 'lucide-react'
+import { useSeo } from '@/hooks/useSeo'
 
 export function ResetPasswordPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+
+  useSeo({ title: 'Repor palavra-passe', path: '/reset-password', noIndex: true })
 
   const token = searchParams.get('token') || ''
   const email = searchParams.get('email') || ''

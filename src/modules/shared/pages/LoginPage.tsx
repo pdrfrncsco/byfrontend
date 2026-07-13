@@ -12,12 +12,19 @@ import {
   type LoginFormData,
   type RegisterFormData,
 } from '@/modules/auth/schemas'
+import { useSeo } from '@/hooks/useSeo'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
   const isRegisterMode = location.pathname === '/register'
+
+  useSeo(
+    isRegisterMode
+      ? { title: 'Criar conta', description: 'Crie a sua conta Bolayetu e junte-se ao ecossistema do futebol.', path: '/register' }
+      : { title: 'Entrar', description: 'Aceda à sua conta Bolayetu.', path: '/login' },
+  )
 
   const loginMutation = useLogin()
   const registerMutation = useRegister()

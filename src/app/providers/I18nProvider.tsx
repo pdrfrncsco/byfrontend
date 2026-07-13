@@ -14,6 +14,179 @@ i18n
       'pt-AO': {
         translation: {
           welcome: 'Bem-vindo ao BolaYetu',
+          landing: {
+            hero: {
+              badge: 'Tecnologia para o Elite do Futebol',
+              titlePrefix: 'Digitalize o ',
+              titleHighlight: 'Futebol Africano',
+              description:
+                'A plataforma unificada que conecta federações, clubes e atletas com tecnologia de ponta para gestão, análise e scouting.',
+              ctaStart: 'Começar Agora',
+              ctaDemo: 'Ver Demonstração',
+            },
+            trustedBy: {
+              label: 'Confiança das Maiores Instituições',
+            },
+            features: {
+              title: 'Funcionalidades de Elite',
+              subtitle: 'Ferramentas desenhadas por profissionais para transformar a gestão desportiva.',
+              items: [
+                {
+                  title: 'Gestão de Competições',
+                  description:
+                    'Calendários automatizados, registo de súmulas digitais e tabelas classificativas em tempo real para qualquer liga ou torneio.',
+                },
+                {
+                  title: 'Scouting Avançado',
+                  description:
+                    'Base de dados centralizada com perfis detalhados de atletas e mapas térmicos de performance.',
+                },
+                {
+                  title: 'Desenvolvimento de Atletas',
+                  description:
+                    'Monitorização de carga de treino, relatórios médicos e acompanhamento nutricional personalizado.',
+                },
+                {
+                  title: 'Engajamento de Fãs',
+                  description:
+                    'Apps personalizadas para clubes, venda de bilhetes digital e conteúdos exclusivos para a massa associativa.',
+                },
+              ],
+            },
+            howItWorks: {
+              title: 'Como Funciona',
+              steps: [
+                {
+                  title: 'Registo',
+                  description: 'Criação da conta institucional e verificação de credenciais pela federação local.',
+                },
+                {
+                  title: 'Integração de Dados',
+                  description:
+                    'Importação automatizada de histórico de atletas, contratos e registos de competições passadas.',
+                },
+                {
+                  title: 'Gestão e Análise',
+                  description: 'Acesso total às ferramentas de análise preditiva e otimização de processos diários.',
+                },
+              ],
+            },
+            stats: {
+              items: [
+                { label: 'Clubes Registados' },
+                { label: 'Jogadores Verificados' },
+                { label: 'Federações' },
+              ],
+            },
+            ecosystem: {
+              title: 'O Ecossistema BolaYetu',
+              subtitle: 'Conecta todas as partes interessadas numa única plataforma integrada para o futebol africano.',
+              items: [
+                {
+                  title: 'Organizações',
+                  description: 'Gestão de federações, confederações e associações com controlo de permissões granular.',
+                },
+                {
+                  title: 'Clubes e Equipas',
+                  description: 'Plataforma centralizada para registos de atletas, calendários e finanças desportivas.',
+                },
+                {
+                  title: 'Jogadores & Staff',
+                  description: 'Perfis profissionais com histórico médico, contratual e estatísticas de performance.',
+                },
+              ],
+            },
+            pricing: {
+              title: 'Planos de Subscrição',
+              subtitle: 'Escolha o plano perfeito para sua organização.',
+              ctaStart: 'Começar Agora',
+              ctaContact: 'Contactar Vendas',
+              plans: [
+                {
+                  name: 'Básico',
+                  period: 'para sempre',
+                  features: [
+                    'Até 20 atletas',
+                    'Relatórios básicos',
+                    'Suporte comunitário',
+                    'Acesso limitado a scouting',
+                  ],
+                },
+                {
+                  name: 'Professional',
+                  period: 'por mês',
+                  features: [
+                    'Atletas ilimitados',
+                    'Análise avançada',
+                    'Suporte prioritário',
+                    'Scouting com IA',
+                    'API access',
+                    'Relatórios customizados',
+                  ],
+                },
+                {
+                  name: 'Enterprise',
+                  period: 'negociável',
+                  features: [
+                    'Tudo do Professional',
+                    'Integração customizada',
+                    'Gestor de conta dedicado',
+                    'SLA garantido',
+                    'Treinamento on-site',
+                    'Infraestrutura privada',
+                  ],
+                },
+              ],
+            },
+            testimonials: {
+              title: 'Vozes do Campo',
+              subtitle: 'Veja como líderes do futebol africano estão transformando suas organizações.',
+              items: [
+                {
+                  quote:
+                    'O BolaYetu revolucionou a forma como gerimos nossos atletas e dados. A plataforma é intuitiva e os resultados são mensuráveis. Recomendo fortemente.',
+                  author: 'António Silva',
+                  title: 'Director Executivo, Petro Luanda',
+                },
+                {
+                  quote:
+                    'A análise de performance com IA nos ajudou a identificar novos talentos que antes passavam despercebidos. Já aumentamos nosso scouting em 300%.',
+                  author: 'Dr. Manuel Gonçalves',
+                  title: 'Head Scout, Girabola Analytics',
+                },
+              ],
+            },
+            faq: {
+              title: 'Perguntas Frequentes',
+              items: [
+                {
+                  question: 'Como começo a usar o BolaYetu?',
+                  answer:
+                    'É simples! Registe-se na nossa plataforma, complete a verificação institucional e aceda ao dashboard. Todo o processo leva menos de 24 horas.',
+                },
+                {
+                  question: 'O BolaYetu suporta diferentes línguas?',
+                  answer:
+                    'Sim, a plataforma está disponível em português, inglês, francês e espanhol, com suporte a mais idiomas em desenvolvimento.',
+                },
+                {
+                  question: 'Posso integrar o BolaYetu com meus sistemas existentes?',
+                  answer:
+                    'Absolutamente! Oferecemos APIs robustas para integração com sistemas legados. Nosso time técnico pode auxiliar na configuração.',
+                },
+                {
+                  question: 'Qual é o período de suporte e SLA?',
+                  answer:
+                    'Clientes Premium e Enterprise têm suporte 24/7 com tempo de resposta garantido. Planos Básicos têm suporte em horário comercial.',
+                },
+              ],
+            },
+            demo: {
+              title: 'Demonstração',
+              placeholder: 'Demonstração de vídeo será exibida aqui',
+              close: 'Fechar',
+            },
+          },
           auth: {
             login: {
               title: 'Login',
@@ -434,6 +607,177 @@ i18n
       en: {
         translation: {
           welcome: 'Welcome to BolaYetu',
+          landing: {
+            hero: {
+              badge: 'Technology for Football Elite',
+              titlePrefix: 'Digitize ',
+              titleHighlight: 'African Football',
+              description:
+                'The unified platform that connects federations, clubs and athletes with cutting-edge technology for management, analytics and scouting.',
+              ctaStart: 'Get Started',
+              ctaDemo: 'Watch Demo',
+            },
+            trustedBy: {
+              label: 'Trusted by Leading Institutions',
+            },
+            features: {
+              title: 'Elite Features',
+              subtitle: 'Tools designed by professionals to transform sports management.',
+              items: [
+                {
+                  title: 'Competition Management',
+                  description:
+                    'Automated schedules, digital match sheets and real-time standings for any league or tournament.',
+                },
+                {
+                  title: 'Advanced Scouting',
+                  description: 'Centralized database with detailed athlete profiles and performance heatmaps.',
+                },
+                {
+                  title: 'Athlete Development',
+                  description: 'Training load monitoring, medical reports and personalized nutrition tracking.',
+                },
+                {
+                  title: 'Fan Engagement',
+                  description:
+                    'Custom club apps, digital ticketing and exclusive content for the fan base.',
+                },
+              ],
+            },
+            howItWorks: {
+              title: 'How It Works',
+              steps: [
+                {
+                  title: 'Registration',
+                  description: 'Create the institutional account and verify credentials with the local federation.',
+                },
+                {
+                  title: 'Data Integration',
+                  description:
+                    'Automated import of athlete history, contracts and records from past competitions.',
+                },
+                {
+                  title: 'Management & Analytics',
+                  description: 'Full access to predictive analytics tools and daily process optimization.',
+                },
+              ],
+            },
+            stats: {
+              items: [
+                { label: 'Registered Clubs' },
+                { label: 'Verified Players' },
+                { label: 'Federations' },
+              ],
+            },
+            ecosystem: {
+              title: 'The BolaYetu Ecosystem',
+              subtitle: 'Connects every stakeholder in a single integrated platform for African football.',
+              items: [
+                {
+                  title: 'Organizations',
+                  description: 'Manage federations, confederations and associations with granular permission control.',
+                },
+                {
+                  title: 'Clubs & Teams',
+                  description: 'Centralized platform for athlete registration, schedules and sports finance.',
+                },
+                {
+                  title: 'Players & Staff',
+                  description: 'Professional profiles with medical, contractual history and performance stats.',
+                },
+              ],
+            },
+            pricing: {
+              title: 'Subscription Plans',
+              subtitle: 'Choose the perfect plan for your organization.',
+              ctaStart: 'Get Started',
+              ctaContact: 'Contact Sales',
+              plans: [
+                {
+                  name: 'Basic',
+                  period: 'forever',
+                  features: [
+                    'Up to 20 athletes',
+                    'Basic reports',
+                    'Community support',
+                    'Limited scouting access',
+                  ],
+                },
+                {
+                  name: 'Professional',
+                  period: 'per month',
+                  features: [
+                    'Unlimited athletes',
+                    'Advanced analytics',
+                    'Priority support',
+                    'AI scouting',
+                    'API access',
+                    'Custom reports',
+                  ],
+                },
+                {
+                  name: 'Enterprise',
+                  period: 'negotiable',
+                  features: [
+                    'Everything in Professional',
+                    'Custom integration',
+                    'Dedicated account manager',
+                    'Guaranteed SLA',
+                    'On-site training',
+                    'Private infrastructure',
+                  ],
+                },
+              ],
+            },
+            testimonials: {
+              title: 'Voices from the Field',
+              subtitle: 'See how African football leaders are transforming their organizations.',
+              items: [
+                {
+                  quote:
+                    'BolaYetu revolutionized how we manage our athletes and data. The platform is intuitive and the results are measurable. Highly recommended.',
+                  author: 'António Silva',
+                  title: 'Executive Director, Petro Luanda',
+                },
+                {
+                  quote:
+                    'AI performance analysis helped us identify new talents that previously went unnoticed. We have already grown our scouting by 300%.',
+                  author: 'Dr. Manuel Gonçalves',
+                  title: 'Head Scout, Girabola Analytics',
+                },
+              ],
+            },
+            faq: {
+              title: 'Frequently Asked Questions',
+              items: [
+                {
+                  question: 'How do I get started with BolaYetu?',
+                  answer:
+                    'It is simple! Sign up on our platform, complete institutional verification and access the dashboard. The whole process takes less than 24 hours.',
+                },
+                {
+                  question: 'Does BolaYetu support multiple languages?',
+                  answer:
+                    'Yes, the platform is available in Portuguese, English, French and Spanish, with more languages in development.',
+                },
+                {
+                  question: 'Can I integrate BolaYetu with my existing systems?',
+                  answer:
+                    'Absolutely! We offer robust APIs for integration with legacy systems. Our technical team can assist with setup.',
+                },
+                {
+                  question: 'What is the support period and SLA?',
+                  answer:
+                    'Premium and Enterprise customers get 24/7 support with guaranteed response time. Basic plans get support during business hours.',
+                },
+              ],
+            },
+            demo: {
+              title: 'Demo',
+              placeholder: 'Video demo will be shown here',
+              close: 'Close',
+            },
+          },
           auth: {
             login: {
               title: 'Login',

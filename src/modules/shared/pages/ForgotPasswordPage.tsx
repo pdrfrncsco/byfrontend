@@ -5,10 +5,13 @@ import { AuthLayout } from '@/app/layouts'
 import { useForgotPassword } from '@/modules/auth/hooks'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/modules/auth/schemas'
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react'
+import { useSeo } from '@/hooks/useSeo'
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate()
   const forgotPasswordMutation = useForgotPassword()
+
+  useSeo({ title: 'Recuperar palavra-passe', path: '/forgot-password', noIndex: true })
 
   const {
     register,

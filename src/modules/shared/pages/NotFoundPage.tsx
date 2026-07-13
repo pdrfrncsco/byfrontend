@@ -1,6 +1,8 @@
 import { Navigation, Footer } from '@/modules/shared/components'
+import { useSeo } from '@/hooks/useSeo'
 
 export function NotFoundPage() {
+  useSeo({ title: 'Página não encontrada', noIndex: true })
   return (
     <div className="min-h-screen bg-background text-on-surface">
       <Navigation />

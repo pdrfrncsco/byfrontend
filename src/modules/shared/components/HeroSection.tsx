@@ -1,26 +1,30 @@
+import { useTranslation } from 'react-i18next'
+
 interface HeroSectionProps {
   onGetStarted?: () => void
   onViewDemo?: () => void
 }
 
 export function HeroSection({ onGetStarted, onViewDemo }: HeroSectionProps) {
+  const { t } = useTranslation()
+
   return (
     <section className="relative min-h-[921px] flex flex-col items-center justify-center pt-xl hero-gradient px-gutter">
       <div className="max-w-4xl text-center z-10">
         {/* Badge */}
         <span className="inline-block py-1 px-4 rounded-full border border-primary/30 bg-primary/5 text-primary font-label-sm text-label-sm mb-md tracking-widest uppercase">
-          Tecnologia para o Elite do Futebol
+          {t('landing.hero.badge')}
         </span>
 
         {/* Main Heading */}
         <h1 className="font-display-lg text-6xl md:text-8xl text-on-surface mb-lg uppercase tracking-tighter leading-none">
-          Digitalize o <span className="text-primary">Futebol Africano</span>
+          {t('landing.hero.titlePrefix')}
+          <span className="text-primary">{t('landing.hero.titleHighlight')}</span>
         </h1>
 
         {/* Description */}
         <p className="font-title-md text-xl md:text-2xl text-on-surface-variant mb-xl max-w-2xl mx-auto">
-          A plataforma unificada que conecta federações, clubes e atletas com tecnologia de ponta para gestão,
-          análise e scouting.
+          {t('landing.hero.description')}
         </p>
 
         {/* CTA Buttons */}
@@ -29,13 +33,13 @@ export function HeroSection({ onGetStarted, onViewDemo }: HeroSectionProps) {
             onClick={onGetStarted}
             className="bg-primary text-on-primary-fixed px-xl py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-lg"
           >
-            Começar Agora
+            {t('landing.hero.ctaStart')}
           </button>
           <button
             onClick={onViewDemo}
             className="border border-outline-variant text-on-surface px-xl py-md font-bold rounded-lg hover:bg-surface-container-high transition-colors text-lg flex items-center justify-center gap-sm"
           >
-            <span className="material-symbols-outlined">play_circle</span> Ver Demonstração
+            <span className="material-symbols-outlined">play_circle</span> {t('landing.hero.ctaDemo')}
           </button>
         </div>
       </div>

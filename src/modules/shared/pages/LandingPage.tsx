@@ -13,10 +13,18 @@ import {
   FAQ,
   Footer,
 } from '@/modules/shared/components'
+import { useSeo } from '@/hooks/useSeo'
 
 export function LandingPage() {
   const navigate = useNavigate()
   const [showDemoModal, setShowDemoModal] = useState(false)
+
+  useSeo({
+    title: 'O Ecossistema do Futebol em Angola e África',
+    description:
+      'Gestão completa de competições, clubes, atletas e scouting numa só plataforma. Junte-se ao ecossistema do futebol em Angola e em África.',
+    path: '/',
+  })
 
   const handleNavClick = (path: string) => {
     const element = document.querySelector(path)

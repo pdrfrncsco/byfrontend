@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /register
+Allow: /register/organization
+Disallow: /dashboard
+Disallow: /onboarding
+Disallow: /profile
+Disallow: /notifications
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /404
+
+Sitemap: https://bolayetu.com/sitemap.xml
