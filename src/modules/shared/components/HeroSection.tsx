@@ -2,14 +2,18 @@ import { useTranslation } from 'react-i18next'
 
 interface HeroSectionProps {
   onGetStarted?: () => void
-  onViewDemo?: () => void
+  onViewDemo?: (event?: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export function HeroSection({ onGetStarted, onViewDemo }: HeroSectionProps) {
   const { t } = useTranslation()
 
   return (
-    <section className="relative min-h-[921px] flex flex-col items-center justify-center pt-xl hero-gradient px-gutter">
+    <section
+      id="hero"
+      aria-labelledby="hero-title"
+      className="relative min-h-[921px] flex flex-col items-center justify-center pt-xl hero-gradient px-gutter"
+    >
       <div className="max-w-4xl text-center z-10">
         {/* Badge */}
         <span className="inline-block py-1 px-4 rounded-full border border-primary/30 bg-primary/5 text-primary font-label-sm text-label-sm mb-md tracking-widest uppercase">
@@ -17,7 +21,10 @@ export function HeroSection({ onGetStarted, onViewDemo }: HeroSectionProps) {
         </span>
 
         {/* Main Heading */}
-        <h1 className="font-display-lg text-6xl md:text-8xl text-on-surface mb-lg uppercase tracking-tighter leading-none">
+        <h1
+          id="hero-title"
+          className="font-display-lg text-6xl md:text-8xl text-on-surface mb-lg uppercase tracking-tighter leading-none"
+        >
           {t('landing.hero.titlePrefix')}
           <span className="text-primary">{t('landing.hero.titleHighlight')}</span>
         </h1>
@@ -31,15 +38,16 @@ export function HeroSection({ onGetStarted, onViewDemo }: HeroSectionProps) {
         <div className="flex flex-col sm:flex-row gap-md justify-center mb-20">
           <button
             onClick={onGetStarted}
-            className="bg-primary text-on-primary-fixed px-xl py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-lg"
+            className="bg-primary text-on-primary-fixed px-xl py-md font-bold rounded-lg hover:scale-[1.02] transition-transform text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             {t('landing.hero.ctaStart')}
           </button>
           <button
             onClick={onViewDemo}
-            className="border border-outline-variant text-on-surface px-xl py-md font-bold rounded-lg hover:bg-surface-container-high transition-colors text-lg flex items-center justify-center gap-sm"
+            className="border border-outline-variant text-on-surface px-xl py-md font-bold rounded-lg hover:bg-surface-container-high transition-colors text-lg flex items-center justify-center gap-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <span className="material-symbols-outlined">play_circle</span> {t('landing.hero.ctaDemo')}
+            <span className="material-symbols-outlined" aria-hidden="true">play_circle</span>
+            {t('landing.hero.ctaDemo')}
           </button>
         </div>
       </div>

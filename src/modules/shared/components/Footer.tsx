@@ -16,14 +16,26 @@ export function Footer() {
               Ecossistema unificado para o futebol africano com tecnologia de elite.
             </p>
             <div className="flex gap-sm mt-lg">
-              <a href="#" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">
-                github
+              <a
+                href="#"
+                aria-label={t('footer.social.github', 'GitHub')}
+                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">github</span>
               </a>
-              <a href="#" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">
-                twitter
+              <a
+                href="#"
+                aria-label={t('footer.social.twitter', 'Twitter')}
+                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">twitter</span>
               </a>
-              <a href="#" className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">
-                language
+              <a
+                href="#"
+                aria-label={t('footer.social.website', 'Website')}
+                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">language</span>
               </a>
             </div>
           </div>

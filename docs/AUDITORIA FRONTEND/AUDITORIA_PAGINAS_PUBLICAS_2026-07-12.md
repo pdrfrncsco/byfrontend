@@ -564,3 +564,16 @@ As páginas públicas têm **estrutura de componentes correta** para a narrativa
 A boa notícia: o trabalho de unificação (Fase 1) vai beneficiar todo o projeto (Players, Clubs, Organizations, Competitions também têm o mesmo problema), e a infraestrutura de i18n já foi iniciada (Navigation tem `useTranslation()`), logo a expansão é direta.
 
 **Tempo estimado para conformidade total:** 15-20 dias de esforço concentrado (ou 4-5 sprints de 2 semanas com equipa de 2 FE engineers).
+
+
+
+#COMMIT#
+
+refactor: add i18n, accessibility fixes, tests & build updates
+
+- refactor all shared UI components to use react-i18next for internationalization, replacing hardcoded text with translation keys
+- add comprehensive accessibility improvements including proper aria labels, semantic HTML landmarks, focus states, and ARIA control attributes
+- lazy load non-critical components in LandingPage to improve initial load performance
+- add complete test suites for NotFoundPage, FAQ, LoginPage, and LandingPage components
+- update build assets in dist/index.html with latest compiled asset hashes
+- fix interactive element styling and behavior across all components

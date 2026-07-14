@@ -15,7 +15,7 @@ export function Navigation({ onNavClick }: NavigationProps) {
 
   return (
     <header className="sticky top-0 z-50 bg-surface-container-low border-b border-outline-variant">
-      <nav className="flex justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
+      <nav aria-label={t('nav.main', 'Main navigation')} className="flex justify-between items-center w-full px-xl py-md max-w-container-max mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-lg">
           <span className="font-display-lg text-headline-lg-mobile text-primary tracking-widest">
@@ -26,8 +26,12 @@ export function Navigation({ onNavClick }: NavigationProps) {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => onNavClick?.(link.href)}
-                className={`transition-colors pb-base ${
+                onClick={e => {
+                  e.preventDefault()
+                  onNavClick?.(link.href)
+                }}
+                aria-current={link.active ? 'page' : undefined}
+                className={`transition-colors pb-base focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   link.active
                     ? 'text-primary border-b-2 border-primary font-bold'
                     : 'text-on-surface-variant hover:text-on-surface'
@@ -41,19 +45,33 @@ export function Navigation({ onNavClick }: NavigationProps) {
 
         {/* Right Side */}
         <div className="flex items-center gap-md">
-          <button className="hidden lg:block text-on-surface hover:bg-surface-container-high px-md py-sm rounded-full transition-all font-title-md text-title-md">
+          <button
+            type="button"
+            className="hidden lg:block text-on-surface hover:bg-surface-container-high px-md py-sm rounded-full transition-all font-title-md text-title-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
             {t('nav.enterpriseLogin')}
           </button>
-          <button className="bg-primary text-on-primary-fixed font-bold px-lg py-sm rounded-full hover:bg-opacity-90 transition-all font-title-md text-title-md">
+          <button
+            type="button"
+            className="bg-primary text-on-primary-fixed font-bold px-lg py-sm rounded-full hover:bg-opacity-90 transition-all font-title-md text-title-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
             {t('nav.joinEcosystem')}
           </button>
           <div className="flex items-center gap-sm ml-md">
-            <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">
-              notifications
-            </span>
-            <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">
-              account_circle
-            </span>
+            <button
+              type="button"
+              aria-label={t('nav.notifications', 'Notifications')}
+              className="text-on-surface-variant hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">notifications</span>
+            </button>
+            <button
+              type="button"
+              aria-label={t('nav.account', 'Account')}
+              className="text-on-surface-variant hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
+            >
+              <span className="material-symbols-outlined" aria-hidden="true">account_circle</span>
+            </button>
           </div>
         </div>
       </nav>
