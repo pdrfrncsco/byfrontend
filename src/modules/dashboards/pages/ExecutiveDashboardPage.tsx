@@ -1,4 +1,6 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { ROUTES } from '@/constants/routes'
+import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Network, 
@@ -35,18 +37,26 @@ export function ExecutiveDashboardPage() {
 
 
   const sidebarLinks = [
-    { label: 'Ecossistema', href: '#ecosystem', icon: <Network className="w-5 h-5" />, active: true },
-    { label: 'Organizações', href: '#organizations', icon: <Building2 className="w-5 h-5" /> },
-    { label: 'Clubes', href: '#clubs', icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Jogadores', href: '#players', icon: <Users className="w-5 h-5" /> },
-    { label: 'Fan Zone', href: '#fanzone', icon: <Heart className="w-5 h-5" /> },
-    { label: 'Estatísticas', href: '#analytics', icon: <BarChart3 className="w-5 h-5" /> },
+    { label: 'Ecossistema', href: dashboardRoutes.executive, icon: <Network className="w-5 h-5" />, active: true },
+    { label: 'Organizações', href: ROUTES.ORGANIZATIONS, icon: <Building2 className="w-5 h-5" /> },
+    { label: 'Clubes', href: ROUTES.CLUBS, icon: <Trophy className="w-5 h-5" /> },
+    { label: 'Jogadores', href: ROUTES.PLAYERS, icon: <Users className="w-5 h-5" /> },
+    { label: 'Fan Zone', href: ROUTES.FANS, icon: <Heart className="w-5 h-5" /> },
+    { label: 'Estatísticas', href: dashboardRoutes.executive, icon: <BarChart3 className="w-5 h-5" />, disabled: true },
   ]
 
   const headerActions = (
     <div className="flex items-center gap-sm bg-[#1b2b3f] p-1 rounded-lg border border-[#26364a] text-xs">
-      <button className="px-md py-1.5 rounded bg-primary text-on-primary font-semibold">Temporada 23/24</button>
-      <button className="px-md py-1.5 rounded text-on-surface-variant font-semibold hover:bg-[#26364a] transition-all">Histórico</button>
+      <button type="button" className="px-md py-1.5 rounded bg-primary text-on-primary font-semibold" disabled>
+        Temporada 23/24
+      </button>
+      <button
+        type="button"
+        className="px-md py-1.5 rounded text-on-surface-variant font-semibold opacity-60 cursor-not-allowed"
+        disabled
+      >
+        Histórico
+      </button>
     </div>
   )
 

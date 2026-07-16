@@ -1,4 +1,6 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { ROUTES } from '@/constants/routes'
+import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Home, 
@@ -47,20 +49,20 @@ export function FederationDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
 
   const sidebarLinks = [
-    { label: 'Home', href: '#home', icon: <Home className="w-5 h-5" />, active: true },
-    { label: 'Scouting', href: '#scouting', icon: <Search className="w-5 h-5" /> },
-    { label: 'Transfers', href: '#transfers', icon: <RefreshCw className="w-5 h-5" /> },
-    { label: 'Médico', href: '#medical', icon: <Activity className="w-5 h-5" /> },
-    { label: 'Academia', href: '#academy', icon: <GraduationCap className="w-5 h-5" /> },
-    { label: 'Finanças', href: '#finance', icon: <DollarSign className="w-5 h-5" /> },
+    { label: 'Home', href: dashboardRoutes.federation, icon: <Home className="w-5 h-5" />, active: true },
+    { label: 'Scouting', href: ROUTES.PLAYERS, icon: <Search className="w-5 h-5" /> },
+    { label: 'Transfers', href: ROUTES.TRANSFERS, icon: <RefreshCw className="w-5 h-5" /> },
+    { label: 'Médico', href: dashboardRoutes.federation, icon: <Activity className="w-5 h-5" />, disabled: true },
+    { label: 'Academia', href: dashboardRoutes.federation, icon: <GraduationCap className="w-5 h-5" />, disabled: true },
+    { label: 'Finanças', href: dashboardRoutes.federation, icon: <DollarSign className="w-5 h-5" />, disabled: true },
   ]
 
   const headerActions = (
     <>
-      <button className="bg-[#1b2b3f] border border-[#26364a] text-[#d3e4fe] px-md py-sm rounded-lg flex items-center gap-sm hover:bg-[#26364a] transition-all text-xs font-semibold">
+      <button type="button" className="bg-[#1b2b3f] border border-[#26364a] text-[#d3e4fe] px-md py-sm rounded-lg flex items-center gap-sm opacity-60 cursor-not-allowed text-xs font-semibold" disabled>
         Exportar Auditoria
       </button>
-      <button className="bg-[#D1102B] text-white px-md py-sm rounded-lg font-bold flex items-center gap-sm hover:opacity-90 transition-all shadow-lg text-xs">
+      <button type="button" className="bg-[#D1102B] text-white px-md py-sm rounded-lg font-bold flex items-center gap-sm opacity-60 cursor-not-allowed shadow-lg text-xs" disabled>
         Gerir Conformidade
       </button>
     </>

@@ -9,6 +9,7 @@ interface SidebarLink {
   href: string
   icon: React.ReactNode
   active?: boolean
+  disabled?: boolean
 }
 
 interface DashboardMobileMenuProps {
@@ -60,20 +61,33 @@ export function DashboardMobileMenu({
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto px-sm">
           {sidebarLinks.map((link, idx) => (
-            <Link
-              key={idx}
-              to={link.href}
-              onClick={onClose}
-              aria-current={activeHref === link.href ? 'page' : undefined}
-              className={`flex items-center gap-md p-md rounded-lg transition-all ${
-                link.active || activeHref === link.href
-                  ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                  : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
-              }`}
-            >
-              {link.icon}
-              <span className="font-title-md text-sm">{link.label}</span>
-            </Link>
+            link.disabled ? (
+              <button
+                key={idx}
+                type="button"
+                disabled
+                title={link.label}
+                className="flex w-full items-center gap-md rounded-lg p-md text-left text-on-surface-variant opacity-55 transition-all cursor-not-allowed"
+              >
+                {link.icon}
+                <span className="font-title-md text-sm">{link.label}</span>
+              </button>
+            ) : (
+              <Link
+                key={idx}
+                to={link.href}
+                onClick={onClose}
+                aria-current={activeHref === link.href ? 'page' : undefined}
+                className={`flex items-center gap-md p-md rounded-lg transition-all ${
+                  link.active || activeHref === link.href
+                    ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
+                    : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
+                }`}
+              >
+                {link.icon}
+                <span className="font-title-md text-sm">{link.label}</span>
+              </Link>
+            )
           ))}
         </nav>
         <div className="pt-lg border-t border-[#26364a] mt-auto space-y-1">

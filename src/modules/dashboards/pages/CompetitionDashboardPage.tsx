@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { Button } from '@/components/ui'
 import { useDashboardOverview } from '../hooks/useDashboard'
+import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { ROUTES } from '@/constants'
 import { 
   Home, 
@@ -27,21 +29,21 @@ export function CompetitionDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
 
   const sidebarLinks = [
-    { label: 'Geral',        href: '#home',       icon: <Home        className="w-5 h-5" />, active: true },
-    { label: 'Torneios',     href: '#tournaments', icon: <Trophy      className="w-5 h-5" /> },
-    { label: 'Partidas',     href: '#matches',     icon: <Calendar    className="w-5 h-5" /> },
-    { label: 'Árbitros',     href: '#referees',    icon: <Gavel       className="w-5 h-5" /> },
-    { label: 'Estádios',     href: '#venues',      icon: <MapPin      className="w-5 h-5" /> },
-    { label: 'Conformidade', href: '#compliance',  icon: <ShieldAlert className="w-5 h-5" /> },
+    { label: 'Geral',        href: dashboardRoutes.competition, icon: <Home        className="w-5 h-5" />, active: true },
+    { label: 'Torneios',     href: ROUTES.COMPETITIONS, icon: <Trophy      className="w-5 h-5" /> },
+    { label: 'Partidas',     href: ROUTES.MATCHES, icon: <Calendar    className="w-5 h-5" /> },
+    { label: 'Árbitros',     href: dashboardRoutes.competition, icon: <Gavel       className="w-5 h-5" />, disabled: true },
+    { label: 'Estádios',     href: dashboardRoutes.competition, icon: <MapPin      className="w-5 h-5" />, disabled: true },
+    { label: 'Conformidade', href: dashboardRoutes.competition, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
   ]
 
   const headerActions = (
-    <Link to={ROUTES.COMPETITION_CREATE}>
-      <button className="bg-primary text-on-primary px-md py-sm rounded-lg font-bold flex items-center gap-xs hover:brightness-110 transition-all text-xs">
+    <Button asChild size="sm">
+      <Link to={ROUTES.COMPETITION_CREATE} className="flex items-center gap-xs">
         <PlusCircle className="w-4 h-4" />
         Criar Nova Competição
-      </button>
-    </Link>
+      </Link>
+    </Button>
   )
 
   // Extract KPIs with safe defaults

@@ -48,10 +48,16 @@ export function DashboardHeader({
         </div>
 
         {/* Quick Breadcrumbs */}
-        <div className="hidden md:flex gap-md text-sm">
-          <a className="text-[#94d3c1] font-bold border-b-2 border-[#94d3c1] pb-1" href="#home">{t('dashboard.topbar.general')}</a>
-          <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#analytics">{t('dashboard.topbar.analytics')}</a>
-          <a className="text-on-surface-variant hover:text-[#94d3c1] transition-colors" href="#reports">{t('dashboard.topbar.reports')}</a>
+        <div className="hidden md:flex gap-md text-sm" aria-label={t('dashboard.topbar.general')}>
+          <span className="text-[#94d3c1] font-bold border-b-2 border-[#94d3c1] pb-1">
+            {t('dashboard.topbar.general')}
+          </span>
+          <span className="text-on-surface-variant">
+            {t('dashboard.topbar.analytics')}
+          </span>
+          <span className="text-on-surface-variant">
+            {t('dashboard.topbar.reports')}
+          </span>
         </div>
       </div>
 

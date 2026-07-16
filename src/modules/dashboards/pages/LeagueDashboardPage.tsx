@@ -1,4 +1,6 @@
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { ROUTES } from '@/constants/routes'
+import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Home, 
@@ -19,20 +21,20 @@ export function LeagueDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
 
   const sidebarLinks = [
-    { label: 'Geral', href: '#home', icon: <Home className="w-5 h-5" />, active: true },
-    { label: 'Scouting', href: '#scouting', icon: <Search className="w-5 h-5" /> },
-    { label: 'Transferências', href: '#transfers', icon: <RefreshCw className="w-5 h-5" /> },
-    { label: 'Equipa Médica', href: '#medical', icon: <Activity className="w-5 h-5" /> },
-    { label: 'Academia', href: '#academy', icon: <GraduationCap className="w-5 h-5" /> },
-    { label: 'Finanças', href: '#finance', icon: <DollarSign className="w-5 h-5" /> },
+    { label: 'Geral', href: dashboardRoutes.league, icon: <Home className="w-5 h-5" />, active: true },
+    { label: 'Scouting', href: ROUTES.PLAYERS, icon: <Search className="w-5 h-5" /> },
+    { label: 'Transferências', href: ROUTES.TRANSFERS, icon: <RefreshCw className="w-5 h-5" /> },
+    { label: 'Equipa Médica', href: dashboardRoutes.league, icon: <Activity className="w-5 h-5" />, disabled: true },
+    { label: 'Academia', href: dashboardRoutes.league, icon: <GraduationCap className="w-5 h-5" />, disabled: true },
+    { label: 'Finanças', href: dashboardRoutes.league, icon: <DollarSign className="w-5 h-5" />, disabled: true },
   ]
 
   const headerActions = (
     <div className="flex items-center gap-sm">
-      <button className="bg-[#1b2b3f] border border-[#26364a] text-on-surface px-md py-sm rounded-lg flex items-center gap-sm hover:bg-[#26364a] transition-all text-xs font-semibold">
+      <button type="button" className="bg-[#1b2b3f] border border-[#26364a] text-on-surface px-md py-sm rounded-lg flex items-center gap-sm opacity-60 cursor-not-allowed transition-all text-xs font-semibold" disabled>
         Imprimir Calendário
       </button>
-      <button className="bg-[#e9c349] text-[#241a00] px-md py-sm rounded-lg font-bold flex items-center gap-sm hover:opacity-90 transition-all shadow-lg text-xs">
+      <button type="button" className="bg-[#e9c349] text-[#241a00] px-md py-sm rounded-lg font-bold flex items-center gap-sm opacity-60 cursor-not-allowed transition-all shadow-lg text-xs" disabled>
         Painel de Arbitragem
       </button>
     </div>
