@@ -15,10 +15,18 @@ interface OnboardingGuardProps {
  * - Blocks access when onboarding is already complete
  */
 export function OnboardingGuard({ children }: OnboardingGuardProps) {
-  const { isAuthenticated, loading: authLoading } = useAuth()
-  const { data, isLoading, isError } = useOnboardingStatus(isAuthenticated)
+  const { isAuthenticated, user, loading: authLoading } = useAuth()
+  
+  // Onboarding is only relevant for organization owners, admins, or executives
+  const deservesOnboardingCheck = isAuthenticated && user && (
+    user.roles.includes('owner') || 
+    user.roles.includes('admin') || 
+    user.roles.includes('executive')
+  )
 
-  if (authLoading || isLoading) {
+  const { data, isLoading, isError } = useOnboardingStatus(Boolean(deservesOnboardingCheck))
+
+  if (authLoading || (deservesOnboardingCheck && isLoading)) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex items-center justify-center">
         A carregar...
@@ -28,6 +36,11 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
 
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />
+  }
+
+  // If user doesn't belong to onboarding target roles, send them to dashboard
+  if (!deservesOnboardingCheck) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />
   }
 
   if (isError || !data?.has_organization) {

@@ -65,24 +65,24 @@ export function dashboardRouteElements() {
       />
       <Route
         path={dashboardRoutes.executive}
-        element={<ProtectedRoute><ExecutiveDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><ExecutiveDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.federation}
-        element={<ProtectedRoute><FederationDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><FederationDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.league}
-        element={<ProtectedRoute><LeagueDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><LeagueDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.competition}
-        element={<ProtectedRoute><CompetitionDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}><CompetitionDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.club}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
             <Suspense fallback={<RouteFallback />}><ClubDashboardPage /></Suspense>
           </ProtectedRoute>
         }
@@ -92,7 +92,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.dashboard}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive']}>
             <Suspense fallback={<RouteFallback />}><PlayerDashboardPage /></Suspense>
           </ProtectedRoute>
         }
@@ -100,7 +100,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.dashboardSettings}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
             <Suspense fallback={<RouteFallback />}><PlayerDashboardSettingsPage /></Suspense>
           </ProtectedRoute>
         }
@@ -110,7 +110,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.clubRegister}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
             <Suspense fallback={<RouteFallback />}><ClubPlayerRegisterPage /></Suspense>
           </ProtectedRoute>
         }
@@ -118,7 +118,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.clubPlayerRequests}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
             <Suspense fallback={<RouteFallback />}><ClubPlayerRegistrationRequestsPage /></Suspense>
           </ProtectedRoute>
         }
@@ -128,7 +128,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.linkClub}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
             <Suspense fallback={<RouteFallback />}><PlayerClubLinkRequestPage /></Suspense>
           </ProtectedRoute>
         }
@@ -137,19 +137,19 @@ export function dashboardRouteElements() {
       {/* Organization management */}
       <Route
         path={organizationRoutes.dashboard}
-        element={<ProtectedRoute><OrganizationDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.settings}
-        element={<ProtectedRoute><OrganizationSettingsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationSettingsPage /></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.members}
-        element={<ProtectedRoute><OrganizationMembersPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationMembersPage /></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.affiliations}
-        element={<ProtectedRoute><OrganizationAffiliationsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationAffiliationsPage /></ProtectedRoute>}
       />
 
       {/* Club management */}
