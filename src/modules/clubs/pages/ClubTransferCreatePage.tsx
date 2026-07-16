@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Check, Loader2, Search, User, Users } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Loader2, Search, User } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -19,6 +19,7 @@ import {
   Skeleton,
   EmptyState,
 } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useCreateTransfer } from '@/modules/clubs/hooks/useClubs'
 import { usePlayers } from '@/modules/players/hooks'
 import type { Player } from '@/modules/players/types'
@@ -96,14 +97,7 @@ export default function ClubTransferCreatePage() {
     player.full_name.toLowerCase().includes(playerSearch.toLowerCase())
   ) ?? []
 
-  const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" />, active: true },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const canProceed = () => {
     switch (currentStep) {

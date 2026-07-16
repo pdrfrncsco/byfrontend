@@ -1,11 +1,6 @@
-import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
-  FileText,
-  LayoutDashboard,
-  MessageCircleMore,
-  Shield,
   Sparkles,
   Trophy,
   Users,
@@ -15,6 +10,7 @@ import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubDocuments, useClubKpis, useClubMe, useClubMembers, useClubSponsors, useTransfers } from '@/modules/clubs/hooks/useClubs'
 
 function formatRelative(dateString?: string | null): string {
@@ -41,19 +37,7 @@ export default function ClubDashboardPage() {
   const { data: sponsors } = useClubSponsors(slug)
   const { data: transfers, isLoading: transfersLoading } = useTransfers({ page_size: 5 })
 
-  const sidebarLinks = useMemo(
-    () => [
-      { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <LayoutDashboard className="h-4 w-4" />, active: true },
-      { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <Users className="h-4 w-4" /> },
-      { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <Shield className="h-4 w-4" /> },
-      { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <FileText className="h-4 w-4" /> },
-      { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <MessageCircleMore className="h-4 w-4" /> },
-    { label: 'Pedidos de Vínculo', href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Registar Jogador', href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <Users className="h-4 w-4" /> },
-  ],
-    [],
-  )
+  const sidebarLinks = getClubSidebarLinks()
 
   const headerActions = (
     <Button asChild variant="primary" size="sm" disabled={!club}>

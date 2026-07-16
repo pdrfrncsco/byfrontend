@@ -1,6 +1,8 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link, useLocation } from 'react-router-dom'
 import { X, LogOut } from 'lucide-react'
+import { getActiveSidebarHref } from './sidebar-utils'
 
 interface SidebarLink {
   label: string
@@ -29,6 +31,8 @@ export function DashboardMobileMenu({
   onLogout,
 }: DashboardMobileMenuProps) {
   const { t } = useTranslation()
+  const location = useLocation()
+  const activeHref = getActiveSidebarHref(location, sidebarLinks)
 
   if (!isOpen) return null
 
@@ -56,19 +60,20 @@ export function DashboardMobileMenu({
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto px-sm">
           {sidebarLinks.map((link, idx) => (
-            <a
+            <Link
               key={idx}
-              href={link.href}
+              to={link.href}
               onClick={onClose}
+              aria-current={activeHref === link.href ? 'page' : undefined}
               className={`flex items-center gap-md p-md rounded-lg transition-all ${
-                link.active
+                link.active || activeHref === link.href
                   ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
                   : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
               }`}
             >
               {link.icon}
               <span className="font-title-md text-sm">{link.label}</span>
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="pt-lg border-t border-[#26364a] mt-auto space-y-1">

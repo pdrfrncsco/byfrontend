@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, ExternalLink, LayoutDashboard, Save, Settings } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Handshake, LayoutDashboard, Save, Settings } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button, Card, CardContent, FormField, Input, Textarea, Badge } from '@/components/ui'
@@ -29,6 +29,7 @@ export function PlayerDashboardSettingsPage() {
 
   const sidebarLinks = [
     { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
     { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" />, active: true },
     {
       label: t('players.dashboard.sidebar.publicProfile'),

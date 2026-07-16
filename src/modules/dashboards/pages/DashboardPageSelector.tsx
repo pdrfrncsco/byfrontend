@@ -3,8 +3,8 @@ import { PendingOnboardingRedirect } from '@/app/routes'
 import { ExecutiveDashboardPage } from './ExecutiveDashboardPage'
 import { FederationDashboardPage } from './FederationDashboardPage'
 import { LeagueDashboardPage } from './LeagueDashboardPage'
-import { ClubDashboardPage } from './ClubDashboardPage'
 import { CompetitionDashboardPage } from './CompetitionDashboardPage'
+import ClubDashboardPage from '@/modules/clubs/pages/ClubDashboardPage'
 import OrganizationDashboardPage from '@/modules/organizations/pages/OrganizationDashboardPage'
 import {
   useDashboardResolver,

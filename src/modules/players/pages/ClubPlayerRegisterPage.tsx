@@ -56,6 +56,7 @@ export function ClubPlayerRegisterPage() {
 
   const sidebarLinks = [
     { label: t('players.register.sidebar.general'), href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
+    { label: t('players.clubRequests.sidebar'), href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS, icon: <UserPlus className="h-4 w-4" /> },
     { label: t('players.register.sidebar.register'), href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <UserPlus className="h-4 w-4" />, active: true },
     { label: t('players.register.sidebar.transfers'), href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" /> },
   ]

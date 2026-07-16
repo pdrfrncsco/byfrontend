@@ -1,6 +1,8 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link, useLocation } from 'react-router-dom'
 import { LayoutDashboard, Settings, HelpCircle, LogOut } from 'lucide-react'
+import { getActiveSidebarHref } from './sidebar-utils'
 
 interface SidebarLink {
   label: string
@@ -25,6 +27,8 @@ export function DashboardSidebar({
   onLogout,
 }: DashboardSidebarProps) {
   const { t } = useTranslation()
+  const location = useLocation()
+  const activeHref = getActiveSidebarHref(location, sidebarLinks)
 
   return (
     <aside className="w-64 border-r border-[#26364a] bg-[#102034]/85 backdrop-blur-xl flex flex-col p-md hidden md:flex sticky top-0 h-screen z-40">
@@ -50,36 +54,37 @@ export function DashboardSidebar({
 
       <nav className="flex-1 space-y-1 overflow-y-auto custom-scrollbar px-sm">
         {sidebarLinks.map((link, idx) => (
-          <a
+          <Link
             key={idx}
-            href={link.href}
+            to={link.href}
+            aria-current={activeHref === link.href ? 'page' : undefined}
             className={`flex items-center gap-md p-md rounded-lg transition-all duration-200 ${
-              link.active
+              link.active || activeHref === link.href
                 ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
                 : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
             }`}
           >
             {link.icon}
             <span className="font-title-md text-sm">{link.label}</span>
-          </a>
+          </Link>
         ))}
       </nav>
 
       <div className="pt-lg border-t border-[#26364a]/50 mt-auto space-y-1">
-        <a
-          href="#settings"
+        <Link
+          to="/settings"
           className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
         >
           <Settings className="w-5 h-5" />
           <span className="font-title-md text-sm">{t('dashboard.sidebar.settings')}</span>
-        </a>
-        <a
-          href="#help"
-          className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
+        </Link>
+        <button
+          type="button"
+          className="w-full flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all text-left"
         >
           <HelpCircle className="w-5 h-5" />
           <span className="font-title-md text-sm">{t('dashboard.sidebar.support')}</span>
-        </a>
+        </button>
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRightLeft, Filter, Plus, SlidersHorizontal, Trophy } from 'lucide-react'
+import { ArrowLeft, Filter, Plus, SlidersHorizontal, Trophy } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -18,6 +18,7 @@ import {
   Select,
   Skeleton,
 } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useTransfers } from '@/modules/clubs/hooks/useClubs'
 import type { Transfer, TransferStatus, TransferType } from '@/modules/clubs/types'
 
@@ -58,14 +59,7 @@ export default function ClubTransfersPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | TransferStatus>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | TransferType>('all')
 
-  const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <ArrowRightLeft className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <ArrowRightLeft className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <ArrowRightLeft className="h-4 w-4" /> },
-    { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <ArrowRightLeft className="h-4 w-4" /> },
-    { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <ArrowRightLeft className="h-4 w-4" /> },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <ArrowRightLeft className="h-4 w-4" />, active: true },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const rows = useMemo(() => {
     const list = transfersData?.results ?? []

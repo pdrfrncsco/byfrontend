@@ -3,14 +3,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-import {
-  ArrowLeft,
-  Edit3,
-  Search,
-  Shield,
-  Trash2,
-  Users,
-} from 'lucide-react'
+import { ArrowLeft, Edit3, Search, Trash2, Users } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -27,6 +20,7 @@ import {
   Select,
   Skeleton,
 } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useAddClubMember, useUpdateClubMember, useRemoveClubMember, useClubMembers } from '@/modules/clubs/hooks/useClubs'
 import { clubMemberSchema, type ClubMemberFormData } from '@/modules/clubs/schemas'
 import type { ClubMember } from '@/modules/clubs/types'
@@ -98,14 +92,7 @@ export default function ClubMembersPage() {
     reset(toDefaults(editingMember))
   }, [editingMember, reset])
 
-  const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <Shield className="h-4 w-4" />, active: true },
-    { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Shield className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const memberRows = useMemo(() => {
     const list = Array.isArray(members) ? members : []

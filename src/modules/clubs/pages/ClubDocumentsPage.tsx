@@ -21,6 +21,7 @@ import {
   Skeleton,
   Textarea,
 } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubDocuments, useClubMe, useCreateClubDocument, useDeleteClubDocument } from '@/modules/clubs/hooks/useClubs'
 import { clubDocumentSchema, type ClubDocumentFormData } from '@/modules/clubs/schemas'
 import type { ClubDocument } from '@/modules/clubs/types'
@@ -71,14 +72,7 @@ export default function ClubDocumentsPage() {
   const watchedFile = watch('document')
   const isPublic = watch('is_public')
 
-  const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <FileText className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <FileText className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <FileText className="h-4 w-4" /> },
-    { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <FileText className="h-4 w-4" />, active: true },
-    { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <FileText className="h-4 w-4" /> },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <FileText className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const documentRows = useMemo(() => (Array.isArray(documents) ? documents : []), [documents])
 

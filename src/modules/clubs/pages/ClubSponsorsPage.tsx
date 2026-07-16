@@ -21,6 +21,7 @@ import {
   Skeleton,
   Textarea,
 } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubSponsors, useCreateClubSponsor, useDeleteClubSponsor } from '@/modules/clubs/hooks/useClubs'
 import { clubSponsorSchema, type ClubSponsorFormData } from '@/modules/clubs/schemas'
 import type { ClubSponsor } from '@/modules/clubs/types'
@@ -74,14 +75,7 @@ export default function ClubSponsorsPage() {
   const watchedLogo = watch('logo')
   const isActive = watch('is_active')
 
-  const sidebarLinks = [
-    { label: 'Geral', href: ROUTES.DASHBOARD_CLUB, icon: <Handshake className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_CLUB_MEMBERS, icon: <Handshake className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.DASHBOARD_CLUB_SETTINGS, icon: <Handshake className="h-4 w-4" /> },
-    { label: 'Documentos', href: ROUTES.DASHBOARD_CLUB_DOCUMENTS, icon: <Handshake className="h-4 w-4" /> },
-    { label: 'Patrocinadores', href: ROUTES.DASHBOARD_CLUB_SPONSORS, icon: <Handshake className="h-4 w-4" />, active: true },
-    { label: 'Transferências', href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Handshake className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const sponsorRows = useMemo(() => (Array.isArray(sponsors) ? sponsors : []), [sponsors])
 
