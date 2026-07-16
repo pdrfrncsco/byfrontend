@@ -211,7 +211,7 @@ export default function OrganizationDashboardPage() {
     <DashboardLayout
       title={org ? `Portal — ${org.name}` : 'Portal da Organização'}
       subtitle="Painel administrativo de gestão de clubes, competições e estatísticas"
-      dashboardType="federation"
+      dashboardType="organization"
       sidebarLinks={sidebarLinks}
       headerActions={headerActions}
     >
