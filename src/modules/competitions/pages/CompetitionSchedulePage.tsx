@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, ChevronLeft, Loader2, Zap } from 'lucide-react'
+import { Calendar, Loader2, Zap } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input } from '@/components/ui'
 import { useGenerateSchedule } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
 import { generateScheduleSchema, type GenerateScheduleFormData } from '../schemas'
 import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
+import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 
 /**
  * CompetitionSchedulePage — configure and generate the competition calendar.
@@ -51,38 +52,20 @@ export function CompetitionSchedulePage() {
   if (loadingComp) return <CompetitionHeaderSkeleton />
 
   return (
-    <div className="mx-auto max-w-2xl space-y-xl p-xl">
-      {/* Back */}
-      <Link
-        to={`/competitions/${competitionId}`}
-        className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar à Competição
-      </Link>
-
-      {/* Header */}
-      <div className="space-y-xs">
-        <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-widest text-primary">
-          <Calendar className="h-3.5 w-3.5" />
-          Calendário
-        </div>
-        <h1 className="text-2xl font-bold text-on-surface">
-          Gerar Calendário
-        </h1>
-        {competition && (
-          <p className="text-sm text-on-surface-variant">
-            {competition.name} — {competition.season}
-          </p>
-        )}
-      </div>
-
+    <CompetitionManagementFrame
+      backTo={`/competitions/${competitionId}`}
+      backLabel="Voltar à Competição"
+      badge={<><Calendar className="h-3.5 w-3.5" /> Calendário</>}
+      title="Gerar Calendário"
+      description={competition ? `${competition.name} — ${competition.season}` : undefined}
+      contentClassName="mx-auto max-w-2xl"
+    >
       {generated && (
         <div
           role="status"
           className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-md text-sm font-medium text-emerald-700"
         >
-          ✓ Calendário gerado com sucesso! Os jogos já estão visíveis na página da competição.
+          Calendário gerado com sucesso. Os jogos já estão visíveis na página da competição.
         </div>
       )}
 
@@ -170,6 +153,6 @@ export function CompetitionSchedulePage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </CompetitionManagementFrame>
   )
 }

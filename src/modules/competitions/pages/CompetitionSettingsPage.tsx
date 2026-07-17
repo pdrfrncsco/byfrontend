@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Settings, ChevronLeft, Loader2 } from 'lucide-react'
+import { Settings, Loader2 } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select } from '@/components/ui'
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
 import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
+import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import { competitionRoutes } from '../routes'
 
 /**
@@ -55,37 +56,20 @@ export function CompetitionSettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-xl p-xl">
-      {/* Back */}
-      <Link
-        to={competitionRoutes.detail(competitionId)}
-        className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar à Competição
-      </Link>
-
-      {/* Header */}
-      <div className="space-y-xs">
-        <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-widest text-primary">
-          <Settings className="h-3.5 w-3.5" />
-          Configurações
-        </div>
-        <h1 className="text-2xl font-bold text-on-surface">{competition.name}</h1>
-        <p className="text-sm text-on-surface-variant">Edite os dados gerais desta competição.</p>
-      </div>
-
+    <CompetitionManagementFrame
+      backTo={competitionRoutes.detail(competitionId)}
+      backLabel="Voltar à Competição"
+      badge={<><Settings className="h-3.5 w-3.5" /> Configurações</>}
+      title={competition.name}
+      description="Edite os dados gerais desta competição."
+      contentClassName="mx-auto max-w-2xl"
+    >
       <Card variant="flat" padding="none">
         <CardHeader>
           <CardTitle>Dados Gerais</CardTitle>
         </CardHeader>
         <CardContent>
-          <form
-            id="edit-competition-form"
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            className="space-y-lg"
-          >
+          <form id="edit-competition-form" onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-lg">
             <FormField label="Nome" htmlFor="comp-edit-name" error={errors.name?.message} required>
               <Input
                 id="comp-edit-name"
@@ -127,12 +111,7 @@ export function CompetitionSettingsPage() {
             </FormField>
 
             <div className="flex justify-end gap-sm pt-sm">
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={isPending || !isDirty}
-                id="comp-settings-save-btn"
-              >
+              <Button type="submit" variant="primary" disabled={isPending || !isDirty} id="comp-settings-save-btn">
                 {isPending ? (
                   <>
                     <Loader2 className="mr-xs h-4 w-4 animate-spin" />
@@ -146,6 +125,6 @@ export function CompetitionSettingsPage() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </CompetitionManagementFrame>
   )
 }

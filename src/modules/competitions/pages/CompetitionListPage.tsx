@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Trophy, Filter, Search } from 'lucide-react'
-import { useCompetitions } from '../hooks/useCompetitions'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useCompetitionsPaginated } from '../hooks/useCompetitions'
 import {
   Button,
   Card,
@@ -15,35 +16,52 @@ import { CompetitionCard } from '../components/CompetitionCard'
 import { CompetitionSkeleton } from '../components/CompetitionSkeleton'
 import { CompetitionEmptyState } from '../components/CompetitionEmptyState'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
-import type { Competition, CompetitionStatus, CompetitionType } from '../types'
+import type { CompetitionStatus, CompetitionType } from '../types'
+
+const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
 export function CompetitionListPage() {
-  const { data: competitions = [], isLoading, isError, refetch } = useCompetitions()
-
-  // Filters state
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | CompetitionStatus>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | CompetitionType>('all')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(9)
+  const debouncedSearch = useDebounce(search, 300)
 
-  // Filtered competitions
-  const filteredCompetitions = useMemo(() => {
-    const list = competitions as Competition[]
-    const term = search.trim().toLowerCase()
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch, statusFilter, typeFilter, pageSize])
 
-    return list.filter((comp) => {
-      const matchesSearch = !term || comp.name.toLowerCase().includes(term)
-      const matchesStatus = statusFilter === 'all' || comp.status === statusFilter
-      const matchesType = typeFilter === 'all' || comp.competition_type === typeFilter
-      return matchesSearch && matchesStatus && matchesType
-    })
-  }, [search, statusFilter, typeFilter, competitions])
+  const { data, isLoading, isError, refetch, isFetching } = useCompetitionsPaginated({
+    search: debouncedSearch || undefined,
+    status: statusFilter === 'all' ? undefined : statusFilter,
+    competition_type: typeFilter === 'all' ? undefined : typeFilter,
+    page,
+    page_size: pageSize,
+  })
 
-  const hasFilters = search.trim() !== '' || statusFilter !== 'all' || typeFilter !== 'all'
+  const competitions = data?.results ?? []
+  const total = data?.count ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const hasNext = Boolean(data?.next)
+  const hasPrev = Boolean(data?.previous) || page > 1
+  const hasFilters = debouncedSearch.trim() !== '' || statusFilter !== 'all' || typeFilter !== 'all'
+  const competitionLabel = total === 1 ? 'competição' : 'competições'
+
+  const summary = useMemo(() => {
+    const filters = [
+      debouncedSearch,
+      statusFilter !== 'all' ? statusFilter : '',
+      typeFilter !== 'all' ? typeFilter : '',
+    ].filter(Boolean)
+    return filters.length > 0 ? `${filters.length} filtro(s) ativos` : 'Sem filtros ativos'
+  }, [debouncedSearch, statusFilter, typeFilter])
 
   const handleClearFilters = () => {
     setSearch('')
     setStatusFilter('all')
     setTypeFilter('all')
+    setPage(1)
   }
 
   return (
@@ -54,22 +72,19 @@ export function CompetitionListPage() {
           title="Descubra campeonatos, taças e torneios"
           description="Campeonatos, taças e torneios organizados na plataforma. Use os filtros para encontrar competições específicas."
           stats={[
-            {
-              label: `${filteredCompetitions.length} competição${filteredCompetitions.length !== 1 ? 'ões' : ''} encontrada${filteredCompetitions.length !== 1 ? 's' : ''}`,
-            },
-            { label: hasFilters ? 'Filtros aplicados' : 'Sem filtros ativos' },
-            { label: `${competitions.length} no total` },
+            { label: `${total} ${competitionLabel}` },
+            { label: summary },
+            { label: `${pageSize} por página` },
           ]}
           insightIcon={Trophy}
           insightTitle="Exploração de competições"
           insightDescription="Filtre por nome, estado e tipo para localizar rapidamente a competição certa."
           metrics={[
-            { label: 'Resultados', value: isLoading ? '...' : filteredCompetitions.length },
-            { label: 'Total', value: competitions.length },
+            { label: 'Página atual', value: page },
+            { label: 'Resultados', value: isFetching ? '...' : competitions.length },
           ]}
         />
 
-        {/* Filters */}
         <Card variant="flat" padding="none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -119,17 +134,33 @@ export function CompetitionListPage() {
               </FormField>
             </div>
 
-            {hasFilters && (
-              <div className="mt-md flex justify-end">
-                <Button variant="secondary" size="sm" onClick={handleClearFilters}>
-                  Limpar filtros
-                </Button>
+            <div className="mt-md flex flex-col items-start justify-between gap-md md:flex-row md:items-center">
+              <p className="text-sm text-on-surface-variant">
+                Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
+                <span className="font-semibold text-on-surface">{totalPages}</span>
+              </p>
+
+              <div className="flex items-center gap-sm">
+                {hasFilters && (
+                  <Button variant="secondary" size="sm" onClick={handleClearFilters}>
+                    Limpar filtros
+                  </Button>
+                )}
+                <label className="flex items-center gap-sm text-sm text-on-surface-variant">
+                  <span className="whitespace-nowrap">Por página</span>
+                  <Select value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
+                    {PAGE_SIZE_OPTIONS.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
               </div>
-            )}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Results */}
         {isLoading ? (
           <CompetitionSkeleton />
         ) : isError ? (
@@ -141,22 +172,45 @@ export function CompetitionListPage() {
               </Button>
             </div>
           </Card>
-        ) : filteredCompetitions.length === 0 ? (
+        ) : competitions.length === 0 ? (
           <CompetitionEmptyState hasFilters={hasFilters} onClearFilters={handleClearFilters} />
         ) : (
           <div className="space-y-md">
-            {/* Results count */}
             <p className="text-sm text-on-surface-variant">
-              {filteredCompetitions.length} competição
-              {filteredCompetitions.length !== 1 ? 'ões' : ''} encontrada
-              {filteredCompetitions.length !== 1 ? 's' : ''}
+              {total} {competitionLabel} encontrada{total !== 1 ? 's' : ''}
               {hasFilters && ' com os filtros aplicados'}
             </p>
 
-            {/* Competition list */}
-            {filteredCompetitions.map((comp) => (
-              <CompetitionCard key={comp.id} competition={comp} />
-            ))}
+            <div className="grid gap-md">
+              {competitions.map((comp) => (
+                <CompetitionCard key={comp.id} competition={comp} />
+              ))}
+            </div>
+
+            <div className="flex flex-col items-center justify-between gap-md rounded-[1.5rem] border border-outline-variant/20 bg-surface-container/70 px-lg py-md backdrop-blur md:flex-row">
+              <p className="text-sm text-on-surface-variant">
+                Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
+                <span className="font-semibold text-on-surface">{totalPages}</span>
+              </p>
+              <div className="flex items-center gap-sm">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={!hasPrev}
+                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={!hasNext}
+                  onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+                >
+                  Seguinte
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>

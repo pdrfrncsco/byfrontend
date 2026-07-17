@@ -6,6 +6,7 @@ import type {
   CompetitionCreateData,
   CompetitionUpdateData,
   CompetitionListParams,
+  PaginatedResponse,
   Match,
   MatchEvent,
   MatchEventCreateData,
@@ -25,16 +26,50 @@ import type {
   SeasonRanking,
 } from '../types'
 
+type PaginatedEnvelope<T> =
+  | ApiResponse<PaginatedResponse<T>>
+  | PaginatedResponse<T>
+  | { count?: number; next?: string | null; previous?: string | null; results?: T[] }
+  | T[]
+
+function unwrapPaginated<T>(payload: PaginatedEnvelope<T>): PaginatedResponse<T> {
+  const data = 'data' in payload && 'success' in payload ? payload.data : payload
+
+  if (Array.isArray(data)) {
+    return {
+      count: data.length,
+      next: null,
+      previous: null,
+      results: data,
+    }
+  }
+
+  if (data && typeof data === 'object' && 'results' in data) {
+    const results = Array.isArray((data as { results?: T[] }).results) ? (data as { results: T[] }).results : []
+    return {
+      count: typeof (data as { count?: number }).count === 'number' ? (data as { count: number }).count : results.length,
+      next: (data as { next?: string | null }).next ?? null,
+      previous: (data as { previous?: string | null }).previous ?? null,
+      results,
+    }
+  }
+
+  return {
+    count: 0,
+    next: null,
+    previous: null,
+    results: [],
+  }
+}
+
 export const competitionApi = {
   // ─── Competition CRUD ────────────────────────────────────────────────────
 
-  async list(params?: CompetitionListParams): Promise<Competition[]> {
-    const response = await client.get<ApiResponse<any>>(API_ROUTES.COMPETITIONS.LIST, { params })
-    const data = response.data.data
-    if (data && typeof data === 'object' && 'results' in data) {
-      return data.results
-    }
-    return Array.isArray(data) ? data : []
+  async list(params?: CompetitionListParams): Promise<PaginatedResponse<Competition>> {
+    const response = await client.get<PaginatedEnvelope<Competition>>(API_ROUTES.COMPETITIONS.LIST, {
+      params,
+    })
+    return unwrapPaginated(response.data)
   },
 
   async get(id: string): Promise<Competition> {

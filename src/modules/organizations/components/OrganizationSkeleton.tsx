@@ -36,7 +36,7 @@ export function OrganizationDetailSkeleton() {
         padding="none"
         className="overflow-hidden rounded-[2rem] border border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
       >
-        <div className="grid gap-xl bg-surface-container/75 p-xl md:grid-cols-[auto_1fr_auto] md:items-center">
+        <div className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))] p-xl md:grid-cols-[auto_1fr_auto] md:items-center">
           <Skeleton className="h-32 w-32 rounded-3xl" />
           <div className="space-y-md">
             <Skeleton className="h-5 w-40 rounded-full" />

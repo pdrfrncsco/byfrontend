@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom'
-import { Trophy, ChevronLeft, Shield, Target } from 'lucide-react'
+import { Trophy, Shield, Target } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useTopScorers, useFairPlayRanking } from '../hooks/useCompetitionAdvanced'
 import { TopScorersTable } from '../components/TopScorersTable'
+import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import type { FairPlayRanking } from '../types'
 
 // ─── Fair Play Table ─────────────────────────────────────────────────────────
@@ -115,31 +116,15 @@ export function CompetitionRankingsPage() {
   const { data: fairPlay = [], isLoading: loadingFairPlay } = useFairPlayRanking(competitionId)
 
   return (
-    <div className="mx-auto max-w-4xl space-y-xl p-xl">
-      {/* Back */}
-      <Link
-        to={`/competitions/${competitionId}`}
-        className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar à Competição
-      </Link>
-
-      {/* Header */}
-      <div className="space-y-xs">
-        <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-widest text-primary">
-          <Trophy className="h-3.5 w-3.5" />
-          Rankings
-        </div>
-        <h1 className="text-2xl font-bold text-on-surface">Rankings & Fair Play</h1>
-        {!loadingComp && competition && (
-          <p className="text-sm text-on-surface-variant">
-            {competition.name} — {competition.season}
-          </p>
-        )}
-      </div>
-
-      <Tabs defaultValue="scorers">
+    <CompetitionManagementFrame
+      backTo={`/competitions/${competitionId}`}
+      backLabel="Voltar à Competição"
+      badge={<><Trophy className="h-3.5 w-3.5" /> Rankings</>}
+      title="Rankings & Fair Play"
+      description={!loadingComp && competition ? `${competition.name} — ${competition.season}` : undefined}
+      contentClassName="mx-auto max-w-5xl"
+    >
+      <Tabs defaultValue="scorers" className="space-y-lg">
         <TabsList>
           <TabsTrigger value="scorers" id="rankings-tab-scorers">
             <Target className="mr-xs h-4 w-4" />
@@ -159,6 +144,6 @@ export function CompetitionRankingsPage() {
           <FairPlayTable rankings={fairPlay} isLoading={loadingFairPlay} />
         </TabsContent>
       </Tabs>
-    </div>
+    </CompetitionManagementFrame>
   )
 }

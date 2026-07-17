@@ -39,6 +39,7 @@ import {
   KpiCard,
 } from '../components'
 import { organizationRoutes } from '../routes'
+import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
 
 export function OrganizationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -99,60 +100,35 @@ export function OrganizationDetailPage() {
   return (
     <div className="min-h-screen bg-background pb-xl text-on-surface">
       <div className="container py-xl space-y-xl">
-        <Card
-          variant="flat"
-          padding="none"
-          className="overflow-hidden rounded-[2rem] border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
-        >
-          <CardContent className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))] p-xl backdrop-blur md:grid-cols-[auto_1fr_auto] md:items-center">
-            <div className="flex-shrink-0">
-              {organization.logo_url ? (
-                <img
-                  src={organization.logo_url}
-                  alt={organization.name}
-                  className="h-32 w-32 rounded-3xl border border-outline-variant/20 object-cover shadow-lg"
-                />
-              ) : (
-                <div
-                  className="flex h-32 w-32 items-center justify-center rounded-3xl border border-outline-variant/20 font-display-lg text-4xl text-white shadow-lg shadow-black/30"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  {firstLetter}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-md">
-              <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                Organização pública
+        <DetailHeroCard
+          eyebrow="Organização pública"
+          title={organization.name}
+          description={organization.description || 'Perfil público da organização com estatísticas, contactos e histórico.'}
+          visual={
+            organization.logo_url ? (
+              <img
+                src={organization.logo_url}
+                alt={organization.name}
+                className="h-32 w-32 rounded-3xl border border-outline-variant/20 object-cover shadow-lg"
+              />
+            ) : (
+              <div
+                className="flex h-32 w-32 items-center justify-center rounded-3xl border border-outline-variant/20 font-display-lg text-4xl text-white shadow-lg shadow-black/30"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {firstLetter}
               </div>
-
-              <div className="space-y-sm">
-                <h1 className="font-title-lg text-3xl text-on-surface md:text-4xl">{organization.name}</h1>
-                <p className="max-w-3xl text-base leading-7 text-on-surface-variant">
-                  {organization.description || 'Perfil público da organização com estatísticas, contactos e histórico.'}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  <MapPin className="h-4 w-4" />
-                  <span>{locationLabel}</span>
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  {organization.type_label || organization.type}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {verifiedLabel}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  {statusLabel}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap justify-start gap-sm md:justify-end">
+            )
+          }
+          chips={[
+            { icon: MapPin, label: locationLabel },
+            { label: organization.type_label || organization.type },
+            { icon: CheckCircle2, label: verifiedLabel },
+            { label: statusLabel },
+          ]}
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))]"
+          actions={
+            <>
               <Button variant="outline" size="sm" asChild>
                 <Link to={organizationRoutes.list}>
                   <ArrowLeft className="h-4 w-4" />
@@ -176,9 +152,9 @@ export function OrganizationDetailPage() {
                   <span>Subscrever</span>
                 </Button>
               )}
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          }
+        />
 
         <Tabs defaultValue="overview" className="space-y-lg">
           <TabsList>

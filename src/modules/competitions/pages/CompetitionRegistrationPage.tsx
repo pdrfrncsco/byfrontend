@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom'
-import { Users, ChevronLeft, Loader2, Shield } from 'lucide-react'
+import { Users, Loader2, Shield } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useCompetitionStandings, useRegisterClub } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
 import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
+import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import type { Standing } from '../types'
 
 /**
@@ -22,33 +23,14 @@ export function CompetitionRegistrationPage() {
   if (loadingComp) return <CompetitionHeaderSkeleton />
 
   return (
-    <div className="mx-auto max-w-3xl space-y-xl p-xl">
-      {/* Back */}
-      <Link
-        to={`/competitions/${competitionId}`}
-        className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar à Competição
-      </Link>
-
-      {/* Header */}
-      <div className="space-y-xs">
-        <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-widest text-primary">
-          <Users className="h-3.5 w-3.5" />
-          Inscrição de Clubes
-        </div>
-        <h1 className="text-2xl font-bold text-on-surface">
-          Clubes Inscritos
-        </h1>
-        {competition && (
-          <p className="text-sm text-on-surface-variant">
-            {competition.name} — {competition.season}
-          </p>
-        )}
-      </div>
-
-      {/* Registered Clubs */}
+    <CompetitionManagementFrame
+      backTo={`/competitions/${competitionId}`}
+      backLabel="Voltar à Competição"
+      badge={<><Users className="h-3.5 w-3.5" /> Inscrição de Clubes</>}
+      title="Clubes Inscritos"
+      description={competition ? `${competition.name} — ${competition.season}` : undefined}
+      contentClassName="mx-auto max-w-5xl"
+    >
       <Card variant="flat" padding="none">
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -117,8 +99,6 @@ export function CompetitionRegistrationPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* Add Club — placeholder */}
       <Card variant="flat" padding="lg">
         <div className="space-y-md">
           <h3 className="font-semibold text-on-surface">Adicionar Clube</h3>
@@ -155,6 +135,6 @@ export function CompetitionRegistrationPage() {
           </div>
         </div>
       </Card>
-    </div>
+    </CompetitionManagementFrame>
   )
 }

@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { competitionApi } from '../services/competition.api'
-import type { CompetitionCreateData, CompetitionUpdateData, CompetitionListParams } from '../types'
+import type {
+  Competition,
+  CompetitionCreateData,
+  CompetitionUpdateData,
+  CompetitionListParams,
+  PaginatedResponse,
+} from '../types'
 import { toast } from 'sonner'
 
 export const competitionKeys = {
@@ -16,6 +22,19 @@ export const competitionKeys = {
  */
 export function useCompetitions(params?: CompetitionListParams) {
   return useQuery({
+    queryKey: competitionKeys.list(params),
+    queryFn: async () => {
+      const response = await competitionApi.list(params)
+      return response.results
+    },
+  })
+}
+
+/**
+ * Fetch the paginated/filtered list of competitions with counts.
+ */
+export function useCompetitionsPaginated(params?: CompetitionListParams) {
+  return useQuery<PaginatedResponse<Competition>>({
     queryKey: competitionKeys.list(params),
     queryFn: () => competitionApi.list(params),
   })

@@ -1,9 +1,10 @@
-import { useParams, Link } from 'react-router-dom'
-import { AlertTriangle, ChevronLeft, Loader2, User as UserIcon } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { AlertTriangle, Loader2, User as UserIcon } from 'lucide-react'
 import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useSuspensions, useCancelSuspension } from '../hooks/useCompetitionAdvanced'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
+import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import type { Suspension, SuspensionType } from '../types'
 
 const SUSPENSION_TYPE_LABELS: Record<SuspensionType, string> = {
@@ -77,30 +78,14 @@ export function CompetitionSuspensionsPage() {
   const past = (suspensions as Suspension[]).filter(s => !s.is_active)
 
   return (
-    <div className="mx-auto max-w-3xl space-y-xl p-xl">
-      {/* Back */}
-      <Link
-        to={`/competitions/${competitionId}`}
-        className="inline-flex items-center gap-xs text-sm text-on-surface-variant transition-colors hover:text-on-surface"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Voltar à Competição
-      </Link>
-
-      {/* Header */}
-      <div className="space-y-xs">
-        <div className="inline-flex items-center gap-sm rounded-full border border-red-200 bg-red-50 px-md py-1 text-xs font-semibold uppercase tracking-widest text-red-600">
-          <AlertTriangle className="h-3.5 w-3.5" />
-          Suspensões
-        </div>
-        <h1 className="text-2xl font-bold text-on-surface">Suspensões</h1>
-        {!loadingComp && competition && (
-          <p className="text-sm text-on-surface-variant">
-            {competition.name} — {competition.season}
-          </p>
-        )}
-      </div>
-
+    <CompetitionManagementFrame
+      backTo={`/competitions/${competitionId}`}
+      backLabel="Voltar à Competição"
+      badge={<><AlertTriangle className="h-3.5 w-3.5" /> Suspensões</>}
+      title="Suspensões"
+      description={!loadingComp && competition ? `${competition.name} — ${competition.season}` : undefined}
+      contentClassName="mx-auto max-w-5xl"
+    >
       {loadingSuspensions ? (
         <div className="flex items-center gap-sm py-xl text-sm text-on-surface-variant">
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -157,6 +142,6 @@ export function CompetitionSuspensionsPage() {
           )}
         </>
       )}
-    </div>
+    </CompetitionManagementFrame>
   )
 }
