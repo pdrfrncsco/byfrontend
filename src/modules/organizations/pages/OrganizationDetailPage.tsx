@@ -15,7 +15,6 @@ import {
   Users,
 } from 'lucide-react'
 import {
-  Badge,
   Button,
   Card,
   CardContent,
@@ -87,96 +86,101 @@ export function OrganizationDetailPage() {
   const primaryColor = organization.primary_color || '#1B4D3E'
   const firstLetter = organization.name?.charAt(0) || '?'
   const isSubscribed = organization.is_subscribed ?? false
+  const verifiedLabel = organization.verified || organization.is_verified ? 'Verificada' : 'Pública'
+  const statusLabelByKey = {
+    active: 'Ativa',
+    suspended: 'Suspensa',
+    closed: 'Encerrada',
+    pending: 'Pendente',
+  } as const
+  const statusLabel = organization.status_label || (organization.status ? statusLabelByKey[organization.status] : undefined) || 'Ativa'
+  const locationLabel = organization.location || [organization.city, organization.country].filter(Boolean).join(', ')
 
   return (
-    <div className="relative min-h-screen bg-background pb-xl text-on-surface">
-      <div className="glow-bg">
-        <div className="glow-circle glow-1" />
-        <div className="glow-circle glow-2" />
-      </div>
+    <div className="min-h-screen bg-background pb-xl text-on-surface">
+      <div className="container py-xl space-y-xl">
+        <Card
+          variant="flat"
+          padding="none"
+          className="overflow-hidden rounded-[2rem] border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
+        >
+          <CardContent className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))] p-xl backdrop-blur md:grid-cols-[auto_1fr_auto] md:items-center">
+            <div className="flex-shrink-0">
+              {organization.logo_url ? (
+                <img
+                  src={organization.logo_url}
+                  alt={organization.name}
+                  className="h-32 w-32 rounded-3xl border border-outline-variant/20 object-cover shadow-lg"
+                />
+              ) : (
+                <div
+                  className="flex h-32 w-32 items-center justify-center rounded-3xl border border-outline-variant/20 font-display-lg text-4xl text-white shadow-lg shadow-black/30"
+                  style={{ backgroundColor: primaryColor }}
+                >
+                  {firstLetter}
+                </div>
+              )}
+            </div>
 
-      <div className="relative h-64 w-full overflow-hidden border-b border-outline-variant/30 md:h-80">
-        {organization.banner_url ? (
-          <img src={organization.banner_url} alt="Banner da Organização" className="h-full w-full object-cover" />
-        ) : (
-          <div
-            className="h-full w-full opacity-60"
-            style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, #031427 100%)` }}
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-
-        <div className="absolute left-gutter top-lg mx-auto w-full max-w-7xl px-gutter">
-          <Button variant="outline" size="sm" asChild className="rounded-full bg-surface-lowest/80 backdrop-blur">
-            <Link to={organizationRoutes.list}>
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Voltar às Organizações</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      <div className="relative z-10 mx-auto -mt-20 max-w-7xl space-y-lg px-gutter md:-mt-24">
-        <div className="flex flex-col justify-between gap-md border-b border-outline-variant/20 pb-md md:flex-row md:items-end">
-          <div className="flex flex-col items-center gap-md text-center md:flex-row md:items-end md:text-left">
-            {organization.logo_url ? (
-              <img
-                src={organization.logo_url}
-                alt={organization.name}
-                className="h-32 w-32 rounded-2xl border-4 border-background bg-surface-container object-cover shadow-lg md:h-36 md:w-36"
-              />
-            ) : (
-              <div
-                className="flex h-32 w-32 items-center justify-center rounded-2xl border-4 border-background font-display-lg text-4xl text-white shadow-lg shadow-black/40 md:h-36 md:w-36 md:text-5xl"
-                style={{ backgroundColor: primaryColor }}
-              >
-                {firstLetter}
-              </div>
-            )}
-
-            <div className="space-y-sm">
-              <div className="flex flex-wrap items-center justify-center gap-sm md:justify-start">
-                <h1 className="font-display-lg text-3xl leading-none tracking-tight text-on-surface md:text-4xl">
-                  {organization.name}
-                </h1>
-                {organization.verified && (
-                  <CheckCircle2 className="h-6 w-6 shrink-0 text-primary" aria-label="Verificada" />
-                )}
+            <div className="space-y-md">
+              <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                Organização pública
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-xs text-sm text-on-surface-variant md:justify-start">
-                <MapPin className="h-4 w-4 text-outline" aria-hidden="true" />
-                <span>{organization.location || `${organization.city || ''}, ${organization.country}`}</span>
-                <span className="text-outline/40">•</span>
-                <Badge variant="primary" className="uppercase tracking-wider">
+              <div className="space-y-sm">
+                <h1 className="font-title-lg text-3xl text-on-surface md:text-4xl">{organization.name}</h1>
+                <p className="max-w-3xl text-base leading-7 text-on-surface-variant">
+                  {organization.description || 'Perfil público da organização com estatísticas, contactos e histórico.'}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
+                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                  <MapPin className="h-4 w-4" />
+                  <span>{locationLabel}</span>
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
                   {organization.type_label || organization.type}
-                </Badge>
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                  <CheckCircle2 className="h-4 w-4" />
+                  {verifiedLabel}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
+                  {statusLabel}
+                </span>
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-center gap-sm">
-            {isSubscribed ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleUnsubscribe}
-                loading={unsubscribeMutation.isPending}
-                className="hover:border-error/20 hover:bg-error/10 hover:text-error"
-              >
-                <BellOff className="h-4 w-4" />
-                <span>Cancelar subscrição</span>
+            <div className="flex flex-wrap justify-start gap-sm md:justify-end">
+              <Button variant="outline" size="sm" asChild>
+                <Link to={organizationRoutes.list}>
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Voltar às Organizações</span>
+                </Link>
               </Button>
-            ) : (
-              <Button variant="primary" size="sm" onClick={handleSubscribe} loading={subscribeMutation.isPending}>
-                <Bell className="h-4 w-4" />
-                <span>Subscrever</span>
-              </Button>
-            )}
-          </div>
-        </div>
+              {isSubscribed ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleUnsubscribe}
+                  loading={unsubscribeMutation.isPending}
+                  className="hover:border-error/20 hover:bg-error/10 hover:text-error"
+                >
+                  <BellOff className="h-4 w-4" />
+                  <span>Cancelar subscrição</span>
+                </Button>
+              ) : (
+                <Button variant="primary" size="sm" onClick={handleSubscribe} loading={subscribeMutation.isPending}>
+                  <Bell className="h-4 w-4" />
+                  <span>Subscrever</span>
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="overview" className="space-y-lg">
           <TabsList>
             <TabsTrigger value="overview">Resumo Geral</TabsTrigger>
             <TabsTrigger value="history">Histórico & Torneios ({historyCount})</TabsTrigger>
