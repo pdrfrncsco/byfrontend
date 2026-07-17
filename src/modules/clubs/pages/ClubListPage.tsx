@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { Search, SlidersHorizontal } from 'lucide-react'
 import { ClubCard } from '@/modules/clubs/components/ClubCard'
 import { ClubEmptyState } from '@/modules/clubs/components/ClubEmptyState'
 import { ClubListSkeleton } from '@/modules/clubs/components/ClubSkeleton'
@@ -10,6 +10,7 @@ import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/ui/empty-state'
+import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
@@ -54,58 +55,24 @@ export default function ClubListPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,rgba(66,153,225,0.20),transparent_40%),radial-gradient(circle_at_top_right,rgba(17,94,89,0.16),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]" />
       <div className="container py-xl space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/70 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur md:grid-cols-[1.4fr_0.9fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Portal público de clubes
-            </div>
-            <div className="space-y-sm">
-              <h1 className="font-title-lg text-4xl text-on-surface md:text-5xl">Descubra clubes, estrutura e identidade pública</h1>
-              <p className="max-w-2xl text-base leading-7 text-on-surface-variant">
-                Explore clubes do ecossistema BolaYetu com pesquisa rápida, paginação fluida e acesso direto ao plantel, staff, documentos e patrocinadores.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                {total} clube(s)
-              </span>
-              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                {summary}
-              </span>
-              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                {pageSize} por página
-              </span>
-            </div>
-          </div>
-
-          <Card variant="flat" padding="none" className="border-outline-variant/20">
-            <CardContent className="grid h-full gap-md p-lg">
-              <div className="flex items-start gap-sm">
-                <div className="rounded-2xl bg-primary-container/20 p-sm text-primary">
-                  <SlidersHorizontal className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-on-surface">Filtros ativos</p>
-                  <p className="text-sm text-on-surface-variant">Pesquisa e organização atualizam a listagem em tempo real.</p>
-                </div>
-              </div>
-
-              <div className="grid gap-sm">
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Página atual</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{page}</p>
-                </div>
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Resultados</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{isFetching ? '...' : total}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+        <PublicListHero
+          badge="Portal público de clubes"
+          title="Descubra clubes, estrutura e identidade pública"
+          description="Explore clubes do ecossistema BolaYetu com pesquisa rápida, paginação fluida e acesso direto ao plantel, staff, documentos e patrocinadores."
+          stats={[
+            { label: `${total} clube(s)` },
+            { label: summary },
+            { label: `${pageSize} por página` },
+          ]}
+          insightIcon={SlidersHorizontal}
+          insightTitle="Filtros ativos"
+          insightDescription="Pesquisa e organização atualizam a listagem em tempo real."
+          metrics={[
+            { label: 'Página atual', value: page },
+            { label: 'Resultados', value: isFetching ? '...' : total },
+          ]}
+        />
 
         <Card variant="flat" padding="none">
           <CardContent className="grid gap-md p-lg lg:grid-cols-[1.3fr_1fr_auto_auto] lg:items-end">

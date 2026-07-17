@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, Sparkles, User } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
+import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import { PlayerCard, PlayerEmptyState, PlayerListSkeleton } from '../components'
 import { usePlayers, usePlayerSearch } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
@@ -72,57 +73,25 @@ export function PlayerListPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]" />
       <div className="container py-xl space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/70 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur md:grid-cols-[1.4fr_0.9fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              {t('players.list.badge')}
-            </div>
-            <div className="space-y-sm">
-              <h1 className="font-title-lg text-4xl text-on-surface md:text-5xl">{t('players.list.title')}</h1>
-              <p className="max-w-2xl text-base leading-7 text-on-surface-variant">{t('players.list.subtitle')}</p>
-            </div>
-            <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                {t('players.list.playersCount', { count: totalCount })}
-              </span>
-              <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                {t('players.list.activeFilters', { count: activeFilters })}
-              </span>
-              {isSearching && (
-                <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  {t('players.list.searchActive', { query: debouncedSearch })}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <Card variant="flat" padding="none" className="border-outline-variant/20">
-            <CardContent className="grid h-full gap-md p-lg">
-              <div className="flex items-start gap-sm">
-                <div className="rounded-2xl bg-primary-container/20 p-sm text-primary">
-                  <User className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-semibold text-on-surface">{t('players.list.discoveryTitle')}</p>
-                  <p className="text-sm text-on-surface-variant">{t('players.list.discoveryDescription')}</p>
-                </div>
-              </div>
-              <div className="grid gap-sm sm:grid-cols-2">
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.list.page')}</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{page}</p>
-                </div>
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">{t('players.list.results')}</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{isLoading ? '...' : totalCount}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+        <PublicListHero
+          badge={t('players.list.badge')}
+          title={t('players.list.title')}
+          description={t('players.list.subtitle')}
+          stats={[
+            { label: t('players.list.playersCount', { count: totalCount }) },
+            { label: t('players.list.activeFilters', { count: activeFilters }) },
+            ...(isSearching ? [{ label: t('players.list.searchActive', { query: debouncedSearch }) }] : []),
+          ]}
+          insightIcon={User}
+          insightTitle={t('players.list.discoveryTitle')}
+          insightDescription={t('players.list.discoveryDescription')}
+          metrics={[
+            { label: t('players.list.page'), value: page },
+            { label: t('players.list.results'), value: isLoading ? '...' : totalCount },
+          ]}
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]"
+        />
 
         <Card variant="flat" padding="none">
           <CardContent className="space-y-md p-lg">
