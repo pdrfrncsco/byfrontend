@@ -24,6 +24,7 @@ export const playerCreateSchema = z.object({
   foot: z.enum(['left', 'right', 'both'], { errorMap: () => ({ message: 'Selecione um pé preferido.' }) }).optional(),
   bio: z.string().max(2000, 'A biografia não pode exceder 2000 caracteres.').optional().or(z.literal('')),
   avatar: z.string().url('URL inválida.').optional().or(z.literal('')),
+  is_public: z.boolean().optional(),
 })
 
 export type PlayerCreateFormData = z.infer<typeof playerCreateSchema>

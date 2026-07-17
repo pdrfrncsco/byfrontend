@@ -37,6 +37,7 @@ const MEMBERSHIP_ROLES = {
 const DERIVED_ROLES = {
   EXECUTIVE: 'executive',
   CLUB_ADMIN: 'club_admin',
+  CLUB: 'club',
   PLAYER: 'player',
   COMPETITION_ORGANIZER: 'competition_organizer',
   FAN: 'fan',
@@ -94,6 +95,7 @@ function resolveFromRoles(roles: string[]): DashboardType {
   if (has(DERIVED_ROLES.EXECUTIVE)) return 'executive'
   if (has(MEMBERSHIP_ROLES.MANAGER)) return 'executive'
   if (has(DERIVED_ROLES.CLUB_ADMIN)) return 'club'
+  if (has(DERIVED_ROLES.CLUB)) return 'club'
   if (has(DERIVED_ROLES.COMPETITION_ORGANIZER)) return 'competition'
   if (has(DERIVED_ROLES.PLAYER)) return 'player'
 

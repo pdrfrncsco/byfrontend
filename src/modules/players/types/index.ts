@@ -31,6 +31,7 @@ export interface Player {
   shirt_number: number | null
   bio: string | null
   avatar: string | null
+  is_public: boolean
   status: PlayerStatus
   status_label: string
   total_matches: number
@@ -316,6 +317,7 @@ export interface PlayerCreate {
   foot?: PlayerFoot
   bio?: string
   avatar?: string
+  is_public?: boolean
 }
 
 export interface PlayerUpdate {
@@ -331,6 +333,7 @@ export interface PlayerUpdate {
   foot?: PlayerFoot
   bio?: string
   avatar?: string
+  is_public?: boolean
   status?: PlayerStatus
 }
 

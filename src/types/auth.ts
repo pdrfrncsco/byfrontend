@@ -6,6 +6,7 @@ export interface User {
   last_name: string
   full_name: string
   phone: string | null
+  profile_type?: 'admin' | 'organization' | 'club' | 'player' | 'fan'
   status: 'active' | 'suspended' | 'pending_verification' | 'deactivated'
   is_email_verified: boolean
   language: string
@@ -43,6 +44,7 @@ export interface RegisterRequest {
   first_name?: string
   last_name?: string
   phone?: string
+  profile_type?: 'admin' | 'organization' | 'club' | 'player' | 'fan'
 }
 
 export interface RegisterOrganizationRequest extends RegisterRequest {

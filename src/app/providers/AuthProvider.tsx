@@ -8,6 +8,7 @@ export interface UserProfile {
   email: string
   roles: string[]
   role?: string
+  profileType?: string
   tenant_id: string | null
 }
 

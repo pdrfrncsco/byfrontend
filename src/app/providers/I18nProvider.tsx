@@ -584,6 +584,8 @@ i18n
               clear: 'Limpar',
               avatarUrlAlt: 'URL do Avatar (alternativa)',
               avatarAutoPlaceholder: 'Preenchido automaticamente após upload',
+              publicProfile: 'Perfil público',
+              publicProfileHint: 'Mostrar este perfil de jogador publicamente.',
             },
             common: {
               goalsShort: 'golos',
@@ -1175,6 +1177,8 @@ i18n
               clear: 'Clear',
               avatarUrlAlt: 'Avatar URL (alternative)',
               avatarAutoPlaceholder: 'Filled automatically after upload',
+              publicProfile: 'Public profile',
+              publicProfileHint: 'Show this player profile publicly.',
             },
             common: {
               goalsShort: 'goals',

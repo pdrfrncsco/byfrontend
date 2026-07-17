@@ -30,9 +30,14 @@ function mapToUserProfile(
   activeMembershipId: string | null = null,
 ): UserProfile {
   const roles: string[] = []
+  const profileType = user.profile_type
 
   if (user.status === 'active') {
     roles.push('active')
+  }
+
+  if (profileType) {
+    roles.push(profileType)
   }
 
   memberships.forEach(m => {
@@ -47,7 +52,8 @@ function mapToUserProfile(
     username: user.username || user.full_name,
     email: user.email,
     roles: roles.length > 0 ? roles : ['fan'],
-    role: activeMembership?.role || memberships.find(m => m.is_active)?.role || 'fan',
+    role: activeMembership?.role || memberships.find(m => m.is_active)?.role || profileType || 'fan',
+    profileType,
     tenant_id: activeMembership?.tenant || memberships.find(m => m.is_active)?.tenant || null,
   }
 }

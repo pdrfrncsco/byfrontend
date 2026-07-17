@@ -18,6 +18,7 @@ export const mockPlayer: Player = {
   shirt_number: 9,
   bio: 'Avançado completo com boa finalização.',
   avatar: 'https://cdn.example.com/joao-pedro.jpg',
+  is_public: true,
   status: 'active',
   status_label: 'Ativo',
   total_matches: 120,

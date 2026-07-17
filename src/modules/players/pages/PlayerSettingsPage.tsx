@@ -57,6 +57,7 @@ export function PlayerSettingsPage() {
         foot: player.foot || undefined,
         bio: player.bio || '',
         avatar: player.avatar || '',
+        is_public: player.is_public,
         status: player.status || undefined,
       })
     }
@@ -82,6 +83,7 @@ export function PlayerSettingsPage() {
       foot: data.foot || undefined,
       bio: data.bio || undefined,
       avatar: data.avatar || undefined,
+      is_public: data.is_public ?? false,
       status: data.status || undefined,
     }
     updateMutation.mutate(payload)
@@ -305,6 +307,21 @@ export function PlayerSettingsPage() {
                     state={errors.avatar ? 'error' : 'default'}
                     placeholder={t('players.form.avatarAutoPlaceholder')}
                   />
+                </FormField>
+
+                <FormField
+                  label={t('players.form.publicProfile')}
+                  htmlFor="is_public"
+                >
+                  <div className="flex items-center gap-sm">
+                    <input
+                      id="is_public"
+                      type="checkbox"
+                      {...register('is_public')}
+                      className="h-4 w-4 rounded border-outline-variant text-primary"
+                    />
+                    <span className="text-sm text-on-surface-variant">{t('players.form.publicProfileHint')}</span>
+                  </div>
                 </FormField>
               </div>
             </div>
