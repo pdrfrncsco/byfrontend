@@ -255,7 +255,7 @@ export function LoginPage() {
             {t('auth.login.organizationCta')}{' '}
             <button
               type="button"
-              onClick={() => navigate(ROUTES.REGISTER_ORGANIZATION)}
+              onClick={() => navigate(ROUTES.REGISTER)}
               className="text-primary hover:text-primary-fixed transition-colors font-bold underline bg-transparent border-0 cursor-pointer"
             >
               {t('auth.login.organizationLink')}

@@ -44,15 +44,6 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument()
   })
 
-  it('shows the register title and name fields at /register', () => {
-    renderLoginAt('/register')
-
-    expect(screen.getByRole('heading', { level: 1, name: /Criar Conta/i })).toBeInTheDocument()
-    expect(screen.getByText('Nome')).toBeInTheDocument()
-    expect(screen.getByText('Apelido')).toBeInTheDocument()
-    expect(screen.getByText('Confirmar Senha')).toBeInTheDocument()
-  })
-
   it('shows the toggle link to register when in login mode', () => {
     renderLoginAt('/login')
 
@@ -62,11 +53,6 @@ describe('LoginPage', () => {
   it('shows the forgot password link only in login mode', () => {
     renderLoginAt('/login')
     expect(screen.getByRole('button', { name: /Esqueceu/i })).toBeInTheDocument()
-  })
-
-  it('hides the forgot password link in register mode', () => {
-    renderLoginAt('/register')
-    expect(screen.queryByRole('button', { name: /Esqueceu/i })).not.toBeInTheDocument()
   })
 
   it('shows validation errors when submitting empty login form', async () => {
