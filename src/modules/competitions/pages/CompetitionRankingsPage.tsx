@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom'
 import { Trophy, Shield, Target } from 'lucide-react'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useTopScorers, useFairPlayRanking } from '../hooks/useCompetitionAdvanced'
 import { TopScorersTable } from '../components/TopScorersTable'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
+import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 import type { FairPlayRanking } from '../types'
 
 // ─── Fair Play Table ─────────────────────────────────────────────────────────
@@ -110,19 +112,26 @@ function FairPlayTable({
 export function CompetitionRankingsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: topScorers = [], isLoading: loadingScorers } = useTopScorers(competitionId)
   const { data: fairPlay = [], isLoading: loadingFairPlay } = useFairPlayRanking(competitionId)
 
   return (
-    <CompetitionManagementFrame
-      backTo={`/competitions/${competitionId}`}
-      backLabel="Voltar à Competição"
-      badge={<><Trophy className="h-3.5 w-3.5" /> Rankings</>}
+    <DashboardLayout
       title="Rankings & Fair Play"
-      description={!loadingComp && competition ? `${competition.name} — ${competition.season}` : undefined}
-      contentClassName="mx-auto max-w-5xl"
+      subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar marcadores e fair play da competição.'}
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.detail(competitionId)}>
+            <Trophy className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       <Tabs defaultValue="scorers" className="space-y-lg">
         <TabsList>
@@ -144,6 +153,6 @@ export function CompetitionRankingsPage() {
           <FairPlayTable rankings={fairPlay} isLoading={loadingFairPlay} />
         </TabsContent>
       </Tabs>
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }

@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Loader2, Zap } from 'lucide-react'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input } from '@/components/ui'
 import { useGenerateSchedule } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
 import { generateScheduleSchema, type GenerateScheduleFormData } from '../schemas'
-import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
+import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 
 /**
  * CompetitionSchedulePage — configure and generate the competition calendar.
@@ -17,6 +18,7 @@ import { CompetitionManagementFrame } from '../components/CompetitionManagementF
 export function CompetitionSchedulePage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const generateSchedule = useGenerateSchedule(competitionId)
@@ -49,16 +51,37 @@ export function CompetitionSchedulePage() {
     )
   }
 
-  if (loadingComp) return <CompetitionHeaderSkeleton />
+  if (loadingComp) {
+    return (
+      <DashboardLayout
+        title="Gerar Calendário"
+        subtitle="Configurar e gerar o calendário da competição."
+        dashboardType="competition"
+        sidebarLinks={sidebarLinks}
+      >
+        <Card variant="flat" padding="lg" className="space-y-sm">
+          <div className="h-5 w-48 rounded-full bg-surface-container-high animate-pulse" />
+          <div className="h-10 w-full rounded-lg bg-surface-container-high animate-pulse" />
+          <div className="h-10 w-full rounded-lg bg-surface-container-high animate-pulse" />
+        </Card>
+      </DashboardLayout>
+    )
+  }
 
   return (
-    <CompetitionManagementFrame
-      backTo={`/competitions/${competitionId}`}
-      backLabel="Voltar à Competição"
-      badge={<><Calendar className="h-3.5 w-3.5" /> Calendário</>}
+    <DashboardLayout
       title="Gerar Calendário"
-      description={competition ? `${competition.name} — ${competition.season}` : undefined}
-      contentClassName="mx-auto max-w-2xl"
+      subtitle={competition ? `${competition.name} — ${competition.season}` : 'Configurar e gerar o calendário da competição.'}
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.detail(competitionId)}>
+            <Calendar className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       {generated && (
         <div
@@ -153,6 +176,6 @@ export function CompetitionSchedulePage() {
           </form>
         </CardContent>
       </Card>
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }

@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router-dom'
 import { Users, Loader2, Shield } from 'lucide-react'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useCompetitionStandings, useRegisterClub } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
-import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
+import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 import type { Standing } from '../types'
 
 /**
@@ -15,21 +16,42 @@ import type { Standing } from '../types'
 export function CompetitionRegistrationPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
   const registerClub = useRegisterClub(competitionId)
 
-  if (loadingComp) return <CompetitionHeaderSkeleton />
+  if (loadingComp) {
+    return (
+      <DashboardLayout
+        title="Inscrição de Clubes"
+        subtitle="Gerir os clubes participantes desta competição."
+        dashboardType="competition"
+        sidebarLinks={sidebarLinks}
+      >
+        <Card variant="flat" padding="lg" className="space-y-sm">
+          <div className="h-5 w-48 rounded-full bg-surface-container-high animate-pulse" />
+          <div className="h-24 rounded-xl bg-surface-container-high animate-pulse" />
+        </Card>
+      </DashboardLayout>
+    )
+  }
 
   return (
-    <CompetitionManagementFrame
-      backTo={`/competitions/${competitionId}`}
-      backLabel="Voltar à Competição"
-      badge={<><Users className="h-3.5 w-3.5" /> Inscrição de Clubes</>}
-      title="Clubes Inscritos"
-      description={competition ? `${competition.name} — ${competition.season}` : undefined}
-      contentClassName="mx-auto max-w-5xl"
+    <DashboardLayout
+      title="Inscrição de Clubes"
+      subtitle={competition ? `${competition.name} — ${competition.season}` : 'Gerir os clubes participantes desta competição.'}
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.detail(competitionId)}>
+            <Users className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       <Card variant="flat" padding="none">
         <CardHeader>
@@ -135,6 +157,6 @@ export function CompetitionRegistrationPage() {
           </div>
         </div>
       </Card>
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }

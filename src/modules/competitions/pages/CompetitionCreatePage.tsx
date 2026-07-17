@@ -2,11 +2,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Trophy, Loader2 } from 'lucide-react'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select } from '@/components/ui'
 import { useCreateCompetition } from '../hooks/useCompetitions'
 import { createCompetitionSchema, type CreateCompetitionFormData } from '../schemas'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 
 /**
  * CompetitionCreatePage — form to create a new competition.
@@ -15,6 +16,7 @@ import { competitionRoutes } from '../routes'
 export function CompetitionCreatePage() {
   const navigate = useNavigate()
   const { mutate: createCompetition, isPending } = useCreateCompetition()
+  const sidebarLinks = getCompetitionSidebarLinks()
 
   const {
     register,
@@ -37,13 +39,19 @@ export function CompetitionCreatePage() {
   }
 
   return (
-    <CompetitionManagementFrame
-      backTo={competitionRoutes.list}
-      backLabel="Voltar às Competições"
-      badge={<><Trophy className="h-3.5 w-3.5" /> Nova Competição</>}
+    <DashboardLayout
       title="Criar Competição"
-      description="Preencha os dados para criar uma nova competição na sua organização."
-      contentClassName="mx-auto max-w-2xl"
+      subtitle="Preencha os dados para criar uma nova competição na sua organização."
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.list}>
+            <Trophy className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       <Card variant="flat" padding="none">
         <CardHeader>
@@ -122,6 +130,6 @@ export function CompetitionCreatePage() {
           </form>
         </CardContent>
       </Card>
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }

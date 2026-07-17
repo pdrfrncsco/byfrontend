@@ -1,10 +1,12 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { AlertTriangle, Loader2, User as UserIcon } from 'lucide-react'
-import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useSuspensions, useCancelSuspension } from '../hooks/useCompetitionAdvanced'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
+import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 import type { Suspension, SuspensionType } from '../types'
 
 const SUSPENSION_TYPE_LABELS: Record<SuspensionType, string> = {
@@ -69,6 +71,7 @@ function SuspensionCard({ suspension, isAdmin }: SuspensionCardProps) {
 export function CompetitionSuspensionsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
   const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
@@ -78,13 +81,19 @@ export function CompetitionSuspensionsPage() {
   const past = (suspensions as Suspension[]).filter(s => !s.is_active)
 
   return (
-    <CompetitionManagementFrame
-      backTo={`/competitions/${competitionId}`}
-      backLabel="Voltar à Competição"
-      badge={<><AlertTriangle className="h-3.5 w-3.5" /> Suspensões</>}
+    <DashboardLayout
       title="Suspensões"
-      description={!loadingComp && competition ? `${competition.name} — ${competition.season}` : undefined}
-      contentClassName="mx-auto max-w-5xl"
+      subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar suspensões ativas e cumpridas.'}
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.detail(competitionId)}>
+            <AlertTriangle className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       {loadingSuspensions ? (
         <div className="flex items-center gap-sm py-xl text-sm text-on-surface-variant">
@@ -142,6 +151,6 @@ export function CompetitionSuspensionsPage() {
           )}
         </>
       )}
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }

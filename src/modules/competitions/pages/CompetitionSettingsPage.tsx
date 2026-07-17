@@ -2,12 +2,12 @@ import { useParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Settings, Loader2 } from 'lucide-react'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Select } from '@/components/ui'
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
-import { CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
-import { CompetitionManagementFrame } from '../components/CompetitionManagementFrame'
 import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 
 /**
  * CompetitionSettingsPage — edit competition metadata and status.
@@ -16,6 +16,7 @@ import { competitionRoutes } from '../routes'
 export function CompetitionSettingsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   const { data: competition, isLoading } = useCompetition(competitionId)
   const { mutate: updateCompetition, isPending } = useUpdateCompetition()
@@ -41,28 +42,55 @@ export function CompetitionSettingsPage() {
   }
 
   if (isLoading) {
-    return <CompetitionHeaderSkeleton />
+    return (
+      <DashboardLayout
+        title="Configurações da Competição"
+        subtitle="Ajuste os dados gerais e o estado da competição."
+        dashboardType="competition"
+        sidebarLinks={sidebarLinks}
+      >
+        <Card variant="flat" padding="lg" className="space-y-sm">
+          <div className="h-5 w-40 rounded-full bg-surface-container-high animate-pulse" />
+          <div className="h-10 w-full rounded-lg bg-surface-container-high animate-pulse" />
+          <div className="h-10 w-full rounded-lg bg-surface-container-high animate-pulse" />
+          <div className="h-10 w-full rounded-lg bg-surface-container-high animate-pulse" />
+        </Card>
+      </DashboardLayout>
+    )
   }
 
   if (!competition) {
     return (
-      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
-        <p>Competição não encontrada.</p>
-        <Link to={competitionRoutes.list}>
-          <Button variant="secondary" size="sm">Voltar</Button>
-        </Link>
-      </div>
+      <DashboardLayout
+        title="Configurações da Competição"
+        subtitle="Ajuste os dados gerais e o estado da competição."
+        dashboardType="competition"
+        sidebarLinks={sidebarLinks}
+      >
+        <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
+          <p>Competição não encontrada.</p>
+          <Link to={competitionRoutes.list}>
+            <Button variant="secondary" size="sm">Ver página pública</Button>
+          </Link>
+        </div>
+      </DashboardLayout>
     )
   }
 
   return (
-    <CompetitionManagementFrame
-      backTo={competitionRoutes.detail(competitionId)}
-      backLabel="Voltar à Competição"
-      badge={<><Settings className="h-3.5 w-3.5" /> Configurações</>}
-      title={competition.name}
-      description="Edite os dados gerais desta competição."
-      contentClassName="mx-auto max-w-2xl"
+    <DashboardLayout
+      title={`Configurações • ${competition.name}`}
+      subtitle="Edite os dados gerais desta competição."
+      dashboardType="competition"
+      sidebarLinks={sidebarLinks}
+      headerActions={
+        <Button asChild variant="secondary" size="sm">
+          <Link to={competitionRoutes.detail(competitionId)}>
+            <Settings className="h-4 w-4" />
+            <span>Ver página pública</span>
+          </Link>
+        </Button>
+      }
     >
       <Card variant="flat" padding="none">
         <CardHeader>
@@ -125,6 +153,6 @@ export function CompetitionSettingsPage() {
           </form>
         </CardContent>
       </Card>
-    </CompetitionManagementFrame>
+    </DashboardLayout>
   )
 }
