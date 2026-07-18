@@ -206,5 +206,6 @@ export const API_ROUTES = {
     LIST: '/notifications/',
     UNREAD_COUNT: '/notifications/unread-count/',
     MARK_READ: (id: string) => `/notifications/${id}/mark-read/`,
+    STREAM: '/notifications/stream/',
   },
 }
