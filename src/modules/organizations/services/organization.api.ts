@@ -13,6 +13,7 @@ import type {
   OrgMember,
   OrgMemberInviteData,
   ClubAffiliationRequest,
+  ClubAffiliationCreateData,
   ClubAffiliationReviewData,
 } from '../types'
 
@@ -69,7 +70,8 @@ export const organizationApi = {
       API_ROUTES.ORGANIZATIONS.PUBLIC.LIST,
       { params },
     )
-    return response.data.data
+    const data = response.data.data as PublicOrganization[] | { results?: PublicOrganization[] }
+    return Array.isArray(data) ? data : data.results || []
   },
 
   async getPublicDetail(slug: string): Promise<PublicOrganization> {
@@ -156,6 +158,17 @@ export const organizationApi = {
   async getClubRequests(): Promise<ClubAffiliationRequest[]> {
     const response = await client.get<ApiResponse<ClubAffiliationRequest[]>>(
       API_ROUTES.ORGANIZATIONS.CLUB_REQUESTS,
+    )
+    return response.data.data
+  },
+
+  async submitClubRequest(
+    slug: string,
+    data: ClubAffiliationCreateData,
+  ): Promise<ClubAffiliationRequest> {
+    const response = await client.post<ApiResponse<ClubAffiliationRequest>>(
+      API_ROUTES.ORGANIZATIONS.PUBLIC.CLUB_REQUESTS(slug),
+      data,
     )
     return response.data.data
   },

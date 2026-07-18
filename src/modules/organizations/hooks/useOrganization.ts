@@ -6,6 +6,7 @@ import type {
   OrganizationListParams,
   OrganizationUpdateData,
   OrgMemberInviteData,
+  ClubAffiliationCreateData,
   ClubAffiliationReviewData,
 } from '../types'
 
@@ -290,6 +291,27 @@ export function useOrganizationClubRequests() {
     queryKey: ['organization', 'club-requests'],
     queryFn: () => organizationApi.getClubRequests(),
     enabled: isAuthenticated,
+  })
+}
+
+/**
+ * Hook para submeter pedido público de filiação de clube.
+ */
+export function useSubmitClubRequest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ slug, data }: { slug: string; data: ClubAffiliationCreateData }) =>
+      organizationApi.submitClubRequest(slug, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['organization', 'club-requests'] })
+      toast.success('Pedido de filiação submetido com sucesso.')
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao submeter pedido de filiação.'
+      toast.error(message)
+    },
   })
 }
 

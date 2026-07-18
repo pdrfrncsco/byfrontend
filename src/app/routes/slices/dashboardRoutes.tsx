@@ -7,6 +7,7 @@ import { clubRoutes } from '@/modules/clubs/routes'
 import { playerRoutes } from '@/modules/players/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { onboardingRoutes } from '@/modules/onboarding/routes'
+import { ROUTES } from '@/constants/routes'
 import {
   DashboardPageSelector,
   ExecutiveDashboardPage,
@@ -29,6 +30,7 @@ const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocuments
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/clubs/pages/ClubTransfersPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/clubs/pages/ClubTransferCreatePage'))
+const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
 )
@@ -198,6 +200,14 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><ClubTransferCreatePage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.CLUB_ONBOARDING}
+        element={
+          <ProtectedRoute requiredRoles={['club']}>
+            <Suspense fallback={<RouteFallback />}><ClubOnboardingPage /></Suspense>
           </ProtectedRoute>
         }
       />

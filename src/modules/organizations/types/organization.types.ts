@@ -153,6 +153,22 @@ export interface ClubAffiliationRequest {
   created_at?: string
 }
 
+export interface ClubAffiliationCreateData {
+  name: string
+  short_name?: string
+  founded_year?: number | null
+  city?: string | null
+  country?: string
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  description?: string | null
+  primary_color?: string
+  secondary_color?: string
+  stadium_name?: string | null
+  stadium_capacity?: number | null
+}
+
 export interface ClubAffiliationReviewData {
   approve: boolean
   review_notes?: string

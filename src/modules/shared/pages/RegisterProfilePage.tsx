@@ -61,7 +61,7 @@ export function RegisterProfilePage({
     })
 
     if (result) {
-      navigate('/dashboard')
+      navigate(profileType === 'club' ? ROUTES.CLUB_ONBOARDING : ROUTES.DASHBOARD)
     }
   }
 
