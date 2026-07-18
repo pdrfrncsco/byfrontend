@@ -49,9 +49,9 @@ const EMPTY_PUBLIC_STATS: PublicStatsResponse = {
 }
 
 /**
- * Verifica se o modo mock está habilitado via variável de ambiente
+ * Verifica se o modo mock está habilitado via variável de ambiente (apenas em desenvolvimento)
  */
-const isMockEnabled = import.meta.env.VITE_ENABLE_DASHBOARD_MOCK === 'true'
+const isMockEnabled = import.meta.env.VITE_ENABLE_DASHBOARD_MOCK === 'true' && !import.meta.env.PROD
 
 export const dashboardApi = {
   /**
