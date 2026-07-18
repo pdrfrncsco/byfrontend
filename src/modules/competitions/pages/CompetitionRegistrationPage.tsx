@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom'
 import { Users, Loader2, Shield } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, FormField } from '@/components/ui'
 import { useCompetitionStandings, useRegisterClub } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
+import { useOrganizationMe, useOrganizationClubs } from '@/modules/organizations/hooks'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import type { Standing } from '../types'
@@ -21,6 +22,9 @@ export function CompetitionRegistrationPage() {
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
   const registerClub = useRegisterClub(competitionId)
+
+  const { data: org } = useOrganizationMe()
+  const { data: orgClubs, isLoading: loadingOrgClubs } = useOrganizationClubs(org?.slug)
 
   if (loadingComp) {
     return (
@@ -123,30 +127,46 @@ export function CompetitionRegistrationPage() {
       </Card>
       <Card variant="flat" padding="lg">
         <div className="space-y-md">
-          <h3 className="font-semibold text-on-surface">Adicionar Clube</h3>
+          <h3 className="font-semibold text-on-surface">Inscrever Clube da Organização</h3>
           <p className="text-sm text-on-surface-variant">
-            Para inscrever um clube, utilize o ID do clube na plataforma.
-            Esta funcionalidade será expandida com pesquisa autocomplete em breve.
+            Selecione um dos clubes filiados à sua organização para inscrever nesta competição.
           </p>
-          <div className="flex gap-sm">
-            <input
-              id="club-id-input"
-              type="text"
-              placeholder="ID do clube (UUID)"
-              className="flex-1 rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
-            />
+          <div className="flex gap-sm items-end">
+            <FormField label="Clube Filiado" htmlFor="club-id-select" className="flex-1">
+              {loadingOrgClubs ? (
+                <div className="text-xs text-on-surface-variant flex items-center gap-xs h-10 px-md py-sm">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> A carregar clubes afiliados...
+                </div>
+              ) : (
+                <select
+                  id="club-id-select"
+                  className="w-full rounded-lg border border-outline-variant bg-[#0b1c30] px-md py-xs text-sm text-on-surface focus:border-primary focus:outline-none h-10"
+                >
+                  <option value="">Selecione um clube...</option>
+                  {Array.isArray(orgClubs) &&
+                    orgClubs
+                      .filter((c: any) => !standings.some((s: any) => s.club === c.id))
+                      .map((c: any) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} ({c.city || 'Sem Cidade'})
+                        </option>
+                      ))}
+                </select>
+              )}
+            </FormField>
             <Button
               variant="primary"
               size="sm"
               disabled={registerClub.isPending}
               onClick={() => {
-                const input = document.getElementById('club-id-input') as HTMLInputElement
-                if (input?.value) {
-                  registerClub.mutate(input.value)
-                  input.value = ''
+                const select = document.getElementById('club-id-select') as HTMLSelectElement
+                if (select?.value) {
+                  registerClub.mutate(select.value)
+                  select.value = ''
                 }
               }}
               id="register-club-btn"
+              className="h-10 animate-fade-in"
             >
               {registerClub.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

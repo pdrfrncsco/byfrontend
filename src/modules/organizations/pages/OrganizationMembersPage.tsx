@@ -165,7 +165,7 @@ export function OrganizationMembersPage() {
     <DashboardLayout
       title="Membros da Organização"
       subtitle="Gira os utilizadores que têm acesso ao painel de administração da sua organização."
-      dashboardType="federation"
+      dashboardType="organization"
       sidebarLinks={sidebarLinks}
       headerActions={headerActions}
     >

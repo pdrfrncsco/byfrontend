@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Shield, Trophy, Settings } from 'lucide-react'
+import { ArrowLeft, Shield, Trophy, Settings, Users } from 'lucide-react'
 import { Card, Button } from '@/components/ui'
 import { useOrganizationMe, useUpdateOrganization, useUploadLogo, useUploadBanner } from '../hooks'
 import { OrganizationSettingsSkeleton, OrganizationSettingsForm } from '../components'
@@ -17,6 +17,8 @@ export function OrganizationSettingsPage() {
     { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Clubes Associados', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
     { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
+    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
     { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" />, active: true },
   ]
 
@@ -25,7 +27,7 @@ export function OrganizationSettingsPage() {
       <DashboardLayout
         title="Definições da Organização"
         subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
-        dashboardType="federation"
+        dashboardType="organization"
         sidebarLinks={sidebarLinks}
       >
         <OrganizationSettingsSkeleton />
@@ -38,7 +40,7 @@ export function OrganizationSettingsPage() {
       <DashboardLayout
         title="Definições da Organização"
         subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
-        dashboardType="federation"
+        dashboardType="organization"
         sidebarLinks={sidebarLinks}
       >
         <div className="flex items-center justify-center p-lg text-center">
@@ -62,7 +64,7 @@ export function OrganizationSettingsPage() {
     <DashboardLayout
       title="Definições da Organização"
       subtitle="Gira a identidade visual, contactos e visibilidade pública do portal da sua federação/associação."
-      dashboardType="federation"
+      dashboardType="organization"
       sidebarLinks={sidebarLinks}
     >
       <OrganizationSettingsForm

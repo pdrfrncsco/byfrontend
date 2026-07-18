@@ -7,6 +7,7 @@ import {
   Zap,
   Loader2,
   AlertCircle,
+  Settings,
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button, Card } from '@/components/ui'
@@ -224,6 +225,26 @@ export function CompetitionDetailPage() {
       ) : competition ? (
         <CompetitionHeader competition={competition} />
       ) : null}
+
+      {/* Admin Notice Bar */}
+      {isAdmin && (
+        <div className="mx-auto max-w-6xl px-md pt-md sm:px-xl">
+          <div className="flex items-center justify-between gap-md rounded-xl border border-primary/20 bg-primary-container/10 p-md">
+            <div className="flex items-center gap-sm">
+              <Settings className="h-5 w-5 text-primary" />
+              <div>
+                <p className="text-sm font-semibold text-on-surface">Administrador da Competição</p>
+                <p className="text-xs text-on-surface-variant">Tem permissões administrativas para gerir este torneio, inscrições e calendário.</p>
+              </div>
+            </div>
+            <Button variant="primary" size="sm" asChild>
+              <Link to={competitionRoutes.settings(competitionId)}>
+                Gerir Torneio
+              </Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl">

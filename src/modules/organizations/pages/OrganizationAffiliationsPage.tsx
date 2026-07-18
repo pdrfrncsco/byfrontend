@@ -214,7 +214,7 @@ export function OrganizationAffiliationsPage() {
     <DashboardLayout
       title="Pedidos de Filiação de Clubes"
       subtitle="Aprove ou rejeite pedidos de clubes que pretendem filiar-se à sua organização."
-      dashboardType="federation"
+      dashboardType="organization"
       sidebarLinks={sidebarLinks}
     >
       <div className="animate-fade-in">

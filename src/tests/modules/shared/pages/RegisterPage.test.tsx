@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { I18nextProvider } from 'react-i18next'
 import { i18n } from '@/app/providers/I18nProvider'
@@ -76,15 +76,17 @@ describe('RegisterProfilePage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Criar conta de Jogador/i }))
 
-    expect(authMocks.mutateAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        email: 'joao@example.com',
-        first_name: 'João',
-        last_name: 'Silva',
-        password: 'Senha@123',
-        password_confirm: 'Senha@123',
-        profile_type: 'player',
-      }),
-    )
+    await waitFor(() => {
+      expect(authMocks.mutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: 'joao@example.com',
+          first_name: 'João',
+          last_name: 'Silva',
+          password: 'Senha@123',
+          password_confirm: 'Senha@123',
+          profile_type: 'player',
+        }),
+      )
+    })
   })
 })

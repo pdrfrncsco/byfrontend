@@ -10,6 +10,7 @@ import {
   Users,
 } from 'lucide-react'
 import { competitionRoutes } from '../routes'
+import { ROUTES } from '@/constants/routes'
 
 interface CompetitionSidebarLink {
   label: string
@@ -22,7 +23,8 @@ export function getCompetitionSidebarLinks(competitionId?: string): CompetitionS
   const competitionPath = competitionId ?? ''
 
   return [
-    { label: 'Geral', href: competitionRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: 'Visão Geral (Provas)', href: competitionRoutes.dashboard, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Nova Competição', href: competitionRoutes.create, icon: <PlusCircle className="h-4 w-4" /> },
     ...(hasCompetition
       ? [

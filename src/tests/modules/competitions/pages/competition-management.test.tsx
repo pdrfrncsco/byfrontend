@@ -21,6 +21,12 @@ vi.mock('@/modules/competitions/hooks/useCompetitions', () => ({
   useUpdateCompetition: vi.fn(),
 }))
 
+vi.mock('@/modules/notifications/hooks/useNotifications', () => ({
+  useUnreadCount: () => ({ data: 0, isLoading: false }),
+  useNotificationsList: () => ({ data: [], isLoading: false }),
+  useMarkRead: () => ({ mutate: vi.fn() }),
+}))
+
 vi.mock('@/modules/competitions/components/CompetitionHeader', () => ({
   CompetitionHeaderSkeleton: () => <div>Loading competition header</div>,
 }))

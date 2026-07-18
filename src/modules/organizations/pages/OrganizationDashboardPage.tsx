@@ -130,7 +130,14 @@ export default function OrganizationDashboardPage() {
       {
         accessorKey: 'name',
         header: 'Nome',
-        cell: ({ row }) => <span className="font-semibold">{row.original.name}</span>,
+        cell: ({ row }) => (
+          <Link
+            to={ROUTES.COMPETITION_SETTINGS(row.original.id)}
+            className="font-semibold text-primary hover:underline hover:text-primary-container"
+          >
+            {row.original.name}
+          </Link>
+        ),
       },
       {
         id: 'format',
@@ -153,6 +160,17 @@ export default function OrganizationDashboardPage() {
         accessorFn: (row) => row.status_label || row.status || 'active',
         cell: ({ row }) => getStatusBadge(row.original.status_label || row.original.status || 'active'),
         enableSorting: false,
+      },
+      {
+        id: 'actions',
+        header: 'Ações',
+        cell: ({ row }) => (
+          <Button variant="ghost" size="sm" asChild className="text-primary hover:bg-primary-container/20">
+            <Link to={ROUTES.COMPETITION_SETTINGS(row.original.id)}>
+              Gerir
+            </Link>
+          </Button>
+        ),
       },
     ],
     [],
@@ -422,7 +440,7 @@ export default function OrganizationDashboardPage() {
                 </Link>
               </Button>
               <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.COMPETITIONS}>
+                <Link to={ROUTES.COMPETITION_CREATE}>
                   <Trophy className="h-4 w-4 text-primary" />
                   <span>Publicar Nova Competição</span>
                 </Link>

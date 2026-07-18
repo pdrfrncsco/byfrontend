@@ -29,12 +29,13 @@ export function CompetitionDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
 
   const sidebarLinks = [
-    { label: 'Geral',        href: dashboardRoutes.competition, icon: <Home        className="w-5 h-5" />, active: true },
-    { label: 'Torneios',     href: ROUTES.COMPETITIONS, icon: <Trophy      className="w-5 h-5" /> },
-    { label: 'Partidas',     href: ROUTES.MATCHES, icon: <Calendar    className="w-5 h-5" /> },
-    { label: 'Árbitros',     href: dashboardRoutes.competition, icon: <Gavel       className="w-5 h-5" />, disabled: true },
-    { label: 'Estádios',     href: dashboardRoutes.competition, icon: <MapPin      className="w-5 h-5" />, disabled: true },
-    { label: 'Conformidade', href: dashboardRoutes.competition, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
+    { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
+    { label: 'Geral de Provas',       href: dashboardRoutes.competition, icon: <Trophy className="w-5 h-5" />, active: true },
+    { label: 'Torneios',              href: ROUTES.COMPETITIONS, icon: <Trophy className="w-5 h-5" /> },
+    { label: 'Partidas',              href: ROUTES.MATCHES, icon: <Calendar className="w-5 h-5" /> },
+    { label: 'Árbitros',              href: dashboardRoutes.competition, icon: <Gavel className="w-5 h-5" />, disabled: true },
+    { label: 'Estádios',              href: dashboardRoutes.competition, icon: <MapPin className="w-5 h-5" />, disabled: true },
+    { label: 'Conformidade',          href: dashboardRoutes.competition, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
   ]
 
   const headerActions = (
@@ -103,7 +104,7 @@ export function CompetitionDashboardPage() {
                   return (
                     <Link
                       key={comp.id}
-                      to={ROUTES.COMPETITION_DETAIL(comp.id)}
+                      to={ROUTES.COMPETITION_SETTINGS(comp.id)}
                       className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 flex items-center justify-between hover:border-primary/40 hover:bg-[#102034] transition-all group"
                     >
                       <div className="flex items-center gap-sm min-w-0">
