@@ -84,7 +84,7 @@ export function dashboardRouteElements() {
       <Route
         path={dashboardRoutes.club}
         element={
-          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>
             <Suspense fallback={<RouteFallback />}><ClubDashboardPage /></Suspense>
           </ProtectedRoute>
         }
@@ -112,7 +112,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.clubRegister}
         element={
-          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>
             <Suspense fallback={<RouteFallback />}><ClubPlayerRegisterPage /></Suspense>
           </ProtectedRoute>
         }
@@ -120,7 +120,7 @@ export function dashboardRouteElements() {
       <Route
         path={playerRoutes.clubPlayerRequests}
         element={
-          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin']}>
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>
             <Suspense fallback={<RouteFallback />}><ClubPlayerRegistrationRequestsPage /></Suspense>
           </ProtectedRoute>
         }

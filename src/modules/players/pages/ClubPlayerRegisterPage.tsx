@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react'
+import { ArrowLeft, Search, Users } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -19,6 +19,7 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { usePlayers, useRegisterPlayer } from '../hooks'
 import { playerRegisterSchema, type PlayerRegisterFormData } from '../schemas'
 import type { Player } from '../types'
@@ -54,12 +55,7 @@ export function ClubPlayerRegisterPage() {
     }
   }, [club?.id, setValue])
 
-  const sidebarLinks = [
-    { label: t('players.register.sidebar.general'), href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
-    { label: t('players.clubRequests.sidebar'), href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS, icon: <UserPlus className="h-4 w-4" /> },
-    { label: t('players.register.sidebar.register'), href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER, icon: <UserPlus className="h-4 w-4" />, active: true },
-    { label: t('players.register.sidebar.transfers'), href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const filteredPlayers = useMemo(() => {
     const players = playersData?.results ?? []

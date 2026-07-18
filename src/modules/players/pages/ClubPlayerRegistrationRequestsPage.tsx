@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type ColumnDef } from '@tanstack/react-table'
-import { ArrowLeft, CheckCircle, UserPlus, Users, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, UserPlus, XCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, DataTable, EmptyState, Skeleton } from '@/components/ui'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubPlayerRegistrationRequests, useReviewClubPlayerRegistrationRequest } from '../hooks'
-import { playerRoutes } from '../routes'
 import type { PlayerRegistrationRequest } from '../types'
 
 function formatDate(dateString?: string | null): string {
@@ -39,12 +39,7 @@ export function ClubPlayerRegistrationRequestsPage() {
   const reviewRequest = useReviewClubPlayerRegistrationRequest()
   const [rowNotes, setRowNotes] = useState<RowNotesState>({})
 
-  const sidebarLinks = [
-    { label: t('players.register.sidebar.general'), href: ROUTES.DASHBOARD_CLUB, icon: <Users className="h-4 w-4" /> },
-    { label: t('players.clubRequests.sidebar'), href: playerRoutes.clubPlayerRequests, icon: <UserPlus className="h-4 w-4" />, active: true },
-    { label: t('players.register.sidebar.register'), href: playerRoutes.clubRegister, icon: <UserPlus className="h-4 w-4" /> },
-    { label: t('players.register.sidebar.transfers'), href: ROUTES.DASHBOARD_CLUB_TRANSFERS, icon: <Users className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getClubSidebarLinks()
 
   const toggleNotes = (id: string, approve: boolean) => {
     setRowNotes((prev) => ({
