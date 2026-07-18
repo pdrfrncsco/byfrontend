@@ -21,6 +21,7 @@ import type {
   CompetitionRegulation,
   CompetitionRegulationCreateData,
   Suspension,
+  ManualSuspensionCreateData,
   FairPlayRanking,
   TopScorer,
   SeasonRanking,
@@ -284,6 +285,14 @@ export const competitionApi = {
     return response.data.data
   },
 
+  async createSuspension(competitionId: string, data: ManualSuspensionCreateData): Promise<Suspension> {
+    const response = await client.post<ApiResponse<Suspension>>(
+      `/competitions/${competitionId}/suspensions/`,
+      data
+    )
+    return response.data.data
+  },
+
   async checkEligibility(competitionId: string, playerId: string): Promise<{ eligible: boolean; reason?: string }> {
     const response = await client.get<ApiResponse<{ eligible: boolean; reason?: string }>>(
       `/competitions/${competitionId}/eligibility/${playerId}/`
@@ -319,6 +328,14 @@ export const competitionApi = {
     const response = await client.get<ApiResponse<SeasonRanking[]>>(
       '/competitions/rankings/season/',
       { params: season ? { season } : {} }
+    )
+    return response.data.data
+  },
+
+  async recalculateRankings(competitionId?: string): Promise<{ message: string }> {
+    const response = await client.post<ApiResponse<{ message: string }>>(
+      '/competitions/rankings/recalculate/',
+      competitionId ? { competition_id: competitionId } : {}
     )
     return response.data.data
   },

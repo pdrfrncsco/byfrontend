@@ -83,7 +83,7 @@ export default function OrganizationDashboardPage() {
 
   const headerActions = (
     <Button variant="primary" size="sm" asChild>
-      <Link to={ROUTES.COMPETITIONS}>
+      <Link to={ROUTES.COMPETITION_CREATE}>
         <PlusCircle className="h-4 w-4" />
         <span>Criar Competição</span>
       </Link>

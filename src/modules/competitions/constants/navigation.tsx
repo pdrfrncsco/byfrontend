@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react'
 import {
+  BookOpen,
   Calendar,
   ExternalLink,
   LayoutDashboard,
   PlusCircle,
   Settings,
   ShieldAlert,
+  Target,
   Trophy,
   Users,
 } from 'lucide-react'
@@ -16,6 +18,7 @@ interface CompetitionSidebarLink {
   label: string
   href: string
   icon: ReactNode
+  disabled?: boolean
 }
 
 export function getCompetitionSidebarLinks(competitionId?: string): CompetitionSidebarLink[] {
@@ -28,6 +31,11 @@ export function getCompetitionSidebarLinks(competitionId?: string): CompetitionS
     { label: 'Nova Competição', href: competitionRoutes.create, icon: <PlusCircle className="h-4 w-4" /> },
     ...(hasCompetition
       ? [
+          {
+            label: 'Painel da Competição',
+            href: competitionRoutes.adminDashboard(competitionPath),
+            icon: <LayoutDashboard className="h-4 w-4" />,
+          },
           {
             label: 'Configurações',
             href: competitionRoutes.settings(competitionPath),
@@ -45,13 +53,18 @@ export function getCompetitionSidebarLinks(competitionId?: string): CompetitionS
           },
           {
             label: 'Rankings',
-            href: competitionRoutes.rankings(competitionPath),
-            icon: <Trophy className="h-4 w-4" />,
+            href: competitionRoutes.adminRankings(competitionPath),
+            icon: <Target className="h-4 w-4" />,
           },
           {
             label: 'Suspensões',
-            href: competitionRoutes.suspensions(competitionPath),
+            href: competitionRoutes.adminSuspensions(competitionPath),
             icon: <ShieldAlert className="h-4 w-4" />,
+          },
+          {
+            label: 'Regulamentos',
+            href: competitionRoutes.adminRegulations(competitionPath),
+            icon: <BookOpen className="h-4 w-4" />,
           },
           {
             label: 'Página Pública',

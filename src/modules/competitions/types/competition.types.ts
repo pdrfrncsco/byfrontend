@@ -319,22 +319,37 @@ export interface SeasonRanking {
 
 // ─── Regulation Types ──────────────────────────────────────────────────────
 
+export type RegulationStatus = 'draft' | 'published' | 'archived'
+
 export interface CompetitionRegulation {
   id: string
   competition: string
   title: string
-  content: string
-  category?: string
-  order?: number
+  summary?: string
+  version: string
+  status: RegulationStatus
+  status_label?: string
+  document?: string | null
+  published_at?: string | null
   created_at?: string
   updated_at?: string
 }
 
 export interface CompetitionRegulationCreateData {
   title: string
-  content: string
-  category?: string
-  order?: number
+  summary?: string
+  version?: string
+  status?: RegulationStatus
+  document?: File | string
+}
+
+export interface ManualSuspensionCreateData {
+  player: string
+  club: string
+  suspension_type: SuspensionType
+  matches_suspended: number
+  effective_from: string
+  reason?: string
 }
 
 // ─── Utility Types ─────────────────────────────────────────────────────────

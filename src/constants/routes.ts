@@ -50,9 +50,13 @@ export const ROUTES = {
   COMPETITION_SUSPENSIONS: (id: string) => `/competitions/${id}/suspensions`,
   // Competition admin (dashboard) routes
   COMPETITION_CREATE: '/dashboard/competitions/create',
+  COMPETITION_ADMIN_DASHBOARD: (id: string) => `/dashboard/competitions/${id}`,
   COMPETITION_SETTINGS: (id: string) => `/dashboard/competitions/${id}/settings`,
   COMPETITION_REGISTRATION: (id: string) => `/dashboard/competitions/${id}/registration`,
   COMPETITION_SCHEDULE: (id: string) => `/dashboard/competitions/${id}/schedule`,
+  COMPETITION_ADMIN_RANKINGS: (id: string) => `/dashboard/competitions/${id}/rankings`,
+  COMPETITION_ADMIN_SUSPENSIONS: (id: string) => `/dashboard/competitions/${id}/suspensions`,
+  COMPETITION_ADMIN_REGULATIONS: (id: string) => `/dashboard/competitions/${id}/regulations`,
   // Match center
   MATCH_CENTER: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}`,
   MATCH_LINEUP: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/lineup`,

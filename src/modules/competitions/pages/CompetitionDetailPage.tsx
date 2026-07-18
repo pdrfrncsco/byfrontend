@@ -153,15 +153,29 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
       {regulations.map(reg => (
         <Card key={reg.id} variant="flat" padding="lg">
           <div className="space-y-sm">
-            <h3 className="font-semibold text-on-surface">{reg.title}</h3>
-            {reg.category && (
-              <span className="inline-block rounded-full bg-primary-container/20 px-sm py-0.5 text-xs text-primary">
-                {reg.category}
-              </span>
+            <div className="flex flex-wrap items-center gap-sm">
+              <h3 className="font-semibold text-on-surface">{reg.title}</h3>
+              {reg.version && (
+                <span className="rounded-md bg-surface-container-high px-xs py-px text-xs text-on-surface-variant">
+                  v{reg.version}
+                </span>
+              )}
+            </div>
+            {reg.summary && (
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-on-surface-variant">
+                {reg.summary}
+              </p>
             )}
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-on-surface-variant">
-              {reg.content}
-            </p>
+            {reg.document && (
+              <a
+                href={reg.document}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-xs text-xs text-primary hover:underline"
+              >
+                Ver documento completo →
+              </a>
+            )}
           </div>
         </Card>
       ))}

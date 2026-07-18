@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom'
-import { Trophy, Shield, Target } from 'lucide-react'
+import { Loader2, RefreshCw, Trophy, Shield, Target } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
-import { useTopScorers, useFairPlayRanking } from '../hooks/useCompetitionAdvanced'
+import { useTopScorers, useFairPlayRanking, useRecalculateRankings } from '../hooks/useCompetitionAdvanced'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
@@ -113,10 +114,12 @@ export function CompetitionRankingsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: topScorers = [], isLoading: loadingScorers } = useTopScorers(competitionId)
   const { data: fairPlay = [], isLoading: loadingFairPlay } = useFairPlayRanking(competitionId)
+  const recalculate = useRecalculateRankings(competitionId)
 
   return (
     <DashboardLayout
@@ -125,12 +128,30 @@ export function CompetitionRankingsPage() {
       dashboardType="competition"
       sidebarLinks={sidebarLinks}
       headerActions={
-        <Button asChild variant="secondary" size="sm">
-          <Link to={competitionRoutes.detail(competitionId)}>
-            <Trophy className="h-4 w-4" />
-            <span>Ver página pública</span>
-          </Link>
-        </Button>
+        <div className="flex items-center gap-sm">
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => recalculate.mutate()}
+              disabled={recalculate.isPending}
+              id="recalculate-btn"
+            >
+              {recalculate.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              <span>Recalcular</span>
+            </Button>
+          )}
+          <Button asChild variant="secondary" size="sm">
+            <Link to={competitionRoutes.detail(competitionId)}>
+              <Trophy className="h-4 w-4" />
+              <span>Ver página pública</span>
+            </Link>
+          </Button>
+        </div>
       }
     >
       <Tabs defaultValue="scorers" className="space-y-lg">

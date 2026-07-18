@@ -233,6 +233,22 @@ export function useCancelSuspension() {
   })
 }
 
+export function useCreateSuspension(competitionId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: import('../types').ManualSuspensionCreateData) =>
+      competitionApi.createSuspension(competitionId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: suspensionKeys.byCompetition(competitionId) })
+      toast.success('Suspensão criada com sucesso!')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao criar suspensão.')
+    },
+  })
+}
+
 // ─── Fair Play & Rankings Hooks ────────────────────────────────────────────
 
 export function useFairPlayRanking(competitionId: string) {
@@ -254,5 +270,21 @@ export function useSeasonRanking(season?: string) {
   return useQuery({
     queryKey: rankingKeys.season(season),
     queryFn: () => competitionApi.getSeasonRanking(season),
+  })
+}
+
+export function useRecalculateRankings(competitionId?: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => competitionApi.recalculateRankings(competitionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rankingKeys.all })
+      queryClient.invalidateQueries({ queryKey: ['standings'] })
+      toast.success('Classificações recalculadas com sucesso!')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao recalcular classificações.')
+    },
   })
 }

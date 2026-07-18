@@ -31,6 +31,12 @@ const CompetitionRegistrationPage = lazy(() =>
 const CompetitionSchedulePage = lazy(() =>
   import('@/modules/competitions/pages/CompetitionSchedulePage').then(m => ({ default: m.CompetitionSchedulePage })),
 )
+const CompetitionAdminDashboardPage = lazy(() =>
+  import('@/modules/competitions/pages/CompetitionAdminDashboardPage').then(m => ({ default: m.CompetitionAdminDashboardPage })),
+)
+const CompetitionRegulationsPage = lazy(() =>
+  import('@/modules/competitions/pages/CompetitionRegulationsPage').then(m => ({ default: m.CompetitionRegulationsPage })),
+)
 const CompetitionRankingsPage = lazy(() =>
   import('@/modules/competitions/pages/CompetitionRankingsPage').then(m => ({ default: m.CompetitionRankingsPage })),
 )
@@ -148,6 +154,40 @@ export function contentRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><CompetitionSchedulePage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Competition admin per-competition dashboard + admin rankings/suspensions */}
+      <Route
+        path={competitionRoutes.adminDashboard(':id')}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><CompetitionAdminDashboardPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={competitionRoutes.adminRankings(':id')}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><CompetitionRankingsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={competitionRoutes.adminSuspensions(':id')}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><CompetitionSuspensionsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={competitionRoutes.adminRegulations(':id')}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><CompetitionRegulationsPage /></Suspense>
           </ProtectedRoute>
         }
       />
