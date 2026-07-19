@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import * as React from 'react'
 import { useTransfers, transferKeys } from '@/modules/transfers/hooks/useTransfers'
-import type { Transfer, TransferListParams } from '@/modules/transfers/types'
+import type { Transfer, TransferListParams, PaginatedTransfers } from '@/modules/transfers/types'
 
 vi.mock('@/modules/transfers/services', () => ({
   transferApi: {
@@ -13,6 +13,10 @@ vi.mock('@/modules/transfers/services', () => ({
 
 vi.mock('@/app/providers', () => ({
   useAuth: () => ({ isAuthenticated: true }),
+}))
+
+vi.mock('sonner', () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }))
 
 import { transferApi } from '@/modules/transfers/services'
@@ -31,22 +35,24 @@ const createWrapper = () => {
 
 const mockTransfer: Transfer = {
   id: 'trans-1',
-  player: 'player-uuid-1',
-  player_name: 'Mateus Paulo',
-  player_slug: 'mateus-paulo',
-  from_club: 'club-uuid-1',
-  from_club_name: 'FC Origem',
-  to_club: 'club-uuid-2',
-  to_club_name: 'FC Destino',
-  competition: null,
-  joined_date: '2026-07-01',
-  shirt_number: 10,
-  fee: '15000.00',
+  player: {
+    id: 'player-uuid-1',
+    full_name: 'Mateus Paulo',
+    primary_position: 'FW',
+  },
+  from_club: { id: 'club-uuid-1', name: 'FC Origem', slug: 'fc-origem' },
+  to_club: { id: 'club-uuid-2', name: 'FC Destino', slug: 'fc-destino' },
+  transfer_type: 'permanent',
+  transfer_date: '2026-07-01',
   status: 'approved',
-  status_label: 'Aprovado',
-  request_date: '2026-06-28',
-  completed_date: '2026-07-01',
-  rejection_reason: null,
+  fee: '15000.00',
+}
+
+const mockPage: PaginatedTransfers = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [mockTransfer],
 }
 
 describe('useTransfers', () => {
@@ -55,7 +61,7 @@ describe('useTransfers', () => {
   })
 
   it('fetches and returns transfer list when authenticated', async () => {
-    vi.mocked(transferApi.list).mockResolvedValueOnce([mockTransfer])
+    vi.mocked(transferApi.list).mockResolvedValueOnce(mockPage)
 
     const { result } = renderHook(() => useTransfers(), {
       wrapper: createWrapper(),
@@ -63,12 +69,12 @@ describe('useTransfers', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(result.current.data).toEqual([mockTransfer])
+    expect(result.current.data).toEqual(mockPage)
     expect(transferApi.list).toHaveBeenCalledTimes(1)
   })
 
   it('passes filter params to the service', async () => {
-    vi.mocked(transferApi.list).mockResolvedValueOnce([mockTransfer])
+    vi.mocked(transferApi.list).mockResolvedValueOnce(mockPage)
 
     const params: TransferListParams = { status: 'approved' }
     const { result } = renderHook(() => useTransfers(params), {
@@ -90,8 +96,13 @@ describe('useTransfers', () => {
     await waitFor(() => expect(result.current.isError).toBe(true))
   })
 
-  it('returns empty array when no transfers exist', async () => {
-    vi.mocked(transferApi.list).mockResolvedValueOnce([])
+  it('returns empty results when no transfers exist', async () => {
+    vi.mocked(transferApi.list).mockResolvedValueOnce({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    })
 
     const { result } = renderHook(() => useTransfers(), {
       wrapper: createWrapper(),
@@ -99,7 +110,7 @@ describe('useTransfers', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
 
-    expect(result.current.data).toEqual([])
+    expect(result.current.data?.results).toEqual([])
   })
 })
 

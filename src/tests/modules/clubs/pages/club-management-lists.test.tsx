@@ -37,6 +37,9 @@ vi.mock('@/modules/clubs/hooks/useClubs', () => ({
   useClubSponsors: vi.fn(),
   useCreateClubSponsor: vi.fn(),
   useDeleteClubSponsor: vi.fn(),
+}))
+
+vi.mock('@/modules/transfers/hooks', () => ({
   useTransfers: vi.fn(),
 }))
 
@@ -45,7 +48,6 @@ import {
   useClubMembers,
   useClubDocuments,
   useClubSponsors,
-  useTransfers,
   useAddClubMember,
   useUpdateClubMember,
   useRemoveClubMember,
@@ -54,6 +56,7 @@ import {
   useCreateClubSponsor,
   useDeleteClubSponsor,
 } from '@/modules/clubs/hooks/useClubs'
+import { useTransfers } from '@/modules/transfers/hooks'
 import ClubMembersPage from '@/modules/clubs/pages/ClubMembersPage'
 import ClubDocumentsPage from '@/modules/clubs/pages/ClubDocumentsPage'
 import ClubSponsorsPage from '@/modules/clubs/pages/ClubSponsorsPage'

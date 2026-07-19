@@ -9,7 +9,6 @@ import type {
   ClubStaffMember,
   ClubDocument,
   ClubSponsor,
-  Transfer,
   ClubListParams,
   ClubCreateData,
   ClubUpdateData,
@@ -17,8 +16,6 @@ import type {
   ClubMemberUpdateData,
   ClubDocumentCreateData,
   ClubSponsorCreateData,
-  TransferListParams,
-  TransferCreateData,
   PaginatedResponse,
 } from '../types'
 
@@ -246,34 +243,8 @@ export async function deleteClubSponsor(slug: string, sponsorId: string): Promis
   await apiClient.delete(API_ROUTES.CLUBS.SPONSOR_DETAIL(slug, sponsorId))
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Transfer Management
-// ─────────────────────────────────────────────────────────────────────────────
+// Transfer APIs live in `@/modules/transfers` — re-exported for legacy imports.
+export {
+  transferApi as transfersApi,
+} from '@/modules/transfers/services'
 
-export async function listTransfers(params?: TransferListParams): Promise<PaginatedResponse<Transfer>> {
-  const res = await apiClient.get<{ results: Transfer[] } | ApiResponse<PaginatedResponse<Transfer>> | PaginatedResponse<Transfer>>(
-    API_ROUTES.CLUBS.TRANSFERS,
-    { params },
-  )
-  return unwrapPaginated(res.data as PaginatedEnvelope<Transfer>)
-}
-
-export async function getTransfer(id: string): Promise<Transfer> {
-  const res = await apiClient.get<Envelope<Transfer>>(API_ROUTES.CLUBS.TRANSFER_DETAIL(id))
-  return unwrapData(res.data)
-}
-
-export async function createTransfer(data: TransferCreateData): Promise<Transfer> {
-  const res = await apiClient.post<Envelope<Transfer>>(API_ROUTES.CLUBS.TRANSFERS, data)
-  return unwrapData(res.data)
-}
-
-export async function approveTransfer(id: string): Promise<Transfer> {
-  const res = await apiClient.post<Envelope<Transfer>>(API_ROUTES.CLUBS.TRANSFER_APPROVE(id))
-  return unwrapData(res.data)
-}
-
-export async function rejectTransfer(id: string, reason?: string): Promise<Transfer> {
-  const res = await apiClient.post<Envelope<Transfer>>(API_ROUTES.CLUBS.TRANSFER_REJECT(id), { reason })
-  return unwrapData(res.data)
-}

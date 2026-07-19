@@ -10,8 +10,6 @@ import type {
   ClubMemberUpdateData,
   ClubDocumentCreateData,
   ClubSponsorCreateData,
-  TransferListParams,
-  TransferCreateData,
 } from '@/modules/clubs/types'
 
 export const clubKeys = {
@@ -29,9 +27,6 @@ export const clubKeys = {
   sponsors: (slug: string) => [...clubKeys.all, slug, 'sponsors', 'private'] as const,
   members: (slug: string) => [...clubKeys.all, slug, 'members'] as const,
   me: () => [...clubKeys.all, 'me'] as const,
-  transfers: () => [...clubKeys.all, 'transfers'] as const,
-  transferList: (params?: TransferListParams) => [...clubKeys.transfers(), 'list', params] as const,
-  transferDetail: (id: string) => [...clubKeys.transfers(), 'detail', id] as const,
 }
 
 export function useClubs(params?: ClubListParams) {
@@ -312,68 +307,17 @@ export function useDeleteClubSponsor() {
   })
 }
 
-export function useTransfers(params?: TransferListParams) {
-  const { isAuthenticated } = useAuth()
-  return useQuery({
-    queryKey: clubKeys.transferList(params),
-    queryFn: () => service.listTransfers(params),
-    enabled: isAuthenticated,
-  })
-}
-
-export function useTransfer(id?: string) {
-  const { isAuthenticated } = useAuth()
-  return useQuery({
-    queryKey: clubKeys.transferDetail(id || ''),
-    queryFn: () => (id ? service.getTransfer(id) : Promise.resolve(null)),
-    enabled: !!id && isAuthenticated,
-  })
-}
-
-export function useCreateTransfer() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (data: TransferCreateData) => service.createTransfer(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: clubKeys.transfers() })
-      toast.success('Transferência registada com sucesso.')
-    },
-    onError: (error: unknown) => {
-      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao registar transferência.'
-      toast.error(message)
-    },
-  })
-}
-
-export function useApproveTransfer() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (id: string) => service.approveTransfer(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: clubKeys.transfers() })
-      toast.success('Transferência aprovada com sucesso.')
-    },
-    onError: (error: unknown) => {
-      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao aprovar transferência.'
-      toast.error(message)
-    },
-  })
-}
-
-export function useRejectTransfer() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason?: string }) => service.rejectTransfer(id, reason),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: clubKeys.transfers() })
-      toast.success('Transferência rejeitada.')
-    },
-    onError: (error: unknown) => {
-      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao rejeitar transferência.'
-      toast.error(message)
-    },
-  })
-}
-
 export const usePublicClubDocuments = useClubPublicDocuments
 export const usePublicClubSponsors = useClubPublicSponsors
+
+// Transfer hooks live in `@/modules/transfers` — re-exported for legacy club imports.
+export {
+  useTransfers,
+  useTransfer,
+  useTransferDetail,
+  useCreateTransfer,
+  useApproveTransfer,
+  useRejectTransfer,
+  useCompleteTransfer,
+  useCancelTransfer,
+} from '@/modules/transfers/hooks'

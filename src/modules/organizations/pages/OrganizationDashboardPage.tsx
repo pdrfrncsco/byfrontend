@@ -79,6 +79,7 @@ export default function OrganizationDashboardPage() {
   const { data: clubs, isLoading: isLoadingClubs } = useOrganizationClubs(slug)
   const { data: tournaments, isLoading: isLoadingTournaments } = useOrganizationTournaments(slug)
   const { data: transfers, isLoading: isLoadingTransfers } = useTransfers({ page_size: 4 })
+  const transferResults = transfers?.results ?? []
   const launchOrganization = useLaunchOrganization()
 
   const headerActions = (
@@ -360,15 +361,17 @@ export default function OrganizationDashboardPage() {
                   <Skeleton className="h-14 w-full rounded" />
                   <Skeleton className="h-14 w-full rounded" />
                 </div>
-              ) : transfers && transfers.length > 0 ? (
+              ) : transferResults.length > 0 ? (
                 <div className="space-y-sm">
-                  {transfers.map((transfer) => (
+                  {transferResults.map((transfer) => (
                     <TransferItem
                       key={transfer.id}
-                      playerName={transfer.player_name}
-                      fromClub={transfer.from_club_name || 'Sem Clube'}
-                      toClub={transfer.to_club_name}
-                      timeAgo={formatTimeAgo(transfer.completed_date || transfer.request_date)}
+                      playerName={transfer.player.full_name}
+                      fromClub={transfer.from_club?.name || 'Sem Clube'}
+                      toClub={transfer.to_club.name}
+                      timeAgo={formatTimeAgo(
+                        transfer.completed_at || transfer.transfer_date || transfer.created_at,
+                      )}
                     />
                   ))}
                 </div>
@@ -382,7 +385,7 @@ export default function OrganizationDashboardPage() {
 
           <CardFooter className="justify-center border-t border-outline-variant/20 pt-sm">
             <Button variant="link" size="sm" asChild className="text-xs">
-              <Link to={ROUTES.TRANSFERS || '/transfers'}>
+              <Link to={ROUTES.DASHBOARD_TRANSFERS}>
                 <span>Ver painel de transferências</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>

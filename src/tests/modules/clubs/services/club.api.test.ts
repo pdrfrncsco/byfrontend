@@ -8,7 +8,6 @@ import {
   listClubMembers,
   listClubDocuments,
   listClubSponsors,
-  listTransfers,
 } from '@/modules/clubs/services'
 import {
   mockClub,
@@ -17,7 +16,6 @@ import {
   mockClubDocuments,
   mockClubSponsors,
   mockPaginatedClubs,
-  mockClubTransfer,
 } from '@/tests/__mocks__/club.mock'
 
 vi.mock('@/lib/api-client', () => ({
@@ -81,14 +79,5 @@ describe('clubs service', () => {
     await expect(listClubMembers(mockClub.slug)).resolves.toEqual(mockClubMembers)
     await expect(listClubDocuments(mockClub.slug)).resolves.toEqual(mockClubDocuments)
     await expect(listClubSponsors(mockClub.slug)).resolves.toEqual(mockClubSponsors)
-  })
-
-  it('returns transfer lists from the clubs transfer endpoint', async () => {
-    vi.mocked(apiClient.get).mockResolvedValueOnce(createResponse({ success: true, message: '', data: { results: [mockClubTransfer] } }))
-
-    const result = await listTransfers({ status: 'approved' })
-
-    expect(result.results).toEqual([mockClubTransfer])
-    expect(apiClient.get).toHaveBeenCalledWith('/clubs/transfers/', { params: { status: 'approved' } })
   })
 })

@@ -17,7 +17,7 @@ O projeto é uma **plataforma SaaS multi-tenant para gestão esportiva**, cobrin
 | **Players** | ✅ Completo | ✅ Bom | 🟢 Sólido |
 | **Competitions** | ✅ Completo | ✅ Parcial | 🟡 Avançado |
 | **Dashboards** | ✅ Completo | ❌ Ausente | 🟡 Funcional |
-| **Transfers** | 🟡 Parcial | ❌ Ausente | 🟠 Básico |
+| **Transfers** | ✅ Completo | ✅ Presente | 🟡 Avançado |
 | **Notifications** | 🟡 Parcial | ❌ Ausente | 🟠 Básico |
 | **Onboarding** | ✅ Completo | ❌ Ausente | 🟡 Funcional |
 | **Shared/Public** | ✅ Completo | ✅ Presente | 🟢 Sólido |
@@ -168,21 +168,20 @@ O projeto é uma **plataforma SaaS multi-tenant para gestão esportiva**, cobrin
 ## 7. Módulo de Transferências (`src/modules/transfers`)
 
 ### O que está implementado
-- **Serviços:** `transfer.api.ts`
-- **Hooks:** `useTransfers.ts`
-- **Tipos:** `transfer.types.ts`
-- Integrado nas páginas de Clube (`ClubTransfersPage`, `ClubTransferCreatePage`)
+- **Serviços:** `transfer.api.ts` alinhado a `/clubs/transfers/` (list, get, create, approve, reject, complete, cancel, loans)
+- **Hooks:** `useTransfers.ts` com fluxo completo + toasts
+- **Tipos:** nested shape canónico + normalização de list flat → nested
+- **Páginas próprias:** `TransfersListPage`, `TransferCreatePage`, `TransferDetailPage` (escopo clube e organização)
+- **Rotas:** `/dashboard/club/transfers`, `/create`, `/:id` e hub org `/dashboard/transfers` (+ legacy `/transfers`)
+- **Testes:** `transfer.api.test.ts`, `useTransfers.test.ts`, `TransferDetailPage.test.tsx`
 
 ### O que está faltando
-- **Módulo próprio de páginas** (não tem `pages/` próprio — depende do módulo clubs)
-- Aprovação multi-step de transferências
-- Histórico de transferências por jogador/clube
-- Janelas de transferência com datas configuráveis
-- Notificações automáticas para partes envolvidas
-- Testes ausentes
+- Janelas de transferência com datas configuráveis (sem modelo no backend)
+- Histórico dedicado por jogador no perfil (lista filtrável por `player_id` já suportada na API)
+- Extracção do domínio Transfer para app Django `transfers` (opcional; API continua sob `clubs`)
 
 ### Avaliação
-🟠 **Básico.** Existe a estrutura mínima mas é um módulo claramente subordinado ao de clubes. Para uma plataforma de gestão esportiva, transferências são um domínio rico que merece módulo independente e completo.
+🟡 **Avançado.** Módulo frontend independente com fluxo de aprovação multi-step (pending → approved → completed). Páginas de clube são thin wrappers; consumers (club/org dashboards) usam `@/modules/transfers`.
 
 ---
 
@@ -336,7 +335,7 @@ A presença dos seguintes arquivos em `.ai/plans/` e `docs/AUDITORIA*` indica tr
 
 ### Prioridade 2 — Completar Funcionalidades Core (próximas 8 semanas)
 5. **Notifications em tempo real** — WebSocket ou SSE para eventos de competições
-6. **Transfers como módulo independente** com fluxo de aprovação completo
+6. **Transfers como módulo independente** com fluxo de aprovação completo — ✅ feito (frontend; API sob `/clubs/transfers/`)
 7. **Dashboard de Clube e Dashboard de Jogador** dedicados com dados reais
 8. **`useCompetitionPhase3`** — finalizar e renomear quando phase 3 estiver completa
 
