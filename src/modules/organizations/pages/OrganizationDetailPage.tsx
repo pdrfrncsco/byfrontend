@@ -98,8 +98,12 @@ export function OrganizationDetailPage() {
   const locationLabel = organization.location || [organization.city, organization.country].filter(Boolean).join(', ')
 
   return (
-    <div className="min-h-screen bg-background pb-xl text-on-surface">
-      <div className="container py-xl space-y-xl">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
+
+      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <DetailHeroCard
           eyebrow="Organização pública"
           title={organization.name}
@@ -157,15 +161,28 @@ export function OrganizationDetailPage() {
         />
 
         <Tabs defaultValue="overview" className="space-y-lg">
-          <TabsList>
-            <TabsTrigger value="overview">Resumo Geral</TabsTrigger>
-            <TabsTrigger value="history">Histórico & Torneios ({historyCount})</TabsTrigger>
+          <TabsList className="h-auto rounded-full p-sm bg-surface-container/50 border border-outline-variant/30">
+            <TabsTrigger 
+              value="overview" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Resumo Geral
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Histórico & Torneios ({historyCount})
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview">
+          <TabsContent 
+            value="overview"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             <div className="grid grid-cols-12 gap-lg">
               <div className="col-span-12 space-y-lg lg:col-span-8">
-                <Card padding="md">
+                <Card padding="md" className="shadow-lg shadow-black/10">
                   <CardHeader className="border-none bg-transparent p-0 pb-md">
                     <CardTitle>
                       <Info className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -207,7 +224,7 @@ export function OrganizationDetailPage() {
                   <span>Contactos</span>
                 </h3>
 
-                <Card padding="md" className="space-y-md text-sm">
+                <Card padding="md" className="space-y-md text-sm shadow-lg shadow-black/10">
                   {organization.email && (
                     <div className="flex items-start gap-md">
                       <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
@@ -267,11 +284,14 @@ export function OrganizationDetailPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="history">
+          <TabsContent 
+            value="history"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             {history && history.length > 0 ? (
               <OrganizationHistoryTable history={history} />
             ) : (
-              <Card padding="lg" className="py-16 text-center">
+              <Card padding="lg" className="py-16 text-center shadow-lg shadow-black/10">
                 <Trophy className="mx-auto mb-md h-12 w-12 text-outline opacity-40" aria-hidden="true" />
                 <h4 className="mb-xs font-title-md text-base text-on-surface">Sem Histórico Registado</h4>
                 <p className="mx-auto max-w-sm text-sm text-on-surface-variant">

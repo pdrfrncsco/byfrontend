@@ -63,24 +63,30 @@ export function PlayerDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="container py-xl">
-        <PlayerDetailSkeleton />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <PlayerDetailSkeleton />
+        </div>
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="container py-xl">
-        <ServerError onRetry={() => refetch()} />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ServerError onRetry={() => refetch()} />
+        </div>
       </div>
     )
   }
 
   if (!player) {
     return (
-      <div className="container py-xl">
-        <NotFound resourceName="jogador" onAction={() => navigate(playerRoutes.list)} />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <NotFound resourceName="jogador" onAction={() => navigate(playerRoutes.list)} />
+        </div>
       </div>
     )
   }
@@ -90,9 +96,12 @@ export function PlayerDetailPage() {
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[24rem] bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.16),transparent_36%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_34%),linear-gradient(180deg,rgba(7,16,29,0.88),rgba(7,16,29,0.04))]" />
-      <div className="container py-xl space-y-xl">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
+
+      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <Link
           to={playerRoutes.list}
           className="inline-flex items-center gap-sm text-sm text-on-surface-variant transition-colors hover:text-primary"
@@ -216,16 +225,39 @@ export function PlayerDetailPage() {
           <DetailStat icon={User} label={t('players.detail.stats.position')} value={player.position_label} color={positionColor} />
         </div>
 
-        <Tabs defaultValue="career">
-          <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
-            <TabsTrigger value="career">{t('players.detail.tabs.career')}</TabsTrigger>
-            <TabsTrigger value="documents">{t('players.detail.tabs.documents')}</TabsTrigger>
-            <TabsTrigger value="videos">{t('players.detail.tabs.videos')}</TabsTrigger>
-            <TabsTrigger value="achievements">{t('players.detail.tabs.achievements')}</TabsTrigger>
+        <Tabs defaultValue="career" className="space-y-lg">
+          <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
+            <TabsTrigger 
+              value="career" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              {t('players.detail.tabs.career')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="documents" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              {t('players.detail.tabs.documents')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="videos" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              {t('players.detail.tabs.videos')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="achievements" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              {t('players.detail.tabs.achievements')}
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="career">
-            <Card variant="flat" padding="none">
+          <TabsContent 
+            value="career" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
               <CardHeader>
                 <CardTitle>{t('players.detail.careerHistory')}</CardTitle>
               </CardHeader>
@@ -235,15 +267,24 @@ export function PlayerDetailPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="documents">
+          <TabsContent 
+            value="documents" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             <PlayerDocumentsTab slug={slug} fallbackDocuments={player.documents ?? []} />
           </TabsContent>
 
-          <TabsContent value="videos">
+          <TabsContent 
+            value="videos" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             <PlayerVideosTab slug={slug} fallbackVideos={player.videos ?? []} />
           </TabsContent>
 
-          <TabsContent value="achievements">
+          <TabsContent 
+            value="achievements" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             <PlayerAchievementsTab slug={slug} fallbackAchievements={player.achievements ?? []} />
           </TabsContent>
         </Tabs>

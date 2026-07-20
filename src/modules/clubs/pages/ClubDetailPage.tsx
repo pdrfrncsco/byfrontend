@@ -59,8 +59,10 @@ export default function ClubDetailPage() {
 
   if (clubQuery.isLoading) {
     return (
-      <div className="container py-xl">
-        <ClubDetailSkeleton />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ClubDetailSkeleton />
+        </div>
       </div>
     )
   }
@@ -68,39 +70,49 @@ export default function ClubDetailPage() {
   if (clubQuery.isError) {
     if (errorStatus === 403) {
       return (
-        <div className="container py-xl">
-          <PermissionDenied onAction={() => navigate('/clubs')} />
+        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <PermissionDenied onAction={() => navigate('/clubs')} />
+          </div>
         </div>
       )
     }
 
     if (errorStatus === 404) {
       return (
-        <div className="container py-xl">
-          <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
+        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
+          </div>
         </div>
       )
     }
 
     if (errorStatus === 500) {
       return (
-        <div className="container py-xl">
-          <ServerError onRetry={() => clubQuery.refetch()} />
+        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <ServerError onRetry={() => clubQuery.refetch()} />
+          </div>
         </div>
       )
     }
 
     return (
-      <div className="container py-xl">
-        <ServerError onRetry={() => clubQuery.refetch()} />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ServerError onRetry={() => clubQuery.refetch()} />
+        </div>
       </div>
     )
   }
 
   if (!club) {
     return (
-      <div className="container py-xl">
-        <ClubEmptyState onReset={() => navigate('/clubs')} />
+      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ClubEmptyState onReset={() => navigate('/clubs')} />
+        </div>
       </div>
     )
   }
@@ -108,9 +120,12 @@ export default function ClubDetailPage() {
   const initials = (club.short_name || club.name || '?').slice(0, 2).toUpperCase()
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[24rem] bg-[radial-gradient(circle_at_top_left,rgba(66,153,225,0.16),transparent_36%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.14),transparent_34%),linear-gradient(180deg,rgba(7,16,29,0.88),rgba(7,16,29,0.04))]" />
-      <div className="container py-xl space-y-xl">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
+
+      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur">
           <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-center">
             <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-high text-3xl font-bold text-primary shadow-lg">
@@ -164,7 +179,7 @@ export default function ClubDetailPage() {
         {kpisQuery.data && <ClubKpisCard kpis={kpisQuery.data} />}
 
         <div className="grid gap-lg lg:grid-cols-[1.3fr_0.7fr]">
-          <Card variant="flat" padding="none">
+          <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
             <CardHeader>
               <CardTitle>Visão geral</CardTitle>
             </CardHeader>
@@ -179,7 +194,7 @@ export default function ClubDetailPage() {
             </CardContent>
           </Card>
 
-          <Card variant="flat" padding="none">
+          <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
             <CardHeader>
               <CardTitle>Resumo rápido</CardTitle>
             </CardHeader>
@@ -191,15 +206,38 @@ export default function ClubDetailPage() {
           </Card>
         </div>
 
-        <Tabs defaultValue="squad">
-          <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
-            <TabsTrigger value="squad">Plantel</TabsTrigger>
-            <TabsTrigger value="staff">Staff</TabsTrigger>
-            <TabsTrigger value="documents">Documentos</TabsTrigger>
-            <TabsTrigger value="sponsors">Patrocinadores</TabsTrigger>
+        <Tabs defaultValue="squad" className="space-y-lg">
+          <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
+            <TabsTrigger 
+              value="squad" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Plantel
+            </TabsTrigger>
+            <TabsTrigger 
+              value="staff" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Staff
+            </TabsTrigger>
+            <TabsTrigger 
+              value="documents" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Documentos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="sponsors" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Patrocinadores
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="squad">
+          <TabsContent 
+            value="squad" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             {squad.length === 0 ? (
               <EmptyState
                 icon={Users}
@@ -209,7 +247,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {squad.map((player) => (
-                  <Card key={player.id} variant="flat" padding="none">
+                  <Card key={player.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
                     <CardContent className="space-y-sm p-lg">
                       <div className="flex items-center justify-between">
                         <p className="font-semibold text-on-surface">{player.display_name}</p>
@@ -226,7 +264,10 @@ export default function ClubDetailPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="staff">
+          <TabsContent 
+            value="staff" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             {staff.length === 0 ? (
               <EmptyState
                 icon={Building2}
@@ -236,7 +277,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {staff.map((member) => (
-                  <Card key={member.id} variant="flat" padding="none">
+                  <Card key={member.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
                     <CardContent className="space-y-sm p-lg">
                       <p className="font-semibold text-on-surface">{member.display_name}</p>
                       <p className="text-sm text-on-surface-variant">{member.role_label || member.role || 'Staff'}</p>
@@ -248,7 +289,10 @@ export default function ClubDetailPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="documents">
+          <TabsContent 
+            value="documents" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             {documents.length === 0 ? (
               <EmptyState
                 icon={FileText}
@@ -258,7 +302,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="space-y-sm">
                 {documents.map((document) => (
-                  <Card key={document.id} variant="flat" padding="none">
+                  <Card key={document.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
                     <CardContent className="flex flex-col gap-md p-lg md:flex-row md:items-center md:justify-between">
                       <div className="space-y-xs">
                         <div className="flex flex-wrap items-center gap-sm">
@@ -283,7 +327,10 @@ export default function ClubDetailPage() {
             )}
           </TabsContent>
 
-          <TabsContent value="sponsors">
+          <TabsContent 
+            value="sponsors" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
             {sponsors.length === 0 ? (
               <EmptyState
                 icon={Trophy}
@@ -293,7 +340,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {sponsors.map((sponsor) => (
-                  <Card key={sponsor.id} variant="flat" padding="none">
+                  <Card key={sponsor.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
                     <CardContent className="space-y-sm p-lg">
                       <div className="flex items-center gap-md">
                         <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-surface-container-high text-sm font-bold text-primary">

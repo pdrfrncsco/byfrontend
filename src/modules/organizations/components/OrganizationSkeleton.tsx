@@ -31,54 +31,60 @@ export function OrganizationListSkeleton() {
 
 export function OrganizationDetailSkeleton() {
   return (
-    <div className="container py-xl space-y-xl">
-      <Card
-        padding="none"
-        className="overflow-hidden rounded-[2rem] border border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
-      >
-        <div className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))] p-xl md:grid-cols-[auto_1fr_auto] md:items-center">
-          <Skeleton className="h-32 w-32 rounded-3xl" />
-          <div className="space-y-md">
-            <Skeleton className="h-5 w-40 rounded-full" />
-            <div className="space-y-sm">
-              <Skeleton className="h-8 w-2/3" />
-              <Skeleton className="h-4 w-full max-w-2xl" />
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
+
+      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+        <Card
+          padding="none"
+          className="overflow-hidden rounded-[2rem] border border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
+        >
+          <div className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))] p-xl md:grid-cols-[auto_1fr_auto] md:items-center">
+            <Skeleton className="h-32 w-32 rounded-3xl" />
+            <div className="space-y-md">
+              <Skeleton className="h-5 w-40 rounded-full" />
+              <div className="space-y-sm">
+                <Skeleton className="h-8 w-2/3" />
+                <Skeleton className="h-4 w-full max-w-2xl" />
+              </div>
+              <div className="flex flex-wrap gap-sm">
+                <Skeleton className="h-8 w-44 rounded-full" />
+                <Skeleton className="h-8 w-32 rounded-full" />
+                <Skeleton className="h-8 w-28 rounded-full" />
+                <Skeleton className="h-8 w-24 rounded-full" />
+              </div>
             </div>
             <div className="flex flex-wrap gap-sm">
-              <Skeleton className="h-8 w-44 rounded-full" />
-              <Skeleton className="h-8 w-32 rounded-full" />
-              <Skeleton className="h-8 w-28 rounded-full" />
-              <Skeleton className="h-8 w-24 rounded-full" />
+              <Skeleton className="h-10 w-36 rounded-full" />
+              <Skeleton className="h-10 w-28 rounded-full" />
             </div>
           </div>
-          <div className="flex flex-wrap gap-sm">
-            <Skeleton className="h-10 w-36 rounded-full" />
-            <Skeleton className="h-10 w-28 rounded-full" />
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-2 gap-md md:grid-cols-4 lg:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} padding="md" className="space-y-sm text-center">
-            <Skeleton className="mx-auto h-8 w-1/2" />
-            <Skeleton className="mx-auto h-4 w-3/4" />
-          </Card>
-        ))}
-      </div>
-
-      <div className="space-y-lg">
-        <Skeleton className="h-6 w-1/4" />
-        <Card padding="none">
-          <div className="border-b border-outline-variant/30 bg-surface-container-low p-md">
-            <Skeleton className="h-5 w-1/3" />
-          </div>
-          <div className="space-y-md p-lg">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-          </div>
         </Card>
+
+        <div className="grid grid-cols-2 gap-md md:grid-cols-4 lg:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} padding="md" className="space-y-sm text-center">
+              <Skeleton className="mx-auto h-8 w-1/2" />
+              <Skeleton className="mx-auto h-4 w-3/4" />
+            </Card>
+          ))}
+        </div>
+
+        <div className="space-y-lg">
+          <Skeleton className="h-6 w-1/4" />
+          <Card padding="none">
+            <div className="border-b border-outline-variant/30 bg-surface-container-low p-md">
+              <Skeleton className="h-5 w-1/3" />
+            </div>
+            <div className="space-y-md p-lg">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   )
