@@ -1,4 +1,5 @@
 export * from './useCompetitions'
-export * from './useCompetitionPhase3'
+export * from './useCompetitionMatches'
 export * from './useMatchCenter'
-export * from './useCompetitionAdvanced'
+export * from './useCompetitionFull'
+// Legacy aliases for backward compatibility
