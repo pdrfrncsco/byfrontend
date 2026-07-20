@@ -1,1 +1,3 @@
-export { TransfersListPage, TransferCreatePage, TransferDetailPage } from '../pages'
+export { TransfersListPage } from './TransfersListPage'
+export { TransferCreatePage } from './TransferCreatePage'
+export { TransferDetailPage } from './TransferDetailPage'
