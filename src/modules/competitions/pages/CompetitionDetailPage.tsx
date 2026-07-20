@@ -104,7 +104,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
         .map(([round, roundMatches]) => (
           <div key={round} className="space-y-sm">
             <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
-              <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
+              <span className="inline-flex items-center rounded-full bg-primary-container/30 px-md py-1 text-xs font-bold text-primary shadow-sm">
                 Jornada {round}
               </span>
             </h3>
@@ -151,7 +151,7 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
   return (
     <div className="space-y-md">
       {regulations.map(reg => (
-        <Card key={reg.id} variant="flat" padding="lg">
+        <Card key={reg.id} variant="flat" padding="lg" className="border border-outline-variant/10 hover:shadow-md transition-shadow">
           <div className="space-y-sm">
             <div className="flex flex-wrap items-center gap-sm">
               <h3 className="font-semibold text-on-surface">{reg.title}</h3>
@@ -232,7 +232,11 @@ export function CompetitionDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/15 to-indigo-600/15 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/15 to-pink-600/15 blur-3xl" />
+
       {/* Hero Header */}
       {loadingComp ? (
         <CompetitionHeaderSkeleton />
@@ -242,8 +246,8 @@ export function CompetitionDetailPage() {
 
       {/* Admin Notice Bar */}
       {isAdmin && (
-        <div className="mx-auto max-w-6xl px-md pt-md sm:px-xl">
-          <div className="flex items-center justify-between gap-md rounded-xl border border-primary/20 bg-primary-container/10 p-md">
+        <div className="mx-auto max-w-6xl px-md pt-md sm:px-xl relative z-10">
+          <div className="flex items-center justify-between gap-md rounded-xl border border-primary/20 bg-primary-container/10 p-md shadow-md">
             <div className="flex items-center gap-sm">
               <Settings className="h-5 w-5 text-primary" />
               <div>
@@ -261,29 +265,29 @@ export function CompetitionDetailPage() {
       )}
 
       {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl">
+      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl relative z-10">
         <Tabs defaultValue="standings" className="space-y-lg">
-          <TabsList>
-            <TabsTrigger value="standings" id="comp-tab-standings">
+          <TabsList className="p-1 bg-surface-container/70 rounded-full backdrop-blur">
+            <TabsTrigger value="standings" id="comp-tab-standings" className="rounded-full">
               <Trophy className="mr-xs h-4 w-4" />
               Classificação
             </TabsTrigger>
-            <TabsTrigger value="matches" id="comp-tab-matches">
+            <TabsTrigger value="matches" id="comp-tab-matches" className="rounded-full">
               <Calendar className="mr-xs h-4 w-4" />
               Jogos
             </TabsTrigger>
-            <TabsTrigger value="stats" id="comp-tab-stats">
+            <TabsTrigger value="stats" id="comp-tab-stats" className="rounded-full">
               <BarChart3 className="mr-xs h-4 w-4" />
               Estatísticas
             </TabsTrigger>
-            <TabsTrigger value="regulations" id="comp-tab-regulations">
+            <TabsTrigger value="regulations" id="comp-tab-regulations" className="rounded-full">
               <BookOpen className="mr-xs h-4 w-4" />
               Regulamentos
             </TabsTrigger>
           </TabsList>
 
           {/* Classificação */}
-          <TabsContent value="standings">
+          <TabsContent value="standings" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             {loadingStandings ? (
               <div className="flex items-center justify-center py-xl">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -294,17 +298,17 @@ export function CompetitionDetailPage() {
           </TabsContent>
 
           {/* Jogos */}
-          <TabsContent value="matches">
+          <TabsContent value="matches" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <MatchesTab competitionId={competitionId} isAdmin={isAdmin} />
           </TabsContent>
 
           {/* Estatísticas */}
-          <TabsContent value="stats">
+          <TabsContent value="stats" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <StatsTab competitionId={competitionId} />
           </TabsContent>
 
           {/* Regulamentos */}
-          <TabsContent value="regulations">
+          <TabsContent value="regulations" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
             <RegulationsTab competitionId={competitionId} />
           </TabsContent>
         </Tabs>

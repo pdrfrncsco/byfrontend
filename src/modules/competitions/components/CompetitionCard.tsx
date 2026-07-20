@@ -9,10 +9,10 @@ const STATUS_CONFIG: Record<CompetitionStatus, { color: string; bg: string; labe
   completed: { color: '#6b7280', bg: '#6b728022', label: 'Concluída' },
 }
 
-const TYPE_CONFIG: Record<CompetitionType, { icon: typeof Trophy; label: string }> = {
-  league: { icon: Trophy, label: 'Campeonato' },
-  tournament: { icon: Activity, label: 'Torneio' },
-  cup: { icon: Trophy, label: 'Taça' },
+const TYPE_CONFIG: Record<CompetitionType, { icon: typeof Trophy; label: string; gradient: string }> = {
+  league: { icon: Trophy, label: 'Campeonato', gradient: 'from-blue-500 to-indigo-600' },
+  tournament: { icon: Activity, label: 'Torneio', gradient: 'from-purple-500 to-pink-600' },
+  cup: { icon: Trophy, label: 'Taça', gradient: 'from-amber-500 to-orange-600' },
 }
 
 interface CompetitionCardProps {
@@ -29,22 +29,27 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
       <Card
         variant="flat"
         padding="lg"
-        className="group transition-all hover:border-primary/30 hover:bg-surface-container-high"
+        className="group relative overflow-hidden transition-all duration-300 hover:border-primary/40 hover:bg-surface-container-high hover:shadow-lg hover:-translate-y-1"
       >
-        <div className="flex items-center gap-lg">
-          {/* Icon */}
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-primary-container/20 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
-            <Icon className="h-6 w-6" />
+        {/* Gradient Accent */}
+        <div
+          className={`absolute -left-10 top-1/2 h-32 w-32 -translate-y-1/2 rounded-full bg-gradient-to-br ${typeCfg.gradient} opacity-10 blur-2xl transition-opacity duration-300 group-hover:opacity-20`}
+        />
+
+        <div className="relative flex items-center gap-lg">
+          {/* Icon with Gradient */}
+          <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${typeCfg.gradient} text-white shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+            <Icon className="h-7 w-7" />
           </div>
 
           {/* Content */}
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-base font-semibold text-on-surface">
+            <h3 className="truncate text-lg font-bold text-on-surface group-hover:text-primary transition-colors">
               {competition.name}
             </h3>
-            <div className="mt-1 flex items-center gap-sm text-sm text-on-surface-variant">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{competition.season}</span>
+            <div className="mt-2 flex items-center gap-sm text-sm text-on-surface-variant">
+              <Calendar className="h-4 w-4" />
+              <span className="font-medium">{competition.season}</span>
               <span className="text-outline">•</span>
               <span>{typeCfg.label}</span>
             </div>
@@ -63,7 +68,7 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
             >
               {statusCfg.label}
             </Badge>
-            <ChevronRight className="h-5 w-5 text-outline transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+            <ChevronRight className="h-6 w-6 text-outline transition-all duration-300 group-hover:translate-x-2 group-hover:text-primary" />
           </div>
         </div>
       </Card>

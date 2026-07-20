@@ -54,7 +54,7 @@ export default function ClubListPage() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
       <div className="container py-xl space-y-xl">
         <PublicListHero
           badge="Portal público de clubes"

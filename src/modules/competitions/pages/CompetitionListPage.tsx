@@ -65,7 +65,11 @@ export function CompetitionListPage() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
+      {/* Background Gradient Accents */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
+
       <div className="container py-xl space-y-xl">
         <PublicListHero
           badge="Competições"
@@ -85,10 +89,10 @@ export function CompetitionListPage() {
           ]}
         />
 
-        <Card variant="flat" padding="none">
-          <CardHeader>
+        <Card variant="flat" padding="none" className="border border-outline-variant/20 shadow-lg">
+          <CardHeader className="border-b border-outline-variant/10">
             <CardTitle className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
+              <Filter className="h-5 w-5 text-primary" />
               Filtros
             </CardTitle>
           </CardHeader>
@@ -164,7 +168,7 @@ export function CompetitionListPage() {
         {isLoading ? (
           <CompetitionSkeleton />
         ) : isError ? (
-          <Card variant="flat" padding="lg">
+          <Card variant="flat" padding="lg" className="border border-error/20 bg-error/5">
             <div className="text-center">
               <p className="text-on-surface-variant">Erro ao carregar competições.</p>
               <Button variant="secondary" size="sm" className="mt-md" onClick={() => refetch()}>
@@ -181,7 +185,8 @@ export function CompetitionListPage() {
               {hasFilters && ' com os filtros aplicados'}
             </p>
 
-            <div className="grid gap-md">
+            {/* Responsive Grid Layout for Competition Cards */}
+            <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {competitions.map((comp) => (
                 <CompetitionCard key={comp.id} competition={comp} />
               ))}
