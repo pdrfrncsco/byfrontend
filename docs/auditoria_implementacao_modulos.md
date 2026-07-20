@@ -337,7 +337,7 @@ A presença dos seguintes arquivos em `.ai/plans/` e `docs/AUDITORIA*` indica tr
 5. **Notifications em tempo real** — WebSocket ou SSE para eventos de competições
 6. **Transfers como módulo independente** com fluxo de aprovação completo — ✅ feito (frontend; API sob `/clubs/transfers/`)
 7. **Dashboard de Clube e Dashboard de Jogador** dedicados com dados reais
-8. **`useCompetitionPhase3`** — finalizar e renomear quando phase 3 estiver completa
+8. **`useCompetitionPhase3`** — finalizar e renomear phase 3V completa
 
 ### Prioridade 3 — Business Value (próximos 3 meses)
 9. **Módulo de Monetização** — planos, billing, feature flags
