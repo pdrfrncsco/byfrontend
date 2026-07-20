@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { CheckCheck, Bell, Loader2 } from 'lucide-react'
 import { useNotificationsList, useMarkRead } from '../hooks/useNotifications'
-import type { Notification } from '../types'
 
 const PAGE_SIZE = 6
 

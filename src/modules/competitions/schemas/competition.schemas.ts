@@ -81,7 +81,7 @@ export const goalSchema = z.object({
   player_id: z.string({ required_error: 'O jogador é obrigatório.' }).uuid('ID de jogador inválido.'),
   club_id: z.string({ required_error: 'O clube é obrigatório.' }).uuid('ID de clube inválido.'),
   minute: z.number().int().min(1).max(120),
-  goal_type: z.enum(['normal', 'penalty', 'own_goal']).default('normal'),
+  goal_type: z.enum(['normal', 'penalty', 'own_goal'], { required_error: 'O tipo de gol é obrigatório.' }),
   assist_player_id: z.string().uuid().optional().nullable(),
 })
 

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Filter, Plus, SlidersHorizontal, Trophy } from 'lucide-react'
+import { ArrowLeft, Filter, Plus, SlidersHorizontal, Trophy, Settings, Shield } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -59,11 +59,11 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
   const sidebarLinks = isClubScope
     ? getClubSidebarLinks()
     : [
-        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION },
-        { label: 'Transferências', href: transferRoutes.list },
-        { label: 'Clubes', href: ROUTES.CLUBS },
-        { label: 'Competições', href: ROUTES.COMPETITIONS },
-        { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS },
+        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
+        { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
+        { label: 'Clubes', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
+        { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
+        { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
       ]
 
   const rows = useMemo(() => {

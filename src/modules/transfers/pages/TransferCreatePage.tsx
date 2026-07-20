@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Check, Loader2, Search, User } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Loader2, Search, User, Trophy, Shield } from 'lucide-react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -110,8 +110,8 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
   const sidebarLinks = isClubScope
     ? getClubSidebarLinks()
     : [
-        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION },
-        { label: 'Transferências', href: transferRoutes.list },
+        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
+        { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
       ]
 
   const canProceed = () => {

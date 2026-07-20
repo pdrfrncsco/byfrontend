@@ -11,6 +11,8 @@ import {
   Undo2,
   CalendarPlus,
   ShieldCheck,
+  Trophy,
+  Shield,
 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
@@ -101,8 +103,8 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
   const sidebarLinks = isClubScope
     ? getClubSidebarLinks()
     : [
-        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION },
-        { label: 'Transferências', href: transferRoutes.list },
+        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
+        { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
       ]
 
   const isBusy =
