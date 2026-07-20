@@ -30,7 +30,7 @@ interface CompetitionHeaderProps {
 export function CompetitionHeader({ competition, isLoading = false }: CompetitionHeaderProps) {
   if (isLoading) {
     return (
-      <div className="container py-xl">
+      <div className="mx-auto max-w-8xl px-md py-xl sm:px-xl relative z-10">
         <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] md:grid-cols-[auto_1fr_auto]">
           <div className="h-16 w-16 rounded-2xl bg-surface-container-highest" />
           <div className="space-y-sm">
@@ -48,7 +48,7 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
   const typeLabel = TYPE_LABELS[competition.competition_type] ?? competition.competition_type
 
   return (
-    <div className="container py-xl">
+    <div className="mx-auto max-w-8xl px-md py-xl sm:px-xl relative z-10">
       <DetailHeroCard
         eyebrow="Competição pública"
         title={competition.name}
@@ -80,7 +80,7 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
  */
 export function CompetitionHeaderSkeleton() {
   return (
-    <div className="container py-xl">
+    <div className="mx-auto max-w-8xl px-md py-xl sm:px-xl relative z-10">
       <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] md:grid-cols-[auto_1fr_auto]">
         <div className="h-16 w-16 rounded-2xl bg-surface-container-highest" />
         <div className="space-y-sm">
