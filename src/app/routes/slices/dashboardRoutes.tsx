@@ -28,6 +28,7 @@ const ClubSettingsPage = lazy(() => import('@/modules/clubs/pages/ClubSettingsPa
 const ClubMembersPage = lazy(() => import('@/modules/clubs/pages/ClubMembersPage'))
 const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocumentsPage'))
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
+const ClubSquadPage = lazy(() => import('@/modules/clubs/pages/ClubSquadPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
 const ClubTransferDetailPage = lazy(() => import('@/modules/transfers/pages/ClubTransferDetailPage'))
@@ -189,6 +190,14 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><ClubSponsorsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={clubRoutes.squad}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><ClubSquadPage /></Suspense>
           </ProtectedRoute>
         }
       />

@@ -64,6 +64,18 @@ export function ClubPlayerRegisterPage() {
     return players.filter((player) => player.full_name.toLowerCase().includes(query))
   }, [playersData, playerSearch])
 
+  const getErrorMessage = (error: unknown): string => {
+    if (!error) return t('players.register.error')
+    if (typeof error === 'object' && 'response' in error) {
+      const response = (error as { response?: { data?: unknown } }).response
+      if (response && typeof response.data === 'object' && response.data) {
+        const data = response.data as { detail?: string; message?: string }
+        return data.detail || data.message || t('players.register.error')
+      }
+    }
+    return t('players.register.error')
+  }
+
   const onSubmit = (data: PlayerRegisterFormData) => {
     if (!selectedPlayer || !club) return
 
@@ -137,24 +149,41 @@ export function ClubPlayerRegisterPage() {
               <EmptyState icon={Users} title={t('players.register.emptyTitle')} description={t('players.register.emptyDescription')} />
             ) : (
               <div className="grid gap-sm md:grid-cols-2">
-                {filteredPlayers.map((player) => (
-                  <button
-                    key={player.id}
-                    type="button"
-                    onClick={() => setSelectedPlayer(player)}
-                    className={`rounded-2xl border p-md text-left transition-colors ${
-                      selectedPlayer?.id === player.id
-                        ? 'border-primary bg-primary-container/15'
-                        : 'border-outline-variant/20 bg-surface-container hover:border-primary/40'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-sm">
-                      <p className="font-semibold text-on-surface">{player.full_name}</p>
-                      <Badge variant="outline">{player.position_label}</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-on-surface-variant">{player.nationality || t('players.register.nationalityUnknown')}</p>
-                  </button>
-                ))}
+                {filteredPlayers.map((player) => {
+                  const hasCurrentClub = !!player.current_club
+                  const isCurrentClub = player.current_club?.id === club.id
+                  return (
+                    <button
+                      key={player.id}
+                      type="button"
+                      onClick={() => !hasCurrentClub && setSelectedPlayer(player)}
+                      disabled={hasCurrentClub}
+                      className={`rounded-2xl border p-md text-left transition-colors ${
+                        selectedPlayer?.id === player.id
+                          ? 'border-primary bg-primary-container/15'
+                          : hasCurrentClub
+                          ? 'border-outline-variant/20 bg-surface-container/50 cursor-not-allowed opacity-60'
+                          : 'border-outline-variant/20 bg-surface-container hover:border-primary/40'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-sm">
+                        <p className="font-semibold text-on-surface">{player.full_name}</p>
+                        <div className="flex gap-xs">
+                          <Badge variant="outline">{player.position_label}</Badge>
+                          {hasCurrentClub && (
+                            <Badge variant={isCurrentClub ? 'success' : 'warning'}>
+                              {isCurrentClub ? t('players.register.alreadyInThisClub') : t('players.register.alreadyHasClub')}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <p className="mt-1 text-xs text-on-surface-variant">
+                        {player.nationality || t('players.register.nationalityUnknown')}
+                        {hasCurrentClub && player.current_club && ` • ${player.current_club.name}`}
+                      </p>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </CardContent>
@@ -190,7 +219,7 @@ export function ClubPlayerRegisterPage() {
         </div>
 
         {registerMutation.isError && (
-          <p className="text-sm text-error">{t('players.register.error')}</p>
+          <p className="text-sm text-error">{getErrorMessage(registerMutation.error)}</p>
         )}
       </form>
     </DashboardLayout>

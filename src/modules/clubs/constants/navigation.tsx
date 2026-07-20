@@ -1,4 +1,4 @@
-import { ArrowRightLeft, FileText, Handshake, LayoutDashboard, Settings, UserCheck, UserPlus, Users } from 'lucide-react'
+import { ArrowRightLeft, FileText, Handshake, LayoutDashboard, Settings, UserCheck, UserPlus, Users, UsersRound } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 export function getClubSidebarLinks() {
@@ -37,6 +37,11 @@ export function getClubSidebarLinks() {
       label: 'Pedidos de Vínculo',
       href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS,
       icon: <UserCheck className="h-4 w-4" />,
+    },
+    {
+      label: 'Plantel',
+      href: ROUTES.DASHBOARD_CLUB_SQUAD,
+      icon: <UsersRound className="h-4 w-4" />,
     },
     {
       label: 'Registar Jogador',

@@ -38,6 +38,7 @@ export interface Player {
   total_goals: number
   total_assists: number
   created_at: string
+  current_club?: PlayerCurrentClub | null
 }
 
 export interface PlayerCareerEntry {

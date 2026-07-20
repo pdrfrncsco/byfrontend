@@ -46,6 +46,7 @@ export const ROUTES = {
   DASHBOARD_PLAYER_LINK_CLUB: '/dashboard/player/link-club',
   DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',
   DASHBOARD_CLUB_PLAYER_REQUESTS: '/dashboard/club/player-requests',
+  DASHBOARD_CLUB_SQUAD: '/dashboard/club/squad',
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',

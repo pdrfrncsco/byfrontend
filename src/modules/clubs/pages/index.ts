@@ -6,4 +6,5 @@ export { default as ClubMembersPage } from './ClubMembersPage'
 export { default as ClubDocumentsPage } from './ClubDocumentsPage'
 export { default as ClubSponsorsPage } from './ClubSponsorsPage'
 export { default as ClubTransfersPage } from './ClubTransfersPage'
+export { default as ClubSquadPage } from './ClubSquadPage'
 
