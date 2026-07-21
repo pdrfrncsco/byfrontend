@@ -84,6 +84,7 @@ export function useUpdatePlayerMe() {
     mutationFn: (data: PlayerUpdate) => updatePlayerMe(data),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
     },
   })
@@ -96,6 +97,7 @@ export function useUploadPlayerAvatar(slug?: string) {
     mutationFn: (file: File) => uploadPlayerAvatar(file, slug),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
       queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
     },

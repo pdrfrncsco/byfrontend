@@ -1,7 +1,16 @@
 // Players module — React Query query hooks
 
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { listPlayers, getPlayer, searchPlayers, listPlayerDocuments, listPlayerVideos, listPlayerAchievements, getPlayerMe } from '../services'
+import {
+  listPlayers,
+  getPlayer,
+  searchPlayers,
+  listPlayerDocuments,
+  listPlayerVideos,
+  listPlayerAchievements,
+  getPlayerMe,
+  getPlayerOnboardingStatus,
+} from '../services'
 import type { PlayerListParams } from '../types'
 
 export const playerKeys = {
@@ -15,6 +24,7 @@ export const playerKeys = {
   videos: (slug: string) => [...playerKeys.all, 'videos', slug] as const,
   achievements: (slug: string) => [...playerKeys.all, 'achievements', slug] as const,
   me: () => [...playerKeys.all, 'me'] as const,
+  onboardingStatus: () => [...playerKeys.all, 'onboarding-status'] as const,
 }
 
 /**
@@ -98,5 +108,17 @@ export function usePlayerMe() {
     queryKey: playerKeys.me(),
     queryFn: () => getPlayerMe(),
     staleTime: 60_000,
+  })
+}
+
+/**
+ * Hook: get onboarding status for the authenticated user's linked player profile.
+ */
+export function usePlayerOnboardingStatus(enabled = true) {
+  return useQuery({
+    queryKey: playerKeys.onboardingStatus(),
+    queryFn: () => getPlayerOnboardingStatus(),
+    enabled,
+    staleTime: 30_000,
   })
 }

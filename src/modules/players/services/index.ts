@@ -23,6 +23,7 @@ import type {
   PlayerAchievement,
   PlayerAchievementCreate,
   PlayerAchievementUpdate,
+  PlayerOnboardingStatus,
 } from '../types'
 
 type Envelope<T> = ApiResponse<T> | T
@@ -135,6 +136,11 @@ export async function reviewClubPlayerRegistrationRequest(
 
 export async function getPlayerMe(): Promise<PlayerDetail> {
   const res = await apiClient.get(API_ROUTES.PLAYERS.ME)
+  return unwrapData(res.data)
+}
+
+export async function getPlayerOnboardingStatus(): Promise<PlayerOnboardingStatus> {
+  const res = await apiClient.get(API_ROUTES.PLAYERS.ME_ONBOARDING_STATUS)
   return unwrapData(res.data)
 }
 

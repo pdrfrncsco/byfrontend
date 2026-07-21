@@ -1,4 +1,5 @@
 export { ProtectedRoute } from './ProtectedRoute'
 export { OnboardingGuard } from './OnboardingGuard'
+export { PlayerOnboardingGuard } from './PlayerOnboardingGuard'
 export { PendingOnboardingRedirect } from './PendingOnboardingRedirect'
 export { useRoutes, navigationRoutes } from './useRoutes'

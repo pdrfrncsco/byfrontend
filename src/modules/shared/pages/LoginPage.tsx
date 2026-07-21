@@ -57,7 +57,7 @@ export function LoginPage() {
   const onLogin = async (data: LoginFormData) => {
     const result = await loginMutation.mutateAsync(data)
     if (result) {
-      const redirectTo = await getPostAuthRedirectPath()
+      const redirectTo = await getPostAuthRedirectPath(result.user)
       navigate(redirectTo)
     }
   }
@@ -72,7 +72,7 @@ export function LoginPage() {
       phone: data.phone || undefined,
     })
     if (result) {
-      const redirectTo = await getPostAuthRedirectPath()
+      const redirectTo = await getPostAuthRedirectPath(result.user)
       navigate(redirectTo)
     }
   }

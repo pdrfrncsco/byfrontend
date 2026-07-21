@@ -33,8 +33,8 @@ export function useLogin() {
 /**
  * Returns redirect path after successful auth. Call after login() has completed.
  */
-export async function getPostAuthRedirectPath(): Promise<string> {
-  return resolvePostAuthRedirect()
+export async function getPostAuthRedirectPath(user?: LoginResponse['user']): Promise<string> {
+  return resolvePostAuthRedirect(user)
 }
 
 /* ──────────────────────────────────────────────

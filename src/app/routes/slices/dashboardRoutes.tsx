@@ -1,7 +1,8 @@
 import { Suspense, lazy } from 'react'
-import { Route } from 'react-router-dom'
+import { Navigate, Route } from 'react-router-dom'
 import { ProtectedRoute } from '../ProtectedRoute'
 import { OnboardingGuard } from '../OnboardingGuard'
+import { PlayerOnboardingGuard } from '../PlayerOnboardingGuard'
 import { organizationRoutes } from '@/modules/organizations/routes'
 import { clubRoutes } from '@/modules/clubs/routes'
 import { playerRoutes } from '@/modules/players/routes'
@@ -59,6 +60,21 @@ const PlayerClubLinkRequestPage = lazy(() =>
 const ClubPlayerRegistrationRequestsPage = lazy(() =>
   import('@/modules/players/pages/ClubPlayerRegistrationRequestsPage').then((m) => ({
     default: m.ClubPlayerRegistrationRequestsPage,
+  })),
+)
+const PlayerOnboardingProfilePage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingProfilePage').then((m) => ({
+    default: m.PlayerOnboardingProfilePage,
+  })),
+)
+const PlayerOnboardingFootballPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingFootballPage').then((m) => ({
+    default: m.PlayerOnboardingFootballPage,
+  })),
+)
+const PlayerOnboardingReviewPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingReviewPage').then((m) => ({
+    default: m.PlayerOnboardingReviewPage,
   })),
 )
 
@@ -343,6 +359,40 @@ export function dashboardRouteElements() {
       <Route
         path={onboardingRoutes.review}
         element={<ProtectedRoute><OnboardingGuard><ReviewStep /></OnboardingGuard></ProtectedRoute>}
+      />
+      <Route
+        path={onboardingRoutes.player}
+        element={
+          <ProtectedRoute requiredRoles={['player']}>
+            <PlayerOnboardingGuard>
+              <Suspense fallback={<RouteFallback />}><PlayerOnboardingProfilePage /></Suspense>
+            </PlayerOnboardingGuard>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={onboardingRoutes.playerProfile}
+        element={<Navigate to={onboardingRoutes.player} replace />}
+      />
+      <Route
+        path={onboardingRoutes.playerFootball}
+        element={
+          <ProtectedRoute requiredRoles={['player']}>
+            <PlayerOnboardingGuard>
+              <Suspense fallback={<RouteFallback />}><PlayerOnboardingFootballPage /></Suspense>
+            </PlayerOnboardingGuard>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={onboardingRoutes.playerReview}
+        element={
+          <ProtectedRoute requiredRoles={['player']}>
+            <PlayerOnboardingGuard>
+              <Suspense fallback={<RouteFallback />}><PlayerOnboardingReviewPage /></Suspense>
+            </PlayerOnboardingGuard>
+          </ProtectedRoute>
+        }
       />
     </>
   )

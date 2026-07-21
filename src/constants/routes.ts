@@ -11,6 +11,10 @@ export const ROUTES = {
   ONBOARDING_BRANDING: '/onboarding/branding',
   ONBOARDING_COMPETITION: '/onboarding/competition',
   ONBOARDING_REVIEW: '/onboarding/review',
+  ONBOARDING_PLAYER: '/onboarding/player',
+  ONBOARDING_PLAYER_FOOTBALL: '/onboarding/player/football',
+  ONBOARDING_PLAYER_PROFILE: '/onboarding/player/profile',
+  ONBOARDING_PLAYER_REVIEW: '/onboarding/player/review',
   REGISTER_PLAYER: '/register/player',
   REGISTER_CLUB: '/register/club',
   REGISTER_FAN: '/register/fan',
@@ -85,7 +89,6 @@ export const ROUTES = {
   NOT_FOUND_PAGE: '/404',
   NOT_FOUND: '*',
 }
-
 
 export const API_ROUTES = {
   AUTH: {
@@ -167,6 +170,7 @@ export const API_ROUTES = {
     LIST: '/players/',
     SEARCH: '/players/search/',
     ME: '/players/me/',
+    ME_ONBOARDING_STATUS: '/players/me/onboarding-status/',
     ME_AVATAR: '/players/me/avatar/',
     ME_REGISTRATION_REQUESTS: '/players/me/registration-requests/',
     GET: (slug: string) => `/players/${slug}/`,

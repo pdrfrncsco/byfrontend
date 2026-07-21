@@ -385,3 +385,14 @@ export interface PlayerRegistrationRequestReview {
   approve: boolean
   review_notes?: string
 }
+
+// ─── Player Onboarding Types ───────────────────────────────────────────────────
+
+export interface PlayerOnboardingStatus {
+  onboarding_required: boolean
+  has_player_profile: boolean
+  has_basic_info?: boolean
+  has_football_info?: boolean
+  next_step?: 'profile' | 'football' | null
+  player?: Player | null
+}
