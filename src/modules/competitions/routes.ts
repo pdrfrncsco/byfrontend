@@ -3,6 +3,7 @@ import { ROUTES } from '@/constants'
 export const competitionRoutes = {
   list: ROUTES.COMPETITIONS,
   adminList: ROUTES.DASHBOARD_COMPETITIONS_LIST,
+  adminMatches: ROUTES.DASHBOARD_COMPETITIONS_MATCHES,
   detail: (id: string) => ROUTES.COMPETITION_DETAIL(id),
   rankings: (id: string) => ROUTES.COMPETITION_RANKINGS(id),
   suspensions: (id: string) => ROUTES.COMPETITION_SUSPENSIONS(id),
@@ -18,4 +19,7 @@ export const competitionRoutes = {
   matchCenter: (compId: string, matchId: string) => ROUTES.MATCH_CENTER(compId, matchId),
   matchLineup: (compId: string, matchId: string) => ROUTES.MATCH_LINEUP(compId, matchId),
   matchReport: (compId: string, matchId: string) => ROUTES.MATCH_REPORT(compId, matchId),
+  adminMatchCenter: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_CENTER(compId, matchId),
+  adminMatchLineup: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_LINEUP(compId, matchId),
+  adminMatchReport: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_REPORT(compId, matchId),
 }

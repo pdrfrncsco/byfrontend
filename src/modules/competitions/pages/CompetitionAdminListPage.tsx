@@ -40,7 +40,7 @@ export function CompetitionAdminListPage() {
     { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
     { label: 'Geral de Provas', href: ROUTES.DASHBOARD_COMPETITION, icon: <Trophy className="w-5 h-5" /> },
     { label: 'Torneios', href: ROUTES.DASHBOARD_COMPETITIONS_LIST, icon: <Trophy className="w-5 h-5" />, active: true },
-    { label: 'Partidas', href: ROUTES.DASHBOARD_COMPETITION, icon: <Calendar className="w-5 h-5" />, disabled: true },
+    { label: 'Partidas', href: ROUTES.DASHBOARD_COMPETITIONS_MATCHES, icon: <Calendar className="w-5 h-5" /> },
     { label: 'Árbitros', href: ROUTES.DASHBOARD_COMPETITION, icon: <Gavel className="w-5 h-5" />, disabled: true },
     { label: 'Estádios', href: ROUTES.DASHBOARD_COMPETITION, icon: <MapPin className="w-5 h-5" />, disabled: true },
     { label: 'Conformidade', href: ROUTES.DASHBOARD_COMPETITION, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },

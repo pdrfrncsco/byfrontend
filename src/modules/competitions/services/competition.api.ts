@@ -129,6 +129,13 @@ export const competitionApi = {
     )
     return response.data.data
   },
+  
+  async listAllMatches(params?: Record<string, any>): Promise<PaginatedResponse<Match>> {
+    const response = await client.get<PaginatedEnvelope<Match>>(API_ROUTES.MATCHES.LIST, {
+      params,
+    })
+    return unwrapPaginated(response.data)
+  },
 
   async getStandings(competitionId: string): Promise<Standing[]> {
     const response = await client.get<ApiResponse<Standing[]>>(

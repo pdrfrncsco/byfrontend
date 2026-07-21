@@ -40,6 +40,10 @@ const OrgTransferDetailPage = lazy(() => import('@/modules/transfers/pages/OrgTr
 const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/OrgTransfersListPage'))
 const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
 const CompetitionAdminListPage = lazy(() => import('@/modules/competitions/pages/CompetitionAdminListPage').then(m => ({ default: m.CompetitionAdminListPage })))
+const CompetitionMatchesPage = lazy(() => import('@/modules/competitions/pages/CompetitionMatchesPage').then(m => ({ default: m.CompetitionMatchesPage })))
+const MatchCenterPage = lazy(() => import('@/modules/competitions/pages/MatchCenterPage').then(m => ({ default: m.MatchCenterPage })))
+const MatchLineupPage = lazy(() => import('@/modules/competitions/pages/MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
+const MatchReportPage = lazy(() => import('@/modules/competitions/pages/MatchReportPage').then(m => ({ default: m.MatchReportPage })))
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
 )
@@ -177,6 +181,42 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
             <Suspense fallback={<RouteFallback />}><CompetitionAdminListPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      {/* Competition admin matches */}
+      <Route
+        path={ROUTES.DASHBOARD_COMPETITIONS_MATCHES}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><CompetitionMatchesPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      {/* Competition admin match center */}
+      <Route
+        path={ROUTES.DASHBOARD_MATCH_CENTER(':compId', ':matchId')}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      {/* Competition admin match lineup */}
+      <Route
+        path={ROUTES.DASHBOARD_MATCH_LINEUP(':compId', ':matchId')}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      {/* Competition admin match report */}
+      <Route
+        path={ROUTES.DASHBOARD_MATCH_REPORT(':compId', ':matchId')}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>
           </ProtectedRoute>
         }
       />

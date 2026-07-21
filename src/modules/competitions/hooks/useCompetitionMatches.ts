@@ -2,9 +2,12 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { competitionApi } from '../services/competition.api'
+import type { Match, MatchListParams, PaginatedResponse } from '../types'
 
 export const matchKeys = {
   all: ['matches'] as const,
+  lists: () => [...matchKeys.all, 'list'] as const,
+  list: (params?: Record<string, any>) => [...matchKeys.lists(), params] as const,
   byCompetition: (id: string) => ['matches', 'competition', id] as const,
 }
 
@@ -101,5 +104,28 @@ export function useUpdateMatchScore(competitionId: string) {
       queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
       queryClient.invalidateQueries({ queryKey: standingKeys.byCompetition(competitionId) })
     },
+  })
+}
+
+/**
+ * Fetch the paginated/filtered list of matches.
+ */
+export function useMatches(params?: MatchListParams | Record<string, any>) {
+  return useQuery({
+    queryKey: matchKeys.list(params),
+    queryFn: async () => {
+      const response = await competitionApi.listAllMatches(params)
+      return response.results
+    },
+  })
+}
+
+/**
+ * Fetch the paginated/filtered list of matches with counts.
+ */
+export function useMatchesPaginated(params?: MatchListParams | Record<string, any>) {
+  return useQuery<PaginatedResponse<Match>>({
+    queryKey: matchKeys.list(params),
+    queryFn: () => competitionApi.listAllMatches(params),
   })
 }

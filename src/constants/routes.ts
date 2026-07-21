@@ -35,6 +35,7 @@ export const ROUTES = {
   DASHBOARD_TRANSFERS_CREATE: '/dashboard/transfers/create',
   DASHBOARD_COMPETITION: '/dashboard/competition',
   DASHBOARD_COMPETITIONS_LIST: '/dashboard/competitions',
+  DASHBOARD_COMPETITIONS_MATCHES: '/dashboard/competitions/matches',
   DASHBOARD_COMPETITIONS_CREATE: '/dashboard/competitions/create',
   DASHBOARD_COMPETITIONS_SETTINGS: (id: string) => `/dashboard/competitions/${id}/settings`,
   DASHBOARD_COMPETITIONS_REGISTRATION: (id: string) => `/dashboard/competitions/${id}/registration`,
@@ -69,6 +70,10 @@ export const ROUTES = {
   MATCH_CENTER: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}`,
   MATCH_LINEUP: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/lineup`,
   MATCH_REPORT: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/report`,
+  // Dashboard match center
+  DASHBOARD_MATCH_CENTER: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}`,
+  DASHBOARD_MATCH_LINEUP: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}/lineup`,
+  DASHBOARD_MATCH_REPORT: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}/report`,
   // Other modules
   MATCHES: '/matches',
   RANKINGS: '/rankings',

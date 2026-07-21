@@ -1,5 +1,6 @@
 export * from './CompetitionListPage'
 export * from './CompetitionAdminListPage'
+export * from './CompetitionMatchesPage'
 export * from './CompetitionDetailPage'
 export * from './CompetitionAdminDashboardPage'
 export * from './CompetitionRegulationsPage'

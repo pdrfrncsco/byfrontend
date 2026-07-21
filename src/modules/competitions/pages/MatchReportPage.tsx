@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
   FileText,
@@ -15,6 +15,9 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import { Badge, Button, Card } from '@/components/ui'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { competitionRoutes } from '../routes'
+import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
 import { useMatchReport, useAddGoal } from '../hooks/useCompetitionAdvanced'
@@ -311,6 +314,8 @@ export function MatchReportPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
   const { isAdmin } = useCompetitionAccess()
+  const location = useLocation()
+  const isDashboard = location.pathname.startsWith('/dashboard')
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
@@ -320,25 +325,59 @@ export function MatchReportPage() {
 
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   if (loadingComp || loadingMatches) {
+    const LoadingComponent = () => (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+    if (isDashboard) {
+      return (
+        <DashboardLayout
+          title="Relatório do Jogo"
+          subtitle="A carregar..."
+          dashboardType="competition"
+          sidebarLinks={sidebarLinks}
+        >
+          <LoadingComponent />
+        </DashboardLayout>
+      )
+    }
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <LoadingComponent />
       </div>
     )
   }
 
   if (!match) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+    const NotFoundComponent = () => (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="text-lg font-medium text-on-surface">Jogo não encontrado</p>
-        <Link to={`/competitions/${competitionId}`}>
+        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
           <Button variant="secondary" size="sm">
-            Voltar à competição
+            Voltar ao jogo
           </Button>
         </Link>
+      </div>
+    )
+    if (isDashboard) {
+      return (
+        <DashboardLayout
+          title="Jogo não encontrado"
+          dashboardType="competition"
+          sidebarLinks={sidebarLinks}
+        >
+          <NotFoundComponent />
+        </DashboardLayout>
+      )
+    }
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+        <NotFoundComponent />
       </div>
     )
   }
@@ -346,14 +385,14 @@ export function MatchReportPage() {
   const homeGoals = (report?.goals || []).filter((g) => g.club === match.home_club)
   const awayGoals = (report?.goals || []).filter((g) => g.club === match.away_club)
 
-  return (
-    <div className="min-h-screen bg-background">
+  const pageContent = (
+    <>
       {/* Header */}
-      <div className="bg-surface-container">
+      <div className="bg-surface-container rounded-xl mb-lg">
         <div className="mx-auto max-w-4xl px-lg py-lg">
           {/* Breadcrumb */}
           <Link
-            to={`/competitions/${competitionId}/matches/${matchIdValue}`}
+            to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}
             className="mb-md inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -510,6 +549,21 @@ export function MatchReportPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
+
+  if (isDashboard) {
+    return (
+      <DashboardLayout
+        title="Relatório do Jogo"
+        subtitle={`${match.home_club_name} vs ${match.away_club_name}`}
+        dashboardType="competition"
+        sidebarLinks={sidebarLinks}
+      >
+        {pageContent}
+      </DashboardLayout>
+    )
+  }
+
+  return <div className="min-h-screen bg-background">{pageContent}</div>
 }
