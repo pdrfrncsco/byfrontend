@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
+import { useQuery } from '@tanstack/react-query'
 import {
   Badge,
   Card,
@@ -19,7 +20,8 @@ import {
   MapPin,
   ShieldAlert,
 } from 'lucide-react'
-import { useMatchesPaginated } from '../hooks'
+import { useOrganizationMe, useOrganizationTournaments } from '@/modules/organizations/hooks'
+import { competitionApi } from '../services/competition.api'
 import type { Match } from '../types'
 
 function getStatusBadge(status: string) {
@@ -40,7 +42,36 @@ function getStatusBadge(status: string) {
 }
 
 export function CompetitionMatchesPage() {
-  const { data, isLoading } = useMatchesPaginated()
+  const { data: org } = useOrganizationMe()
+  const { data: competitions, isLoading: isLoadingCompetitions } = useOrganizationTournaments(org?.slug)
+  
+  // Fetch matches for each competition
+  const competitionQueries = useQuery({
+    queryKey: ['organization-matches', competitions?.map(c => (c as any).id)],
+    queryFn: async () => {
+      if (!competitions || competitions.length === 0) return []
+      const allMatches = await Promise.all(
+        competitions.map(async (comp: any) => {
+          try {
+            const matches = await competitionApi.listMatches(comp.id)
+            // Add competition info to each match
+            return matches.map(match => ({ ...match, competition: comp.id }))
+          } catch (e) {
+            return []
+          }
+        })
+      )
+      return allMatches.flat()
+    },
+    enabled: !!competitions && competitions.length > 0,
+  })
+  
+  const isLoading = isLoadingCompetitions || competitionQueries.isLoading
+  const matches = useMemo(() => {
+    const allMatches = competitionQueries.data ?? []
+    // Sort matches by date (most recent first)
+    return allMatches.sort((a, b) => new Date(b.match_date).getTime() - new Date(a.match_date).getTime())
+  }, [competitionQueries.data])
 
   const sidebarLinks = [
     { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
@@ -139,7 +170,7 @@ export function CompetitionMatchesPage() {
     [],
   )
 
-  const matches = useMemo(() => data?.results ?? [], [data?.results])
+
 
   return (
     <DashboardLayout
