@@ -18,6 +18,8 @@ export const ROUTES = {
   CLUB_ONBOARDING: '/club/onboarding',
   ORGANIZATION_SETTINGS: '/organization/settings',
   DASHBOARD_ORGANIZATION: '/dashboard/organization',
+  DASHBOARD_ORGANIZATION_CLUBS: '/dashboard/organization/clubs',
+  DASHBOARD_ORGANIZATION_COMPETITIONS: '/dashboard/organization/competitions',
   DASHBOARD_ORGANIZATION_MEMBERS: '/dashboard/organization/members',
   DASHBOARD_ORGANIZATION_AFFILIATIONS: '/dashboard/organization/affiliations',
   DASHBOARD_CLUB: '/dashboard/club',

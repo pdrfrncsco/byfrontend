@@ -8,6 +8,7 @@ import type {
   OrgMemberInviteData,
   ClubAffiliationCreateData,
   ClubAffiliationReviewData,
+  OrganizationClub,
 } from '../types'
 
 /**
@@ -177,7 +178,7 @@ export function useOrganizationTournaments(slug: string | undefined) {
  * Hook para clubes de uma organização
  */
 export function useOrganizationClubs(slug: string | undefined) {
-  return useQuery({
+  return useQuery<OrganizationClub[]>({
     queryKey: organizationKeys.clubs(slug || ''),
     queryFn: () => organizationApi.getClubs(slug!),
     enabled: !!slug,

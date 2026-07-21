@@ -15,6 +15,7 @@ import type {
   ClubAffiliationRequest,
   ClubAffiliationCreateData,
   ClubAffiliationReviewData,
+  OrganizationClub,
 } from '../types'
 
 export const organizationApi = {
@@ -102,8 +103,8 @@ export const organizationApi = {
     return response.data.data
   },
 
-  async getClubs(slug: string): Promise<unknown[]> {
-    const response = await client.get<ApiResponse<unknown[]>>(
+  async getClubs(slug: string): Promise<OrganizationClub[]> {
+    const response = await client.get<ApiResponse<OrganizationClub[]>>(
       API_ROUTES.ORGANIZATIONS.PUBLIC.CLUBS(slug),
     )
     return response.data.data

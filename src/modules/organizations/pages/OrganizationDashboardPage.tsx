@@ -93,8 +93,8 @@ export default function OrganizationDashboardPage() {
 
   const sidebarLinks = [
     { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" />, active: true },
-    { label: 'Clubes Associados', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
+    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
     { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
     { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
@@ -317,7 +317,7 @@ export default function OrganizationDashboardPage() {
               <span>Competições Organizacionais</span>
             </CardTitle>
             <Button variant="link" size="sm" asChild className="text-xs">
-              <Link to={ROUTES.COMPETITIONS}>
+              <Link to={ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS}>
                 <span>Ver todas</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -401,7 +401,7 @@ export default function OrganizationDashboardPage() {
               <span>Clubes Associados</span>
             </CardTitle>
             <Button variant="link" size="sm" asChild className="text-xs">
-              <Link to={ROUTES.CLUBS}>
+              <Link to={ROUTES.DASHBOARD_ORGANIZATION_CLUBS}>
                 <span>Ver todos</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
@@ -416,11 +416,11 @@ export default function OrganizationDashboardPage() {
               emptyMessage="Nenhum clube associado registado."
               emptyAction={
                 <Button variant="primary" size="sm" asChild>
-                  <Link to={ROUTES.CLUBS}>
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span>Vincular Novo Clube</span>
-                  </Link>
-                </Button>
+                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span>Vincular Novo Clube</span>
+                </Link>
+              </Button>
               }
             />
           </CardContent>
@@ -437,7 +437,7 @@ export default function OrganizationDashboardPage() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-sm">
               <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.CLUBS}>
+                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
                   <PlusCircle className="h-4 w-4 text-primary" />
                   <span>Vincular Novo Clube</span>
                 </Link>
