@@ -34,6 +34,7 @@ export const ROUTES = {
   DASHBOARD_TRANSFER_DETAIL: (id: string) => `/dashboard/transfers/${id}`,
   DASHBOARD_TRANSFERS_CREATE: '/dashboard/transfers/create',
   DASHBOARD_COMPETITION: '/dashboard/competition',
+  DASHBOARD_COMPETITIONS_LIST: '/dashboard/competitions',
   DASHBOARD_COMPETITIONS_CREATE: '/dashboard/competitions/create',
   DASHBOARD_COMPETITIONS_SETTINGS: (id: string) => `/dashboard/competitions/${id}/settings`,
   DASHBOARD_COMPETITIONS_REGISTRATION: (id: string) => `/dashboard/competitions/${id}/registration`,

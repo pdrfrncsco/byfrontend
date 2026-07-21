@@ -2,6 +2,7 @@ import { ROUTES } from '@/constants'
 
 export const competitionRoutes = {
   list: ROUTES.COMPETITIONS,
+  adminList: ROUTES.DASHBOARD_COMPETITIONS_LIST,
   detail: (id: string) => ROUTES.COMPETITION_DETAIL(id),
   rankings: (id: string) => ROUTES.COMPETITION_RANKINGS(id),
   suspensions: (id: string) => ROUTES.COMPETITION_SUSPENSIONS(id),

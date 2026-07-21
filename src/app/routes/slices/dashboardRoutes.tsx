@@ -39,6 +39,7 @@ const OrgTransferCreatePage = lazy(() => import('@/modules/transfers/pages/OrgTr
 const OrgTransferDetailPage = lazy(() => import('@/modules/transfers/pages/OrgTransferDetailPage'))
 const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/OrgTransfersListPage'))
 const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
+const CompetitionAdminListPage = lazy(() => import('@/modules/competitions/pages/CompetitionAdminListPage').then(m => ({ default: m.CompetitionAdminListPage })))
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
 )
@@ -168,6 +169,16 @@ export function dashboardRouteElements() {
       <Route
         path={organizationRoutes.affiliations}
         element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationAffiliationsPage /></ProtectedRoute>}
+      />
+
+      {/* Competition admin list */}
+      <Route
+        path={ROUTES.DASHBOARD_COMPETITIONS_LIST}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><CompetitionAdminListPage /></Suspense>
+          </ProtectedRoute>
+        }
       />
 
       {/* Club management */}

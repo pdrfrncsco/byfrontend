@@ -31,8 +31,8 @@ export function CompetitionDashboardPage() {
   const sidebarLinks = [
     { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
     { label: 'Geral de Provas',       href: dashboardRoutes.competition, icon: <Trophy className="w-5 h-5" />, active: true },
-    { label: 'Torneios',              href: ROUTES.COMPETITIONS, icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Partidas',              href: ROUTES.MATCHES, icon: <Calendar className="w-5 h-5" /> },
+    { label: 'Torneios',              href: ROUTES.DASHBOARD_COMPETITIONS_LIST, icon: <Trophy className="w-5 h-5" /> },
+    { label: 'Partidas',              href: dashboardRoutes.competition, icon: <Calendar className="w-5 h-5" />, disabled: true },
     { label: 'Árbitros',              href: dashboardRoutes.competition, icon: <Gavel className="w-5 h-5" />, disabled: true },
     { label: 'Estádios',              href: dashboardRoutes.competition, icon: <MapPin className="w-5 h-5" />, disabled: true },
     { label: 'Conformidade',          href: dashboardRoutes.competition, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
@@ -135,7 +135,7 @@ export function CompetitionDashboardPage() {
             )}
           </div>
 
-          <Link to={ROUTES.COMPETITIONS} className="w-full mt-lg">
+          <Link to={ROUTES.DASHBOARD_COMPETITIONS_LIST} className="w-full mt-lg">
             <button className="w-full bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1">
               Visualizar Todos os Torneios <ArrowRight className="w-4 h-4" />
             </button>
