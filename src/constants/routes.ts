@@ -55,6 +55,7 @@ export const ROUTES = {
   DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',
   DASHBOARD_CLUB_PLAYER_REQUESTS: '/dashboard/club/player-requests',
   DASHBOARD_CLUB_SQUAD: '/dashboard/club/squad',
+  DASHBOARD_CLUB_COMPETITIONS: '/dashboard/club/competitions',
   FANS: '/fans',
   // Competition public routes
   COMPETITIONS: '/competitions',
@@ -131,6 +132,9 @@ export const API_ROUTES = {
   CLUBS: {
     LIST: '/clubs/',
     ME: '/clubs/me/',
+    ME_COMPETITIONS: '/clubs/me/competitions/',
+    ME_MATCHES: '/clubs/me/matches/',
+    ME_STANDINGS: '/clubs/me/standings/',
     LOGO: '/clubs/me/logo/',
     PLAYER_REGISTRATION_REQUESTS: '/clubs/me/player-registration-requests/',
     PLAYER_REGISTRATION_REQUEST_REVIEW: (requestId: string) =>
@@ -164,6 +168,9 @@ export const API_ROUTES = {
       STAFF: (slug: string) => `/clubs/public/${slug}/staff/`,
       DOCUMENTS: (slug: string) => `/clubs/public/${slug}/documents/`,
       SPONSORS: (slug: string) => `/clubs/public/${slug}/sponsors/`,
+      COMPETITIONS: (slug: string) => `/clubs/public/${slug}/competitions/`,
+      MATCHES: (slug: string) => `/clubs/public/${slug}/matches/`,
+      STANDINGS: (slug: string) => `/clubs/public/${slug}/standings/`,
     },
   },
   PLAYERS: {

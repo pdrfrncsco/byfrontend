@@ -243,8 +243,52 @@ export async function deleteClubSponsor(slug: string, sponsorId: string): Promis
   await apiClient.delete(API_ROUTES.CLUBS.SPONSOR_DETAIL(slug, sponsorId))
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Club Competitions, Matches & Standings
+// ─────────────────────────────────────────────────────────────────────────────
+
+import type { Competition, Match, Standing } from '@/modules/competitions/types'
+
+export async function getClubPublicCompetitions(slug: string): Promise<Competition[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Competition>>(API_ROUTES.CLUBS.PUBLIC.COMPETITIONS(slug))
+  return unwrapList(res.data)
+}
+
+export async function getClubPublicMatches(
+  slug: string,
+  params?: { status?: string; competition_id?: string }
+): Promise<Match[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Match>>(API_ROUTES.CLUBS.PUBLIC.MATCHES(slug), { params })
+  return unwrapList(res.data)
+}
+
+export async function getClubPublicStandings(slug: string, competitionId?: string): Promise<Standing[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Standing>>(API_ROUTES.CLUBS.PUBLIC.STANDINGS(slug), {
+    params: competitionId ? { competition_id: competitionId } : undefined,
+  })
+  return unwrapList(res.data)
+}
+
+export async function getClubMeCompetitions(): Promise<Competition[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Competition>>(API_ROUTES.CLUBS.ME_COMPETITIONS)
+  return unwrapList(res.data)
+}
+
+export async function getClubMeMatches(params?: { status?: string; competition_id?: string }): Promise<Match[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Match>>(API_ROUTES.CLUBS.ME_MATCHES, { params })
+  return unwrapList(res.data)
+}
+
+export async function getClubMeStandings(competitionId?: string): Promise<Standing[]> {
+  const res = await apiClient.get<PaginatedEnvelope<Standing>>(API_ROUTES.CLUBS.ME_STANDINGS, {
+    params: competitionId ? { competition_id: competitionId } : undefined,
+  })
+  return unwrapList(res.data)
+}
+
 // Transfer APIs live in `@/modules/transfers` — re-exported for legacy imports.
 export {
   transferApi as transfersApi,
 } from '@/modules/transfers/services'
+
 

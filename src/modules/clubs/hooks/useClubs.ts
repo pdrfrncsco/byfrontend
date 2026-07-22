@@ -27,7 +27,16 @@ export const clubKeys = {
   sponsors: (slug: string) => [...clubKeys.all, slug, 'sponsors', 'private'] as const,
   members: (slug: string) => [...clubKeys.all, slug, 'members'] as const,
   me: () => [...clubKeys.all, 'me'] as const,
+  competitions: (slug: string) => [...clubKeys.all, slug, 'competitions'] as const,
+  matches: (slug: string, params?: { status?: string; competition_id?: string }) =>
+    [...clubKeys.all, slug, 'matches', params] as const,
+  standings: (slug: string, competitionId?: string) => [...clubKeys.all, slug, 'standings', competitionId] as const,
+  meCompetitions: () => [...clubKeys.all, 'me', 'competitions'] as const,
+  meMatches: (params?: { status?: string; competition_id?: string }) =>
+    [...clubKeys.all, 'me', 'matches', params] as const,
+  meStandings: (competitionId?: string) => [...clubKeys.all, 'me', 'standings', competitionId] as const,
 }
+
 
 export function useClubs(params?: ClubListParams) {
   return useQuery({
@@ -307,8 +316,60 @@ export function useDeleteClubSponsor() {
   })
 }
 
+export function useClubPublicCompetitions(slug?: string) {
+  return useQuery({
+    queryKey: clubKeys.competitions(slug || ''),
+    queryFn: () => (slug ? service.getClubPublicCompetitions(slug) : Promise.resolve([])),
+    enabled: !!slug,
+  })
+}
+
+export function useClubPublicMatches(slug?: string, params?: { status?: string; competition_id?: string }) {
+  return useQuery({
+    queryKey: clubKeys.matches(slug || '', params),
+    queryFn: () => (slug ? service.getClubPublicMatches(slug, params) : Promise.resolve([])),
+    enabled: !!slug,
+  })
+}
+
+export function useClubPublicStandings(slug?: string, competitionId?: string) {
+  return useQuery({
+    queryKey: clubKeys.standings(slug || '', competitionId),
+    queryFn: () => (slug ? service.getClubPublicStandings(slug, competitionId) : Promise.resolve([])),
+    enabled: !!slug,
+  })
+}
+
+export function useClubMeCompetitions() {
+  const { isAuthenticated } = useAuth()
+  return useQuery({
+    queryKey: clubKeys.meCompetitions(),
+    queryFn: () => service.getClubMeCompetitions(),
+    enabled: isAuthenticated,
+  })
+}
+
+export function useClubMeMatches(params?: { status?: string; competition_id?: string }) {
+  const { isAuthenticated } = useAuth()
+  return useQuery({
+    queryKey: clubKeys.meMatches(params),
+    queryFn: () => service.getClubMeMatches(params),
+    enabled: isAuthenticated,
+  })
+}
+
+export function useClubMeStandings(competitionId?: string) {
+  const { isAuthenticated } = useAuth()
+  return useQuery({
+    queryKey: clubKeys.meStandings(competitionId),
+    queryFn: () => service.getClubMeStandings(competitionId),
+    enabled: isAuthenticated,
+  })
+}
+
 export const usePublicClubDocuments = useClubPublicDocuments
 export const usePublicClubSponsors = useClubPublicSponsors
+
 
 // Transfer hooks live in `@/modules/transfers` — re-exported for legacy club imports.
 export {

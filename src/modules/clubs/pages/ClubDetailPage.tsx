@@ -10,6 +10,7 @@ import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-s
 import { ClubEmptyState } from '@/modules/clubs/components/ClubEmptyState'
 import { ClubDetailSkeleton } from '@/modules/clubs/components/ClubSkeleton'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
+import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
 import {
   useClub,
   useClubKpis,
@@ -17,6 +18,9 @@ import {
   useClubPublicSponsors,
   useClubStaff,
   useClubSquad,
+  useClubPublicCompetitions,
+  useClubPublicMatches,
+  useClubPublicStandings,
 } from '@/modules/clubs/hooks/useClubs'
 
 function formatDate(value?: string | null) {
@@ -46,11 +50,20 @@ export default function ClubDetailPage() {
   const documentsQuery = useClubPublicDocuments(clubSlug)
   const sponsorsQuery = useClubPublicSponsors(clubSlug)
 
+  const competitionsQuery = useClubPublicCompetitions(clubSlug)
+  const matchesQuery = useClubPublicMatches(clubSlug)
+  const standingsQuery = useClubPublicStandings(clubSlug)
+
   const club = clubQuery.data
   const squad = squadQuery.data ?? []
   const staff = staffQuery.data ?? []
   const documents = documentsQuery.data ?? []
   const sponsors = sponsorsQuery.data ?? []
+
+  const competitions = competitionsQuery.data ?? []
+  const matches = matchesQuery.data ?? []
+  const standings = standingsQuery.data ?? []
+
 
   const errorStatus = useMemo(() => {
     const error = clubQuery.error as { response?: { status?: number } } | undefined
@@ -209,6 +222,12 @@ export default function ClubDetailPage() {
         <Tabs defaultValue="squad" className="space-y-lg">
           <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
             <TabsTrigger 
+              value="competitions" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Competições & Jogos
+            </TabsTrigger>
+            <TabsTrigger 
               value="squad" 
               className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
             >
@@ -233,6 +252,22 @@ export default function ClubDetailPage() {
               Patrocinadores
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent
+            value="competitions"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <ClubCompetitionsView
+              clubId={club.id}
+              clubSlug={club.slug}
+              clubName={club.name}
+              competitions={competitions}
+              matches={matches}
+              standings={standings}
+              isLoading={competitionsQuery.isLoading || matchesQuery.isLoading || standingsQuery.isLoading}
+            />
+          </TabsContent>
+
 
           <TabsContent 
             value="squad" 

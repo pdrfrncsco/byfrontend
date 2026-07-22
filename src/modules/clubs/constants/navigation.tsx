@@ -1,4 +1,4 @@
-import { ArrowRightLeft, FileText, Handshake, LayoutDashboard, Settings, UserCheck, UserPlus, Users, UsersRound } from 'lucide-react'
+import { ArrowRightLeft, FileText, Handshake, LayoutDashboard, Settings, Trophy, UserCheck, UserPlus, Users, UsersRound } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 export function getClubSidebarLinks() {
@@ -7,6 +7,11 @@ export function getClubSidebarLinks() {
       label: 'Geral',
       href: ROUTES.DASHBOARD_CLUB,
       icon: <LayoutDashboard className="h-4 w-4" />,
+    },
+    {
+      label: 'Competições & Jogos',
+      href: ROUTES.DASHBOARD_CLUB_COMPETITIONS,
+      icon: <Trophy className="h-4 w-4" />,
     },
     {
       label: 'Membros',
@@ -50,3 +55,4 @@ export function getClubSidebarLinks() {
     },
   ]
 }
+
