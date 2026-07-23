@@ -31,7 +31,7 @@ export function ClubPlayerRegisterPage() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
 
   const { data: club, isLoading: clubLoading } = useClubMe()
-  const { data: playersData, isLoading: playersLoading } = usePlayers({ page_size: 100 })
+  const { data: playersData, isLoading: playersLoading } = usePlayers({ page_size: 100, without_club: true })
   const registerMutation = useRegisterPlayer(selectedPlayer?.slug ?? '')
 
   const {

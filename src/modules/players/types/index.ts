@@ -94,6 +94,7 @@ export interface PlayerListParams {
   page_size?: number
   position?: PlayerPosition
   nationality?: string
+  without_club?: boolean
 }
 
 export interface PlayerListResponse {

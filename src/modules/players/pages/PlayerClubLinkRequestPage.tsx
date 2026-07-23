@@ -133,73 +133,85 @@ export function PlayerClubLinkRequestPage() {
       }
     >
       <div className="mx-auto grid max-w-5xl gap-xl">
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-xl">
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>{t('players.linkRequest.selectClub')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-md">
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
-                <Input
-                  variant="search"
-                  value={clubSearch}
-                  onChange={(event) => setClubSearch(event.target.value)}
-                  placeholder={t('players.linkRequest.searchClubPlaceholder')}
-                  className="pl-10"
-                />
-              </div>
-
-              {clubsLoading ? (
-                <Skeleton className="h-40 w-full rounded-2xl" />
-              ) : filteredClubs.length === 0 ? (
-                <EmptyState icon={Handshake} title={t('players.linkRequest.noClubsTitle')} description={t('players.linkRequest.noClubsDescription')} />
-              ) : (
-                <div className="grid gap-sm md:grid-cols-2">
-                  {filteredClubs.map((club) => (
-                    <button
-                      key={club.id}
-                      type="button"
-                      onClick={() => setValue('club_id', club.id, { shouldValidate: true })}
-                      className={`rounded-2xl border p-md text-left transition-colors ${
-                        selectedClubId === club.id
-                          ? 'border-primary bg-primary-container/15'
-                          : 'border-outline-variant/20 bg-surface-container hover:border-primary/40'
-                      }`}
-                    >
-                      <p className="font-semibold text-on-surface">{club.name}</p>
-                      <p className="mt-1 text-xs text-on-surface-variant">{club.city || club.country || '—'}</p>
-                    </button>
-                  ))}
+        {player.current_club ? (
+          <Card variant="flat" padding="lg" className="border-warning/35 bg-warning-container/5">
+            <div className="flex flex-col items-center justify-center text-center p-lg space-y-md">
+              <Handshake className="h-12 w-12 text-warning" />
+              <h3 className="text-lg font-bold text-on-surface">Já está vinculado a um clube</h3>
+              <p className="text-sm text-on-surface-variant max-w-md">
+                Atualmente já se encontra vinculado ao clube <strong>{player.current_club.name}</strong>. Não é possível solicitar novos vínculos enquanto estiver associado a um clube.
+              </p>
+            </div>
+          </Card>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-xl">
+            <Card variant="flat" padding="none">
+              <CardHeader>
+                <CardTitle>{t('players.linkRequest.selectClub')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-md">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
+                  <Input
+                    variant="search"
+                    value={clubSearch}
+                    onChange={(event) => setClubSearch(event.target.value)}
+                    placeholder={t('players.linkRequest.searchClubPlaceholder')}
+                    className="pl-10"
+                  />
                 </div>
-              )}
-              {errors.club_id && <p className="text-sm text-error">{errors.club_id.message}</p>}
-            </CardContent>
-          </Card>
 
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>{t('players.linkRequest.detailsTitle')}</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-md md:grid-cols-2">
-              <FormField label={t('players.register.joinedDate')} htmlFor="joined-date" error={errors.joined_date?.message} required>
-                <Input id="joined-date" type="date" {...register('joined_date')} />
-              </FormField>
-              <FormField label={t('players.register.shirtNumber')} htmlFor="shirt-number" error={errors.shirt_number?.message}>
-                <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
-              </FormField>
-              <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
-                <Input id="competition-id" {...register('competition_id')} placeholder={t('players.register.competitionPlaceholder')} />
-              </FormField>
-            </CardContent>
-          </Card>
+                {clubsLoading ? (
+                  <Skeleton className="h-40 w-full rounded-2xl" />
+                ) : filteredClubs.length === 0 ? (
+                  <EmptyState icon={Handshake} title={t('players.linkRequest.noClubsTitle')} description={t('players.linkRequest.noClubsDescription')} />
+                ) : (
+                  <div className="grid gap-sm md:grid-cols-2">
+                    {filteredClubs.map((club) => (
+                      <button
+                        key={club.id}
+                        type="button"
+                        onClick={() => setValue('club_id', club.id, { shouldValidate: true })}
+                        className={`rounded-2xl border p-md text-left transition-colors ${
+                          selectedClubId === club.id
+                            ? 'border-primary bg-primary-container/15'
+                            : 'border-outline-variant/20 bg-surface-container hover:border-primary/40'
+                        }`}
+                      >
+                        <p className="font-semibold text-on-surface">{club.name}</p>
+                        <p className="mt-1 text-xs text-on-surface-variant">{club.city || club.country || '—'}</p>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {errors.club_id && <p className="text-sm text-error">{errors.club_id.message}</p>}
+              </CardContent>
+            </Card>
 
-          <div className="flex justify-end">
-            <Button type="submit" loading={submitMutation.isPending} disabled={!selectedClubId}>
-              {t('players.linkRequest.submit')}
-            </Button>
-          </div>
-        </form>
+            <Card variant="flat" padding="none">
+              <CardHeader>
+                <CardTitle>{t('players.linkRequest.detailsTitle')}</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-md md:grid-cols-2">
+                <FormField label={t('players.register.joinedDate')} htmlFor="joined-date" error={errors.joined_date?.message} required>
+                  <Input id="joined-date" type="date" {...register('joined_date')} />
+                </FormField>
+                <FormField label={t('players.register.shirtNumber')} htmlFor="shirt-number" error={errors.shirt_number?.message}>
+                  <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
+                </FormField>
+                <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
+                  <Input id="competition-id" {...register('competition_id')} placeholder={t('players.register.competitionPlaceholder')} />
+                </FormField>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-end">
+              <Button type="submit" loading={submitMutation.isPending} disabled={!selectedClubId}>
+                {t('players.linkRequest.submit')}
+              </Button>
+            </div>
+          </form>
+        )}
 
         <Card variant="flat" padding="none">
           <CardHeader>
