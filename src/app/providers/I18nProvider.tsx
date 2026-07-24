@@ -274,6 +274,9 @@ i18n
               nationality: 'Nacionalidade',
               nationalityPlaceholder: 'ex: AO, PT, BR...',
               clearFilters: 'Limpar filtros',
+              availability: 'Disponibilidade',
+              allPlayers: 'Todos',
+              onlyAvailable: 'Só Disponíveis',
               page: 'Página',
               results: 'Resultados',
               previous: 'Anterior',
@@ -311,6 +314,8 @@ i18n
             card: {
               viewProfile: 'Ver perfil',
               years: '{{count}} anos',
+              available: 'Disponível',
+              linkedTo: 'Vinculado a',
             },
             empty: {
               title: 'Nenhum jogador encontrado',
@@ -867,6 +872,9 @@ i18n
               nationality: 'Nationality',
               nationalityPlaceholder: 'e.g. AO, PT, BR...',
               clearFilters: 'Clear filters',
+              availability: 'Availability',
+              allPlayers: 'All',
+              onlyAvailable: 'Only Available',
               page: 'Page',
               results: 'Results',
               previous: 'Previous',
@@ -904,6 +912,8 @@ i18n
             card: {
               viewProfile: 'View profile',
               years: '{{count}} years',
+              available: 'Available',
+              linkedTo: 'Linked to',
             },
             empty: {
               title: 'No players found',

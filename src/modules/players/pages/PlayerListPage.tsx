@@ -19,19 +19,21 @@ export function PlayerListPage() {
   const [selectedNationality, setSelectedNationality] = useState('')
   const [page, setPage] = useState(1)
   const [showFilters, setShowFilters] = useState(false)
+  const [showOnlyAvailable, setShowOnlyAvailable] = useState(false)
 
   const debouncedSearch = useDebounce(searchQuery, 350)
   const isSearching = debouncedSearch.length >= 2
 
   useEffect(() => {
     setPage(1)
-  }, [debouncedSearch, selectedPosition, selectedNationality])
+  }, [debouncedSearch, selectedPosition, selectedNationality, showOnlyAvailable])
 
   const searchResult = usePlayerSearch(debouncedSearch)
   const listResult = usePlayers({
     page,
     position: selectedPosition || undefined,
     nationality: selectedNationality || undefined,
+    without_club: showOnlyAvailable || undefined,
   })
 
   const activeResult = isSearching ? searchResult : listResult
@@ -50,12 +52,13 @@ export function PlayerListPage() {
   const hasPrev = !isSearching && page > 1
 
   const activeFilters = useMemo(() => {
-    return [selectedPosition, selectedNationality].filter(Boolean).length
-  }, [selectedPosition, selectedNationality])
+    return [selectedPosition, selectedNationality, showOnlyAvailable ? 'available' : ''].filter(Boolean).length
+  }, [selectedPosition, selectedNationality, showOnlyAvailable])
 
   const handleClearFilters = useCallback(() => {
     setSelectedPosition('')
     setSelectedNationality('')
+    setShowOnlyAvailable(false)
     setPage(1)
   }, [])
 
@@ -177,6 +180,31 @@ export function PlayerListPage() {
                     maxLength={3}
                   />
                 </label>
+
+                <div className="space-y-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">
+                    {t('players.list.availability')}
+                  </p>
+                  <div className="flex gap-sm">
+                    <Button
+                      id="players-availability-all"
+                      size="sm"
+                      variant={!showOnlyAvailable ? 'primary' : 'outline'}
+                      onClick={() => setShowOnlyAvailable(false)}
+                    >
+                      {t('players.list.allPlayers')}
+                    </Button>
+                    <Button
+                      id="players-availability-free"
+                      size="sm"
+                      variant={showOnlyAvailable ? 'primary' : 'outline'}
+                      style={showOnlyAvailable ? { borderColor: '#10b981', background: '#10b98122', color: '#10b981' } : undefined}
+                      onClick={() => setShowOnlyAvailable(true)}
+                    >
+                      ✓ {t('players.list.onlyAvailable')}
+                    </Button>
+                  </div>
+                </div>
 
                 {activeFilters > 0 && (
                   <Button id="players-clear-filters" variant="ghost" onClick={handleClearFilters}>

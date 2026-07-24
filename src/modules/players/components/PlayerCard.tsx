@@ -76,6 +76,23 @@ export function PlayerCard({ player }: PlayerCardProps) {
               >
                 {player.status_label}
               </Badge>
+              {player.current_club ? (
+                <Badge
+                  variant="secondary"
+                  className="max-w-[160px] truncate text-[11px]"
+                  title={player.current_club.name}
+                >
+                  🔗 {player.current_club.name}
+                </Badge>
+              ) : (
+                <Badge
+                  variant="outline"
+                  className="text-[11px]"
+                  style={{ borderColor: '#10b981', color: '#10b981', background: '#10b98112' }}
+                >
+                  ✓ {t('players.card.available')}
+                </Badge>
+              )}
             </div>
 
             {/* Location & Age */}
