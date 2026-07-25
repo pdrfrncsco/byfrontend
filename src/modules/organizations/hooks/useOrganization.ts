@@ -25,6 +25,7 @@ export const organizationKeys = {
   history: (slug: string) => ['organization', slug, 'history'] as const,
   tournaments: (slug: string) => ['organization', slug, 'tournaments'] as const,
   clubs: (slug: string) => ['organization', slug, 'clubs'] as const,
+  players: (slug: string) => ['organization', slug, 'players'] as const,
 }
 
 /**
@@ -181,6 +182,17 @@ export function useOrganizationClubs(slug: string | undefined) {
   return useQuery<OrganizationClub[]>({
     queryKey: organizationKeys.clubs(slug || ''),
     queryFn: () => organizationApi.getClubs(slug!),
+    enabled: !!slug,
+  })
+}
+
+/**
+ * Hook para jogadores registados através dos clubes da organização
+ */
+export function useOrganizationPlayers(slug: string | undefined) {
+  return useQuery({
+    queryKey: organizationKeys.players(slug || ''),
+    queryFn: () => organizationApi.getPlayers(slug!),
     enabled: !!slug,
   })
 }

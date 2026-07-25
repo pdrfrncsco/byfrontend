@@ -110,6 +110,13 @@ export const organizationApi = {
     return response.data.data
   },
 
+  async getPlayers(slug: string): Promise<any[]> {
+    const response = await client.get<ApiResponse<any[]>>(
+      API_ROUTES.ORGANIZATIONS.PUBLIC.PLAYERS(slug),
+    )
+    return response.data.data
+  },
+
   async getHistory(slug: string): Promise<OrganizationHistoryEntry[]> {
     const response = await client.get<ApiResponse<OrganizationHistoryEntry[]>>(
       API_ROUTES.ORGANIZATIONS.PUBLIC.HISTORY(slug),

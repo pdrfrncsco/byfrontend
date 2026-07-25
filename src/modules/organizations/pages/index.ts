@@ -5,4 +5,5 @@ export { default as OrganizationDashboardPage } from './OrganizationDashboardPag
 export { OrganizationMembersPage } from './OrganizationMembersPage'
 export { OrganizationAffiliationsPage } from './OrganizationAffiliationsPage'
 export { OrganizationClubsPage } from './OrganizationClubsPage'
+export { OrganizationPlayersPage } from './OrganizationPlayersPage'
 export { OrganizationCompetitionsPage } from './OrganizationCompetitionsPage'

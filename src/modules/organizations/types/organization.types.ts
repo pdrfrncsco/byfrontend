@@ -54,6 +54,12 @@ export interface OrganizationKpis {
   upcoming_tournaments: number
   completed_tournaments: number
   total_clubs: number
+  // Novos KPIs para o Dashboard da Organização:
+  total_affiliated_organizations?: number
+  active_clubs?: number
+  registered_players?: number
+  ongoing_competitions?: number
+  pending_transfers?: number
 }
 
 export interface OrganizationHistoryEntry {

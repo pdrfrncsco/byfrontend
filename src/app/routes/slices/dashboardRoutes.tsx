@@ -22,6 +22,7 @@ import {
   OrganizationMembersPage,
   OrganizationAffiliationsPage,
   OrganizationClubsPage,
+  OrganizationPlayersPage,
   OrganizationCompetitionsPage,
 } from '@/modules/organizations'
 import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
@@ -174,6 +175,10 @@ export function dashboardRouteElements() {
       <Route
         path={organizationRoutes.clubs}
         element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationClubsPage /></ProtectedRoute>}
+      />
+      <Route
+        path={organizationRoutes.players}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationPlayersPage /></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.competitions}

@@ -22,7 +22,7 @@ import {
   useLaunchOrganization,
 } from '../hooks'
 import { KpiCard } from '../components'
-import { ArrowRight, CheckCircle2, PlusCircle, Rocket, Settings, Shield, Trophy, Users } from 'lucide-react'
+import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, PlusCircle, Rocket, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
@@ -94,6 +94,7 @@ export default function OrganizationDashboardPage() {
   const sidebarLinks = [
     { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" />, active: true },
     { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
+    { label: 'Jogadores Registados', href: ROUTES.DASHBOARD_ORGANIZATION_PLAYERS, icon: <UserCheck className="h-4 w-4" /> },
     { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
     { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
     { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
@@ -226,6 +227,25 @@ export default function OrganizationDashboardPage() {
     [],
   )
 
+  const activeClubsCount = useMemo(() => {
+    if (kpis?.active_clubs !== undefined) return kpis.active_clubs
+    return clubRows.filter((c) => (c.status || 'active').toLowerCase() === 'active').length
+  }, [kpis, clubRows])
+
+  const ongoingCompetitionsCount = useMemo(() => {
+    if (kpis?.ongoing_competitions !== undefined) return kpis.ongoing_competitions
+    if (kpis?.active_tournaments !== undefined) return kpis.active_tournaments
+    return tournamentRows.filter((t) => {
+      const s = (t.status_label || t.status || '').toLowerCase()
+      return s.includes('active') || s.includes('curso') || s.includes('live')
+    }).length
+  }, [kpis, tournamentRows])
+
+  const pendingTransfersCount = useMemo(() => {
+    if (kpis?.pending_transfers !== undefined) return kpis.pending_transfers
+    return transferResults.filter((t) => (t.status || '').toLowerCase() === 'pending').length
+  }, [kpis, transferResults])
+
   return (
     <DashboardLayout
       title={org ? `Portal — ${org.name}` : 'Portal da Organização'}
@@ -234,7 +254,7 @@ export default function OrganizationDashboardPage() {
       sidebarLinks={sidebarLinks}
       headerActions={headerActions}
     >
-      <div className="mb-xl flex animate-fade-in flex-col justify-between gap-lg md:flex-row md:items-end">
+      <div className="mb-xl flex animate-fade-in flex-col justify-between gap-lg lg:flex-row lg:items-end">
         <div>
           <h1 className="mb-xs font-display-lg text-3xl leading-none tracking-tight text-on-surface">
             {org ? `Bem-vindo, ${org.name}` : 'Bem-vindo'}
@@ -242,9 +262,11 @@ export default function OrganizationDashboardPage() {
           <p className="text-sm text-on-surface-variant">Consola operacional e resumo analítico da sua organização.</p>
         </div>
 
-        <div className="flex w-full gap-md md:w-auto">
+        <div className="flex w-full flex-wrap gap-md lg:w-auto">
           {isLoadingKpiSection ? (
             <>
+              <Skeleton className="h-20 w-32 rounded-xl" />
+              <Skeleton className="h-20 w-32 rounded-xl" />
               <Skeleton className="h-20 w-32 rounded-xl" />
               <Skeleton className="h-20 w-32 rounded-xl" />
               <Skeleton className="h-20 w-32 rounded-xl" />
@@ -252,22 +274,34 @@ export default function OrganizationDashboardPage() {
           ) : (
             <>
               <KpiCard
-                label="Torneios Ativos"
-                value={kpis?.active_tournaments ?? 0}
-                icon={<Trophy className="h-4 w-4" />}
-                className="min-w-[120px] flex-1 py-md px-lg md:flex-none"
+                label="Org. Afiliadas"
+                value={kpis?.total_affiliated_organizations ?? 1}
+                icon={<Building2 className="h-4 w-4" />}
+                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
-                label="Clubes"
-                value={kpis?.total_clubs ?? clubRows.length}
+                label="Clubes Ativos"
+                value={activeClubsCount}
                 icon={<Shield className="h-4 w-4" />}
-                className="min-w-[120px] flex-1 py-md px-lg md:flex-none"
+                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
-                label="Subscritores"
-                value={kpis?.active_subscribers ?? 0}
-                icon={<Users className="h-4 w-4" />}
-                className="min-w-[120px] flex-1 py-md px-lg md:flex-none"
+                label="Jogadores Registados"
+                value={kpis?.registered_players ?? 0}
+                icon={<UserCheck className="h-4 w-4" />}
+                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+              />
+              <KpiCard
+                label="Competições em Andamento"
+                value={ongoingCompetitionsCount}
+                icon={<Trophy className="h-4 w-4" />}
+                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+              />
+              <KpiCard
+                label="Transferências Pendentes"
+                value={pendingTransfersCount}
+                icon={<ArrowLeftRight className="h-4 w-4" />}
+                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
             </>
           )}
