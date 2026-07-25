@@ -46,6 +46,7 @@ export default function CompetitionStep() {
     name: '',
     competition_type: 'league' as CompetitionType,
     season: defaultSeason,
+    modality: 'futebol_11',
   })
   const [saving, setSaving] = useState(false)
   const [initialized, setInitialized] = useState(false)
@@ -60,6 +61,7 @@ export default function CompetitionStep() {
         name: draft.name,
         competition_type: draft.competition_type,
         season: draft.season,
+        modality: (draft as any).modality || 'futebol_11',
       })
     }
     setInitialized(true)
@@ -77,13 +79,14 @@ export default function CompetitionStep() {
           name: form.name.trim(),
           competition_type: form.competition_type,
           season: form.season,
+          modality: form.modality,
           status: 'draft' as const,
         }
 
         if (competitionId) {
-          await updateCompetition.mutateAsync({ id: competitionId, data: payload })
+          await updateCompetition.mutateAsync({ id: competitionId, data: payload as any })
         } else {
-          const created = await createCompetition.mutateAsync(payload)
+          const created = await createCompetition.mutateAsync(payload as any)
           setCompetitionId(created.id)
         }
       } catch (e) {
@@ -118,11 +121,19 @@ export default function CompetitionStep() {
 
   return (
     <OnboardingLayout step={3}>
-      <div className="mb-lg">
-        <h2 className="font-display-lg text-display-lg text-primary mb-xs">Configuração de Competição</h2>
-        <p className="text-on-surface-variant max-w-2xl">
-          Defina os parâmetros técnicos da sua competição. Esta estrutura será a base para a gestão de resultados, estatísticas e calendários automáticos.
-        </p>
+      <div className="mb-lg flex flex-col md:flex-row md:items-center justify-between gap-md">
+        <div>
+          <h2 className="font-display-lg text-display-lg text-primary mb-xs">Competição Inicial (Opcional)</h2>
+          <p className="text-on-surface-variant max-w-2xl">
+            Configure sua primeira competição durante o onboarding ou pule esta etapa e crie competições mais tarde.
+          </p>
+        </div>
+        <Link
+          to={onboardingRoutes.review}
+          className="self-start md:self-auto text-label-md text-on-surface-variant hover:text-primary underline px-md py-sm transition-colors"
+        >
+          Pular esta etapa →
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
@@ -147,10 +158,10 @@ export default function CompetitionStep() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <div className="flex flex-col gap-xs">
                   <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                    Tipo de Competição
+                    Tipo
                   </label>
                   <select
                     name="competition_type"
@@ -161,6 +172,23 @@ export default function CompetitionStep() {
                     <option value="league">Liga</option>
                     <option value="tournament">Torneio</option>
                     <option value="cup">Taça</option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col gap-xs">
+                  <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
+                    Modalidade
+                  </label>
+                  <select
+                    name="modality"
+                    value={form.modality}
+                    onChange={onChange}
+                    className="form-inset-input rounded-lg px-md py-sm w-full"
+                  >
+                    <option value="futebol_11">Futebol 11</option>
+                    <option value="futebol_7">Futebol 7</option>
+                    <option value="futsal">Futsal</option>
+                    <option value="praia">Futebol de Praia</option>
                   </select>
                 </div>
 
@@ -191,11 +219,7 @@ export default function CompetitionStep() {
                 </Link>
                 <Link
                   to={onboardingRoutes.review}
-                  className={`flex-1 px-lg py-md font-title-md transition-all rounded-lg flex items-center justify-center gap-sm ${
-                    form.name.trim()
-                      ? 'bg-primary text-on-primary hover:brightness-110'
-                      : 'bg-surface-container-high text-on-surface-variant pointer-events-none opacity-60'
-                  }`}
+                  className="flex-1 px-lg py-md font-title-md bg-primary text-on-primary hover:brightness-110 transition-all rounded-lg flex items-center justify-center gap-sm"
                 >
                   Continuar
                   <ArrowRight className="w-4 h-4" />
@@ -204,7 +228,7 @@ export default function CompetitionStep() {
 
               <div className="text-right">
                 <span className="text-label-sm text-on-surface-variant">
-                  {saving ? 'A gravar...' : competitionId ? 'Guardado' : 'Preencha o nome para guardar'}
+                  {saving ? 'A gravar...' : competitionId ? 'Guardado' : form.name.trim() ? 'A guardar...' : 'Pode preencher agora ou criar depois'}
                 </span>
               </div>
             </form>

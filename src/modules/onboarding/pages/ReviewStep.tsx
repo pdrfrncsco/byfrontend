@@ -46,7 +46,7 @@ export default function ReviewStep() {
 
   const isLoading = orgLoading || compLoading
   const hasCompetition = (competitions?.length ?? 0) > 0
-  const canLaunch = Boolean(org?.name?.trim()) && hasCompetition
+  const canLaunch = Boolean(org?.name?.trim())
   const isAlreadyActive = org?.status === 'active'
 
   const location = [org?.city, COUNTRY_LABELS[org?.country ?? ''] ?? org?.country]
@@ -170,7 +170,7 @@ export default function ReviewStep() {
           <div className="flex justify-between items-center mb-lg">
             <div className="flex items-center gap-sm">
               <Trophy className="w-5 h-5 text-secondary" />
-              <h3 className="font-title-md text-title-md text-on-surface">Competições Configuradas</h3>
+              <h3 className="font-title-md text-title-md text-on-surface">Competição Inicial</h3>
             </div>
             <Link to={onboardingRoutes.competition} className="text-primary hover:underline font-label-sm">
               Gerenciar
@@ -183,9 +183,10 @@ export default function ReviewStep() {
                 <thead>
                   <tr className="border-b border-white/5">
                     <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Nome da Competição</th>
-                    <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Categoria</th>
+                    <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Tipo</th>
+                    <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Modalidade</th>
                     <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Época</th>
-                    <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Equipas</th>
+                    <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase">Equipas Est.</th>
                     <th className="py-md px-sm text-on-surface-variant font-label-sm uppercase text-right">Status</th>
                   </tr>
                 </thead>
@@ -194,6 +195,7 @@ export default function ReviewStep() {
                     <tr key={comp.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="py-md px-sm font-title-md font-bold">{comp.name}</td>
                       <td className="py-md px-sm">{comp.type_label || comp.competition_type}</td>
+                      <td className="py-md px-sm capitalize">{(comp as any).modality?.replace('_', ' ') || 'Futebol 11'}</td>
                       <td className="py-md px-sm">{comp.season}</td>
                       <td className="py-md px-sm">{TEAM_ESTIMATES[comp.competition_type]}</td>
                       <td className="py-md px-sm text-right text-primary">
@@ -206,9 +208,9 @@ export default function ReviewStep() {
             </div>
           ) : (
             <p className="text-on-surface-variant">
-              Nenhuma competição configurada.{' '}
+              Nenhuma competição configurada (Etapa Opcional).{' '}
               <Link to={onboardingRoutes.competition} className="text-primary hover:underline">
-                Criar competição
+                Configurar agora
               </Link>
             </p>
           )}
@@ -254,7 +256,7 @@ export default function ReviewStep() {
         </button>
         {!canLaunch && !isAlreadyActive && (
           <p className="text-label-sm text-on-surface-variant mt-md">
-            Complete os dados da organização e crie pelo menos uma competição para lançar.
+            Complete os dados da organização para lançar o ecossistema.
           </p>
         )}
       </div>
