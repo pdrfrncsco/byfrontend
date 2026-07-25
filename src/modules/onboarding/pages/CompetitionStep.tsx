@@ -84,7 +84,17 @@ export default function CompetitionStep() {
         }
 
         if (competitionId) {
-          await updateCompetition.mutateAsync({ id: competitionId, data: payload as any })
+          try {
+            await updateCompetition.mutateAsync({ id: competitionId, data: payload as any })
+          } catch (err: any) {
+            // Se a competição não existir no backend (404), recria via POST
+            if (err?.response?.status === 404) {
+              const created = await createCompetition.mutateAsync(payload as any)
+              setCompetitionId(created.id)
+            } else {
+              throw err
+            }
+          }
         } else {
           const created = await createCompetition.mutateAsync(payload as any)
           setCompetitionId(created.id)
