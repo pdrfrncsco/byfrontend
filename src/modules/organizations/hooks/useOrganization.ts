@@ -190,8 +190,8 @@ export function useOrganizationClubs(slug: string | undefined) {
  * Hook para jogadores registados através dos clubes da organização
  */
 export function useOrganizationPlayers(slug: string | undefined) {
-  return useQuery({
-    queryKey: organizationKeys.players(slug || ''),
+  return useQuery<any[]>({
+    queryKey: organizationKeys.players(slug ?? ''),
     queryFn: () => organizationApi.getPlayers(slug!),
     enabled: !!slug,
   })

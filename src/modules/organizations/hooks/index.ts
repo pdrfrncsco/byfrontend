@@ -1,1 +1,1 @@
-export * from './useOrganization'
+export * from './useOrganization';
