@@ -663,3 +663,84 @@ FASE 5 — Testes
   [ ] Testes componentes de classificação
 ```
 PLAN
+
+
+
+
+• Alinhei o contrato frontend-backend para o bloco de competições.  
+                                                                    
+  O que foi ajustado:                                               
+                                                                    
+  - O backend agora aceita groupId como alias de group_id nas rotas 
+    de competições e mantém phase/format no contrato público em /D:/    ndeascloud/boayetu/backend/competitions/views/v2_views.py.      
+                                                                    
+  - O cliente frontend passou a suportar filtros opcionais em       
+    listMatches, getStandings, getBracket e getRounds, e draw()     
+    agora envia start_date com default seguro em /D:/ndeascloud/    
+    boayetu/frontend/src/modules/competitions/services/             
+    competition.api.ts.                                             
+                                                                    
+  - As rotas da API frontend foram centralizadas para DRAW, BRACKET 
+    e ROUNDS em /D:/ndeascloud/boayetu/frontend/src/constants/      
+    routes.ts.                                                      
+                                                                    
+  - Corrigi a página de sorteio para compilar com o design system   
+    atual em /D:/ndeascloud/boayetu/frontend/src/modules/           
+    competitions/pages/CompetitionDrawPage.tsx.                     
+                                                                    
+  - Adicionei cobertura backend para o alias groupId no endpoint de 
+    standings em /D:/ndeascloud/boayetu/backend/competitions/tests/ 
+    test_api.py.                                                    
+                                                                    
+  Validação:                                                        
+                                                                    
+  - Backend: cd backend; python manage.py test                      
+    competitions.tests.test_api competitions.tests.test_services    
+                                                                    
+  - Resultado: 22 testes, OK                                        
+  - Frontend: cd frontend; npm run build                            
+  - Resultado: build concluído com sucesso                          
+                                                                    
+  Se quiser, o próximo passo natural é eu continuar com o acabamento
+  de frontend para consumir os novos endpoints de bracket/rounds    
+  diretamente nos hooks e páginas. 
+
+
+
+
+
+  AUDITORIA
+       | config.pointsWin/Draw/Loss   |
+   6 | Desempates (tiebreakers) não | services/standing_service.    
+     | implementados — sort é só    | py
+     | Pts/GD/GF                    |
+   7 | Match sem phase + group_id + | models/match.py
+     | round_name — torneio e taça  |
+     | sem contexto                 |
+   8 | Standing sem group_id +      | models/standing.py
+     | phase — classificações de    |
+     | grupos misturadas            |
+   9 | GET /standings/ sem          | views/
+     | ?group_id= nem ?phase=       |
+  ──────
+  ### 🟡 Médio — Funcionalidades avançadas (Sprint 3)
+
+  • GET /competitions/:id/bracket/ — não existe (bracket
+  taça/torneio)
+  • GET /competitions/:id/rounds/ — não existe (jornadas/rondas)    
+  • POST /competitions/:id/draw/ — não existe (sorteio)
+  • generate-schedule não ramifica por tipo — gera calendário       
+  igual para liga, torneio e taça
+  ──────
+  ### Migrations necessárias (todas non-destructive)
+
+    XXXX_add_config_to_competition.py    ←
+  JSONField(default=dict)
+    XXXX_add_phase_group_to_match.py     ← phase, group_id,
+  round_name (nullable)
+    XXXX_add_group_phase_to_standing.py  ← group_id, phase
+  (nullable)
+
+  O relatório completo está no backend_audit_competicoes.md. Quer
+  começar pelo Sprint 1 (adicionar o campo config ao modelo e  
+  serializers)?

@@ -108,7 +108,8 @@ export const competitionApi = {
     competitionId: string,
     startDate: string,
     roundsIntervalDays: number = 7,
-    doubleRound: boolean = true
+    doubleRound: boolean = true,
+    seed?: string
   ): Promise<any> {
     const response = await client.post<ApiResponse<any>>(
       API_ROUTES.COMPETITIONS.GENERATE_SCHEDULE(competitionId),
@@ -116,6 +117,7 @@ export const competitionApi = {
         start_date: startDate,
         rounds_interval_days: roundsIntervalDays,
         double_round: doubleRound,
+        ...(seed ? { seed } : {}),
       }
     )
     return response.data
@@ -123,9 +125,13 @@ export const competitionApi = {
 
   // ─── Matches & Standings ────────────────────────────────────────────────
 
-  async listMatches(competitionId: string): Promise<Match[]> {
+  async listMatches(
+    competitionId: string,
+    params?: { groupId?: string; group_id?: string; phase?: string }
+  ): Promise<Match[]> {
     const response = await client.get<ApiResponse<Match[]>>(
-      API_ROUTES.COMPETITIONS.MATCHES(competitionId)
+      API_ROUTES.COMPETITIONS.MATCHES(competitionId),
+      { params }
     )
     return response.data.data
   },
@@ -137,9 +143,35 @@ export const competitionApi = {
     return unwrapPaginated(response.data)
   },
 
-  async getStandings(competitionId: string): Promise<Standing[]> {
+  async getStandings(
+    competitionId: string,
+    params?: { groupId?: string; group_id?: string; phase?: string; format?: string }
+  ): Promise<Standing[]> {
     const response = await client.get<ApiResponse<Standing[]>>(
-      API_ROUTES.COMPETITIONS.STANDINGS(competitionId)
+      API_ROUTES.COMPETITIONS.STANDINGS(competitionId),
+      { params }
+    )
+    return response.data.data
+  },
+
+  async getBracket(
+    competitionId: string,
+    params?: { groupId?: string; group_id?: string; phase?: string }
+  ): Promise<any> {
+    const response = await client.get<ApiResponse<any>>(
+      API_ROUTES.COMPETITIONS.BRACKET(competitionId),
+      { params }
+    )
+    return response.data.data
+  },
+
+  async getRounds(
+    competitionId: string,
+    params?: { groupId?: string; group_id?: string; phase?: string }
+  ): Promise<any> {
+    const response = await client.get<ApiResponse<any>>(
+      API_ROUTES.COMPETITIONS.ROUNDS(competitionId),
+      { params }
     )
     return response.data.data
   },
@@ -347,9 +379,19 @@ export const competitionApi = {
     return response.data.data
   },
   
-  async draw(competitionId: string): Promise<any> {
+  async draw(
+    competitionId: string,
+    startDate: string = new Date().toISOString().slice(0, 10),
+    roundsIntervalDays: number = 7,
+    seed?: string
+  ): Promise<any> {
     const response = await client.post<ApiResponse<any>>(
-      `/competitions/${competitionId}/draw/`
+      API_ROUTES.COMPETITIONS.DRAW(competitionId),
+      {
+        start_date: startDate,
+        rounds_interval_days: roundsIntervalDays,
+        ...(seed ? { seed } : {}),
+      }
     )
     return response.data.data
   },

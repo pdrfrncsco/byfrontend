@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { Trophy, Users, HelpCircle, Loader2, Sparkles, Check } from 'lucide-react'
+import { Trophy, HelpCircle, Loader2, Sparkles, Check } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
@@ -149,7 +149,7 @@ export function CompetitionDrawPage() {
 
                   {done && (
                     <Button
-                      variant="success"
+                      variant="secondary"
                       onClick={handleConfirmDraw}
                       disabled={drawMutation.isPending}
                     >
