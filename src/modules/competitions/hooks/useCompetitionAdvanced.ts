@@ -288,3 +288,19 @@ export function useRecalculateRankings(competitionId?: string) {
     },
   })
 }
+
+export function useDraw(competitionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => competitionApi.draw(competitionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['matches', 'competition', competitionId] })
+      queryClient.invalidateQueries({ queryKey: ['standings', 'competition', competitionId] })
+      toast.success('Sorteio realizado com sucesso!')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao realizar sorteio.')
+    },
+  })
+}
+

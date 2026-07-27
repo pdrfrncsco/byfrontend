@@ -13,6 +13,7 @@ export const competitionRoutes = {
   settings: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_SETTINGS(id),
   registration: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_REGISTRATION(id),
   schedule: (id: string) => ROUTES.DASHBOARD_COMPETITIONS_SCHEDULE(id),
+  draw: (id: string) => ROUTES.COMPETITION_DRAW(id),
   adminRankings: (id: string) => ROUTES.COMPETITION_ADMIN_RANKINGS(id),
   adminSuspensions: (id: string) => ROUTES.COMPETITION_ADMIN_SUSPENSIONS(id),
   adminRegulations: (id: string) => ROUTES.COMPETITION_ADMIN_REGULATIONS(id),

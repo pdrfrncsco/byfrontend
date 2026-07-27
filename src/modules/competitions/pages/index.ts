@@ -13,3 +13,5 @@ export * from './CompetitionSuspensionsPage'
 export * from './MatchCenterPage'
 export * from './MatchLineupPage'
 export * from './MatchReportPage'
+export * from './CompetitionDrawPage'
+

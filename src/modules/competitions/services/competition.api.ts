@@ -346,4 +346,11 @@ export const competitionApi = {
     )
     return response.data.data
   },
+  
+  async draw(competitionId: string): Promise<any> {
+    const response = await client.post<ApiResponse<any>>(
+      `/competitions/${competitionId}/draw/`
+    )
+    return response.data.data
+  },
 }

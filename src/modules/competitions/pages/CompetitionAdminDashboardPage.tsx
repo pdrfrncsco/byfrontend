@@ -14,6 +14,7 @@ import {
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
+import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { useTopScorers, useFairPlayRanking, useSuspensions, useRecalculateRankings } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionStandings } from '../hooks/useCompetitionPhase3'
@@ -90,6 +91,7 @@ export function CompetitionAdminDashboardPage() {
   const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
+  const { isLeague, isTournament, isCup } = useCompetitionConfig(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
   const { data: topScorers = [], isLoading: loadingScorers } = useTopScorers(competitionId)
   const { data: suspensions = [] } = useSuspensions(competitionId)
@@ -204,7 +206,7 @@ export function CompetitionAdminDashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between pb-sm">
             <CardTitle className="flex items-center gap-sm">
               <Trophy className="h-4 w-4 text-primary" />
-              Classificação
+              {isCup ? 'Clubes Inscritos' : isTournament ? 'Resumo de Grupos' : 'Classificação'}
             </CardTitle>
             <Button asChild variant="link" size="sm" className="text-xs">
               <Link to={competitionRoutes.adminRankings(competitionId)}>Ver todos</Link>
@@ -220,9 +222,9 @@ export function CompetitionAdminDashboardPage() {
             ) : standings.length === 0 ? (
               <div className="flex flex-col items-center gap-sm py-xl text-on-surface-variant">
                 <Trophy className="h-10 w-10 opacity-20" />
-                <p className="text-sm">Sem jogos realizados ainda.</p>
+                <p className="text-sm">Sem dados de classificação.</p>
               </div>
-            ) : (
+            ) : isLeague ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -249,6 +251,42 @@ export function CompetitionAdminDashboardPage() {
                         <td className="px-sm py-sm text-center">
                           <span className="rounded-md bg-primary/10 px-sm py-xs text-xs font-bold text-primary">{s.points}</span>
                         </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : isTournament ? (
+              <div className="p-md space-y-sm">
+                <p className="text-xs text-on-surface-variant">Esta competição está dividida em grupos. Segue a classificação detalhada nas páginas específicas.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+                  {standings.slice(0, 6).map((s, idx) => (
+                    <div key={s.id ?? idx} className="rounded-lg border border-outline-variant/10 bg-surface-container-low p-sm flex justify-between items-center">
+                      <span className="font-semibold text-xs text-on-surface">{s.club_name}</span>
+                      <span className="rounded bg-primary/10 px-xs py-0.5 text-xs text-primary font-bold">{s.points} Pts</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-outline-variant/20 bg-surface-container-high text-xs">
+                      <th className="w-8 px-md py-sm text-center font-semibold text-on-surface-variant">#</th>
+                      <th className="px-md py-sm text-left font-semibold text-on-surface-variant">Clube</th>
+                      <th className="px-md py-sm text-right font-semibold text-on-surface-variant">Inscrição</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {standings.slice(0, 6).map((s, idx) => (
+                      <tr
+                        key={s.id ?? idx}
+                        className="border-b border-outline-variant/10 transition-colors last:border-0 hover:bg-surface-container-high/50"
+                      >
+                        <td className="px-md py-sm text-center text-xs font-semibold text-on-surface-variant">{idx + 1}</td>
+                        <td className="px-md py-sm font-medium text-on-surface">{s.club_name}</td>
+                        <td className="px-md py-sm text-right text-xs text-on-surface-variant">Inscrito</td>
                       </tr>
                     ))}
                   </tbody>
@@ -328,7 +366,7 @@ export function CompetitionAdminDashboardPage() {
               <CardHeader className="pb-sm">
                 <CardTitle className="flex items-center gap-sm">
                   <Trophy className="h-4 w-4 text-amber-500" />
-                  Líder da Classificação
+                  {isCup ? 'Clube em Destaque' : isTournament ? 'Líder Geral' : 'Líder da Classificação'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -336,11 +374,13 @@ export function CompetitionAdminDashboardPage() {
                   <div>
                     <p className="font-semibold text-on-surface">{leader.club_name}</p>
                     <p className="text-xs text-on-surface-variant">
-                      {leader.played} jogos • {leader.won}V {leader.drawn}E {leader.lost}D
+                      {isCup ? 'Participante na Taça' : `${leader.played} jogos • ${leader.won}V ${leader.drawn}E ${leader.lost}D`}
                     </p>
                   </div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
-                    <span className="text-lg font-bold text-amber-600">{leader.points}</span>
+                    <span className="text-lg font-bold text-amber-600">
+                      {isCup ? '🏆' : leader.points}
+                    </span>
                   </div>
                 </div>
               </CardContent>

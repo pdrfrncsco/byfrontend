@@ -125,6 +125,7 @@ export interface CompetitionPhase {
   id: string;
   name: string;
   type: 'round_robin' | 'group_stage' | 'knockout' | 'final';
+  
   order: number;
   status: 'pending' | 'active' | 'completed';
   // Dados específicos por type resolvidos nos hooks
@@ -146,7 +147,6 @@ Taça:
 ```
 
 ---
-
 ## 3. Regras de Negócio por Tipo
 
 ### 3.1 Campeonato — Liga (Pontos Corridos)

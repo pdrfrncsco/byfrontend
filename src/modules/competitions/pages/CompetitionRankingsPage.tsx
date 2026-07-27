@@ -6,6 +6,7 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useTopScorers, useFairPlayRanking, useRecalculateRankings } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { TopScorersTable } from '../components/TopScorersTable'
+import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import type { FairPlayRanking } from '../types'
@@ -108,7 +109,7 @@ function FairPlayTable({
 // ─── CompetitionRankingsPage ──────────────────────────────────────────────────
 
 /**
- * CompetitionRankingsPage — shows top scorers, fair play ranking, and season stats.
+ * CompetitionRankingsPage — shows standings, top scorers, fair play ranking, and season stats.
  */
 export function CompetitionRankingsPage() {
   const { id } = useParams<{ id: string }>()
@@ -123,8 +124,8 @@ export function CompetitionRankingsPage() {
 
   return (
     <DashboardLayout
-      title="Rankings & Fair Play"
-      subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar marcadores e fair play da competição.'}
+      title="Classificação & Rankings"
+      subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar classificação, marcadores e fair play da competição.'}
       dashboardType="competition"
       sidebarLinks={sidebarLinks}
       headerActions={
@@ -154,8 +155,12 @@ export function CompetitionRankingsPage() {
         </div>
       }
     >
-      <Tabs defaultValue="scorers" className="space-y-lg">
+      <Tabs defaultValue="standings" className="space-y-lg">
         <TabsList>
+          <TabsTrigger value="standings" id="rankings-tab-standings">
+            <Trophy className="mr-xs h-4 w-4" />
+            Classificação
+          </TabsTrigger>
           <TabsTrigger value="scorers" id="rankings-tab-scorers">
             <Target className="mr-xs h-4 w-4" />
             Marcadores
@@ -165,6 +170,10 @@ export function CompetitionRankingsPage() {
             Fair Play
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="standings">
+          <CompetitionStandingsRouter competitionId={competitionId} />
+        </TabsContent>
 
         <TabsContent value="scorers">
           <TopScorersTable scorers={topScorers} isLoading={loadingScorers} limit={20} />

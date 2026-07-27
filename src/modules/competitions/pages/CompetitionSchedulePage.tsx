@@ -29,9 +29,6 @@ export function CompetitionSchedulePage() {
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const updateMatchScore = useUpdateMatchScore(competitionId)
 
-  // Label for rounds differs by format
-  const roundLabel = isLeague ? 'Jornada' : isCup ? 'Ronda' : 'Grupo/Ronda'
-
   const [generated, setGenerated] = useState(false)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
   const [editHomeScore, setEditHomeScore] = useState<string>('')
@@ -44,6 +41,54 @@ export function CompetitionSchedulePage() {
     acc[m.round_number].push(m)
     return acc
   }, {})
+
+  const getRoundDisplayLabel = (roundNumStr: string) => {
+    const roundNum = Number(roundNumStr)
+    if (isLeague) {
+      return `Jornada ${roundNum}`
+    }
+    if (isCup && competition?.config?.format === 'cup') {
+      const cupRounds = competition.config.rounds || []
+      const roundKey = cupRounds[roundNum - 1]
+      if (roundKey) {
+        switch (roundKey) {
+          case 'final': return 'Final'
+          case 'semi-final': return 'Meias-Finais'
+          case 'quarter-final': return 'Quartos-de-Finais'
+          case 'round-of-16': return 'Oitavos-de-Finais'
+          case 'round-of-32': return '16-Avos-de-Final'
+          case 'round-of-64': return '32-Avos-de-Final'
+          default: break
+        }
+      }
+      return `Ronda ${roundNum}`
+    }
+    if (competition?.config?.format === 'tournament') {
+      const tournamentConfig = competition.config as any
+      const teams = tournamentConfig.groupStage?.teamsPerGroup || 4
+      const double = tournamentConfig.groupStage?.homeAndAway ? 2 : 1
+      const groupRounds = (teams - 1) * double
+      if (roundNum <= groupRounds) {
+        return `Fase de Grupos — Jornada ${roundNum}`
+      } else {
+        const knockoutRoundIndex = roundNum - groupRounds - 1
+        const koRounds = tournamentConfig.knockoutStage?.rounds || []
+        const koKey = koRounds[knockoutRoundIndex]
+        if (koKey) {
+          switch (koKey) {
+            case 'final': return 'Final'
+            case 'semi-final': return 'Meias-Finais'
+            case 'quarter-final': return 'Quartos-de-Finais'
+            case 'round-of-16': return 'Oitavos-de-Finais'
+            case 'round-of-32': return '16-Avos-de-Final'
+            default: break
+          }
+        }
+        return `Fase Final — Ronda ${roundNum - groupRounds}`
+      }
+    }
+    return `Ronda ${roundNum}`
+  }
 
   const {
     register,
@@ -259,7 +304,7 @@ export function CompetitionSchedulePage() {
                     <div key={round} className="space-y-sm">
                       <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
                         <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
-                          {roundLabel} {round}
+                          {getRoundDisplayLabel(round)}
                         </span>
                       </h3>
                       <div className="space-y-sm">
