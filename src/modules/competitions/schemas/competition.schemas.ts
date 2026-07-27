@@ -1,6 +1,15 @@
 import { z } from 'zod'
+import { leagueConfigSchema } from './league.schema'
+import { tournamentConfigSchema } from './tournament.schema'
+import { cupConfigSchema } from './cup.schema'
 
 // ─── Competition Schemas ────────────────────────────────────────────────────
+
+export const competitionConfigSchema = z.union([
+  leagueConfigSchema,
+  tournamentConfigSchema,
+  cupConfigSchema
+])
 
 export const createCompetitionSchema = z.object({
   name: z
@@ -15,9 +24,39 @@ export const createCompetitionSchema = z.object({
     .string({ required_error: 'A época é obrigatória.' })
     .regex(/^\d{4}(-\d{4})?$/, 'Formato inválido. Use AAAA ou AAAA-AAAA (ex: 2024 ou 2024-2025).'),
   status: z.enum(['draft', 'active', 'completed']).default('draft').optional(),
+  config: competitionConfigSchema.optional(),
+}).superRefine((data, ctx) => {
+  if (data.config && data.config.format !== data.competition_type) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'O formato da configuração deve corresponder ao tipo de competição selecionado.',
+      path: ['config', 'format']
+    })
+  }
 })
 
-export const updateCompetitionSchema = createCompetitionSchema.partial()
+export const updateCompetitionSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'O nome deve ter pelo menos 3 caracteres.')
+    .max(100, 'O nome não pode ter mais de 100 caracteres.')
+    .optional(),
+  competition_type: z.enum(['league', 'tournament', 'cup']).optional(),
+  season: z
+    .string()
+    .regex(/^\d{4}(-\d{4})?$/, 'Formato inválido. Use AAAA ou AAAA-AAAA (ex: 2024 ou 2024-2025).')
+    .optional(),
+  status: z.enum(['draft', 'active', 'completed']).optional(),
+  config: competitionConfigSchema.optional(),
+}).superRefine((data, ctx) => {
+  if (data.competition_type && data.config && data.config.format !== data.competition_type) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'O formato da configuração deve corresponder ao tipo de competição selecionado.',
+      path: ['config', 'format']
+    })
+  }
+})
 
 // Aliases para API validation
 export const CompetitionCreateSchema = createCompetitionSchema

@@ -7,6 +7,7 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input } from '@/components/ui'
 import { useGenerateSchedule, useCompetitionMatches, useUpdateMatchScore } from '../hooks/useCompetitionPhase3'
 import { useCompetition } from '../hooks/useCompetitions'
+import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { generateScheduleSchema, type GenerateScheduleFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
@@ -21,11 +22,15 @@ export function CompetitionSchedulePage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const { isLeague, isCup } = useCompetitionConfig(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const generateSchedule = useGenerateSchedule(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const updateMatchScore = useUpdateMatchScore(competitionId)
+
+  // Label for rounds differs by format
+  const roundLabel = isLeague ? 'Jornada' : isCup ? 'Ronda' : 'Grupo/Ronda'
 
   const [generated, setGenerated] = useState(false)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
@@ -254,7 +259,7 @@ export function CompetitionSchedulePage() {
                     <div key={round} className="space-y-sm">
                       <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
                         <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
-                          Jornada {round}
+                          {roundLabel} {round}
                         </span>
                       </h3>
                       <div className="space-y-sm">

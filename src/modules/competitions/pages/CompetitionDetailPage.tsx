@@ -12,12 +12,14 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
-import { useCompetitionMatches, useCompetitionStandings, useGenerateSchedule } from '../hooks/useCompetitionPhase3'
+import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
+import { useCompetitionMatches, useGenerateSchedule } from '../hooks/useCompetitionPhase3'
 import { useRegulations } from '../hooks/useCompetitionAdvanced'
 import { useTopScorers } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { CompetitionHeader, CompetitionHeaderSkeleton } from '../components/CompetitionHeader'
-import { StandingsTable } from '../components/StandingsTable'
+import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
+import { TournamentBracket } from '../components/formats/TournamentBracket'
 import { MatchCard } from '../components/MatchCard'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { PlayerStatsTable } from '../components/PlayerStatsTable'
@@ -215,9 +217,10 @@ export function CompetitionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
   const { isAdmin } = useCompetitionAccess()
+  const { isTournament, isCup } = useCompetitionConfig(competitionId)
 
   const { data: competition, isLoading: loadingComp, isError: errorComp } = useCompetition(competitionId)
-  const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
+
 
   if (errorComp) {
     return (
@@ -267,11 +270,17 @@ export function CompetitionDetailPage() {
       {/* Main Content */}
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl relative z-10">
         <Tabs defaultValue="standings" className="space-y-lg">
-          <TabsList className="p-1 bg-surface-container/70 rounded-full backdrop-blur">
+          <TabsList className="p-1 bg-surface-container/70 rounded-full backdrop-blur flex-wrap h-auto gap-xs">
             <TabsTrigger value="standings" id="comp-tab-standings" className="rounded-full">
               <Trophy className="mr-xs h-4 w-4" />
-              Classificação
+              {isCup ? 'Eliminatórias' : isTournament ? 'Grupos' : 'Classificação'}
             </TabsTrigger>
+            {isTournament && (
+              <TabsTrigger value="bracket" id="comp-tab-bracket" className="rounded-full">
+                <Trophy className="mr-xs h-4 w-4" />
+                Fase Final
+              </TabsTrigger>
+            )}
             <TabsTrigger value="matches" id="comp-tab-matches" className="rounded-full">
               <Calendar className="mr-xs h-4 w-4" />
               Jogos
@@ -286,16 +295,17 @@ export function CompetitionDetailPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Classificação */}
+          {/* Classificação / Grupos / Eliminatórias */}
           <TabsContent value="standings" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {loadingStandings ? (
-              <div className="flex items-center justify-center py-xl">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>
-            ) : (
-              <StandingsTable standings={standings} qualifyingSpots={3} />
-            )}
+            <CompetitionStandingsRouter competitionId={competitionId} />
           </TabsContent>
+
+          {/* Bracket - Tournament Knockout */}
+          {isTournament && (
+            <TabsContent value="bracket" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <TournamentBracket competitionId={competitionId} />
+            </TabsContent>
+          )}
 
           {/* Jogos */}
           <TabsContent value="matches" className="animate-in fade-in slide-in-from-bottom-2 duration-300">

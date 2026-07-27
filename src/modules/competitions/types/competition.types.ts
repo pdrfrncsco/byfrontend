@@ -1,3 +1,5 @@
+import { CompetitionFormat, CompetitionConfig, CompetitionPhase } from './competition-format.types'
+
 export type CompetitionType = 'league' | 'tournament' | 'cup'
 export type CompetitionStatus = 'draft' | 'active' | 'completed'
 
@@ -13,6 +15,12 @@ export interface Competition {
   tenant?: string
   created_at?: string
   updated_at?: string
+  
+  // New properties for discriminated formats
+  format?: CompetitionFormat
+  config?: CompetitionConfig
+  phases?: CompetitionPhase[]
+  currentPhase?: string
 }
 
 export interface CompetitionCreateData {

@@ -18,11 +18,26 @@ export const standingKeys = {
 
 /**
  * Fetch match list for a competition (public, no auth).
+ * Supports optional client-side filtering by round number.
  */
-export function useCompetitionMatches(competitionId: string) {
+export function useCompetitionMatches(
+  competitionId: string,
+  filters?: { round_number?: number }
+) {
   return useQuery({
-    queryKey: matchKeys.byCompetition(competitionId),
-    queryFn: () => competitionApi.listMatches(competitionId),
+    queryKey: [...matchKeys.byCompetition(competitionId), filters],
+    queryFn: async () => {
+      const allMatches = await competitionApi.listMatches(competitionId)
+      if (filters) {
+        return allMatches.filter((match) => {
+          if (filters.round_number !== undefined && match.round_number !== filters.round_number) {
+            return false
+          }
+          return true
+        })
+      }
+      return allMatches
+    },
     enabled: Boolean(competitionId),
     staleTime: 30_000,
   })

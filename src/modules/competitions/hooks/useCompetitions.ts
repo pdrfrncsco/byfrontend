@@ -9,6 +9,8 @@ import type {
 } from '../types'
 import { toast } from 'sonner'
 
+import { ensureCompetitionFormat } from '../utils/competition-migration'
+
 export const competitionKeys = {
   all: ['competitions'] as const,
   lists: () => [...competitionKeys.all, 'list'] as const,
@@ -25,7 +27,7 @@ export function useCompetitions(params?: CompetitionListParams) {
     queryKey: competitionKeys.list(params),
     queryFn: async () => {
       const response = await competitionApi.list(params)
-      return response.results
+      return response.results.map(ensureCompetitionFormat)
     },
   })
 }
@@ -36,7 +38,13 @@ export function useCompetitions(params?: CompetitionListParams) {
 export function useCompetitionsPaginated(params?: CompetitionListParams) {
   return useQuery<PaginatedResponse<Competition>>({
     queryKey: competitionKeys.list(params),
-    queryFn: () => competitionApi.list(params),
+    queryFn: async () => {
+      const response = await competitionApi.list(params)
+      return {
+        ...response,
+        results: response.results.map(ensureCompetitionFormat),
+      }
+    },
   })
 }
 
@@ -46,7 +54,10 @@ export function useCompetitionsPaginated(params?: CompetitionListParams) {
 export function useCompetition(id: string) {
   return useQuery({
     queryKey: competitionKeys.detail(id),
-    queryFn: () => competitionApi.get(id),
+    queryFn: async () => {
+      const data = await competitionApi.get(id)
+      return ensureCompetitionFormat(data)
+    },
     enabled: Boolean(id),
   })
 }
