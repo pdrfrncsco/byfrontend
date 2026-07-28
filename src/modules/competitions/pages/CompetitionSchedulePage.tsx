@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -28,7 +28,7 @@ export function CompetitionSchedulePage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
-  const { isLeague, isCup } = useCompetitionConfig(competitionId)
+  const { isLeague, isCup, isTournament } = useCompetitionConfig(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: roundsView, isLoading: loadingRounds } = useCompetitionRounds(competitionId)
@@ -81,6 +81,33 @@ export function CompetitionSchedulePage() {
       status: 'scheduled',
     },
   })
+
+  const manualMatchPhase = createMatchForm.watch('phase')?.trim() || ''
+  const isManualGroupStage = isTournament && manualMatchPhase === 'group_stage'
+
+  useEffect(() => {
+    if (isLeague) {
+      createMatchForm.setValue('phase', '')
+      createMatchForm.setValue('group_id', '')
+      return
+    }
+
+    if (isCup) {
+      createMatchForm.setValue('phase', 'knockout')
+      createMatchForm.setValue('group_id', '')
+      return
+    }
+
+    if (isTournament && !manualMatchPhase) {
+      createMatchForm.setValue('phase', 'group_stage')
+    }
+  }, [createMatchForm, isCup, isLeague, isTournament, manualMatchPhase])
+
+  useEffect(() => {
+    if (isTournament && manualMatchPhase !== 'group_stage' && createMatchForm.getValues('group_id')) {
+      createMatchForm.setValue('group_id', '')
+    }
+  }, [createMatchForm, isTournament, manualMatchPhase])
 
   const getRoundDisplayLabel = (round: CompetitionRoundView) => {
     const roundNum = round.number
@@ -471,6 +498,70 @@ export function CompetitionSchedulePage() {
                   </FormField>
                 </div>
 
+                {isTournament && (
+                  <div className="grid gap-md md:grid-cols-2">
+                    <FormField
+                      label="Fase"
+                      htmlFor="manual-phase"
+                      error={createMatchForm.formState.errors.phase?.message}
+                      required
+                      hint="Escolha entre fase de grupos ou eliminatórias"
+                    >
+                      <select
+                        id="manual-phase"
+                        className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
+                        {...createMatchForm.register('phase')}
+                      >
+                        <option value="group_stage">Fase de Grupos</option>
+                        <option value="knockout">Fase Final</option>
+                      </select>
+                    </FormField>
+
+                    {isManualGroupStage ? (
+                      <FormField
+                        label="Grupo"
+                        htmlFor="manual-group-id"
+                        error={createMatchForm.formState.errors.group_id?.message}
+                        required
+                        hint="Ex: A, B, C"
+                      >
+                        <Input
+                          id="manual-group-id"
+                          type="text"
+                          placeholder="Ex: A"
+                          {...createMatchForm.register('group_id')}
+                        />
+                      </FormField>
+                    ) : (
+                      <FormField
+                        label="Grupo"
+                        htmlFor="manual-group-id"
+                        hint="Não aplicável para a fase final"
+                      >
+                        <Input
+                          id="manual-group-id"
+                          type="text"
+                          placeholder="Opcional"
+                          disabled
+                          {...createMatchForm.register('group_id')}
+                        />
+                      </FormField>
+                    )}
+                  </div>
+                )}
+
+                {isCup && (
+                  <div className="rounded-xl border border-outline-variant/20 bg-surface-container-low p-md text-sm text-on-surface-variant">
+                    Esta competição usa eliminação directa. A partida será criada na fase <span className="font-semibold text-on-surface">knockout</span>.
+                  </div>
+                )}
+
+                {isLeague && (
+                  <div className="rounded-xl border border-outline-variant/20 bg-surface-container-low p-md text-sm text-on-surface-variant">
+                    As competições em liga não usam fase nem grupo na criação manual. O jogo entra directamente na jornada indicada.
+                  </div>
+                )}
+
                 <div className="grid gap-md md:grid-cols-2">
                   <FormField
                     label="Nome da Jornada"
@@ -506,34 +597,14 @@ export function CompetitionSchedulePage() {
                   </FormField>
                 </div>
 
-                <div className="grid gap-md md:grid-cols-3">
-                  <FormField
-                    label="Fase"
-                    htmlFor="manual-phase"
-                    error={createMatchForm.formState.errors.phase?.message}
-                    hint="Opcional. Ex: group_stage, knockout"
-                  >
-                    <Input id="manual-phase" type="text" placeholder="Ex: knockout" {...createMatchForm.register('phase')} />
-                  </FormField>
-
-                  <FormField
-                    label="Grupo"
-                    htmlFor="manual-group-id"
-                    error={createMatchForm.formState.errors.group_id?.message}
-                    hint="Opcional. Ex: A, B, C"
-                  >
-                    <Input id="manual-group-id" type="text" placeholder="Ex: A" {...createMatchForm.register('group_id')} />
-                  </FormField>
-
-                  <FormField
-                    label="Estádio"
-                    htmlFor="manual-venue"
-                    error={createMatchForm.formState.errors.venue?.message}
-                    hint="Opcional. Nome do local da partida"
-                  >
-                    <Input id="manual-venue" type="text" placeholder="Estádio" {...createMatchForm.register('venue')} />
-                  </FormField>
-                </div>
+                <FormField
+                  label="Estádio"
+                  htmlFor="manual-venue"
+                  error={createMatchForm.formState.errors.venue?.message}
+                  hint="Opcional. Nome do local da partida"
+                >
+                  <Input id="manual-venue" type="text" placeholder="Estádio" {...createMatchForm.register('venue')} />
+                </FormField>
 
                 <div className="flex justify-end pt-sm">
                   <Button type="submit" variant="primary" disabled={createMatch.isPending}>
