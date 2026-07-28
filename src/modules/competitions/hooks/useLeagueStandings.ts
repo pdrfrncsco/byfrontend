@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useCompetitionConfig } from './useCompetitionConfig'
 import { competitionApi } from '../services/competition.api'
 import { calculateStandings } from '../utils/league-calculator'
-import { standingKeys } from './useCompetitionPhase3'
+import { standingKeys } from './useCompetitionMatches'
 
 export function useLeagueStandings(competitionId: string) {
   const { leagueConfig } = useCompetitionConfig(competitionId)

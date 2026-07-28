@@ -15,7 +15,7 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
-import { useCompetitionMatches } from '../hooks/useCompetitionPhase3'
+import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import {
   useLineups,
   useConfirmLineup,
