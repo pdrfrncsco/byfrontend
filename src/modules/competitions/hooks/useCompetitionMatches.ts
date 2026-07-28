@@ -201,17 +201,64 @@ export function useGenerateSchedule(competitionId: string) {
       startDate,
       roundsIntervalDays,
       doubleRound,
+      seed,
     }: {
       startDate: string
       roundsIntervalDays?: number
       doubleRound?: boolean
+      seed?: string
     }) =>
       competitionApi.generateSchedule(
         competitionId,
         startDate,
         roundsIntervalDays ?? 7,
-        doubleRound ?? true
+        doubleRound ?? true,
+        seed?.trim() || undefined
       ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
+    },
+  })
+}
+
+/**
+ * Mutation: Create a manual match (org admin).
+ */
+export function useCreateMatch(competitionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      home_club,
+      away_club,
+      match_date,
+      round_number,
+      round_name,
+      phase,
+      group_id,
+      venue,
+      status,
+    }: {
+      home_club: string
+      away_club: string
+      match_date: string
+      round_number?: number
+      round_name?: string
+      phase?: string
+      group_id?: string
+      venue?: string
+      status?: string
+    }) =>
+      competitionApi.createMatch(competitionId, {
+        home_club,
+        away_club,
+        match_date,
+        round_number,
+        round_name,
+        phase,
+        group_id,
+        venue,
+        status,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
     },

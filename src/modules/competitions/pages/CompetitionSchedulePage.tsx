@@ -1,14 +1,19 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Loader2, Zap, Edit3, Check, XCircle } from 'lucide-react'
+import { Calendar, Loader2, Zap, Edit3, Check, XCircle, PlusCircle } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input } from '@/components/ui'
-import { useCompetitionRounds, useGenerateSchedule, useUpdateMatchScore } from '../hooks/useCompetitionMatches'
+import { useCompetitionRounds, useGenerateSchedule, useUpdateMatchScore, useCompetitionStandings, useCreateMatch } from '../hooks/useCompetitionMatches'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
-import { generateScheduleSchema, type GenerateScheduleFormData } from '../schemas'
+import {
+  createMatchSchema,
+  generateScheduleSchema,
+  type CreateMatchFormData,
+  type GenerateScheduleFormData,
+} from '../schemas'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { MatchCard } from '../components/MatchCard'
@@ -26,17 +31,56 @@ export function CompetitionSchedulePage() {
   const { isLeague, isCup } = useCompetitionConfig(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
-  const generateSchedule = useGenerateSchedule(competitionId)
   const { data: roundsView, isLoading: loadingRounds } = useCompetitionRounds(competitionId)
+  const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
+  const generateSchedule = useGenerateSchedule(competitionId)
+  const createMatch = useCreateMatch(competitionId)
   const updateMatchScore = useUpdateMatchScore(competitionId)
 
   const [generated, setGenerated] = useState(false)
+  const [manualCreated, setManualCreated] = useState(false)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
   const [editHomeScore, setEditHomeScore] = useState<string>('')
   const [editAwayScore, setEditAwayScore] = useState<string>('')
   const [editStatus, setEditStatus] = useState<string>('finished')
 
   const rounds = roundsView?.rounds ?? []
+  const registeredClubs = useMemo(
+    () =>
+      standings
+        .map((standing) => ({
+          id: standing.club,
+          name: standing.club_name,
+          logo: standing.club_logo,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [standings]
+  )
+
+  const generateForm = useForm<GenerateScheduleFormData>({
+    resolver: zodResolver(generateScheduleSchema),
+    defaultValues: {
+      start_date: '',
+      rounds_interval_days: 7,
+      double_round: true,
+      seed: '',
+    },
+  })
+
+  const createMatchForm = useForm<CreateMatchFormData>({
+    resolver: zodResolver(createMatchSchema),
+    defaultValues: {
+      home_club: '',
+      away_club: '',
+      match_date: '',
+      round_number: 1,
+      round_name: '',
+      phase: '',
+      group_id: '',
+      venue: '',
+      status: 'scheduled',
+    },
+  })
 
   const getRoundDisplayLabel = (round: CompetitionRoundView) => {
     const roundNum = round.number
@@ -51,13 +95,20 @@ export function CompetitionSchedulePage() {
       const roundKey = cupRounds[roundNum - 1]
       if (roundKey) {
         switch (roundKey) {
-          case 'final': return 'Final'
-          case 'semi-final': return 'Meias-Finais'
-          case 'quarter-final': return 'Quartos-de-Finais'
-          case 'round-of-16': return 'Oitavos-de-Finais'
-          case 'round-of-32': return '16-Avos-de-Final'
-          case 'round-of-64': return '32-Avos-de-Final'
-          default: break
+          case 'final':
+            return 'Final'
+          case 'semi-final':
+            return 'Meias-Finais'
+          case 'quarter-final':
+            return 'Quartos-de-Finais'
+          case 'round-of-16':
+            return 'Oitavos-de-Finais'
+          case 'round-of-32':
+            return '16-Avos-de-Final'
+          case 'round-of-64':
+            return '32-Avos-de-Final'
+          default:
+            break
         }
       }
       return `Ronda ${roundNum}`
@@ -69,50 +120,63 @@ export function CompetitionSchedulePage() {
       const groupRounds = (teams - 1) * double
       if (roundNum <= groupRounds) {
         return `Fase de Grupos — Jornada ${roundNum}`
-      } else {
-        const knockoutRoundIndex = roundNum - groupRounds - 1
-        const koRounds = tournamentConfig.knockoutStage?.rounds || []
-        const koKey = koRounds[knockoutRoundIndex]
-        if (koKey) {
-          switch (koKey) {
-            case 'final': return 'Final'
-            case 'semi-final': return 'Meias-Finais'
-            case 'quarter-final': return 'Quartos-de-Finais'
-            case 'round-of-16': return 'Oitavos-de-Finais'
-            case 'round-of-32': return '16-Avos-de-Final'
-            default: break
-          }
-        }
-        return `Fase Final — Ronda ${roundNum - groupRounds}`
       }
+
+      const knockoutRoundIndex = roundNum - groupRounds - 1
+      const koRounds = tournamentConfig.knockoutStage?.rounds || []
+      const koKey = koRounds[knockoutRoundIndex]
+      if (koKey) {
+        switch (koKey) {
+          case 'final':
+            return 'Final'
+          case 'semi-final':
+            return 'Meias-Finais'
+          case 'quarter-final':
+            return 'Quartos-de-Finais'
+          case 'round-of-16':
+            return 'Oitavos-de-Finais'
+          case 'round-of-32':
+            return '16-Avos-de-Final'
+          default:
+            break
+        }
+      }
+      return `Fase Final — Ronda ${roundNum - groupRounds}`
     }
     return `Ronda ${roundNum}`
   }
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<GenerateScheduleFormData>({
-    resolver: zodResolver(generateScheduleSchema),
-    defaultValues: {
-      start_date: '',
-      rounds_interval_days: 7,
-      double_round: true,
-    },
-  })
-
-  const onSubmit = (data: GenerateScheduleFormData) => {
+  const onGenerateSubmit = (data: GenerateScheduleFormData) => {
     generateSchedule.mutate(
       {
         startDate: data.start_date,
         roundsIntervalDays: data.rounds_interval_days,
-        doubleRound: data.double_round,
+        doubleRound: isLeague ? data.double_round : false,
+        seed: data.seed?.trim() || undefined,
       },
       {
         onSuccess: () => setGenerated(true),
       }
     )
+  }
+
+  const onCreateMatchSubmit = (data: CreateMatchFormData) => {
+    createMatch.mutate(data, {
+      onSuccess: () => {
+        setManualCreated(true)
+        createMatchForm.reset({
+          home_club: '',
+          away_club: '',
+          match_date: '',
+          round_number: 1,
+          round_name: '',
+          phase: '',
+          group_id: '',
+          venue: '',
+          status: 'scheduled',
+        })
+      },
+    })
   }
 
   const startEditMatch = (match: Match) => {
@@ -133,7 +197,7 @@ export function CompetitionSchedulePage() {
     if (!editingMatchId) return
     const homeScore = parseInt(editHomeScore, 10)
     const awayScore = parseInt(editAwayScore, 10)
-    if (isNaN(homeScore) || isNaN(awayScore)) return
+    if (Number.isNaN(homeScore) || Number.isNaN(awayScore)) return
 
     updateMatchScore.mutate(
       {
@@ -180,48 +244,52 @@ export function CompetitionSchedulePage() {
         </Button>
       }
     >
-      {/* Success message for schedule generation */}
       {generated && (
         <div
           role="status"
           className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-md text-sm font-medium text-emerald-700"
         >
-          Calendário gerado com sucesso. Os jogos já estão visíveis na página da competição.
+          {isLeague
+            ? 'Calendário gerado com sucesso. Os jogos já estão visíveis na página da competição.'
+            : 'Sorteio e partidas gerados com sucesso. A estrutura da competição foi atualizada.'}
+        </div>
+      )}
+
+      {manualCreated && (
+        <div
+          role="status"
+          className="rounded-xl border border-primary/20 bg-primary/10 p-md text-sm font-medium text-primary"
+        >
+          Partida criada com sucesso. O calendário foi atualizado imediatamente.
         </div>
       )}
 
       <div className="space-y-xl">
-        {/* Generate Schedule Card */}
         <Card variant="flat" padding="none">
           <CardHeader>
-            <CardTitle>Gerar Calendário</CardTitle>
+            <CardTitle>{isLeague ? 'Gerar Calendário' : 'Gerar Sorteio e Partidas'}</CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              id="generate-schedule-form"
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-              className="space-y-lg"
-            >
+            <form onSubmit={generateForm.handleSubmit(onGenerateSubmit)} noValidate className="space-y-lg">
               <FormField
                 label="Data de Início"
                 htmlFor="schedule-start-date"
-                error={errors.start_date?.message}
+                error={generateForm.formState.errors.start_date?.message}
                 required
                 hint="Data do primeiro jogo da competição"
               >
                 <Input
                   id="schedule-start-date"
                   type="date"
-                  aria-invalid={!!errors.start_date}
-                  {...register('start_date')}
+                  aria-invalid={!!generateForm.formState.errors.start_date}
+                  {...generateForm.register('start_date')}
                 />
               </FormField>
 
               <FormField
                 label="Intervalo entre Jornadas (dias)"
                 htmlFor="schedule-interval"
-                error={errors.rounds_interval_days?.message}
+                error={generateForm.formState.errors.rounds_interval_days?.message}
                 required
                 hint="Número de dias entre cada jornada (ex: 7 para semanal)"
               >
@@ -230,28 +298,51 @@ export function CompetitionSchedulePage() {
                   type="number"
                   min={1}
                   max={30}
-                  aria-invalid={!!errors.rounds_interval_days}
-                  {...register('rounds_interval_days', { valueAsNumber: true })}
+                  aria-invalid={!!generateForm.formState.errors.rounds_interval_days}
+                  {...generateForm.register('rounds_interval_days', { valueAsNumber: true })}
                 />
               </FormField>
 
-              <FormField
-                label="Turno Duplo"
-                htmlFor="schedule-double-round"
-                hint="Gera dois turnos (casa e fora) para cada par de equipes"
-              >
-                <div className="flex items-center gap-sm">
-                  <input
-                    id="schedule-double-round"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-outline accent-primary"
-                    {...register('double_round')}
+              {!isLeague ? (
+                <FormField
+                  label="Seed do Sorteio"
+                  htmlFor="schedule-seed"
+                  error={generateForm.formState.errors.seed?.message}
+                  hint="Opcional. Use uma seed para reproduzir o mesmo sorteio depois."
+                >
+                  <Input
+                    id="schedule-seed"
+                    type="text"
+                    placeholder="Ex: sorteio-2026"
+                    aria-invalid={!!generateForm.formState.errors.seed}
+                    {...generateForm.register('seed')}
                   />
-                  <label htmlFor="schedule-double-round" className="text-sm text-on-surface-variant">
-                    Gerar jogo de volta para cada emparelhamento
-                  </label>
-                </div>
-              </FormField>
+                </FormField>
+              ) : (
+                <FormField
+                  label="Turno Duplo"
+                  htmlFor="schedule-double-round"
+                  hint="Gera dois turnos (casa e fora) para cada emparelhamento"
+                >
+                  <div className="flex items-center gap-sm">
+                    <input
+                      id="schedule-double-round"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-outline accent-primary"
+                      {...generateForm.register('double_round')}
+                    />
+                    <label htmlFor="schedule-double-round" className="text-sm text-on-surface-variant">
+                      Gerar jogo de volta para cada emparelhamento
+                    </label>
+                  </div>
+                </FormField>
+              )}
+
+              <div className="rounded-xl border border-outline-variant/20 bg-surface-container-low p-md text-sm text-on-surface-variant">
+                {isLeague
+                  ? 'A geração usa o modelo de pontos corridos e cria todas as jornadas com a sequência definida.'
+                  : 'A geração usa o sorteio oficial para taça ou torneio e cria as partidas de acordo com a fase da competição.'}
+              </div>
 
               <div className="flex justify-end pt-sm">
                 <Button
@@ -268,7 +359,13 @@ export function CompetitionSchedulePage() {
                   ) : (
                     <>
                       <Zap className="mr-xs h-4 w-4" />
-                      {rounds.length > 0 ? 'Regenerar Calendário' : 'Gerar Calendário'}
+                      {isLeague
+                        ? rounds.length > 0
+                          ? 'Regenerar Calendário'
+                          : 'Gerar Calendário'
+                        : rounds.length > 0
+                          ? 'Regenerar Sorteio'
+                          : 'Gerar Sorteio'}
                     </>
                   )}
                 </Button>
@@ -277,7 +374,187 @@ export function CompetitionSchedulePage() {
           </CardContent>
         </Card>
 
-        {/* Matches List */}
+        <Card variant="flat" padding="none">
+          <CardHeader>
+            <CardTitle>Criar Partida Avulsa</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingStandings ? (
+              <div className="h-24 animate-pulse rounded-xl bg-surface-container-high" />
+            ) : registeredClubs.length < 2 ? (
+              <div className="flex flex-col items-center gap-md rounded-xl border border-dashed border-outline-variant/30 px-lg py-2xl text-center text-on-surface-variant">
+                <PlusCircle className="h-10 w-10 opacity-40" />
+                <div className="space-y-xs">
+                  <p className="font-medium text-on-surface">Sem clubes suficientes para criar partidas.</p>
+                  <p className="text-sm opacity-70">
+                    Registe pelo menos dois clubes na competição para ativar a criação manual.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <form
+                onSubmit={createMatchForm.handleSubmit(onCreateMatchSubmit)}
+                noValidate
+                className="space-y-lg"
+              >
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
+                    label="Clube da Casa"
+                    htmlFor="manual-home-club"
+                    error={createMatchForm.formState.errors.home_club?.message}
+                    required
+                  >
+                    <select
+                      id="manual-home-club"
+                      className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
+                      {...createMatchForm.register('home_club')}
+                    >
+                      <option value="">Selecionar clube</option>
+                      {registeredClubs.map((club) => (
+                        <option key={club.id} value={club.id}>
+                          {club.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <FormField
+                    label="Clube Visitante"
+                    htmlFor="manual-away-club"
+                    error={createMatchForm.formState.errors.away_club?.message}
+                    required
+                  >
+                    <select
+                      id="manual-away-club"
+                      className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
+                      {...createMatchForm.register('away_club')}
+                    >
+                      <option value="">Selecionar clube</option>
+                      {registeredClubs.map((club) => (
+                        <option key={club.id} value={club.id}>
+                          {club.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+                </div>
+
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
+                    label="Data e Hora"
+                    htmlFor="manual-match-date"
+                    error={createMatchForm.formState.errors.match_date?.message}
+                    required
+                    hint="Use a data e hora local do jogo"
+                  >
+                    <Input
+                      id="manual-match-date"
+                      type="datetime-local"
+                      aria-invalid={!!createMatchForm.formState.errors.match_date}
+                      {...createMatchForm.register('match_date')}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Jornada"
+                    htmlFor="manual-round-number"
+                    error={createMatchForm.formState.errors.round_number?.message}
+                    required
+                  >
+                    <Input
+                      id="manual-round-number"
+                      type="number"
+                      min={1}
+                      aria-invalid={!!createMatchForm.formState.errors.round_number}
+                      {...createMatchForm.register('round_number', { valueAsNumber: true })}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
+                    label="Nome da Jornada"
+                    htmlFor="manual-round-name"
+                    error={createMatchForm.formState.errors.round_name?.message}
+                    hint="Opcional. Ex: Jornada 3, Final, Meias-Finais"
+                  >
+                    <Input
+                      id="manual-round-name"
+                      type="text"
+                      placeholder="Ex: Jornada 3"
+                      {...createMatchForm.register('round_name')}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Estado Inicial"
+                    htmlFor="manual-status"
+                    error={createMatchForm.formState.errors.status?.message}
+                    required
+                  >
+                    <select
+                      id="manual-status"
+                      className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
+                      {...createMatchForm.register('status')}
+                    >
+                      <option value="scheduled">Agendado</option>
+                      <option value="live">Em Jogo</option>
+                      <option value="finished">Terminado</option>
+                      <option value="postponed">Adiado</option>
+                      <option value="cancelled">Cancelado</option>
+                    </select>
+                  </FormField>
+                </div>
+
+                <div className="grid gap-md md:grid-cols-3">
+                  <FormField
+                    label="Fase"
+                    htmlFor="manual-phase"
+                    error={createMatchForm.formState.errors.phase?.message}
+                    hint="Opcional. Ex: group_stage, knockout"
+                  >
+                    <Input id="manual-phase" type="text" placeholder="Ex: knockout" {...createMatchForm.register('phase')} />
+                  </FormField>
+
+                  <FormField
+                    label="Grupo"
+                    htmlFor="manual-group-id"
+                    error={createMatchForm.formState.errors.group_id?.message}
+                    hint="Opcional. Ex: A, B, C"
+                  >
+                    <Input id="manual-group-id" type="text" placeholder="Ex: A" {...createMatchForm.register('group_id')} />
+                  </FormField>
+
+                  <FormField
+                    label="Estádio"
+                    htmlFor="manual-venue"
+                    error={createMatchForm.formState.errors.venue?.message}
+                    hint="Opcional. Nome do local da partida"
+                  >
+                    <Input id="manual-venue" type="text" placeholder="Estádio" {...createMatchForm.register('venue')} />
+                  </FormField>
+                </div>
+
+                <div className="flex justify-end pt-sm">
+                  <Button type="submit" variant="primary" disabled={createMatch.isPending}>
+                    {createMatch.isPending ? (
+                      <>
+                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                        A criar...
+                      </>
+                    ) : (
+                      <>
+                        <PlusCircle className="mr-xs h-4 w-4" />
+                        Criar Partida
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+
         <Card variant="flat" padding="none">
           <CardHeader>
             <CardTitle>Partidas</CardTitle>
@@ -293,121 +570,109 @@ export function CompetitionSchedulePage() {
               <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
                 <Calendar className="h-12 w-12 opacity-30" />
                 <p className="font-medium">Calendário ainda não gerado.</p>
-                <p className="text-sm opacity-70">Gere o calendário acima para adicionar partidas.</p>
+                <p className="text-sm opacity-70">Use o formulário acima para gerar o calendário ou criar uma partida.</p>
               </div>
             ) : (
               <div className="space-y-xl">
                 {rounds.map((round) => (
-                    <div key={round.id} className="space-y-sm">
-                      <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
-                        <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
-                          {getRoundDisplayLabel(round)}
-                        </span>
-                      </h3>
-                      <div className="space-y-sm">
-                        {round.matches.map(match => (
-                          <div key={match.id} className="space-y-sm">
-                            <MatchCard
-                              match={match}
-                              competitionId={competitionId}
-                              showLink
-                            />
-                            {editingMatchId === match.id ? (
-                              <div className="rounded-xl border border-outline-variant/20 bg-surface-container p-md space-y-md">
-                                <div className="flex items-center justify-between gap-sm">
-                                  <h4 className="text-sm font-semibold text-on-surface">Editar Resultado</h4>
-                                  <button
-                                    onClick={cancelEditMatch}
-                                    className="text-on-surface-variant hover:text-error"
-                                  >
-                                    <XCircle className="h-4 w-4" />
-                                  </button>
+                  <div key={round.id} className="space-y-sm">
+                    <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
+                      <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
+                        {getRoundDisplayLabel(round)}
+                      </span>
+                    </h3>
+                    <div className="space-y-sm">
+                      {round.matches.map((match) => (
+                        <div key={match.id} className="space-y-sm">
+                          <MatchCard match={match} competitionId={competitionId} showLink />
+                          {editingMatchId === match.id ? (
+                            <div className="space-y-md rounded-xl border border-outline-variant/20 bg-surface-container p-md">
+                              <div className="flex items-center justify-between gap-sm">
+                                <h4 className="text-sm font-semibold text-on-surface">Editar Resultado</h4>
+                                <button
+                                  type="button"
+                                  onClick={cancelEditMatch}
+                                  className="text-on-surface-variant hover:text-error"
+                                >
+                                  <XCircle className="h-4 w-4" />
+                                </button>
+                              </div>
+                              <div className="grid grid-cols-3 items-end gap-md">
+                                <div className="space-y-xs">
+                                  <label className="text-xs font-semibold text-on-surface-variant">
+                                    {match.home_club_name}
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={editHomeScore}
+                                    onChange={(e) => setEditHomeScore(e.target.value)}
+                                  />
                                 </div>
-                                <div className="grid grid-cols-3 gap-md items-end">
-                                  <div className="space-y-xs">
-                                    <label className="text-xs font-semibold text-on-surface-variant">
-                                      {match.home_club_name}
-                                    </label>
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      value={editHomeScore}
-                                      onChange={(e) => setEditHomeScore(e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="space-y-xs">
-                                    <label className="text-xs font-semibold text-on-surface-variant">
-                                      Estado
-                                    </label>
-                                    <select
-                                      value={editStatus}
-                                      onChange={(e) => setEditStatus(e.target.value)}
-                                      className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
-                                    >
-                                      <option value="scheduled">Agendado</option>
-                                      <option value="live">Em Jogo</option>
-                                      <option value="finished">Terminado</option>
-                                      <option value="postponed">Adiado</option>
-                                      <option value="cancelled">Cancelado</option>
-                                    </select>
-                                  </div>
-                                  <div className="space-y-xs">
-                                    <label className="text-xs font-semibold text-on-surface-variant">
-                                      {match.away_club_name}
-                                    </label>
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      value={editAwayScore}
-                                      onChange={(e) => setEditAwayScore(e.target.value)}
-                                    />
-                                  </div>
+                                <div className="space-y-xs">
+                                  <label className="text-xs font-semibold text-on-surface-variant">Estado</label>
+                                  <select
+                                    value={editStatus}
+                                    onChange={(e) => setEditStatus(e.target.value)}
+                                    className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
+                                  >
+                                    <option value="scheduled">Agendado</option>
+                                    <option value="live">Em Jogo</option>
+                                    <option value="finished">Terminado</option>
+                                    <option value="postponed">Adiado</option>
+                                    <option value="cancelled">Cancelado</option>
+                                  </select>
                                 </div>
-                                <div className="flex justify-end gap-sm">
-                                  <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={cancelEditMatch}
-                                  >
-                                    Cancelar
-                                  </Button>
-                                  <Button
-                                    variant="primary"
-                                    size="sm"
-                                    onClick={saveEditMatch}
-                                    disabled={updateMatchScore.isPending}
-                                  >
-                                    {updateMatchScore.isPending ? (
-                                      <>
-                                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
-                                        A guardar...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Check className="mr-xs h-4 w-4" />
-                                        Guardar
-                                      </>
-                                    )}
-                                  </Button>
+                                <div className="space-y-xs">
+                                  <label className="text-xs font-semibold text-on-surface-variant">
+                                    {match.away_club_name}
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={editAwayScore}
+                                    onChange={(e) => setEditAwayScore(e.target.value)}
+                                  />
                                 </div>
                               </div>
-                            ) : (
-                              <div className="flex justify-end">
+                              <div className="flex justify-end gap-sm">
+                                <Button variant="secondary" size="sm" type="button" onClick={cancelEditMatch}>
+                                  Cancelar
+                                </Button>
                                 <Button
-                                  variant="secondary"
+                                  variant="primary"
                                   size="sm"
-                                  onClick={() => startEditMatch(match)}
+                                  type="button"
+                                  onClick={saveEditMatch}
+                                  disabled={updateMatchScore.isPending}
                                 >
-                                  <Edit3 className="mr-xs h-4 w-4" />
-                                  Editar Resultado
+                                  {updateMatchScore.isPending ? (
+                                    <>
+                                      <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                                      A guardar...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Check className="mr-xs h-4 w-4" />
+                                      Guardar
+                                    </>
+                                  )}
                                 </Button>
                               </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end">
+                              <Button variant="secondary" size="sm" type="button" onClick={() => startEditMatch(match)}>
+                                <Edit3 className="mr-xs h-4 w-4" />
+                                Editar Resultado
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>

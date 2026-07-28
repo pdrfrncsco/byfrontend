@@ -123,6 +123,27 @@ export const competitionApi = {
     return response.data
   },
 
+  async createMatch(
+    competitionId: string,
+    data: {
+      home_club: string
+      away_club: string
+      match_date: string
+      round_number?: number
+      round_name?: string
+      phase?: string
+      group_id?: string
+      venue?: string
+      status?: string
+    }
+  ): Promise<Match> {
+    const response = await client.post<ApiResponse<Match>>(
+      API_ROUTES.COMPETITIONS.CREATE_MATCH(competitionId),
+      data
+    )
+    return response.data.data
+  },
+
   // ─── Matches & Standings ────────────────────────────────────────────────
 
   async listMatches(

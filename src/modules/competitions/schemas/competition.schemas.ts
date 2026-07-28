@@ -78,9 +78,36 @@ export const generateScheduleSchema = z.object({
     .max(30, 'O intervalo não pode exceder 30 dias.')
     .default(7),
   double_round: z.boolean().default(true),
+  seed: z.string().max(50, 'A seed não pode exceder 50 caracteres.').optional(),
 })
 
 export type GenerateScheduleFormData = z.infer<typeof generateScheduleSchema>
+
+export const createMatchSchema = z.object({
+  home_club: z.string({ required_error: 'O clube da casa é obrigatório.' }).uuid('ID de clube inválido.'),
+  away_club: z.string({ required_error: 'O clube visitante é obrigatório.' }).uuid('ID de clube inválido.'),
+  match_date: z.string({ required_error: 'A data da partida é obrigatória.' }).min(1, 'A data da partida é obrigatória.'),
+  round_number: z
+    .number()
+    .int()
+    .min(1, 'A jornada deve ser pelo menos 1.')
+    .default(1),
+  round_name: z.string().max(100).optional(),
+  phase: z.string().max(50).optional(),
+  group_id: z.string().max(64).optional(),
+  venue: z.string().max(255).optional(),
+  status: z.enum(['scheduled', 'live', 'finished', 'postponed', 'cancelled']).default('scheduled').optional(),
+}).superRefine((data, ctx) => {
+  if (data.home_club === data.away_club) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'O clube da casa e o visitante devem ser diferentes.',
+      path: ['away_club'],
+    })
+  }
+})
+
+export type CreateMatchFormData = z.infer<typeof createMatchSchema>
 
 // ─── Match Report Schema ─────────────────────────────────────────────────────
 

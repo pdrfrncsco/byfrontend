@@ -210,6 +210,7 @@ export const API_ROUTES = {
     GENERATE_SCHEDULE: (id: string) => `/competitions/${id}/generate-schedule/`,
     DRAW: (id: string) => `/competitions/${id}/draw/`,
     MATCHES: (id: string) => `/competitions/${id}/matches/`,
+    CREATE_MATCH: (id: string) => `/competitions/${id}/matches/`,
     STANDINGS: (id: string) => `/competitions/${id}/standings/`,
     BRACKET: (id: string) => `/competitions/${id}/bracket/`,
     ROUNDS: (id: string) => `/competitions/${id}/rounds/`,
