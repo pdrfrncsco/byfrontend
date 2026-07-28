@@ -49,7 +49,7 @@ function normalizeMatches(payload: unknown): Match[] {
   return []
 }
 
-function normalizeRoundEntry(entry: unknown, index: number): CompetitionRoundView | null {
+function normalizeRoundEntry(entry: unknown, index: number, fallbackMatches: Match[] = []): CompetitionRoundView | null {
   if (!isObject(entry)) {
     return null
   }
@@ -63,6 +63,16 @@ function normalizeRoundEntry(entry: unknown, index: number): CompetitionRoundVie
     entry.title ??
     `Ronda ${Number.isFinite(number) ? number : index + 1}`
   )
+  const phase = typeof entry.phase === 'string' ? entry.phase : undefined
+  const groupId = typeof entry.groupId === 'string' ? entry.groupId : typeof entry.group_id === 'string' ? entry.group_id : undefined
+  const matches = rawMatches.length > 0
+    ? rawMatches
+    : fallbackMatches.filter((match) => {
+        if (match.round_number !== (Number.isFinite(number) ? number : index + 1)) return false
+        if (phase !== undefined && (match.phase ?? undefined) !== phase) return false
+        if (groupId !== undefined && (match.group_id ?? undefined) !== groupId) return false
+        return true
+      })
 
   return {
     id: String(entry.id ?? entry.key ?? `${number}-${index}`),
@@ -71,9 +81,9 @@ function normalizeRoundEntry(entry: unknown, index: number): CompetitionRoundVie
     name: typeof entry.name === 'string' ? entry.name : undefined,
     type: typeof entry.type === 'string' ? entry.type : undefined,
     status: typeof entry.status === 'string' ? entry.status : undefined,
-    phase: typeof entry.phase === 'string' ? entry.phase : undefined,
-    groupId: typeof entry.groupId === 'string' ? entry.groupId : typeof entry.group_id === 'string' ? entry.group_id : undefined,
-    matches: rawMatches,
+    phase,
+    groupId,
+    matches,
   }
 }
 
@@ -98,7 +108,7 @@ function groupMatchesByRound(matches: Match[]): CompetitionRoundView[] {
 function normalizeRoundsPayload(payload: unknown, fallbackMatches: Match[]): CompetitionRoundsView {
   if (Array.isArray(payload)) {
     const rounds = payload
-      .map((entry, index) => normalizeRoundEntry(entry, index))
+      .map((entry, index) => normalizeRoundEntry(entry, index, fallbackMatches))
       .filter((entry): entry is CompetitionRoundView => Boolean(entry))
 
     if (rounds.length > 0) {
@@ -111,7 +121,7 @@ function normalizeRoundsPayload(payload: unknown, fallbackMatches: Match[]): Com
 
     if (Array.isArray(candidate)) {
       const rounds = candidate
-        .map((entry, index) => normalizeRoundEntry(entry, index))
+        .map((entry, index) => normalizeRoundEntry(entry, index, fallbackMatches))
         .filter((entry): entry is CompetitionRoundView => Boolean(entry))
 
       if (rounds.length > 0) {

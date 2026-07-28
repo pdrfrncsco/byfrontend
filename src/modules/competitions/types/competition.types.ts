@@ -43,6 +43,9 @@ export interface Match {
   id: string
   competition: string
   round_number: number
+  round_name?: string | null
+  phase?: string | null
+  group_id?: string | null
   home_club: string
   home_club_name: string
   home_club_logo: string | null
