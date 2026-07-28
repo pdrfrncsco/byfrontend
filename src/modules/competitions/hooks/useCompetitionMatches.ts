@@ -1,8 +1,23 @@
-// Competition Matches Hooks — matches, standings, schedule generation, club registration
-
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { competitionApi } from '../services/competition.api'
 import type { Match, MatchListParams, PaginatedResponse } from '../types'
+
+export interface CompetitionRoundView {
+  id: string
+  number: number
+  label: string
+  name?: string
+  type?: string
+  status?: string
+  phase?: string
+  groupId?: string
+  matches: Match[]
+}
+
+export interface CompetitionRoundsView {
+  rounds: CompetitionRoundView[]
+  source: 'api' | 'fallback'
+}
 
 export const matchKeys = {
   all: ['matches'] as const,
@@ -16,28 +31,111 @@ export const standingKeys = {
   byCompetition: (id: string) => ['standings', 'competition', id] as const,
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function normalizeMatches(payload: unknown): Match[] {
+  if (Array.isArray(payload)) {
+    return payload as Match[]
+  }
+
+  if (isObject(payload)) {
+    if (Array.isArray(payload.results)) return payload.results as Match[]
+    if (Array.isArray(payload.matches)) return payload.matches as Match[]
+    if (Array.isArray(payload.data)) return payload.data as Match[]
+  }
+
+  return []
+}
+
+function normalizeRoundEntry(entry: unknown, index: number): CompetitionRoundView | null {
+  if (!isObject(entry)) {
+    return null
+  }
+
+  const rawMatches = normalizeMatches(entry.matches)
+  const number = Number(entry.number ?? entry.round_number ?? entry.order ?? index + 1)
+  const label = String(
+    entry.label ??
+    entry.name ??
+    entry.round_name ??
+    entry.title ??
+    `Ronda ${Number.isFinite(number) ? number : index + 1}`
+  )
+
+  return {
+    id: String(entry.id ?? entry.key ?? `${number}-${index}`),
+    number: Number.isFinite(number) ? number : index + 1,
+    label,
+    name: typeof entry.name === 'string' ? entry.name : undefined,
+    type: typeof entry.type === 'string' ? entry.type : undefined,
+    status: typeof entry.status === 'string' ? entry.status : undefined,
+    phase: typeof entry.phase === 'string' ? entry.phase : undefined,
+    groupId: typeof entry.groupId === 'string' ? entry.groupId : typeof entry.group_id === 'string' ? entry.group_id : undefined,
+    matches: rawMatches,
+  }
+}
+
+function groupMatchesByRound(matches: Match[]): CompetitionRoundView[] {
+  const grouped = matches.reduce<Record<number, Match[]>>((acc, match) => {
+    const round = match.round_number ?? 0
+    if (!acc[round]) acc[round] = []
+    acc[round].push(match)
+    return acc
+  }, {})
+
+  return Object.entries(grouped)
+    .sort(([a], [b]) => Number(a) - Number(b))
+    .map(([roundNumber, roundMatches]) => ({
+      id: `round-${roundNumber}`,
+      number: Number(roundNumber),
+      label: `Ronda ${roundNumber}`,
+      matches: roundMatches.sort((a, b) => a.match_date.localeCompare(b.match_date)),
+    }))
+}
+
+function normalizeRoundsPayload(payload: unknown, fallbackMatches: Match[]): CompetitionRoundsView {
+  if (Array.isArray(payload)) {
+    const rounds = payload
+      .map((entry, index) => normalizeRoundEntry(entry, index))
+      .filter((entry): entry is CompetitionRoundView => Boolean(entry))
+
+    if (rounds.length > 0) {
+      return { rounds, source: 'api' }
+    }
+  }
+
+  if (isObject(payload)) {
+    const candidate = payload.rounds ?? payload.results ?? payload.data
+
+    if (Array.isArray(candidate)) {
+      const rounds = candidate
+        .map((entry, index) => normalizeRoundEntry(entry, index))
+        .filter((entry): entry is CompetitionRoundView => Boolean(entry))
+
+      if (rounds.length > 0) {
+        return { rounds, source: 'api' }
+      }
+    }
+  }
+
+  return {
+    rounds: groupMatchesByRound(fallbackMatches),
+    source: 'fallback',
+  }
+}
+
 /**
  * Fetch match list for a competition (public, no auth).
- * Supports optional client-side filtering by round number.
  */
 export function useCompetitionMatches(
   competitionId: string,
-  filters?: { round_number?: number }
+  filters?: { round_number?: number; phase?: string; groupId?: string; group_id?: string }
 ) {
   return useQuery({
     queryKey: [...matchKeys.byCompetition(competitionId), filters],
-    queryFn: async () => {
-      const allMatches = await competitionApi.listMatches(competitionId)
-      if (filters) {
-        return allMatches.filter((match) => {
-          if (filters.round_number !== undefined && match.round_number !== filters.round_number) {
-            return false
-          }
-          return true
-        })
-      }
-      return allMatches
-    },
+    queryFn: () => competitionApi.listMatches(competitionId, filters),
     enabled: Boolean(competitionId),
     staleTime: 30_000,
   })
@@ -50,6 +148,29 @@ export function useCompetitionStandings(competitionId: string) {
   return useQuery({
     queryKey: standingKeys.byCompetition(competitionId),
     queryFn: () => competitionApi.getStandings(competitionId),
+    enabled: Boolean(competitionId),
+    staleTime: 30_000,
+  })
+}
+
+/**
+ * Fetch the competition rounds directly from the backend endpoint.
+ * Falls back to client-side grouping when the endpoint is unavailable.
+ */
+export function useCompetitionRounds(
+  competitionId: string,
+  filters?: { phase?: string; groupId?: string; group_id?: string }
+) {
+  return useQuery<CompetitionRoundsView>({
+    queryKey: [...matchKeys.byCompetition(competitionId), 'rounds', filters],
+    queryFn: async () => {
+      const [roundsPayload, matches] = await Promise.all([
+        competitionApi.getRounds(competitionId, filters).catch(() => null),
+        competitionApi.listMatches(competitionId, filters).catch(() => [] as Match[]),
+      ])
+
+      return normalizeRoundsPayload(roundsPayload, matches)
+    },
     enabled: Boolean(competitionId),
     staleTime: 30_000,
   })

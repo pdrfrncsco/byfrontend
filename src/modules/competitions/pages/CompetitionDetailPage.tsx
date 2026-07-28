@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button, Card } from '@/components/ui'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
-import { useCompetitionMatches, useGenerateSchedule } from '../hooks/useCompetitionPhase3'
+import { useCompetitionRounds, useGenerateSchedule } from '../hooks/useCompetitionMatches'
 import { useRegulations } from '../hooks/useCompetitionAdvanced'
 import { useTopScorers } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
@@ -24,7 +24,6 @@ import { MatchCard } from '../components/MatchCard'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { PlayerStatsTable } from '../components/PlayerStatsTable'
 import { competitionRoutes } from '../routes'
-import type { Match } from '../types'
 
 // ─── Matches Tab ──────────────────────────────────────────────────────────────
 
@@ -34,15 +33,9 @@ interface MatchesTabProps {
 }
 
 function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
-  const { data: matches = [], isLoading } = useCompetitionMatches(competitionId)
+  const { data: roundsView, isLoading } = useCompetitionRounds(competitionId)
   const generateSchedule = useGenerateSchedule(competitionId)
-
-  // Group by round
-  const rounds = (matches as Match[]).reduce<Record<number, Match[]>>((acc, m) => {
-    if (!acc[m.round_number]) acc[m.round_number] = []
-    acc[m.round_number].push(m)
-    return acc
-  }, {})
+  const rounds = roundsView?.rounds ?? []
 
   if (isLoading) {
     return (
@@ -54,7 +47,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
     )
   }
 
-  if (Object.keys(rounds).length === 0) {
+  if (rounds.length === 0) {
     return (
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <Calendar className="h-12 w-12 opacity-30" />
@@ -101,17 +94,15 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
         </div>
       )}
 
-      {Object.entries(rounds)
-        .sort(([a], [b]) => Number(a) - Number(b))
-        .map(([round, roundMatches]) => (
-          <div key={round} className="space-y-sm">
+      {rounds.map((round) => (
+          <div key={round.id} className="space-y-sm">
             <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
               <span className="inline-flex items-center rounded-full bg-primary-container/30 px-md py-1 text-xs font-bold text-primary shadow-sm">
-                Jornada {round}
+                {round.label || `Ronda ${round.number}`}
               </span>
             </h3>
             <div className="space-y-sm">
-              {roundMatches.map(m => (
+              {round.matches.map(m => (
                 <MatchCard
                   key={m.id}
                   match={m}
@@ -120,7 +111,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
               ))}
             </div>
           </div>
-        ))}
+      ))}
     </div>
   )
 }

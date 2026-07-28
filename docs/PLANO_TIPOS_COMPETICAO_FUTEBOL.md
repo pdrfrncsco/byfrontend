@@ -709,6 +709,12 @@ PLAN
 
 
 
+
+
+
+
+
+
   AUDITORIA
        | config.pointsWin/Draw/Loss   |
    6 | Desempates (tiebreakers) não | services/standing_service.    

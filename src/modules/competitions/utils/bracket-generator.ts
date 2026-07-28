@@ -1,4 +1,5 @@
 import { CupConfig } from '../types/competition-format.types'
+import type { MatchStatus } from '../types'
 
 export interface BracketMatch {
   id: string
@@ -9,7 +10,7 @@ export interface BracketMatch {
   score1?: number | null
   score2?: number | null
   winner: string | null
-  status: 'scheduled' | 'live' | 'finished'
+  status: MatchStatus
   sourceMatch1?: number
   sourceMatch2?: number
 }

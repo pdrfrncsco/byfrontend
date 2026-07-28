@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Loader2, Zap, Edit3, Check, XCircle } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input } from '@/components/ui'
-import { useGenerateSchedule, useCompetitionMatches, useUpdateMatchScore } from '../hooks/useCompetitionPhase3'
+import { useCompetitionRounds, useGenerateSchedule, useUpdateMatchScore } from '../hooks/useCompetitionMatches'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { generateScheduleSchema, type GenerateScheduleFormData } from '../schemas'
@@ -13,6 +13,7 @@ import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { MatchCard } from '../components/MatchCard'
 import type { Match } from '../types'
+import type { CompetitionRoundView } from '../hooks/useCompetitionMatches'
 
 /**
  * CompetitionSchedulePage — configure, generate, and manage competition matches.
@@ -26,7 +27,7 @@ export function CompetitionSchedulePage() {
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const generateSchedule = useGenerateSchedule(competitionId)
-  const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
+  const { data: roundsView, isLoading: loadingRounds } = useCompetitionRounds(competitionId)
   const updateMatchScore = useUpdateMatchScore(competitionId)
 
   const [generated, setGenerated] = useState(false)
@@ -35,15 +36,13 @@ export function CompetitionSchedulePage() {
   const [editAwayScore, setEditAwayScore] = useState<string>('')
   const [editStatus, setEditStatus] = useState<string>('finished')
 
-  // Group matches by round
-  const rounds = (matches as Match[]).reduce<Record<number, Match[]>>((acc, m) => {
-    if (!acc[m.round_number]) acc[m.round_number] = []
-    acc[m.round_number].push(m)
-    return acc
-  }, {})
+  const rounds = roundsView?.rounds ?? []
 
-  const getRoundDisplayLabel = (roundNumStr: string) => {
-    const roundNum = Number(roundNumStr)
+  const getRoundDisplayLabel = (round: CompetitionRoundView) => {
+    const roundNum = round.number
+    if (round.label && !/^Ronda\s+\d+$/i.test(round.label)) {
+      return round.label
+    }
     if (isLeague) {
       return `Jornada ${roundNum}`
     }
@@ -269,7 +268,7 @@ export function CompetitionSchedulePage() {
                   ) : (
                     <>
                       <Zap className="mr-xs h-4 w-4" />
-                      {Object.keys(rounds).length > 0 ? 'Regenerar Calendário' : 'Gerar Calendário'}
+                      {rounds.length > 0 ? 'Regenerar Calendário' : 'Gerar Calendário'}
                     </>
                   )}
                 </Button>
@@ -284,13 +283,13 @@ export function CompetitionSchedulePage() {
             <CardTitle>Partidas</CardTitle>
           </CardHeader>
           <CardContent>
-            {loadingMatches ? (
+            {loadingRounds ? (
               <div className="flex flex-col gap-sm">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="h-24 animate-pulse rounded-xl bg-surface-container-high" />
                 ))}
               </div>
-            ) : Object.keys(rounds).length === 0 ? (
+            ) : rounds.length === 0 ? (
               <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
                 <Calendar className="h-12 w-12 opacity-30" />
                 <p className="font-medium">Calendário ainda não gerado.</p>
@@ -298,17 +297,15 @@ export function CompetitionSchedulePage() {
               </div>
             ) : (
               <div className="space-y-xl">
-                {Object.entries(rounds)
-                  .sort(([a], [b]) => Number(a) - Number(b))
-                  .map(([round, roundMatches]) => (
-                    <div key={round} className="space-y-sm">
+                {rounds.map((round) => (
+                    <div key={round.id} className="space-y-sm">
                       <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
                         <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
                           {getRoundDisplayLabel(round)}
                         </span>
                       </h3>
                       <div className="space-y-sm">
-                        {roundMatches.map(match => (
+                        {round.matches.map(match => (
                           <div key={match.id} className="space-y-sm">
                             <MatchCard
                               match={match}

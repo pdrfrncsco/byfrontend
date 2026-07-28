@@ -127,7 +127,7 @@ export const competitionApi = {
 
   async listMatches(
     competitionId: string,
-    params?: { groupId?: string; group_id?: string; phase?: string }
+    params?: { groupId?: string; group_id?: string; phase?: string; round_number?: number }
   ): Promise<Match[]> {
     const response = await client.get<ApiResponse<Match[]>>(
       API_ROUTES.COMPETITIONS.MATCHES(competitionId),
