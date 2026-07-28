@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -39,10 +39,12 @@ export function CompetitionSchedulePage() {
 
   const [generated, setGenerated] = useState(false)
   const [manualCreated, setManualCreated] = useState(false)
+  const [quickCreateLabel, setQuickCreateLabel] = useState<string | null>(null)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
   const [editHomeScore, setEditHomeScore] = useState<string>('')
   const [editAwayScore, setEditAwayScore] = useState<string>('')
   const [editStatus, setEditStatus] = useState<string>('finished')
+  const createMatchCardRef = useRef<HTMLDivElement | null>(null)
 
   const rounds = roundsView?.rounds ?? []
   const registeredClubs = useMemo(
@@ -191,6 +193,7 @@ export function CompetitionSchedulePage() {
     createMatch.mutate(data, {
       onSuccess: () => {
         setManualCreated(true)
+        setQuickCreateLabel(null)
         createMatchForm.reset({
           home_club: '',
           away_club: '',
@@ -204,6 +207,21 @@ export function CompetitionSchedulePage() {
         })
       },
     })
+  }
+
+  const applyRoundContext = (round: CompetitionRoundView) => {
+    const nextPhase = round.phase ?? (isLeague ? '' : isCup ? 'knockout' : 'group_stage')
+    const nextGroupId = isLeague ? '' : round.groupId ?? (nextPhase === 'group_stage' ? 'A' : '')
+
+    createMatchForm.setValue('round_number', round.number)
+    createMatchForm.setValue('round_name', round.label)
+    createMatchForm.setValue('phase', nextPhase)
+    createMatchForm.setValue('group_id', nextGroupId)
+
+    setQuickCreateLabel(round.label)
+    window.setTimeout(() => {
+      createMatchCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
   }
 
   const startEditMatch = (match: Match) => {
@@ -405,7 +423,12 @@ export function CompetitionSchedulePage() {
           <CardHeader>
             <CardTitle>Criar Partida Avulsa</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent ref={createMatchCardRef}>
+            {quickCreateLabel && (
+              <div className="mb-md rounded-xl border border-primary/20 bg-primary/10 px-md py-sm text-sm text-primary">
+                Contexto carregado da ronda <span className="font-semibold">{quickCreateLabel}</span>.
+              </div>
+            )}
             {loadingStandings ? (
               <div className="h-24 animate-pulse rounded-xl bg-surface-container-high" />
             ) : registeredClubs.length < 2 ? (
@@ -647,10 +670,14 @@ export function CompetitionSchedulePage() {
               <div className="space-y-xl">
                 {rounds.map((round) => (
                   <div key={round.id} className="space-y-sm">
-                    <h3 className="flex items-center gap-sm text-sm font-semibold text-on-surface-variant">
+                    <h3 className="flex flex-wrap items-center justify-between gap-sm text-sm font-semibold text-on-surface-variant">
                       <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
                         {getRoundDisplayLabel(round)}
                       </span>
+                      <Button variant="secondary" size="sm" type="button" onClick={() => applyRoundContext(round)}>
+                        <PlusCircle className="mr-xs h-4 w-4" />
+                        Criar nesta ronda
+                      </Button>
                     </h3>
                     <div className="space-y-sm">
                       {round.matches.map((match) => (
