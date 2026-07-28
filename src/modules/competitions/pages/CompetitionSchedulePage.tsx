@@ -212,13 +212,24 @@ export function CompetitionSchedulePage() {
   const applyRoundContext = (round: CompetitionRoundView) => {
     const nextPhase = round.phase ?? (isLeague ? '' : isCup ? 'knockout' : 'group_stage')
     const nextGroupId = isLeague ? '' : round.groupId ?? (nextPhase === 'group_stage' ? 'A' : '')
+    const templateMatch = round.matches.length === 1 ? round.matches[0] : undefined
 
+    if (templateMatch) {
+      createMatchForm.setValue('home_club', templateMatch.home_club)
+      createMatchForm.setValue('away_club', templateMatch.away_club)
+      createMatchForm.setValue('match_date', templateMatch.match_date.slice(0, 16))
+      createMatchForm.setValue('venue', templateMatch.venue ?? '')
+    }
     createMatchForm.setValue('round_number', round.number)
     createMatchForm.setValue('round_name', round.label)
     createMatchForm.setValue('phase', nextPhase)
     createMatchForm.setValue('group_id', nextGroupId)
 
-    setQuickCreateLabel(round.label)
+    setQuickCreateLabel(
+      templateMatch
+        ? `${round.label}: ${templateMatch.home_club_name} x ${templateMatch.away_club_name}`
+        : round.label
+    )
     window.setTimeout(() => {
       createMatchCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 0)
