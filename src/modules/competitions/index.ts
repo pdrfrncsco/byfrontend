@@ -8,3 +8,5 @@ export * from './schemas';
 export * from './constants';
 export * from './utils';
 
+export type { MatchEventFormData } from './types';
+

@@ -8,10 +8,13 @@ const STATUS_CONFIG: Record<
   { label: string; icon: React.ComponentType<any>; variant: 'default' | 'success' | 'danger' | 'warning' | 'secondary' }
 > = {
   scheduled: { label: 'Agendado', icon: Clock, variant: 'default' },
+  pre_match: { label: 'Pré-Jogo', icon: Clock, variant: 'secondary' },
   live: { label: 'Em Jogo', icon: Activity, variant: 'warning' },
+  halftime: { label: 'Intervalo', icon: Pause, variant: 'warning' },
   finished: { label: 'Terminado', icon: CheckCircle2, variant: 'success' },
   postponed: { label: 'Adiado', icon: Pause, variant: 'secondary' },
   cancelled: { label: 'Cancelado', icon: XCircle, variant: 'danger' },
+  walkover: { label: 'Walkover', icon: XCircle, variant: 'danger' },
 }
 
 interface MatchCardProps {

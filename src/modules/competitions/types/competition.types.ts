@@ -1,4 +1,5 @@
 import { CompetitionFormat, CompetitionConfig, CompetitionPhase } from './competition-format.types'
+import { MatchStatus, LineupPlayer, MatchStats, EventType } from './match.types'
 
 export type CompetitionType = 'league' | 'tournament' | 'cup'
 export type CompetitionStatus = 'draft' | 'active' | 'completed'
@@ -37,28 +38,6 @@ export interface CompetitionUpdateData {
   status?: CompetitionStatus
 }
 
-export type MatchStatus = 'scheduled' | 'live' | 'finished' | 'postponed' | 'cancelled'
-
-export interface Match {
-  id: string
-  competition: string
-  round_number: number
-  round_name?: string | null
-  phase?: string | null
-  group_id?: string | null
-  home_club: string
-  home_club_name: string
-  home_club_logo: string | null
-  away_club: string
-  away_club_name: string
-  away_club_logo: string | null
-  match_date: string
-  status: MatchStatus
-  status_label: string
-  home_score: number | null
-  away_score: number | null
-  venue: string | null
-}
 
 export interface Standing {
   id: string
@@ -86,33 +65,7 @@ export interface CompetitionRegistration {
   registered_at: string
 }
 
-export type EventType =
-  | 'goal'
-  | 'own_goal'
-  | 'yellow_card'
-  | 'red_card'
-  | 'yellow_red'
-  | 'substitution_in'
-  | 'substitution_out'
-  | 'penalty_scored'
-  | 'penalty_missed'
 
-export interface MatchEvent {
-  id: string
-  event_type: EventType
-  event_type_label: string
-  minute: number
-  extra_time: boolean
-  player: string | null
-  player_name: string | null
-  player_off: string | null
-  player_off_name: string | null
-  club: string
-  club_name: string
-  club_logo: string | null
-  notes: string
-  created_at: string
-}
 
 export interface MatchEventCreateData {
   event_type: EventType
@@ -143,28 +96,6 @@ export interface PlayerStats {
 export type LineupStatus = 'draft' | 'submitted' | 'confirmed' | 'locked'
 export type LineupPlayerStatus = 'starter' | 'substitute'
 
-export interface LineupPlayer {
-  id: string
-  player: {
-    id: string
-    full_name: string
-    position: string
-    date_of_birth?: string
-    nationality?: string
-  }
-  player_id: string
-  status: LineupPlayerStatus
-  status_display?: string
-  position: string
-  position_display?: string
-  shirt_number: number
-  is_captain: boolean
-  is_goalkeeper: boolean
-  formation_position?: number
-  minutes_played?: number
-  substituted_in_minute?: number
-  substituted_out_minute?: number
-}
 
 export interface LineupSubmission {
   id: string
@@ -225,23 +156,6 @@ export interface GoalCreateData {
   assist_player_id?: string | null
 }
 
-export interface MatchStats {
-  id: string
-  match: string
-  club: string
-  possession?: number
-  possession_display?: string
-  shots_on_goal?: number
-  shots_off_goal?: number
-  passes?: number
-  passes_accuracy?: number
-  fouls?: number
-  yellow_cards?: number
-  red_cards?: number
-  corner_kicks?: number
-  created_at?: string
-  updated_at?: string
-}
 
 export interface MatchReport {
   id: string
