@@ -46,8 +46,8 @@ const CompetitionSuspensionsPage = lazy(() =>
 const CompetitionDrawPage = lazy(() =>
   import('@/modules/competitions/pages/CompetitionDrawPage').then(m => ({ default: m.CompetitionDrawPage })),
 )
-const MatchCenterPage = lazy(() =>
-  import('@/modules/competitions/pages/MatchCenterPage').then(m => ({ default: m.MatchCenterPage })),
+const MatchDetailPage = lazy(() =>
+  import('@/modules/competitions/pages/MatchDetailPage').then(m => ({ default: m.MatchDetailPage })),
 )
 const MatchLineupPage = lazy(() =>
   import('@/modules/competitions/pages/MatchLineupPage').then(m => ({ default: m.MatchLineupPage })),
@@ -116,7 +116,7 @@ export function contentRouteElements() {
       {/* Match sub-pages */}
       <Route
         path={competitionRoutes.matchCenter(':compId', ':matchId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>}
+        element={<Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>}
       />
       <Route
         path={competitionRoutes.matchLineup(':compId', ':matchId')}
