@@ -6,9 +6,7 @@ import {
   MapPin,
   ArrowLeft,
   Activity,
-  CheckCircle2,
   XCircle,
-  Pause,
   Zap,
   Users,
   FileText,
@@ -16,7 +14,7 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react'
-import { Badge, Button, Card } from '@/components/ui'
+import { Button, Card } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
@@ -24,23 +22,8 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import { useCompetitionMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
-import type { Match, MatchEvent, MatchStatus, EventType } from '../types'
-
-// ─── Status Config ────────────────────────────────────────────────────────────
-
-const STATUS_CONFIG: Record<
-  MatchStatus,
-  { label: string; icon: React.ComponentType<any>; variant: 'default' | 'success' | 'danger' | 'warning' | 'secondary' }
-> = {
-  scheduled: { label: 'Agendado', icon: Clock, variant: 'default' },
-  pre_match: { label: 'Pré-Jogo', icon: Clock, variant: 'secondary' },
-  live: { label: 'Em Jogo', icon: Activity, variant: 'warning' },
-  halftime: { label: 'Intervalo', icon: Pause, variant: 'warning' },
-  finished: { label: 'Terminado', icon: CheckCircle2, variant: 'success' },
-  postponed: { label: 'Adiado', icon: Pause, variant: 'secondary' },
-  cancelled: { label: 'Cancelado', icon: XCircle, variant: 'danger' },
-  walkover: { label: 'Walkover', icon: XCircle, variant: 'danger' },
-}
+import type { Match, MatchEvent, EventType } from '../types'
+import { MatchCountdown, MatchStatusBadge } from '../components'
 
 // ─── Event Icons ──────────────────────────────────────────────────────────────
 
@@ -65,12 +48,11 @@ interface MatchHeaderProps {
 }
 
 function MatchHeader({ match, competitionId, isDashboard = false }: MatchHeaderProps) {
-  const statusCfg = STATUS_CONFIG[match.status] ?? STATUS_CONFIG.scheduled
-  const StatusIcon = statusCfg.icon
   const matchDate = new Date(match.match_date)
   const isLive = match.status === 'live'
   const isFinished = match.status === 'finished'
   const hasScore = match.home_score !== null && match.away_score !== null
+  const currentMinute = match.events?.length ? Math.max(...match.events.map(event => event.minute)) : null
 
   return (
     <div className={`relative overflow-hidden ${isDashboard ? 'bg-surface-container' : 'bg-gradient-to-br from-surface-container to-surface-container-high'} rounded-xl`}>
@@ -118,10 +100,10 @@ function MatchHeader({ match, competitionId, isDashboard = false }: MatchHeaderP
               <span>{match.venue}</span>
             </div>
           )}
-          <Badge variant={statusCfg.variant} className="flex items-center gap-1">
-            <StatusIcon className="h-3 w-3" />
-            {statusCfg.label}
-          </Badge>
+          <MatchStatusBadge status={match.status} currentMinute={currentMinute} />
+          {(match.status === 'scheduled' || match.status === 'pre_match') && (
+            <MatchCountdown scheduledAt={match.match_date} />
+          )}
         </div>
 
         {/* Teams and Score */}

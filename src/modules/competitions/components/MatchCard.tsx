@@ -1,21 +1,8 @@
 import { Link } from 'react-router-dom'
-import { Calendar, Clock, MapPin, Activity, CheckCircle2, XCircle, Pause, Zap } from 'lucide-react'
-import { Badge } from '@/components/ui'
-import type { Match, MatchStatus } from '../types'
-
-const STATUS_CONFIG: Record<
-  MatchStatus,
-  { label: string; icon: React.ComponentType<any>; variant: 'default' | 'success' | 'danger' | 'warning' | 'secondary' }
-> = {
-  scheduled: { label: 'Agendado', icon: Clock, variant: 'default' },
-  pre_match: { label: 'Pré-Jogo', icon: Clock, variant: 'secondary' },
-  live: { label: 'Em Jogo', icon: Activity, variant: 'warning' },
-  halftime: { label: 'Intervalo', icon: Pause, variant: 'warning' },
-  finished: { label: 'Terminado', icon: CheckCircle2, variant: 'success' },
-  postponed: { label: 'Adiado', icon: Pause, variant: 'secondary' },
-  cancelled: { label: 'Cancelado', icon: XCircle, variant: 'danger' },
-  walkover: { label: 'Walkover', icon: XCircle, variant: 'danger' },
-}
+import { Calendar, MapPin, Zap } from 'lucide-react'
+import type { Match } from '../types'
+import { MatchCountdown } from './MatchCountdown'
+import { MatchStatusBadge } from './MatchStatusBadge'
 
 interface MatchCardProps {
   match: Match
@@ -33,10 +20,17 @@ interface MatchCardProps {
  * <MatchCard match={m} competitionId={comp.id} showLink />
  */
 export function MatchCard({ match, competitionId, showLink = false, compact = false }: MatchCardProps) {
-  const statusCfg = STATUS_CONFIG[match.status] ?? STATUS_CONFIG.scheduled
-  const StatusIcon = statusCfg.icon
+  const homeName = match.homeTeamName || match.home_club_name
+  const awayName = match.awayTeamName || match.away_club_name
+  const homeLogo = match.homeTeamLogo || match.home_club_logo
+  const awayLogo = match.awayTeamLogo || match.away_club_logo
+  const scheduledAt = match.scheduledAt || match.match_date
+  const roundNumber = match.roundNumber ?? match.round_number
+  const homeScore = match.score?.home ?? match.home_score
+  const awayScore = match.score?.away ?? match.away_score
+  const currentMinute = match.events?.length ? Math.max(...match.events.map(event => event.minute)) : null
 
-  const matchDate = new Date(match.match_date)
+  const matchDate = new Date(scheduledAt)
   const dateStr = matchDate.toLocaleDateString('pt-PT', {
     weekday: compact ? undefined : 'short',
     day: '2-digit',
@@ -46,7 +40,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
 
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
-  const hasScore = match.home_score !== null && match.away_score !== null
+  const hasScore = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined
 
   const card = (
     <div
@@ -64,7 +58,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
       <div className="mb-md flex items-center justify-between gap-sm">
         <div className="flex items-center gap-sm text-xs text-on-surface-variant">
           <span className="rounded bg-surface-container-high px-2 py-0.5 font-semibold text-primary">
-            R{match.round_number}
+            J{roundNumber}
           </span>
           <Calendar className="h-3 w-3" />
           <span>{dateStr}</span>
@@ -76,25 +70,27 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
             </>
           )}
         </div>
-        <Badge variant={statusCfg.variant} className="flex items-center gap-1 text-xs">
-          <StatusIcon className="h-3 w-3" />
-          {statusCfg.label}
-        </Badge>
+        <div className="flex items-center gap-sm">
+          {(match.status === 'scheduled' || match.status === 'pre_match') && (
+            <MatchCountdown scheduledAt={scheduledAt} />
+          )}
+          <MatchStatusBadge status={match.status} currentMinute={currentMinute} />
+        </div>
       </div>
 
       {/* Teams + Score */}
       <div className="flex items-center gap-md">
         {/* Home Team */}
         <div className="flex flex-1 items-center gap-sm overflow-hidden">
-          {match.home_club_logo ? (
-            <img src={match.home_club_logo} alt={match.home_club_name} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
+          {homeLogo ? (
+            <img src={homeLogo} alt={homeName} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
           ) : (
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary">
-              {match.home_club_name.charAt(0)}
+              {homeName.charAt(0)}
             </div>
           )}
           <span className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
-            {match.home_club_name}
+            {homeName}
           </span>
         </div>
 
@@ -105,13 +101,13 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
               <span
                 className={`min-w-[2ch] text-center font-bold tabular-nums ${isFinished ? 'text-lg text-on-surface' : 'text-lg text-amber-500'}`}
               >
-                {match.home_score}
+                {homeScore}
               </span>
               <span className="text-on-surface-variant">—</span>
               <span
                 className={`min-w-[2ch] text-center font-bold tabular-nums ${isFinished ? 'text-lg text-on-surface' : 'text-lg text-amber-500'}`}
               >
-                {match.away_score}
+                {awayScore}
               </span>
             </div>
           ) : (
@@ -128,13 +124,13 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
         {/* Away Team */}
         <div className="flex flex-1 items-center justify-end gap-sm overflow-hidden">
           <span className={`truncate text-right font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
-            {match.away_club_name}
+            {awayName}
           </span>
-          {match.away_club_logo ? (
-            <img src={match.away_club_logo} alt={match.away_club_name} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
+          {awayLogo ? (
+            <img src={awayLogo} alt={awayName} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
           ) : (
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary">
-              {match.away_club_name.charAt(0)}
+              {awayName.charAt(0)}
             </div>
           )}
         </div>
