@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -146,12 +147,22 @@ function PlayerMarker({ player }: { player?: LineupPlayer }) {
 function PlayerCard({
   player,
   isStarter,
+  editable = false,
+  onDragStart,
+  onDrop,
 }: {
   player: LineupPlayer
   isStarter: boolean
+  editable?: boolean
+  onDragStart?: () => void
+  onDrop?: () => void
 }) {
   return (
     <div
+      draggable={editable}
+      onDragStart={onDragStart}
+      onDragOver={(event) => editable && event.preventDefault()}
+      onDrop={(event) => { event.preventDefault(); onDrop?.() }}
       className={`flex items-center gap-sm rounded-lg border p-sm transition-all ${
         isStarter
           ? 'border-primary/30 bg-primary-container/10'
@@ -200,18 +211,40 @@ interface LineupSectionProps {
   lineup: LineupSubmission
   isHome: boolean
   match: Match
+  editable?: boolean
 }
 
-function LineupSection({ lineup, isHome, match }: LineupSectionProps) {
+function LineupSection({ lineup, isHome, match, editable = false }: LineupSectionProps) {
   const starters = lineup.starters || lineup.lineup_players?.filter((p) => p.status === 'starter') || []
   const substitutes = lineup.substitutes || lineup.lineup_players?.filter((p) => p.status === 'substitute') || []
+  const [starterPlayers, setStarterPlayers] = useState(starters)
+  const [substitutePlayers, setSubstitutePlayers] = useState(substitutes)
+  const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
   const statusConfig = LINEUP_STATUS_CONFIG[lineup.status] || LINEUP_STATUS_CONFIG.draft
+  const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
+  const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
+    if (!draggedPlayer || !editable) return
+    const sourcePlayers = draggedPlayer.source === 'starter' ? starterPlayers : substitutePlayers
+    const sourcePlayer = sourcePlayers.find(player => playerId(player) === draggedPlayer.id)
+    if (!sourcePlayer) return
+    const nextSource = sourcePlayers.filter(player => playerId(player) !== draggedPlayer.id)
+    const targetPlayers = (target === 'starter' ? starterPlayers : substitutePlayers).filter(player => playerId(player) !== draggedPlayer.id)
+    const insertionIndex = targetId ? targetPlayers.findIndex(player => playerId(player) === targetId) : targetPlayers.length
+    const nextTarget = [...targetPlayers]
+    nextTarget.splice(Math.max(0, insertionIndex), 0, sourcePlayer)
+    if (draggedPlayer.source === 'starter') setStarterPlayers(nextSource)
+    else setSubstitutePlayers(nextSource)
+    if (target === 'starter') setStarterPlayers(nextTarget)
+    else setSubstitutePlayers(nextTarget)
+    setDraggedPlayer(null)
+  }
 
   return (
-    <MatchLineupGrid
+      <MatchLineupGrid
       formation={lineup.formation}
-      starters={starters}
-      substitutes={substitutes}
+      starters={starterPlayers}
+      substitutes={substitutePlayers}
+      editable={editable}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -238,29 +271,29 @@ function LineupSection({ lineup, isHome, match }: LineupSectionProps) {
           Titulares ({starters.length})
         </h4>
         <div className="grid gap-sm sm:grid-cols-2">
-          {starters.map((player) => (
-            <PlayerCard key={player.id} player={player} isStarter />
+            {starterPlayers.map((player) => (
+            <PlayerCard key={playerId(player)} player={player} isStarter editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'starter' })} onDrop={() => movePlayer('starter', playerId(player))} />
           ))}
         </div>
       </div>
 
       {/* Substitutes List */}
-      {substitutes.length > 0 && (
+          {substitutePlayers.length > 0 && (
         <div className="space-y-sm">
           <h4 className="flex items-center gap-xs text-sm font-semibold text-on-surface-variant">
             <Users className="h-4 w-4" />
             Suplentes ({substitutes.length})
           </h4>
-          <div className="grid gap-sm sm:grid-cols-2">
-            {substitutes.map((player) => (
-              <PlayerCard key={player.id} player={player} isStarter={false} />
+            <div className="grid gap-sm sm:grid-cols-2" onDragOver={(event) => editable && event.preventDefault()} onDrop={() => movePlayer('substitute')}>
+            {substitutePlayers.map((player) => (
+              <PlayerCard key={playerId(player)} player={player} isStarter={false} editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'substitute' })} onDrop={() => movePlayer('substitute', playerId(player))} />
             ))}
           </div>
         </div>
       )}
 
       {/* Empty state */}
-      {starters.length === 0 && substitutes.length === 0 && (
+      {starterPlayers.length === 0 && substitutePlayers.length === 0 && (
         <Card variant="flat" padding="lg">
           <div className="flex flex-col items-center gap-sm py-lg text-center">
             <Users className="h-10 w-10 text-on-surface-variant/30" />
@@ -391,7 +424,7 @@ export function MatchLineupPage() {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup ? (
-                <LineupSection lineup={homeLineup} isHome match={match} />
+        <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} />
               ) : (
                 <div className="flex flex-col items-center gap-sm py-lg text-center">
                   <Users className="h-10 w-10 text-on-surface-variant/30" />
@@ -405,7 +438,7 @@ export function MatchLineupPage() {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} />
               ) : (
                 <div className="flex flex-col items-center gap-sm py-lg text-center">
                   <Users className="h-10 w-10 text-on-surface-variant/30" />
