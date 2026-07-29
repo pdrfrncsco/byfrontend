@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Loader2, Plus, Trash2, Clock, ShieldAlert, Goal } from 'lucide-react'
 import { useCompetitionMatchEvents, useAddMatchEvent, useDeleteMatchEvent } from '../hooks'
+import { useMatchLive } from '../hooks/useMatchLive'
 import type { MatchEvent, EventType, Match } from '../types'
 
 const EVENT_ICONS: Record<string, { icon: React.ComponentType<any>; color: string }> = {
@@ -25,6 +26,7 @@ export function MatchEventsPanel({
   isAdmin: boolean
 }) {
   const { data: events = [], isLoading } = useCompetitionMatchEvents(competitionId, match.id)
+  const liveState = useMatchLive({ competitionId, matchId: match.id, initialMatch: match })
   const addEvent = useAddMatchEvent(competitionId, match.id)
   const deleteEvent = useDeleteMatchEvent(competitionId, match.id)
 
@@ -64,7 +66,20 @@ export function MatchEventsPanel({
   return (
     <div className="border-t border-outline-variant/20 bg-surface-container-low p-md">
       <div className="mb-md flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-on-surface">Súmula de Jogo</h4>
+        <div className="flex items-center gap-sm">
+          <h4 className="text-sm font-semibold text-on-surface">Súmula de Jogo</h4>
+          {(liveState.isLive || liveState.isHalftime) && (
+            <span className="inline-flex items-center gap-xs text-xs font-medium text-emerald-600" aria-live="polite">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              {liveState.isHalftime ? 'Intervalo' : 'A actualizar'}
+            </span>
+          )}
+        </div>
+        {liveState.lastUpdated && (
+          <span className="text-[11px] text-on-surface-variant" title={liveState.lastUpdated.toLocaleString('pt-PT')}>
+            Actualizado às {liveState.lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        )}
         {isAdmin && !isAdding && (
           <button 
             className="flex items-center gap-xs rounded-lg border border-outline-variant px-sm py-xs text-xs font-medium text-on-surface transition-colors hover:bg-surface-container-high"
