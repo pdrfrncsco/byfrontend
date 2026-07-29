@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin, Zap } from 'lucide-react'
+import { Calendar, MapPin } from 'lucide-react'
 import type { Match } from '../types'
 import { MatchCountdown } from './MatchCountdown'
+import { MatchScoreboard } from './MatchScoreboard'
 import { MatchStatusBadge } from './MatchStatusBadge'
 
 interface MatchCardProps {
@@ -26,8 +27,6 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
   const awayLogo = match.awayTeamLogo || match.away_club_logo
   const scheduledAt = match.scheduledAt || match.match_date
   const roundNumber = match.roundNumber ?? match.round_number
-  const homeScore = match.score?.home ?? match.home_score
-  const awayScore = match.score?.away ?? match.away_score
   const currentMinute = match.events?.length ? Math.max(...match.events.map(event => event.minute)) : null
 
   const matchDate = new Date(scheduledAt)
@@ -38,9 +37,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
   })
   const timeStr = matchDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
 
-  const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
-  const hasScore = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined
 
   const card = (
     <div
@@ -95,31 +92,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
         </div>
 
         {/* Score */}
-        <div className="flex flex-shrink-0 items-center gap-sm">
-          {hasScore ? (
-            <div className="flex items-center gap-xs">
-              <span
-                className={`min-w-[2ch] text-center font-bold tabular-nums ${isFinished ? 'text-lg text-on-surface' : 'text-lg text-amber-500'}`}
-              >
-                {homeScore}
-              </span>
-              <span className="text-on-surface-variant">—</span>
-              <span
-                className={`min-w-[2ch] text-center font-bold tabular-nums ${isFinished ? 'text-lg text-on-surface' : 'text-lg text-amber-500'}`}
-              >
-                {awayScore}
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-xs text-on-surface-variant">
-              {isLive ? (
-                <Zap className="h-4 w-4 text-amber-500" />
-              ) : (
-                <span className="text-sm font-semibold">VS</span>
-              )}
-            </div>
-          )}
-        </div>
+        <MatchScoreboard match={match} compact />
 
         {/* Away Team */}
         <div className="flex flex-1 items-center justify-end gap-sm overflow-hidden">
