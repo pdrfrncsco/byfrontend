@@ -22,8 +22,9 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import { useCompetitionMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
+import { useMatchStats } from '../hooks/useMatchStats'
 import type { Match, MatchEvent, EventType } from '../types'
-import { MatchCountdown, MatchStatusBadge } from '../components'
+import { MatchCountdown, MatchStatsPanel, MatchStatusBadge } from '../components'
 
 // ─── Event Icons ──────────────────────────────────────────────────────────────
 
@@ -443,9 +444,16 @@ export function MatchCenterPage() {
   const { data: events = [], isLoading: loadingEvents } = useCompetitionMatchEvents(competitionId, matchIdValue)
 
   const [showAddEvent, setShowAddEvent] = useState(false)
+  const [activeTab, setActiveTab] = useState<'events' | 'stats'>('events')
 
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const { stats, isLoading: loadingStats } = useMatchStats({
+    matchId: matchIdValue,
+    homeTeamId: match?.home_club ?? '',
+    awayTeamId: match?.away_club ?? '',
+    isLive: match?.status === 'live' || match?.status === 'halftime',
+  })
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   if (loadingComp || loadingMatches) {
@@ -511,6 +519,19 @@ export function MatchCenterPage() {
       {/* Main Content */}
       <div className="mx-auto max-w-4xl px-lg py-xl">
         <div className="space-y-xl">
+          <div className="flex flex-wrap gap-xs border-b border-outline-variant/20" role="tablist" aria-label="Conteúdo da partida">
+            {(['events', 'stats'] as const).map(tab => (
+              <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} onClick={() => setActiveTab(tab)} className={`border-b-2 px-md py-sm text-sm font-semibold transition-colors ${activeTab === tab ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'}`}>
+                {tab === 'events' ? 'Eventos' : 'Estatísticas'}
+              </button>
+            ))}
+            <Link to={isDashboard ? competitionRoutes.adminMatchLineup(competitionId, match.id) : competitionRoutes.matchLineup(competitionId, match.id)} className="border-b-2 border-transparent px-md py-sm text-sm font-semibold text-on-surface-variant hover:text-on-surface">Escalações</Link>
+            <Link to={isDashboard ? competitionRoutes.adminMatchReport(competitionId, match.id) : competitionRoutes.matchReport(competitionId, match.id)} className="border-b-2 border-transparent px-md py-sm text-sm font-semibold text-on-surface-variant hover:text-on-surface">Relatório</Link>
+          </div>
+
+          {activeTab === 'stats' ? (
+            <MatchStatsPanel stats={stats} isLoading={loadingStats} homeName={match.home_club_name} awayName={match.away_club_name} />
+          ) : <>
           {/* Section Header */}
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-sm text-lg font-semibold text-on-surface">
@@ -537,6 +558,7 @@ export function MatchCenterPage() {
 
           {/* Event Timeline */}
           <EventTimeline events={events} match={match} isLoading={loadingEvents} />
+          </>}
         </div>
       </div>
     </>
