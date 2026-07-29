@@ -400,6 +400,18 @@ export const matchApi = {
     return response.data.data || response.data
   },
 
+  async uploadRefereeDocument(matchId: string, file: File): Promise<string> {
+    const formData = new FormData()
+    formData.append('document', file)
+    const response = await client.post<ApiResponse<any>>(
+      `/competitions/matches/${matchId}/report/document/`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    )
+    const data = response.data.data || response.data
+    return data.document_url || data.url || data.document || ''
+  },
+
   // PATCH /matches/:id/report/approve → aprovar relatório
   async approveReport(matchId: string): Promise<any> {
     const response = await client.post<ApiResponse<any>>(

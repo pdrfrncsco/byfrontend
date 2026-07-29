@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Loader2, Plus, Trash2, Clock, ShieldAlert, Goal } from 'lucide-react'
-import { useMatchEvents, useAddMatchEvent, useDeleteMatchEvent } from '../hooks'
+import { useCompetitionMatchEvents, useAddMatchEvent, useDeleteMatchEvent } from '../hooks'
 import type { MatchEvent, EventType, Match } from '../types'
 
 const EVENT_ICONS: Record<string, { icon: React.ComponentType<any>; color: string }> = {
@@ -24,7 +24,7 @@ export function MatchEventsPanel({
   match: Match
   isAdmin: boolean
 }) {
-  const { data: events = [], isLoading } = useMatchEvents(competitionId, match.id)
+  const { data: events = [], isLoading } = useCompetitionMatchEvents(competitionId, match.id)
   const addEvent = useAddMatchEvent(competitionId, match.id)
   const deleteEvent = useDeleteMatchEvent(competitionId, match.id)
 

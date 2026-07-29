@@ -1,9 +1,16 @@
 export * from './useCompetitions'
 export * from './useCompetitionMatches'
-export * from './useMatchCenter'
 export * from './useCompetitionFull'
 export * from './useCompetitionConfig'
+export * from './useCompetitionAccess'
 export * from './useLeagueStandings'
 export * from './useTournamentBracket'
 export * from './useCupBracket'
 
+// Match Center — Fase 2
+export * from './useMatchCenter'
+export * from './useMatchLive'
+export * from './useMatchEvents'
+export * from './useMatchLineup'
+export * from './useMatchReport'
+export * from './useMatchStats'

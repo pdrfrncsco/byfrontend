@@ -105,7 +105,7 @@ export function useLockLineup(matchId: string) {
 
 // ─── Match Report Hooks ────────────────────────────────────────────────────
 
-export function useMatchReport(matchId: string) {
+export function useCompetitionMatchReport(matchId: string) {
   return useQuery({
     queryKey: reportKeys.byMatch(matchId),
     queryFn: () => competitionApi.getMatchReport(matchId),

@@ -275,7 +275,7 @@ GET  /matches/live                        → partidas ao vivo (global)
 - Garantir retrocompatibilidade com tipos existentes
 
 ---
-
+/
 ### FASE 2 — Hooks Core (Lógica de Negócio)
 **Prioridade:** 🔴 Crítica | **Estimativa:** 2 dias
 

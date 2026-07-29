@@ -22,7 +22,7 @@ import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
-import { useMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
+import { useCompetitionMatchEvents, useAddMatchEvent } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, MatchEvent, MatchStatus, EventType } from '../types'
 
@@ -458,7 +458,7 @@ export function MatchCenterPage() {
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
-  const { data: events = [], isLoading: loadingEvents } = useMatchEvents(competitionId, matchIdValue)
+  const { data: events = [], isLoading: loadingEvents } = useCompetitionMatchEvents(competitionId, matchIdValue)
 
   const [showAddEvent, setShowAddEvent] = useState(false)
 
