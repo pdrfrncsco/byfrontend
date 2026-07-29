@@ -42,8 +42,8 @@ const mockKpis = {
 }
 
 const mockMembers = [
-  { id: 'm1', full_name: 'João Silva', display_name: 'João', role: 'admin', role_label: 'Administrador', is_active: true },
-  { id: 'm2', full_name: 'Maria Santos', display_name: 'Maria', role: 'member', role_label: 'Membro', is_active: true },
+  { id: 'm1', full_name: 'João Silva', display_name: 'João Silva', role: 'admin', role_label: 'Administrador', is_active: true },
+  { id: 'm2', full_name: 'Maria Santos', display_name: 'Maria Santos', role: 'member', role_label: 'Membro', is_active: true },
 ]
 
 const mockTransfers = {
@@ -149,7 +149,7 @@ describe('ClubDashboardPage', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('active')).toBeInTheDocument()
+      expect(screen.getByText('Active')).toBeInTheDocument()
     })
   })
 
