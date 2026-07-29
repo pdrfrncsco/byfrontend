@@ -24,7 +24,7 @@ import { useCompetitionMatchEvents, useAddMatchEvent } from '../hooks/useMatchCe
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { useMatchStats } from '../hooks/useMatchStats'
 import type { Match, MatchEvent, EventType } from '../types'
-import { MatchCountdown, MatchStatsPanel, MatchStatusBadge } from '../components'
+import { MatchCountdown, MatchEventForm, MatchStatsPanel, MatchStatusBadge, MatchTimeline } from '../components'
 
 // ─── Event Icons ──────────────────────────────────────────────────────────────
 
@@ -195,6 +195,10 @@ interface EventTimelineProps {
 }
 
 function EventTimeline({ events, match, isLoading }: EventTimelineProps) {
+  return <MatchTimeline events={events} match={match} isLoading={isLoading} />
+
+  /* Kept unreachable as a compatibility reference for local extensions. */
+  if (false) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-xl">
@@ -265,6 +269,7 @@ function EventTimeline({ events, match, isLoading }: EventTimelineProps) {
     </div>
   )
 }
+}
 
 // ─── Add Event Form ───────────────────────────────────────────────────────────
 
@@ -276,6 +281,10 @@ interface AddEventFormProps {
 }
 
 function AddEventForm({ match, competitionId, onSuccess, onCancel }: AddEventFormProps) {
+  return <MatchEventForm match={match} competitionId={competitionId} onSuccess={onSuccess} onCancel={onCancel} />
+
+  /* Kept unreachable as a compatibility reference for local extensions. */
+  if (false) {
   const addEvent = useAddMatchEvent(competitionId, match.id)
   const [eventType, setEventType] = useState<EventType>('goal')
   const [minute, setMinute] = useState('')
@@ -427,6 +436,7 @@ function AddEventForm({ match, competitionId, onSuccess, onCancel }: AddEventFor
       </form>
     </Card>
   )
+}
 }
 
 // ─── MatchCenterPage ──────────────────────────────────────────────────────────
