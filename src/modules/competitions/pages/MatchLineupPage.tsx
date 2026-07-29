@@ -23,6 +23,7 @@ import {
 } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
+import { MatchLineupGrid } from '../components'
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -207,7 +208,11 @@ function LineupSection({ lineup, isHome, match }: LineupSectionProps) {
   const statusConfig = LINEUP_STATUS_CONFIG[lineup.status] || LINEUP_STATUS_CONFIG.draft
 
   return (
-    <div className="space-y-lg">
+    <MatchLineupGrid
+      formation={lineup.formation}
+      starters={starters}
+      substitutes={substitutes}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-sm">
@@ -266,7 +271,7 @@ function LineupSection({ lineup, isHome, match }: LineupSectionProps) {
           </div>
         </Card>
       )}
-    </div>
+    </MatchLineupGrid>
   )
 }
 
