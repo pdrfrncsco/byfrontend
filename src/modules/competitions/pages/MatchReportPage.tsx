@@ -20,9 +20,11 @@ import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
-import { useMatchReport, useAddGoal } from '../hooks/useCompetitionAdvanced'
+import { useAddGoal } from '../hooks/useCompetitionAdvanced'
+import { useMatchReport as useMatchCenterReport } from '../hooks/useMatchReport'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { Match, Goal, MatchStats, GoalType } from '../types'
+import { MatchRefereeReport } from '../components'
 
 // ─── Goal Type Config ─────────────────────────────────────────────────────────
 
@@ -319,7 +321,17 @@ export function MatchReportPage() {
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
-  const { data: report, isLoading: loadingReport } = useMatchReport(matchIdValue)
+  const {
+    report,
+    isLoading: loadingReport,
+    canSubmit,
+    canApprove,
+    isSubmitting,
+    isApproving,
+    submitReport,
+    approveReport,
+    uploadRefereeDocument,
+  } = useMatchCenterReport({ matchId: matchIdValue })
 
   const [showAddGoal, setShowAddGoal] = useState(false)
 
@@ -471,6 +483,18 @@ export function MatchReportPage() {
                 )}
               </div>
             </Card>
+
+            <MatchRefereeReport
+              match={match}
+              report={report}
+              canSubmit={canSubmit}
+              canApprove={canApprove}
+              isSubmitting={isSubmitting}
+              isApproving={isApproving}
+              onSubmit={submitReport}
+              onApprove={approveReport}
+              onUpload={uploadRefereeDocument}
+            />
 
             {/* Goals Section */}
             <div className="space-y-md">

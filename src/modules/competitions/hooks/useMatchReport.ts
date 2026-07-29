@@ -5,6 +5,7 @@ import { MATCH_QUERY_KEYS } from './useMatchCenter'
 import { useCompetitionAccess } from './useCompetitionAccess'
 import { useAuth } from '@/app/providers'
 import { toast } from 'sonner'
+import type { MatchReport } from '../types'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ export interface MatchCenterReportFormData {
 }
 
 export interface UseMatchReportReturn {
-  report: any | null
+  report: MatchReport | null
   submitReport: (data: MatchCenterReportFormData) => Promise<void>
   approveReport: () => Promise<void>
   uploadRefereeDocument: (file: File) => Promise<string>
