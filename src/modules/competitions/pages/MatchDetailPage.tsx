@@ -1,5 +1,5 @@
-import { useState, Suspense } from 'react'
-import { useParams, Link, useLocation, Navigate } from 'react-router-dom'
+import { useState, Suspense, lazy } from 'react'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
   Users,
@@ -21,6 +21,10 @@ import { useMatchStats } from '../hooks/useMatchStats'
 import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
 import type { Match } from '../types'
 import { MatchScoreboard, MatchTimeline, MatchStatsPanel } from '../components'
+
+// Lazy load heavier components
+const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
+const MatchReportPage = lazy(() => import('./MatchReportPage').then(m => ({ default: m.MatchReportPage })))
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
 
@@ -46,7 +50,7 @@ function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean 
   return userRoles.some(role => requiredRoles.includes(role))
 }
 
-// ─── Match Detail Page ────────────────────────────────────────────────────────
+// ─── Match Detail Page (Hub Unificado) ───────────────────────────────────────
 
 export function MatchDetailPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
@@ -57,7 +61,7 @@ export function MatchDetailPage() {
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
 
-  // Determine initial tab from URL
+  // Determine initial tab from URL or state
   const getInitialTab = (): TabId => {
     if (location.pathname.includes('/lineup')) return 'lineup'
     if (location.pathname.includes('/events')) return 'events'
@@ -160,12 +164,15 @@ export function MatchDetailPage() {
     switch (activeTab) {
       case 'lineup':
         return (
-          <Navigate
-            to={isDashboard
-              ? competitionRoutes.adminMatchLineup(competitionId, matchIdValue)
-              : competitionRoutes.matchLineup(competitionId, matchIdValue)}
-            replace
-          />
+          <Suspense
+            fallback={
+              <div className="flex min-h-[40vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            }
+          >
+            <MatchLineupPage />
+          </Suspense>
         )
 
       case 'events':
@@ -203,12 +210,15 @@ export function MatchDetailPage() {
 
       case 'report':
         return (
-          <Navigate
-            to={isDashboard
-              ? competitionRoutes.adminMatchReport(competitionId, matchIdValue)
-              : competitionRoutes.matchReport(competitionId, matchIdValue)}
-            replace
-          />
+          <Suspense
+            fallback={
+              <div className="flex min-h-[40vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            }
+          >
+            <MatchReportPage />
+          </Suspense>
         )
 
       default:

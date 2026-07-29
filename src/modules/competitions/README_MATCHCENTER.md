@@ -29,9 +29,9 @@ Módulo de MatchCenter para gestão de partidas, escalações, eventos e estatí
 - [x] `MatchRefereeReport.tsx` — Workflow árbitro com upload PDF
 - [x] `MatchEventsPanel.tsx` — Painel live com atualizações automáticas
 
-### ✅ Fase 4 — Páginas (PARCIAL)
-- [x] `MatchDetailPage.tsx` — Hub unificado com tabs (NOVO)
-- [x] `MatchCenterPage.tsx` — Página de detalhe de partida
+### ✅ Fase 4 — Páginas (COMPLETA)
+- [x] `MatchDetailPage.tsx` — Hub unificado com tabs (Escalação/Eventos/Stats/Relatório)
+- [x] `MatchCenterPage.tsx` — Centro de jogos por jornada (lista)
 - [x] `MatchLineupPage.tsx` — Escalações com drag & drop
 - [x] `MatchReportPage.tsx` — Relatório árbitro com workflow
 
@@ -40,8 +40,8 @@ Módulo de MatchCenter para gestão de partidas, escalações, eventos e estatí
 ```
 src/modules/competitions/
 ├── pages/
-│   ├── MatchDetailPage.tsx          ← Hub unificado com tabs
-│   ├── MatchCenterPage.tsx          ← Detalhe de partida
+│   ├── MatchDetailPage.tsx          ← Hub unificado com tabs (NOVO)
+│   ├── MatchCenterPage.tsx          ← Centro de jogos por jornada (NOVO)
 │   ├── MatchLineupPage.tsx          ← Escalações
 │   └── MatchReportPage.tsx          ← Relatório árbitro
 ├── components/
@@ -75,6 +75,8 @@ src/modules/competitions/
 |------|-----------|-----------|
 | `/competitions/:compId/matches/:matchId` | MatchDetailPage | Hub unificado com tabs |
 | `/dashboard/competitions/:compId/matches/:matchId` | MatchDetailPage | Dashboard (admin) |
+| `/competitions/:compId/match-center` | MatchCenterPage | Centro de jogos por jornada |
+| `/dashboard/competitions/:compId/match-center` | MatchCenterPage | Dashboard (admin) |
 | `/competitions/:compId/matches/:matchId/lineup` | MatchLineupPage | Escalações |
 | `/competitions/:compId/matches/:matchId/report` | MatchReportPage | Relatório árbitro |
 
@@ -86,6 +88,15 @@ src/modules/competitions/
 - ✅ Indicador de atualização ao vivo
 - ✅ Navegação por tabs com role-based access control
 - ✅ Timeline de eventos com minuto ao vivo
+- ✅ Lazy loading de componentes pesados (MatchLineupPage, MatchReportPage)
+
+### Match Center Page (Centro de Jogos)
+- ✅ Lista de partidas por jornada
+- ✅ Filtro por status (Ao vivo/Seguintes/Finalizados/Todos)
+- ✅ Jornada selector
+- ✅ Card de partida com estado visual
+- ✅ Countdown para partidas agendadas
+- ✅ Live pulse para partidas ao vivo
 
 ### Eventos (Live Feed)
 - ✅ Polling a cada 15s quando partida ao vivo
