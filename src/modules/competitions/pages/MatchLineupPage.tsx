@@ -23,6 +23,7 @@ import {
   useLockLineup,
 } from '../hooks/useCompetitionAdvanced'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
+import { matchApi } from '../services/match.api'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { MatchLineupGrid } from '../components'
 
@@ -212,14 +213,16 @@ interface LineupSectionProps {
   isHome: boolean
   match: Match
   editable?: boolean
+  onSave?: (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => Promise<void>
 }
 
-function LineupSection({ lineup, isHome, match, editable = false }: LineupSectionProps) {
+function LineupSection({ lineup, isHome, match, editable = false, onSave }: LineupSectionProps) {
   const starters = lineup.starters || lineup.lineup_players?.filter((p) => p.status === 'starter') || []
   const substitutes = lineup.substitutes || lineup.lineup_players?.filter((p) => p.status === 'substitute') || []
   const [starterPlayers, setStarterPlayers] = useState(starters)
   const [substitutePlayers, setSubstitutePlayers] = useState(substitutes)
   const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
   const statusConfig = LINEUP_STATUS_CONFIG[lineup.status] || LINEUP_STATUS_CONFIG.draft
   const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
   const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
@@ -237,6 +240,12 @@ function LineupSection({ lineup, isHome, match, editable = false }: LineupSectio
     if (target === 'starter') setStarterPlayers(nextTarget)
     else setSubstitutePlayers(nextTarget)
     setDraggedPlayer(null)
+  }
+  const save = async () => {
+    if (!onSave) return
+    setIsSaving(true)
+    try { await onSave(lineup.club, lineup.formation || '4-4-2', starterPlayers, substitutePlayers) }
+    finally { setIsSaving(false) }
   }
 
   return (
@@ -293,6 +302,15 @@ function LineupSection({ lineup, isHome, match, editable = false }: LineupSectio
       )}
 
       {/* Empty state */}
+      {editable && onSave && (
+        <div className="flex justify-end">
+          <Button type="button" variant="primary" size="sm" onClick={() => void save()} disabled={isSaving}>
+            {isSaving ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Check className="mr-xs h-4 w-4" />}
+            Guardar escalação
+          </Button>
+        </div>
+      )}
+
       {starterPlayers.length === 0 && substitutePlayers.length === 0 && (
         <Card variant="flat" padding="lg">
           <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -333,6 +351,18 @@ export function MatchLineupPage() {
   const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club)
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const saveLineup = async (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => {
+    const players = [...starters.map(player => ({ ...player, status: 'starter' as const })), ...substitutes.map(player => ({ ...player, status: 'substitute' as const }))].map(player => ({
+      player_id: player.playerId || player.player_id || player.player?.id || player.id,
+      status: player.status,
+      position: player.positionSpecific || player.position,
+      shirt_number: player.playerNumber || player.shirt_number || 0,
+      is_captain: player.is_captain ?? false,
+      is_goalkeeper: player.position === 'GK' || player.is_goalkeeper,
+      formation_position: player.formation_position,
+    }))
+    await matchApi.submitLineup(matchIdValue, teamId, { formation, players })
+  }
 
   if (loadingComp || loadingMatches) {
     const LoadingComponent = () => (
@@ -424,7 +454,7 @@ export function MatchLineupPage() {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup ? (
-        <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} />
+        <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
                 <div className="flex flex-col items-center gap-sm py-lg text-center">
                   <Users className="h-10 w-10 text-on-surface-variant/30" />
@@ -438,7 +468,7 @@ export function MatchLineupPage() {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
                 <div className="flex flex-col items-center gap-sm py-lg text-center">
                   <Users className="h-10 w-10 text-on-surface-variant/30" />
