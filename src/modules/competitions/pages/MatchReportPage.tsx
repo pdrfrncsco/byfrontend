@@ -339,6 +339,7 @@ export function MatchReportPage() {
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
+  // Loading state
   if (loadingComp || loadingMatches) {
     const LoadingComponent = () => (
       <div className="flex min-h-[40vh] items-center justify-center">
@@ -364,6 +365,7 @@ export function MatchReportPage() {
     )
   }
 
+  // Guard: Match must exist
   if (!match) {
     const NotFoundComponent = () => (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
@@ -390,6 +392,41 @@ export function MatchReportPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
         <NotFoundComponent />
+      </div>
+    )
+  }
+
+  // Pre-condition: Match must be in progress or finished to access report
+  const canAccessReport = match.status === 'live' || match.status === 'halftime' || match.status === 'finished'
+  if (!canAccessReport) {
+    const NotAccessibleComponent = () => (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
+        <Clock className="h-12 w-12 text-warning opacity-70" />
+        <p className="text-lg font-medium text-on-surface">Relatório não disponível</p>
+        <p className="text-sm text-on-surface-variant text-center max-w-md">
+          O relatório só pode ser acedido após o jogo ter iniciado ou terminado.
+        </p>
+        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+          <Button variant="secondary" size="sm">
+            Voltar ao jogo
+          </Button>
+        </Link>
+      </div>
+    )
+    if (isDashboard) {
+      return (
+        <DashboardLayout
+          title="Relatório não disponível"
+          dashboardType="competition"
+          sidebarLinks={sidebarLinks}
+        >
+          <NotAccessibleComponent />
+        </DashboardLayout>
+      )
+    }
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+        <NotAccessibleComponent />
       </div>
     )
   }

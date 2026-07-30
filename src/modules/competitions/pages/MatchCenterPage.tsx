@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import { Calendar, Activity, Filter, ArrowLeft } from 'lucide-react'
+import { Calendar, Activity, Filter, ArrowLeft, Loader2 } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
@@ -9,7 +9,7 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
-import { MatchCard } from '../components'
+import { MatchCard, CompetitionSkeleton } from '../components'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
 
@@ -42,6 +42,7 @@ export function MatchCenterPage() {
     liveMatches,
     upcomingMatches,
     finishedMatches,
+    isLoading: loadingMatches,
   } = useMatchCenter({ competitionId })
 
   const [statusFilter, setStatusFilter] = useState<MatchStatus[] | null>(null)
@@ -50,10 +51,21 @@ export function MatchCenterPage() {
 
   // ─── Loading State ──────────────────────────────────────────────────────
 
-  if (loadingComp) {
+  if (loadingComp || loadingMatches) {
     const LoadingComponent = () => (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Activity className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-lg">
+        {/* Jornada selector skeleton */}
+        <div className="flex gap-xs">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-8 w-20 animate-pulse rounded-full bg-surface-container-high" />
+          ))}
+        </div>
+        {/* Match cards skeleton */}
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="h-32 animate-pulse rounded-xl bg-surface-container-high" />
+          ))}
+        </div>
       </div>
     )
     if (isDashboard) {
@@ -69,7 +81,7 @@ export function MatchCenterPage() {
       )
     }
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="min-h-screen bg-background p-lg">
         <LoadingComponent />
       </div>
     )

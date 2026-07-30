@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Activity } from 'lucide-react'
 import type { Match } from '../types'
 import { MatchStatusBadge } from './MatchStatusBadge'
@@ -9,8 +10,19 @@ export interface MatchScoreboardProps {
 }
 
 function TeamBadge({ name, logo }: { name: string; logo?: string | null }) {
-  if (logo) return <img src={logo} alt="" className="h-12 w-12 rounded-full object-cover" />
-  return <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-container/20 text-lg font-bold text-primary">{name.charAt(0)}</span>
+  const [logoError, setLogoError] = useState(false)
+  
+  if (logo && !logoError) {
+    return (
+      <img 
+        src={logo} 
+        alt="" 
+        className="h-12 w-12 rounded-full object-cover" 
+        onError={() => setLogoError(true)}
+      />
+    )
+  }
+  return <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-container/20 text-lg font-bold text-primary">{name?.charAt(0) || '?'}</span>
 }
 
 export function MatchScoreboard({ match, compact = false, className = '' }: MatchScoreboardProps) {

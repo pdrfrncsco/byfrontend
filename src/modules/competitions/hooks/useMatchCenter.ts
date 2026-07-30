@@ -80,6 +80,13 @@ export function useMatchCenter(options: UseMatchCenterOptions): UseMatchCenterRe
     queryFn: () => competitionApi.listMatches(competitionId, params),
     enabled: Boolean(competitionId),
     staleTime: 60_000,
+    refetchInterval: (query) => {
+      // Only poll if there are live matches
+      const data = query.state.data as Match[] | undefined
+      if (!data) return false
+      const hasLive = data.some(m => m.status === 'live' || m.status === 'halftime')
+      return hasLive ? 30_000 : false // Poll every 30s when live matches exist
+    },
   })
 
   const matches = (query.data ?? []) as Match[]
@@ -95,7 +102,7 @@ export function useMatchCenter(options: UseMatchCenterOptions): UseMatchCenterRe
     m.status === 'finished' || m.status === 'walkover' || m.status === 'cancelled' || m.status === 'postponed'
   )
 
-  // Group into rounds
+  // Group into rounds with safe fallback
   const roundMap = new Map<number, Match[]>()
   for (const match of matches) {
     const rn = match.roundNumber ?? match.round_number ?? 0

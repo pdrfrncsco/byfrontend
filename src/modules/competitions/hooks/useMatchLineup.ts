@@ -1,7 +1,8 @@
 // src/modules/competitions/hooks/useMatchLineup.ts
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { matchApi } from '../services/match.api'
+import { getClubSquad } from '@/modules/clubs/services'
 import { MATCH_QUERY_KEYS } from './useMatchCenter'
 import type { MatchLineup, LineupPlayer } from '../types'
 import { toast } from 'sonner'
@@ -65,6 +66,8 @@ export interface UseMatchLineupReturn {
   homeLineupDraft: Partial<MatchLineup>
   awayLineupDraft: Partial<MatchLineup>
   eligiblePlayers: LineupPlayer[]
+  homeSquad: LineupPlayer[]
+  awaySquad: LineupPlayer[]
   setLineup: (teamId: string, lineup: Partial<MatchLineup>) => void
   submitLineup: (teamId: string) => Promise<void>
   lockLineup: (teamId: string) => Promise<void>
@@ -74,7 +77,55 @@ export interface UseMatchLineupReturn {
   isSubmitting: boolean
   isLocking: boolean
   isLoading: boolean
+  isSquadLoading: boolean
   error: Error | null
+}
+
+// ─── Helper to map squad player to lineup player ─────────────────────────────
+
+function mapSquadPlayerToLineupPlayer(player: any): LineupPlayer {
+  // Map position from backend to frontend format
+  let position: 'GK' | 'DF' | 'MF' | 'FW' = 'MF'
+  const posUpper = (player.position || '').toUpperCase()
+  
+  if (posUpper.includes('GK') || posUpper.includes('GR') || posUpper === 'GOALKEEPER') {
+    position = 'GK'
+  } else if (['CB', 'LB', 'RB', 'LWB', 'RWB', 'DF', 'DEF'].some(p => posUpper.includes(p))) {
+    position = 'DF'
+  } else if (['CM', 'CDM', 'CAM', 'LM', 'RM', 'MF', 'MID'].some(p => posUpper.includes(p))) {
+    position = 'MF'
+  } else if (['ST', 'CF', 'LW', 'RW', 'FW', 'ATT', 'FWD'].some(p => posUpper.includes(p))) {
+    position = 'FW'
+  }
+
+  return {
+    id: player.id,
+    playerId: player.id,
+    playerName: player.full_name || player.display_name || '',
+    playerNumber: player.jersey_number || player.shirt_number || 0,
+    position,
+    positionSpecific: player.position,
+    eligible: !player.is_suspended && !player.has_pending_transfer,
+    eligibilityWarning: player.is_suspended
+      ? `Suspenso${player.suspension_ends ? ` até ${new Date(player.suspension_ends).toLocaleDateString('pt-PT')}` : ''}`
+      : player.has_pending_transfer
+      ? 'Transferência pendente'
+      : undefined,
+    avatarUrl: player.avatar_url || player.avatar,
+    // Legacy fields
+    player: {
+      id: player.id,
+      full_name: player.full_name || player.display_name || '',
+      position: player.position,
+      date_of_birth: player.date_of_birth,
+      nationality: player.nationality,
+    },
+    player_id: player.id,
+    shirt_number: player.jersey_number || player.shirt_number || 0,
+    status: 'substitute' as const,
+    is_captain: player.is_captain || false,
+    is_goalkeeper: position === 'GK',
+  }
 }
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
@@ -83,7 +134,7 @@ export function useMatchLineup({
   matchId,
   homeTeamId,
   awayTeamId,
-  eligiblePlayers = [],
+  eligiblePlayers: externalEligiblePlayers = [],
 }: {
   matchId: string
   homeTeamId: string
@@ -110,6 +161,41 @@ export function useMatchLineup({
     staleTime: 5 * 60_000,
   })
 
+  // ─── Fetch squad for each team ────────────────────────────────────────────
+  const homeSquadQuery = useQuery({
+    queryKey: ['clubs', homeTeamId, 'squad'],
+    queryFn: () => getClubSquad(homeTeamId),
+    enabled: Boolean(homeTeamId),
+    staleTime: 10 * 60_000,
+  })
+
+  const awaySquadQuery = useQuery({
+    queryKey: ['clubs', awayTeamId, 'squad'],
+    queryFn: () => getClubSquad(awayTeamId),
+    enabled: Boolean(awayTeamId),
+    staleTime: 10 * 60_000,
+  })
+
+  // ─── Map squad players to lineup players ──────────────────────────────────
+  const homeSquad = useMemo(() => {
+    const squad = homeSquadQuery.data ?? []
+    return squad.map(mapSquadPlayerToLineupPlayer)
+  }, [homeSquadQuery.data])
+
+  const awaySquad = useMemo(() => {
+    const squad = awaySquadQuery.data ?? []
+    return squad.map(mapSquadPlayerToLineupPlayer)
+  }, [awaySquadQuery.data])
+
+  // Combine both squads for general eligible players list
+  const eligiblePlayers = useMemo(() => {
+    if (externalEligiblePlayers.length > 0) {
+      return externalEligiblePlayers
+    }
+    return [...homeSquad, ...awaySquad]
+  }, [externalEligiblePlayers, homeSquad, awaySquad])
+
+  // ─── Sync drafts with fetched lineups ────────────────────────────────────
   useEffect(() => {
     if (homeQuery.data && Object.keys(homeLineupDraft).length === 0) {
       setHomeLineupDraft(homeQuery.data)
@@ -200,6 +286,8 @@ export function useMatchLineup({
     homeLineupDraft,
     awayLineupDraft,
     eligiblePlayers,
+    homeSquad,
+    awaySquad,
     setLineup,
     submitLineup: (teamId: string) => submitMutation.mutateAsync(teamId),
     lockLineup: (teamId: string) => lockMutation.mutateAsync(teamId),
@@ -209,6 +297,7 @@ export function useMatchLineup({
     isSubmitting: submitMutation.isPending,
     isLocking: lockMutation.isPending,
     isLoading: homeQuery.isLoading || awayQuery.isLoading,
+    isSquadLoading: homeSquadQuery.isLoading || awaySquadQuery.isLoading,
     error: (homeQuery.error || awayQuery.error) as Error | null,
   }
 }

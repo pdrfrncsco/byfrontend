@@ -61,6 +61,21 @@ export function MatchDetailPage() {
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
 
+  // Guard: redirect if no matchId or competitionId
+  if (!matchId || !compId) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+        <AlertCircle className="h-12 w-12 text-error opacity-70" />
+        <p className="text-lg font-medium text-on-surface">ID do jogo não especificado</p>
+        <Link to="/competitions">
+          <Button variant="secondary" size="sm">
+            Voltar às competições
+          </Button>
+        </Link>
+      </div>
+    )
+  }
+
   // Determine initial tab from URL or state
   const getInitialTab = (): TabId => {
     if (location.pathname.includes('/lineup')) return 'lineup'

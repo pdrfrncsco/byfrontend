@@ -80,12 +80,21 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
         {/* Home Team */}
         <div className="flex flex-1 items-center gap-sm overflow-hidden">
           {homeLogo ? (
-            <img src={homeLogo} alt={homeName} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
-          ) : (
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary">
-              {homeName.charAt(0)}
-            </div>
-          )}
+            <img 
+              src={homeLogo} 
+              alt={homeName} 
+              className="h-8 w-8 flex-shrink-0 rounded-full object-cover" 
+              onError={(e) => { 
+                e.currentTarget.onerror = null
+                e.currentTarget.src = '' 
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove('hidden')
+              }}
+            />
+          ) : null}
+          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? 'hidden' : ''}`}>
+            {homeName?.charAt(0) || '?'}
+          </div>
           <span className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
             {homeName}
           </span>
@@ -100,12 +109,21 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
             {awayName}
           </span>
           {awayLogo ? (
-            <img src={awayLogo} alt={awayName} className="h-8 w-8 flex-shrink-0 rounded-full object-cover" />
-          ) : (
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary">
-              {awayName.charAt(0)}
-            </div>
-          )}
+            <img 
+              src={awayLogo} 
+              alt={awayName} 
+              className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
+              onError={(e) => { 
+                e.currentTarget.onerror = null
+                e.currentTarget.src = '' 
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove('hidden')
+              }}
+            />
+          ) : null}
+          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${awayLogo ? 'hidden' : ''}`}>
+            {awayName?.charAt(0) || '?'}
+          </div>
         </div>
       </div>
 
