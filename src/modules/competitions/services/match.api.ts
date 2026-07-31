@@ -93,15 +93,16 @@ export function mapMatchEventFromBackend(data: any): MatchEvent {
 export function mapLineupPlayerFromBackend(data: any): LineupPlayer {
   if (!data) return data
 
+  // Determine position: prefer lineup position over player's primary position
   let position: 'GK' | 'DF' | 'MF' | 'FW' = 'MF'
-  const posUpper = (data.player?.position || data.position || '').toUpperCase()
-  if (data.is_goalkeeper || posUpper === 'GK' || posUpper === 'GOLO') {
+  const posUpper = (data.position || data.player?.position || '').toUpperCase()
+  if (data.is_goalkeeper || posUpper === 'GK' || posUpper === 'GOLO' || posUpper.includes('GK')) {
     position = 'GK'
-  } else if (['DF', 'LD', 'LE', 'CB'].includes(posUpper)) {
+  } else if (['CB', 'LB', 'RB', 'DF', 'LWB', 'RWB'].some(k => posUpper.includes(k))) {
     position = 'DF'
-  } else if (['MF', 'MC', 'MD', 'ME', 'CM', 'DM', 'AM'].includes(posUpper)) {
+  } else if (['CM', 'CDM', 'CAM', 'LM', 'RM', 'MF'].some(k => posUpper.includes(k))) {
     position = 'MF'
-  } else if (['FW', 'PL', 'ST', 'CF', 'LW', 'RW'].includes(posUpper)) {
+  } else if (['ST', 'CF', 'LW', 'RW', 'FW'].some(k => posUpper.includes(k))) {
     position = 'FW'
   }
 
@@ -114,6 +115,10 @@ export function mapLineupPlayerFromBackend(data: any): LineupPlayer {
     eligible: data.eligible !== undefined ? data.eligible : true,
     eligibilityWarning: data.eligibility_warning || undefined,
     avatarUrl: data.player?.avatar || undefined,
+    is_goalkeeper: data.is_goalkeeper || position === 'GK',
+    is_captain: data.is_captain || false,
+    shirt_number: data.shirt_number,
+    status: data.status,
     
     // Legacy fields
     ...data,
@@ -124,9 +129,20 @@ export function mapLineupPlayerFromBackend(data: any): LineupPlayer {
 export function mapLineupFromBackend(data: any): MatchLineup {
   if (!data) return data
 
-  const players = (data.lineup_players || []).map(mapLineupPlayerFromBackend)
-  const startingXI = players.filter((p: any) => p.status === 'starter')
-  const substitutes = players.filter((p: any) => p.status === 'substitute')
+  // Backend may return either lineup_players, or starters/substitutes directly
+  let startingXI: LineupPlayer[] = []
+  let substitutes: LineupPlayer[] = []
+
+  if (data.starters && data.substitutes) {
+    // New format from LineupSubmissionDetailSerializer
+    startingXI = data.starters.map(mapLineupPlayerFromBackend)
+    substitutes = data.substitutes.map(mapLineupPlayerFromBackend)
+  } else if (data.lineup_players) {
+    // Legacy format with lineup_players array
+    const players = data.lineup_players.map(mapLineupPlayerFromBackend)
+    startingXI = players.filter((p: any) => p.status === 'starter')
+    substitutes = players.filter((p: any) => p.status === 'substitute')
+  }
 
   return {
     matchId: data.match || '',
