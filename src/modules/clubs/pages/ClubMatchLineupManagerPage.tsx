@@ -210,6 +210,10 @@ export default function ClubMatchLineupManagerPage() {
         throw new Error(`O onze inicial deve conter exatamente 11 titulares (atual: ${starters.length}).`)
       }
 
+      if (substitutes.length > 12) {
+        throw new Error(`São permitidos no máximo 12 suplentes no banco de reservas (atual: ${substitutes.length}).`)
+      }
+
       const hasGK = starters.some((p) => p.position === 'GK' || p.is_goalkeeper)
       if (!hasGK) {
         throw new Error('O onze inicial deve incluir um Guarda-redes (GK).')
@@ -244,7 +248,8 @@ export default function ClubMatchLineupManagerPage() {
       toast.success('Convocatória e Escalação submetidas com sucesso!')
     },
     onError: (err: any) => {
-      toast.error(err?.message || err?.response?.data?.message || 'Erro ao submeter escalação.')
+      const serverMessage = err?.response?.data?.error || err?.response?.data?.detail || err?.response?.data?.message || err?.message || 'Erro ao submeter escalação.'
+      toast.error(serverMessage)
     },
   })
 
