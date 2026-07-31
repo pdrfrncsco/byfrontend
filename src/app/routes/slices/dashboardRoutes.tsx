@@ -34,6 +34,7 @@ const ClubDocumentsPage = lazy(() => import('@/modules/clubs/pages/ClubDocuments
 const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPage'))
 const ClubSquadPage = lazy(() => import('@/modules/clubs/pages/ClubSquadPage'))
 const ClubCompetitionsPage = lazy(() => import('@/modules/clubs/pages/ClubCompetitionsPage'))
+const ClubMatchLineupManagerPage = lazy(() => import('@/modules/clubs/pages/ClubMatchLineupManagerPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
 const ClubTransferDetailPage = lazy(() => import('@/modules/transfers/pages/ClubTransferDetailPage'))
@@ -289,6 +290,14 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute>
             <Suspense fallback={<RouteFallback />}><ClubCompetitionsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={clubRoutes.matchLineup(':matchId')}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>
+            <Suspense fallback={<RouteFallback />}><ClubMatchLineupManagerPage /></Suspense>
           </ProtectedRoute>
         }
       />

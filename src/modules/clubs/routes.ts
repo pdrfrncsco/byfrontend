@@ -15,5 +15,6 @@ export const clubRoutes = {
   playerRequests: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS,
   squad: ROUTES.DASHBOARD_CLUB_SQUAD,
   competitions: ROUTES.DASHBOARD_CLUB_COMPETITIONS,
+  matchLineup: (matchId: string) => ROUTES.DASHBOARD_CLUB_MATCH_LINEUP(matchId),
 }
 

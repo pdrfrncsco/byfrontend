@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Calendar, CalendarDays, CheckCircle2, ChevronRight, Filter, Shield, Trophy } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Calendar, CalendarDays, CheckCircle2, ChevronRight, Filter, Shield, Trophy, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+import { clubRoutes } from '@/modules/clubs/routes'
 import type { Competition, Match, Standing } from '@/modules/competitions/types'
 
 interface ClubCompetitionsViewProps {
@@ -429,6 +432,15 @@ export function ClubCompetitionsView({
                           Estádio / Local: <span className="font-semibold text-on-surface">{match.venue}</span>
                         </div>
                       )}
+
+                      <div className="pt-xs flex justify-end">
+                        <Button asChild variant="primary" size="sm" className="w-full sm:w-auto">
+                          <Link to={clubRoutes.matchLineup(match.id)}>
+                            <Users className="mr-xs h-3.5 w-3.5" />
+                            <span>Escalação & Convocados</span>
+                          </Link>
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 )

@@ -453,29 +453,51 @@ export function MatchLineupPage() {
           <div className="space-y-2xl">
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
-              {homeLineup ? (
-        <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+              {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
+                <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
-                <div className="flex flex-col items-center gap-sm py-lg text-center">
-                  <Users className="h-10 w-10 text-on-surface-variant/30" />
-                  <p className="font-medium text-on-surface-variant">
-                    Escalação do {match.home_club_name} não disponível
-                  </p>
-                </div>
+                <LineupSection
+                  lineup={{
+                    id: '',
+                    match: match.id,
+                    club: match.home_club,
+                    formation: '4-3-3',
+                    status: 'draft',
+                    submitted_at: '',
+                    starters: [],
+                    substitutes: [],
+                    lineup_players: [],
+                  } as unknown as LineupSubmission}
+                  isHome
+                  match={match}
+                  editable={isAdmin && match.status !== 'live' && match.status !== 'finished'}
+                  onSave={saveLineup}
+                />
               )}
             </Card>
 
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
-              {awayLineup ? (
+              {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
                 <LineupSection lineup={awayLineup} isHome={false} match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
-                <div className="flex flex-col items-center gap-sm py-lg text-center">
-                  <Users className="h-10 w-10 text-on-surface-variant/30" />
-                  <p className="font-medium text-on-surface-variant">
-                    Escalação do {match.away_club_name} não disponível
-                  </p>
-                </div>
+                <LineupSection
+                  lineup={{
+                    id: '',
+                    match: match.id,
+                    club: match.away_club,
+                    formation: '4-3-3',
+                    status: 'draft',
+                    submitted_at: '',
+                    starters: [],
+                    substitutes: [],
+                    lineup_players: [],
+                  } as unknown as LineupSubmission}
+                  isHome={false}
+                  match={match}
+                  editable={isAdmin && match.status !== 'live' && match.status !== 'finished'}
+                  onSave={saveLineup}
+                />
               )}
             </Card>
 
