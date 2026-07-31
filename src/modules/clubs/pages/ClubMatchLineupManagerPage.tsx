@@ -148,9 +148,12 @@ export default function ClubMatchLineupManagerPage() {
     const subsMap = new Map((existingLineup?.substitutes ?? []).map((p) => [p.playerId || p.player_id, p]))
 
     return clubSquad.map((member: any) => {
-      const pId = member.id || member.player_id
-      const existingStarter = startersMap.get(pId)
-      const existingSub = subsMap.get(pId)
+      // member.id = ClubMember UUID (used as UI key)
+      // member.player_id = Player UUID (must be sent to lineup API)
+      const memberId = member.id
+      const playerId = member.player_id || member.id  // fallback for legacy records
+      const existingStarter = startersMap.get(playerId) || startersMap.get(memberId)
+      const existingSub = subsMap.get(playerId) || subsMap.get(memberId)
 
       const isStarter = Boolean(existingStarter)
       const isCalledUp = isStarter || Boolean(existingSub)
@@ -164,8 +167,8 @@ export default function ClubMatchLineupManagerPage() {
       else if (['ST', 'CF', 'LW', 'RW', 'FW'].some((k) => posUpper.includes(k))) pos = 'FW'
 
       return {
-        id: pId,
-        playerId: pId,
+        id: memberId,          // ClubMember UUID — usado como chave de UI
+        playerId: playerId,    // Player UUID — enviado para a API de lineup
         playerName: member.full_name || member.display_name || 'Jogador',
         playerNumber: existingStarter?.shirt_number || existingSub?.shirt_number || member.jersey_number || member.shirt_number || 0,
         position: pos,

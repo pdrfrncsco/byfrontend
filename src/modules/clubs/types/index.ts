@@ -82,6 +82,7 @@ export interface ClubKpis {
 
 export interface ClubSquadMember {
   id: string
+  player_id?: string | null
   display_name: string
   jersey_number?: number | null
   position?: string | null
