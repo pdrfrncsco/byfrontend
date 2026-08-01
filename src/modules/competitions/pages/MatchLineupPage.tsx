@@ -336,6 +336,9 @@ export function MatchLineupPage() {
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
 
+  // Only allow editing when on dashboard routes (club/org admin flows happen in dashboard)
+  const allowEditing = isAdmin && isDashboard
+
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const { data: lineups = [], isLoading: loadingLineups } = useLineups(matchIdValue)
@@ -346,9 +349,10 @@ export function MatchLineupPage() {
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
 
-  // Find home and away lineups
-  const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club)
-  const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club)
+  // Find home and away lineups — only show submissions that were actually submitted/approved
+  const VISIBLE_STATUSES = new Set(['submitted', 'confirmed', 'locked'])
+  const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && VISIBLE_STATUSES.has(l.status))
+  const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && VISIBLE_STATUSES.has(l.status))
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
   const saveLineup = async (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => {
@@ -422,26 +426,7 @@ export function MatchLineupPage() {
   const pageContent = (
     <>
       {/* Header */}
-      <div className="bg-surface-container rounded-xl mb-lg">
-        <div className="mx-auto max-w-4xl px-lg py-lg">
-          {/* Breadcrumb */}
-          <Link
-            to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}
-            className="mb-md inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar ao jogo
-          </Link>
-
-          <h1 className="flex items-center gap-sm text-xl font-semibold text-on-surface">
-            <Users className="h-5 w-5" />
-            Escalações
-          </h1>
-          <p className="mt-xs text-sm text-on-surface-variant">
-            {match.home_club_name} vs {match.away_club_name}
-          </p>
-        </div>
-      </div>
+ 
 
       {/* Main Content */}
       <div className="mx-auto max-w-4xl px-lg py-xl">
@@ -454,7 +439,7 @@ export function MatchLineupPage() {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={homeLineup} isHome match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
                 <LineupSection
                   lineup={{
@@ -470,7 +455,7 @@ export function MatchLineupPage() {
                   } as unknown as LineupSubmission}
                   isHome
                   match={match}
-                  editable={isAdmin && match.status !== 'live' && match.status !== 'finished'}
+              editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
                   onSave={saveLineup}
                 />
               )}
@@ -479,7 +464,7 @@ export function MatchLineupPage() {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={isAdmin && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
               ) : (
                 <LineupSection
                   lineup={{
@@ -495,7 +480,7 @@ export function MatchLineupPage() {
                   } as unknown as LineupSubmission}
                   isHome={false}
                   match={match}
-                  editable={isAdmin && match.status !== 'live' && match.status !== 'finished'}
+                  editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
                   onSave={saveLineup}
                 />
               )}
