@@ -23,6 +23,12 @@ import {
   useClubPublicStandings,
 } from '@/modules/clubs/hooks/useClubs'
 
+// Helper function to detect UUID format
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
+
 function formatDate(value?: string | null) {
   if (!value) return 'N/A'
   const date = new Date(value)
@@ -43,6 +49,9 @@ export default function ClubDetailPage() {
   const navigate = useNavigate()
   const clubSlug = id || ''
 
+  // If UUID is detected in the URL, extract slug from the data and redirect
+  const shouldFetchByUuid = isUUID(clubSlug)
+  
   const clubQuery = useClub(clubSlug)
   const kpisQuery = useClubKpis(clubSlug)
   const squadQuery = useClubSquad(clubSlug)
@@ -63,6 +72,13 @@ export default function ClubDetailPage() {
   const competitions = competitionsQuery.data ?? []
   const matches = matchesQuery.data ?? []
   const standings = standingsQuery.data ?? []
+
+  // Redirect to slug if UUID was detected and club data is loaded
+  useMemo(() => {
+    if (shouldFetchByUuid && club?.slug && club.slug !== clubSlug) {
+      navigate(`/clubs/${club.slug}`, { replace: true })
+    }
+  }, [shouldFetchByUuid, club?.slug, clubSlug, navigate])
 
 
   const errorStatus = useMemo(() => {
