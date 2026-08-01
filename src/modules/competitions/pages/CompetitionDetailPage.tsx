@@ -107,6 +107,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
                   key={m.id}
                   match={m}
                   competitionId={competitionId}
+                  showLink={true}
                 />
               ))}
             </div>
