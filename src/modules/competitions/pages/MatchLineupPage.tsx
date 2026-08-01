@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -217,13 +217,26 @@ interface LineupSectionProps {
 }
 
 function LineupSection({ lineup, isHome, match, editable = false, onSave }: LineupSectionProps) {
-  const starters = lineup.starters || lineup.lineup_players?.filter((p) => p.status === 'starter') || []
-  const substitutes = lineup.substitutes || lineup.lineup_players?.filter((p) => p.status === 'substitute') || []
-  const [starterPlayers, setStarterPlayers] = useState(starters)
-  const [substitutePlayers, setSubstitutePlayers] = useState(substitutes)
+  // Helpers to extract starters/substitutes robustly (normalize status casing)
+  const extractStarters = () => (
+    lineup.starters ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'starter') ?? []
+  )
+  const extractSubstitutes = () => (
+    lineup.substitutes ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'substitute') ?? []
+  )
+
+  const [starterPlayers, setStarterPlayers] = useState<LineupPlayer[]>(extractStarters())
+  const [substitutePlayers, setSubstitutePlayers] = useState<LineupPlayer[]>(extractSubstitutes())
+
+  // Sync internal state when props change (fixes lifecycle anti-pattern)
+  useEffect(() => {
+    setStarterPlayers(extractStarters())
+    setSubstitutePlayers(extractSubstitutes())
+  }, [lineup])
+
   const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const statusConfig = LINEUP_STATUS_CONFIG[lineup.status] || LINEUP_STATUS_CONFIG.draft
+  const statusConfig = LINEUP_STATUS_CONFIG[String(lineup.status).toLowerCase()] || LINEUP_STATUS_CONFIG.draft
   const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
   const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
     if (!draggedPlayer || !editable) return
@@ -269,15 +282,15 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave }: Line
       </div>
 
       {/* Formation Field */}
-      {starters.length > 0 && (
-        <FormationField starters={starters} />
+      {starterPlayers.length > 0 && (
+        <FormationField starters={starterPlayers} />
       )}
 
       {/* Starters List */}
       <div className="space-y-sm">
         <h4 className="flex items-center gap-xs text-sm font-semibold text-on-surface-variant">
           <Shield className="h-4 w-4" />
-          Titulares ({starters.length})
+          Titulares ({starterPlayers.length})
         </h4>
         <div className="grid gap-sm sm:grid-cols-2">
             {starterPlayers.map((player) => (
@@ -291,7 +304,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave }: Line
         <div className="space-y-sm">
           <h4 className="flex items-center gap-xs text-sm font-semibold text-on-surface-variant">
             <Users className="h-4 w-4" />
-            Suplentes ({substitutes.length})
+            Suplentes ({substitutePlayers.length})
           </h4>
             <div className="grid gap-sm sm:grid-cols-2" onDragOver={(event) => editable && event.preventDefault()} onDrop={() => movePlayer('substitute')}>
             {substitutePlayers.map((player) => (
@@ -349,10 +362,14 @@ export function MatchLineupPage() {
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
 
-  // Find home and away lineups — only show submissions that were actually submitted/approved
-  const VISIBLE_STATUSES = new Set(['submitted', 'confirmed', 'locked'])
-  const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && VISIBLE_STATUSES.has(l.status))
-  const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && VISIBLE_STATUSES.has(l.status))
+    // Find home and away lineups — only show submissions that were approved by the organization
+    const VISIBLE_STATUSES = new Set(['confirmed', 'locked'])
+  const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase()))
+    const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase()))
+
+    // Also detect submitted-but-not-confirmed submissions so public page can show an informative message
+    const homeLineupSubmitted = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && String(l.status).toLowerCase() === 'submitted')
+    const awayLineupSubmitted = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && String(l.status).toLowerCase() === 'submitted')
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
   const saveLineup = async (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => {
@@ -440,6 +457,14 @@ export function MatchLineupPage() {
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
                 <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+              ) : homeLineupSubmitted && !allowEditing ? (
+                <Card variant="flat" padding="lg">
+                  <div className="flex flex-col items-center gap-sm py-lg text-center">
+                    <Users className="h-10 w-10 text-on-surface-variant/30" />
+                    <p className="font-medium text-on-surface-variant">Escalação submetida</p>
+                    <p className="text-sm text-on-surface-variant/70">A escalação foi submetida pelo clube e aguarda aprovação da Organização.</p>
+                  </div>
+                </Card>
               ) : (
                 <LineupSection
                   lineup={{
@@ -465,6 +490,14 @@ export function MatchLineupPage() {
             <Card variant="flat" padding="lg">
               {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
                 <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+              ) : awayLineupSubmitted && !allowEditing ? (
+                <Card variant="flat" padding="lg">
+                  <div className="flex flex-col items-center gap-sm py-lg text-center">
+                    <Users className="h-10 w-10 text-on-surface-variant/30" />
+                    <p className="font-medium text-on-surface-variant">Escalação submetida</p>
+                    <p className="text-sm text-on-surface-variant/70">A escalação foi submetida pelo clube e aguarda aprovação da Organização.</p>
+                  </div>
+                </Card>
               ) : (
                 <LineupSection
                   lineup={{
