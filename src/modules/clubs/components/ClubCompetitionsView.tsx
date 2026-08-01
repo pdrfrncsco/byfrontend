@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+import { clubRoutes } from '@/modules/clubs/routes'
 import type { Competition, Match, Standing } from '@/modules/competitions/types'
 
 interface ClubCompetitionsViewProps {
@@ -333,7 +334,7 @@ export function ClubCompetitionsView({
                 return (
                   <Link
                     key={match.id}
-                    to={`/competitions/${match.competition || match.competitionId}/matches/${match.id}`}
+                    to={clubRoutes.matchLineup(match.id)}
                     className="block hover:shadow-md transition-all"
                   >
                     <Card variant="flat" padding="none" className="overflow-hidden shadow-sm hover:shadow-md transition-all">
@@ -398,7 +399,7 @@ export function ClubCompetitionsView({
                 return (
                   <Link
                     key={match.id}
-                    to={`/competitions/${match.competition || match.competitionId}/matches/${match.id}`}
+                    to={clubRoutes.matchLineup(match.id)}
                     className="block hover:shadow-lg transition-all hover:-translate-y-0.5"
                   >
                     <Card variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5 border-l-4 border-l-primary hover:shadow-xl transition-all">
