@@ -82,7 +82,7 @@ export function MatchDetailPage() {
     if (location.pathname.includes('/events')) return 'events'
     if (location.pathname.includes('/stats')) return 'stats'
     if (location.pathname.includes('/report')) return 'report'
-    return 'events'
+    return 'lineup'
   }
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)

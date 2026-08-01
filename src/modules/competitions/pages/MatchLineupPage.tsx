@@ -507,7 +507,13 @@ export function MatchLineupPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => confirmLineup.mutate()}
+                  onClick={() => {
+                    // Confirmar cada lineup individualmente com o respectivo club_id
+                    const lineupList = lineups as LineupSubmission[]
+                    lineupList.forEach((l) => {
+                      if (l.club) confirmLineup.mutate(l.club)
+                    })
+                  }}
                   disabled={confirmLineup.isPending}
                 >
                   {confirmLineup.isPending ? (

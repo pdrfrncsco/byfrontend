@@ -271,9 +271,10 @@ export const competitionApi = {
     return response.data.data
   },
 
-  async confirmLineup(matchId: string): Promise<LineupSubmission> {
+  async confirmLineup(matchId: string, clubId: string): Promise<LineupSubmission> {
     const response = await client.post<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/confirm/`
+      `/competitions/matches/${matchId}/lineups/confirm/`,
+      { club_id: clubId }          // backend exige club_id no payload
     )
     return response.data.data
   },
