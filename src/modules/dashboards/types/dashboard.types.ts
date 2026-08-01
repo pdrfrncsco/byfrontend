@@ -41,6 +41,7 @@ export interface DashboardTopScorer {
   id: string
   name: string
   nickname: string
+  slug?: string
   club: string
   club_logo: string | null
   avatar: string | null
@@ -50,6 +51,7 @@ export interface DashboardTopScorer {
 export interface DashboardMatch {
   id: string
   tournament: string
+  competition_id?: string
   status: 'scheduled' | 'live' | 'finished'
   date: string
   home_name: string

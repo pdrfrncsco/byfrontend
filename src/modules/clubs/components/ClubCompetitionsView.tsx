@@ -2,12 +2,10 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, CalendarDays, CheckCircle2, ChevronRight, Filter, Shield, Trophy, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
-import { clubRoutes } from '@/modules/clubs/routes'
 import type { Competition, Match, Standing } from '@/modules/competitions/types'
 
 interface ClubCompetitionsViewProps {
@@ -333,45 +331,51 @@ export function ClubCompetitionsView({
                 }
 
                 return (
-                  <Card key={match.id} variant="flat" padding="none" className="overflow-hidden shadow-sm hover:shadow-md transition-all">
-                    <CardContent className="p-md flex flex-col md:flex-row md:items-center justify-between gap-md">
-                      <div className="flex items-center gap-md">
-                        <div className="text-xs font-semibold text-on-surface-variant min-w-[100px]">
-                          <p>{formatDate(match.match_date)}</p>
-                          <p className="text-[11px] text-primary">Jornada {match.round_number}</p>
-                        </div>
-
-                        {/* Teams and Score */}
+                  <Link
+                    key={match.id}
+                    to={`/competitions/${match.competition || match.competitionId}/matches/${match.id}`}
+                    className="block hover:shadow-md transition-all"
+                  >
+                    <Card variant="flat" padding="none" className="overflow-hidden shadow-sm hover:shadow-md transition-all">
+                      <CardContent className="p-md flex flex-col md:flex-row md:items-center justify-between gap-md">
                         <div className="flex items-center gap-md">
-                          {/* Home */}
-                          <div className={`flex items-center gap-xs font-semibold ${isHome ? 'text-primary font-bold' : 'text-on-surface'}`}>
-                            <span>{match.home_club_name}</span>
+                          <div className="text-xs font-semibold text-on-surface-variant min-w-[100px]">
+                            <p>{formatDate(match.match_date)}</p>
+                            <p className="text-[11px] text-primary">Jornada {match.round_number}</p>
                           </div>
 
-                          {/* Score Pill */}
-                          <div className="flex items-center justify-center rounded-xl bg-surface-container-highest px-md py-sm font-title-lg text-lg font-bold text-on-surface shadow-inner">
-                            <span>{match.home_score ?? 0}</span>
-                            <span className="mx-1 text-on-surface-variant">-</span>
-                            <span>{match.away_score ?? 0}</span>
-                          </div>
+                          {/* Teams and Score */}
+                          <div className="flex items-center gap-md">
+                            {/* Home */}
+                            <div className={`flex items-center gap-xs font-semibold ${isHome ? 'text-primary font-bold' : 'text-on-surface'}`}>
+                              <span>{match.home_club_name}</span>
+                            </div>
 
-                          {/* Away */}
-                          <div className={`flex items-center gap-xs font-semibold ${!isHome ? 'text-primary font-bold' : 'text-on-surface'}`}>
-                            <span>{match.away_club_name}</span>
+                            {/* Score Pill */}
+                            <div className="flex items-center justify-center rounded-xl bg-surface-container-highest px-md py-sm font-title-lg text-lg font-bold text-on-surface shadow-inner">
+                              <span>{match.home_score ?? 0}</span>
+                              <span className="mx-1 text-on-surface-variant">-</span>
+                              <span>{match.away_score ?? 0}</span>
+                            </div>
+
+                            {/* Away */}
+                            <div className={`flex items-center gap-xs font-semibold ${!isHome ? 'text-primary font-bold' : 'text-on-surface'}`}>
+                              <span>{match.away_club_name}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center justify-between md:justify-end gap-md">
-                        {match.venue && (
-                          <span className="text-xs text-on-surface-variant hidden lg:inline">
-                            📍 {match.venue}
-                          </span>
-                        )}
-                        {resultBadge}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        <div className="flex items-center justify-between md:justify-end gap-md">
+                          {match.venue && (
+                            <span className="text-xs text-on-surface-variant hidden lg:inline">
+                              📍 {match.venue}
+                            </span>
+                          )}
+                          {resultBadge}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 )
               })}
             </div>
@@ -392,57 +396,61 @@ export function ClubCompetitionsView({
                 const isHome = match.home_club === clubId || match.home_club_name?.toLowerCase() === clubName?.toLowerCase()
 
                 return (
-                  <Card key={match.id} variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5 border-l-4 border-l-primary">
-                    <CardHeader className="bg-surface-container-high/40 p-md flex flex-row items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
-                        Jornada {match.round_number}
-                      </Badge>
-                      <span className="text-xs font-semibold text-primary">
-                        {formatDate(match.match_date)} {formatTime(match.match_date)}
-                      </span>
-                    </CardHeader>
+                  <Link
+                    key={match.id}
+                    to={`/competitions/${match.competition || match.competitionId}/matches/${match.id}`}
+                    className="block hover:shadow-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <Card variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5 border-l-4 border-l-primary hover:shadow-xl transition-all">
+                      <CardHeader className="bg-surface-container-high/40 p-md flex flex-row items-center justify-between">
+                        <Badge variant="outline" className="text-xs">
+                          Jornada {match.round_number}
+                        </Badge>
+                        <span className="text-xs font-semibold text-primary">
+                          {formatDate(match.match_date)} {formatTime(match.match_date)}
+                        </span>
+                      </CardHeader>
 
-                    <CardContent className="p-lg space-y-md">
-                      <div className="flex items-center justify-around gap-md">
-                        <div className="text-center space-y-1 flex-1">
-                          <p className={`font-bold ${isHome ? 'text-primary text-lg' : 'text-on-surface'}`}>
-                            {match.home_club_name}
-                          </p>
-                          <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
-                            {isHome ? 'Mandante (Casa)' : 'Visitante'}
-                          </span>
+                      <CardContent className="p-lg space-y-md">
+                        <div className="flex items-center justify-around gap-md">
+                          <div className="text-center space-y-1 flex-1">
+                            <p className={`font-bold ${isHome ? 'text-primary text-lg' : 'text-on-surface'}`}>
+                              {match.home_club_name}
+                            </p>
+                            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
+                              {isHome ? 'Mandante (Casa)' : 'Visitante'}
+                            </span>
+                          </div>
+
+                          <div className="rounded-full bg-primary-container/30 px-md py-sm text-xs font-bold text-primary">
+                            VS
+                          </div>
+
+                          <div className="text-center space-y-1 flex-1">
+                            <p className={`font-bold ${!isHome ? 'text-primary text-lg' : 'text-on-surface'}`}>
+                              {match.away_club_name}
+                            </p>
+                            <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
+                              {!isHome ? 'Mandante (Casa)' : 'Visitante'}
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="rounded-full bg-primary-container/30 px-md py-sm text-xs font-bold text-primary">
-                          VS
-                        </div>
+                        {match.venue && (
+                          <div className="rounded-xl border border-outline-variant/10 bg-surface-container/60 p-sm text-center text-xs text-on-surface-variant">
+                            Estádio / Local: <span className="font-semibold text-on-surface">{match.venue}</span>
+                          </div>
+                        )}
 
-                        <div className="text-center space-y-1 flex-1">
-                          <p className={`font-bold ${!isHome ? 'text-primary text-lg' : 'text-on-surface'}`}>
-                            {match.away_club_name}
-                          </p>
-                          <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
-                            {!isHome ? 'Mandante (Casa)' : 'Visitante'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {match.venue && (
-                        <div className="rounded-xl border border-outline-variant/10 bg-surface-container/60 p-sm text-center text-xs text-on-surface-variant">
-                          Estádio / Local: <span className="font-semibold text-on-surface">{match.venue}</span>
-                        </div>
-                      )}
-
-                      <div className="pt-xs flex justify-end">
-                        <Button asChild variant="primary" size="sm" className="w-full sm:w-auto">
-                          <Link to={clubRoutes.matchLineup(match.id)}>
-                            <Users className="mr-xs h-3.5 w-3.5" />
+                        <div className="pt-xs flex justify-end">
+                          <div className="w-full sm:w-auto inline-flex items-center justify-center gap-xs px-md py-sm bg-primary text-on-primary rounded-lg text-sm font-semibold hover:bg-primary-fixed transition-all">
+                            <Users className="h-3.5 w-3.5" />
                             <span>Escalação & Convocados</span>
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 )
               })}
             </div>

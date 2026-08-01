@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
@@ -126,7 +127,11 @@ export function LeagueDashboardPage() {
                 <p className="text-center text-on-surface-variant py-md text-[11px]">Nenhum jogo a decorrer neste momento.</p>
               ) : (
                 data?.live_matches.map((match) => (
-                  <div key={match.id} className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-2">
+                  <Link
+                    key={match.id}
+                    to={`/competitions/${match.competition_id}/matches/${match.id}`}
+                    className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-2 hover:border-primary/40 hover:bg-[#102034] transition-all block"
+                  >
                     <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-widest">{match.tournament} • EM CURSO</p>
                     <div className="flex justify-between items-center px-sm">
                       <span className="font-semibold truncate max-w-[80px]">{match.home_name}</span>
@@ -135,7 +140,7 @@ export function LeagueDashboardPage() {
                       </span>
                       <span className="font-semibold truncate max-w-[80px]">{match.away_name}</span>
                     </div>
-                  </div>
+                  </Link>
                 ))
               )}
 
@@ -148,7 +153,11 @@ export function LeagueDashboardPage() {
                     const dayStr = matchDate.toLocaleDateString('pt-AO', { day: '2-digit', month: 'short' })
 
                     return (
-                      <div key={match.id} className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-1 opacity-80 hover:opacity-100 transition-opacity">
+                      <Link
+                        key={match.id}
+                        to={`/competitions/${match.competition_id}/matches/${match.id}`}
+                        className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/40 text-center space-y-1 opacity-80 hover:opacity-100 hover:border-primary/40 transition-all block"
+                      >
                         <div className="flex justify-between items-center px-sm text-[11px]">
                           <span className="font-semibold truncate max-w-[90px]">{match.home_name}</span>
                           <span className="font-mono bg-[#1b2b3f] text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">VS</span>
@@ -157,7 +166,7 @@ export function LeagueDashboardPage() {
                         <span className="text-[9px] text-on-surface-variant block mt-1 flex items-center justify-center gap-1">
                           <Clock className="w-3 h-3 text-[#94d3c1]" /> {dayStr} • {timeStr}
                         </span>
-                      </div>
+                      </Link>
                     )
                   })}
                 </>

@@ -171,9 +171,10 @@ export function CompetitionDashboardPage() {
               <div className="space-y-sm text-xs">
                 {/* Show live matches first */}
                 {liveMatches.slice(0, 2).map(match => (
-                  <div
+                  <Link
                     key={match.id}
-                    className="p-3 bg-emerald-900/20 rounded-lg border border-emerald-500/20 block"
+                    to={`/competitions/${match.competition_id}/matches/${match.id}`}
+                    className="p-3 bg-emerald-900/20 rounded-lg border border-emerald-500/20 block hover:border-emerald-400/50 hover:bg-emerald-900/30 transition-all group"
                   >
                     <div className="flex justify-between items-center text-[10px] text-on-surface-variant mb-1">
                       <span className="font-semibold text-emerald-400 truncate max-w-28">{match.tournament}</span>
@@ -186,14 +187,15 @@ export function CompetitionDashboardPage() {
                       </span>
                       <span className="truncate max-w-20 text-right">{match.away_name}</span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
 
                 {/* Upcoming matches */}
                 {upcomingMatches.slice(0, liveMatches.length > 0 ? 1 : 3).map(match => (
-                  <div
+                  <Link
                     key={match.id}
-                    className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 block"
+                    to={`/competitions/${match.competition_id}/matches/${match.id}`}
+                    className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 block hover:border-primary/40 hover:bg-[#102034] transition-all group"
                   >
                     <div className="flex justify-between items-center text-[10px] text-on-surface-variant mb-1">
                       <span className="font-semibold text-primary truncate max-w-28">{match.tournament}</span>
@@ -208,7 +210,7 @@ export function CompetitionDashboardPage() {
                       <span className="text-on-surface-variant text-[10px] px-sm">vs</span>
                       <span className="truncate max-w-20 text-right">{match.away_name}</span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}

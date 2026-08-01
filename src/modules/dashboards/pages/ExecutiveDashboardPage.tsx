@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
@@ -232,7 +233,7 @@ export function ExecutiveDashboardPage() {
         <section className="glass-card rounded-xl overflow-hidden flex flex-col p-0">
           <div className="p-md border-b border-[#26364a]/50 flex justify-between items-center bg-[#102034]/50">
             <h4 className="font-display text-base font-bold">Gestão de Provas</h4>
-            <button className="text-primary hover:underline text-xs font-semibold">Ver Todas</button>
+            <Link to={ROUTES.DASHBOARD_COMPETITIONS_LIST} className="text-primary hover:underline text-xs font-semibold">Ver Todas</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
@@ -246,7 +247,11 @@ export function ExecutiveDashboardPage() {
               </thead>
               <tbody className="divide-y divide-[#26364a]/30 font-mono text-[11px]">
                 {data?.tournaments.map((tour) => (
-                  <tr key={tour.id} className="hover:bg-[#1b2b3f]/20 transition-colors">
+                  <tr 
+                    key={tour.id} 
+                    className="hover:bg-[#1b2b3f]/20 transition-all cursor-pointer"
+                    onClick={() => window.location.href = `/competitions/${tour.id}`}
+                  >
                     <td className="px-md py-3.5 font-display text-xs text-on-surface font-semibold flex items-center gap-sm">
                       {tour.logo ? (
                         <img src={tour.logo} alt={tour.name} className="w-6 h-6 object-contain rounded" />
@@ -328,7 +333,11 @@ export function ExecutiveDashboardPage() {
           </div>
           <div className="space-y-sm overflow-y-auto max-h-56 custom-scrollbar pr-1">
             {data?.top_scorers.map((scorer) => (
-              <div key={scorer.id} className="flex items-center gap-md p-1.5 hover:bg-[#1b2b3f]/20 rounded-lg transition-all text-xs">
+              <Link
+                key={scorer.id}
+                to={`/players/${scorer.slug}`}
+                className="flex items-center gap-md p-1.5 hover:bg-[#1b2b3f]/20 rounded-lg transition-all text-xs block"
+              >
                 {scorer.avatar ? (
                   <img src={scorer.avatar} alt={scorer.name} className="w-8 h-8 rounded-full object-cover" />
                 ) : (
@@ -341,7 +350,7 @@ export function ExecutiveDashboardPage() {
                   <p className="text-[10px] text-on-surface-variant uppercase">{scorer.club}</p>
                 </div>
                 <span className="font-mono text-primary font-bold">{scorer.goals} Golos</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -359,7 +368,11 @@ export function ExecutiveDashboardPage() {
               const time = matchDate.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' })
 
               return (
-                <div key={match.id} className="flex gap-md items-center p-1.5 hover:bg-[#1b2b3f]/20 rounded-lg transition-all">
+                <Link
+                  key={match.id}
+                  to={`/competitions/${match.competition_id}/matches/${match.id}`}
+                  className="flex gap-md items-center p-1.5 hover:bg-[#1b2b3f]/20 rounded-lg transition-all block"
+                >
                   <div className="flex flex-col items-center justify-center min-w-[44px] h-10 rounded bg-[#26364a] border border-[#3f4945]">
                     <span className="text-[9px] font-bold text-on-surface-variant uppercase leading-none">{month}</span>
                     <span className="font-display text-base font-bold text-primary">{day}</span>
@@ -372,7 +385,7 @@ export function ExecutiveDashboardPage() {
                       <Clock className="w-3 h-3 text-primary-fixed-dim" /> {time} • {match.tournament}
                     </p>
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>
