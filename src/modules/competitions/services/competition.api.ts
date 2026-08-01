@@ -247,10 +247,13 @@ export const competitionApi = {
   // ─── Lineups ─────────────────────────────────────────────────────────────
 
   async getLineups(matchId: string): Promise<LineupSubmission[]> {
-    const response = await client.get<ApiResponse<LineupSubmission[]>>(
+    const response = await client.get<any>(
       `/competitions/matches/${matchId}/lineups/`
     )
-    return response.data.data
+    const raw = response.data?.data ?? response.data
+    if (Array.isArray(raw)) return raw
+    if (raw && Array.isArray(raw.lineups)) return raw.lineups
+    return []
   },
 
   async getLineup(matchId: string, lineupId: string): Promise<LineupSubmission> {

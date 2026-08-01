@@ -45,7 +45,11 @@ export const rankingKeys = {
 export function useLineups(matchId: string) {
   return useQuery({
     queryKey: lineupKeys.byMatch(matchId),
-    queryFn: () => competitionApi.getLineups(matchId),
+    queryFn: async () => {
+      const resp = await competitionApi.getLineups(matchId);
+      // API returns { match_id, match_str, lineups }
+      return resp.lineups ?? [];
+    },
     enabled: !!matchId,
   })
 }
