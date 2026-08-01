@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   Trophy,
   BarChart3,
@@ -25,6 +26,12 @@ import { TopScorersTable } from '../components/TopScorersTable'
 import { PlayerStatsTable } from '../components/PlayerStatsTable'
 import { competitionRoutes } from '../routes'
 
+// Helper function to detect UUID format
+function isUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
+
 // ─── Matches Tab ──────────────────────────────────────────────────────────────
 
 interface MatchesTabProps {
@@ -33,7 +40,7 @@ interface MatchesTabProps {
 }
 
 function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
-  const { data: roundsView, isLoading } = useCompetitionRounds(competitionId)
+  const { data: roundsView, isLoading, isError, error, refetch } = useCompetitionRounds(competitionId)
   const generateSchedule = useGenerateSchedule(competitionId)
   const rounds = roundsView?.rounds ?? []
 
@@ -43,6 +50,21 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-24 animate-pulse rounded-xl bg-surface-container-high" />
         ))}
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
+        <AlertCircle className="h-12 w-12 text-error opacity-70" />
+        <p className="font-medium text-on-surface">Erro ao carregar calendário de jogos.</p>
+        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <div className="mt-md">
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            Tentar novamente
+          </Button>
+        </div>
       </div>
     )
   }
@@ -120,7 +142,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
 // ─── Regulations Tab ──────────────────────────────────────────────────────────
 
 function RegulationsTab({ competitionId }: { competitionId: string }) {
-  const { data: regulations = [], isLoading } = useRegulations(competitionId)
+  const { data: regulations = [], isLoading, isError, error, refetch } = useRegulations(competitionId)
 
   if (isLoading) {
     return (
@@ -128,6 +150,21 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-20 animate-pulse rounded-xl bg-surface-container-high" />
         ))}
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
+        <AlertCircle className="h-12 w-12 text-error opacity-70" />
+        <p className="font-medium text-on-surface">Erro ao carregar regulamentos.</p>
+        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <div className="mt-md">
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            Tentar novamente
+          </Button>
+        </div>
       </div>
     )
   }
@@ -180,7 +217,22 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
 // ─── Stats Tab ─────────────────────────────────────────────────────────────────
 
 function StatsTab({ competitionId }: { competitionId: string }) {
-  const { data: topScorers = [], isLoading: loadingScorers } = useTopScorers(competitionId)
+  const { data: topScorers = [], isLoading: loadingScorers, isError, error, refetch } = useTopScorers(competitionId)
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
+        <AlertCircle className="h-12 w-12 text-error opacity-70" />
+        <p className="font-medium text-on-surface">Erro ao carregar estatísticas.</p>
+        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <div className="mt-md">
+          <Button variant="secondary" size="sm" onClick={() => refetch()}>
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-xl">
@@ -207,11 +259,22 @@ function StatsTab({ competitionId }: { competitionId: string }) {
 
 export function CompetitionDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const competitionId = id ?? ''
   const { isAdmin } = useCompetitionAccess()
   const { isTournament, isCup } = useCompetitionConfig(competitionId)
 
+  // If UUID is detected in the URL, extract slug from the data and redirect
+  const shouldFetchByUuid = isUUID(competitionId)
+  
   const { data: competition, isLoading: loadingComp, isError: errorComp } = useCompetition(competitionId)
+
+  // Redirect to slug if UUID was detected and competition data is loaded
+  useMemo(() => {
+    if (shouldFetchByUuid && competition?.slug && competition.slug !== competitionId) {
+      navigate(`/competitions/${competition.slug}`, { replace: true })
+    }
+  }, [shouldFetchByUuid, competition?.slug, competitionId, navigate])
 
 
   if (errorComp) {

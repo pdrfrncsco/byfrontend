@@ -174,10 +174,21 @@ export function useCompetitionRounds(
   return useQuery<CompetitionRoundsView>({
     queryKey: [...matchKeys.byCompetition(competitionId), 'rounds', filters],
     queryFn: async () => {
-      const [roundsPayload, matches] = await Promise.all([
-        competitionApi.getRounds(competitionId, filters).catch(() => null),
-        competitionApi.listMatches(competitionId, filters).catch(() => [] as Match[]),
-      ])
+      // Try fetching rounds endpoint — treat 404 as "not available" and fall back to client grouping.
+      let roundsPayload: unknown | null = null
+      try {
+        roundsPayload = await competitionApi.getRounds(competitionId, filters)
+      } catch (err: any) {
+        // If rounds endpoint missing (404), fallback to grouping matches client-side.
+        if (err?.response?.status !== 404) {
+          // For other errors (500, network), propagate to surface an error in the UI.
+          throw err
+        }
+        roundsPayload = null
+      }
+
+      // Always attempt to fetch matches. If this fails (500/404) let the error propagate so UI can show it.
+      const matches = await competitionApi.listMatches(competitionId, filters)
 
       return normalizeRoundsPayload(roundsPayload, matches)
     },
