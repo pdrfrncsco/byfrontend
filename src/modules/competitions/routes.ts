@@ -23,4 +23,5 @@ export const competitionRoutes = {
   adminMatchCenter: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_CENTER(compId, matchId),
   adminMatchLineup: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_LINEUP(compId, matchId),
   adminMatchReport: (compId: string, matchId: string) => ROUTES.DASHBOARD_MATCH_REPORT(compId, matchId),
+  tacticalView: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/tactical`,
 }

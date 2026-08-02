@@ -288,6 +288,12 @@ export function MatchDetailPage() {
           {/* Scoreboard */}
           <MatchScoreboard match={liveState.match ?? match} />
 
+          <div className="mt-sm flex justify-center gap-sm">
+            <Link to={competitionRoutes.tacticalView(competitionId, matchIdValue)}>
+              <Button variant="secondary" size="sm">Vista Táctica</Button>
+            </Link>
+          </div>
+
           {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
           {match && match.status === 'scheduled' && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (
             <div className="mt-sm flex justify-center">

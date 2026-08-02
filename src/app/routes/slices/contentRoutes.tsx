@@ -55,6 +55,9 @@ const MatchLineupPage = lazy(() =>
 const MatchReportPage = lazy(() =>
   import('@/modules/competitions/pages/MatchReportPage').then(m => ({ default: m.MatchReportPage })),
 )
+const MatchTacticalViewPage = lazy(() =>
+  import('@/modules/competitions/pages/MatchTacticalViewPage').then(m => ({ default: m.default })),
+)
 
 function RouteFallback() {
   return (
@@ -125,6 +128,10 @@ export function contentRouteElements() {
       <Route
         path={competitionRoutes.matchReport(':compId', ':matchId')}
         element={<Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>}
+      />
+      <Route
+        path={competitionRoutes.tacticalView(':compId', ':matchId')}
+        element={<Suspense fallback={<RouteFallback />}><MatchTacticalViewPage /></Suspense>}
       />
 
       {/* Competition management (protected) */}
