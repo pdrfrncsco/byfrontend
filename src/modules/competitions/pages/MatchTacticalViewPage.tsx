@@ -1,7 +1,12 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import TacticalField, { TacticalPlayer } from '../components/tactical/TacticalField'
+import { useTacticalPositions } from '../hooks/useTacticalPositions'
+import { Button } from '@/components/ui'
+import { useParams } from 'react-router-dom'
 
 export default function MatchTacticalViewPage() {
+  const { matchId } = useParams<{ matchId: string }>()
+
   // example initial positions (normalized coords)
   const initial: TacticalPlayer[] = [
     { id: 'p1', number: 1, name: 'GK', x: 0.05, y: 0.5 },
@@ -12,16 +17,32 @@ export default function MatchTacticalViewPage() {
   ]
 
   const [players, setPlayers] = useState<TacticalPlayer[]>(initial)
+  const { loadPositions, savePositions, loading } = useTacticalPositions(matchId ?? '')
+
+  useEffect(() => {
+    let mounted = true
+    loadPositions().then((p) => {
+      if (!mounted) return
+      if (p && p.length) setPlayers(p)
+    })
+    return () => { mounted = false }
+  }, [loadPositions])
 
   const onPositionsChange = useCallback((next: TacticalPlayer[]) => {
     setPlayers(next)
-    // future: persist positions via API
   }, [])
 
   return (
     <div style={{ padding: 16 }}>
       <h2>Vista tática</h2>
-      <p>Arraste os jogadores para reposicionar. Export / salvar a integrar depois.</p>
+      <p>Arraste os jogadores para reposicionar. Use Guardar para persistir no servidor.</p>
+
+      <div style={{ marginBottom: 12 }}>
+        <Button onClick={() => savePositions(players)} disabled={loading}>
+          {loading ? 'A gravar...' : 'Guardar posições'}
+        </Button>
+      </div>
+
       <TacticalField players={players} onPositionsChange={onPositionsChange} />
     </div>
   )
