@@ -150,11 +150,71 @@ export function useAddMatchEvent(competitionId: string, matchId: string) {
   return useMutation({
     mutationFn: (data: MatchEventCreateData) =>
       competitionApi.addMatchEvent(competitionId, matchId, data),
-    onSuccess: () => {
+    onSuccess: async (createdEvent) => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.eventsByComp(competitionId, matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.events(matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       toast.success('Evento adicionado com sucesso!')
+
+      try {
+        const et = String(createdEvent?.event_type || createdEvent?.type || '').toLowerCase()
+        // If red card or second yellow (yellow_red), create a suspension automatically
+        if ((et === 'red_card' || et === 'yellow_red' || et === 'yellow-red' || et === 'second_yellow') && createdEvent?.player) {
+          const suspensionType: any = et === 'red_card' ? 'red_card' : 'double_yellow'
+
+          // Default mapping for matches suspended by event type
+          const DEFAULT_SUSPENSION_COUNT: Record<string, number> = {
+            red_card: 1,
+            yellow_red: 1,
+            'yellow-red': 1,
+            second_yellow: 1,
+            violent_conduct: 2,
+            assault: 3,
+          }
+
+          // Start with default value for this event type
+          let matchesSuspended = DEFAULT_SUSPENSION_COUNT[et] ?? 1
+
+          // Try to fetch competition-level overrides if the competition exposes suspension rules
+          try {
+            const comp = await competitionApi.get(competitionId)
+            // Accept a few possible shapes for an override: comp.suspension_rules or comp.suspensionDefaults
+            const overrides: any = comp?.suspension_rules ?? comp?.suspensionDefaults ?? comp?.suspensionDefaultsByEvent
+            if (overrides && typeof overrides === 'object') {
+              const overrideVal = overrides[et] ?? overrides[String(et).toLowerCase()]
+              if (typeof overrideVal === 'number' || (typeof overrideVal === 'string' && !Number.isNaN(Number(overrideVal)))) {
+                matchesSuspended = Number(overrideVal)
+              }
+            }
+          } catch (e) {
+            // ignore; use defaults
+            console.debug('No competition-level suspension overrides found or failed to fetch competition', e)
+          }
+
+          const payload = {
+            player: createdEvent.player,
+            club: createdEvent.club || (createdEvent as any).teamId || '',
+            suspension_type: suspensionType,
+            matches_suspended: matchesSuspended,
+            effective_from: new Date().toISOString().split('T')[0],
+            reason: `Cartão automático: ${et} no minuto ${createdEvent.minute || ''}`,
+          }
+
+          competitionApi.createSuspension(competitionId, payload)
+            .then(() => {
+              // invalidate suspensions cache
+              queryClient.invalidateQueries({ queryKey: ['suspensions', 'competition', competitionId] })
+              toast.success('Suspensão criada automaticamente para o jogador.')
+            })
+            .catch((err: any) => {
+              console.error('Failed to create suspension', err)
+              toast.error('Evento registado, mas falha ao criar suspensão automática.')
+            })
+        }
+      } catch (err) {
+        // non-fatal
+        console.warn('Failed to process automatic suspension', err)
+      }
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || 'Erro ao adicionar evento.')
