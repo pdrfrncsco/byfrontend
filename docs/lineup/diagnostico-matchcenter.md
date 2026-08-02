@@ -206,7 +206,12 @@ O arquivo `src/constants/roles-permissions.ts` precisa ser verificado para garan
 7. Criar testes para os hooks e componentes críticos.
 8. Integrar cartão vermelho → módulo de suspensões.
 
+### Longo prazo
 
+9. Vista tática de escalação (campo visual SVG).
+10. Placar embeddable para sites externos.
+11. Sincronização multi-árbitro com conflict resolution.
+12. Push notifications para torcedores (via `NotificationBell`).
 
 ---
 
