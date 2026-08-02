@@ -85,14 +85,14 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
               alt={homeName} 
               className="h-8 w-8 flex-shrink-0 rounded-full object-cover" 
               onError={(e) => { 
+                // prefer React state, but keep inline fallback safe
                 e.currentTarget.onerror = null
-                e.currentTarget.src = '' 
+                e.currentTarget.src = undefined as any
                 e.currentTarget.style.display = 'none'
-                e.currentTarget.nextElementSibling?.classList.remove('hidden')
               }}
             />
           ) : null}
-          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? 'hidden' : ''}`}>
+          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? '' : ''}`}>
             {homeName?.charAt(0) || '?'}
           </div>
           <span className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>

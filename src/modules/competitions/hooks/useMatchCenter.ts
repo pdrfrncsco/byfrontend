@@ -75,8 +75,10 @@ export function useMatchCenter(options: UseMatchCenterOptions): UseMatchCenterRe
   if (status?.length) params.status = status.join(',')
   if (teamId) params.team_id = teamId
 
+  const paramKey = JSON.stringify(params)
+
   const query = useQuery({
-    queryKey: [...MATCH_QUERY_KEYS.byCompetition(competitionId), params],
+    queryKey: [...MATCH_QUERY_KEYS.byCompetition(competitionId), paramKey],
     queryFn: () => competitionApi.listMatches(competitionId, params),
     enabled: Boolean(competitionId),
     staleTime: 60_000,
