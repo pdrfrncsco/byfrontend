@@ -32,13 +32,32 @@ export default function MatchTacticalViewPage() {
     setPlayers(next)
   }, [])
 
+  const handleSave = async () => {
+    const res = await savePositions(players)
+    if (res?.conflict) {
+      // simple conflict resolution: ask user to overwrite or reload remote
+      const remotePositions = res.remote?.positions ?? res.remote
+      const message = 'Existe uma versão mais recente das posições no servidor. Deseja substituir (Sobrescrever) ou recarregar a versão remota? OK = Sobrescrever, Cancel = Recarregar remoto.'
+      const overwrite = window.confirm(message)
+      if (overwrite) {
+        const forced = await savePositions(players, { force: true })
+        if (forced?.success) {
+          // saved
+        }
+      } else {
+        if (Array.isArray(remotePositions)) setPlayers(remotePositions)
+        toast.success('Posições actualizadas a partir do servidor.')
+      }
+    }
+  }
+
   return (
     <div style={{ padding: 16 }}>
       <h2>Vista tática</h2>
       <p>Arraste os jogadores para reposicionar. Use Guardar para persistir no servidor.</p>
 
       <div style={{ marginBottom: 12 }}>
-        <Button onClick={() => savePositions(players)} disabled={loading}>
+        <Button onClick={handleSave} disabled={loading}>
           {loading ? 'A gravar...' : 'Guardar posições'}
         </Button>
       </div>

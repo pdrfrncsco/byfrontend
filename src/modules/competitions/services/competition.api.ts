@@ -357,6 +357,20 @@ export const competitionApi = {
     return response.data.data
   },
 
+  // ─── Tactical positions (dedicated endpoints) ───────────────────────────
+  async getTacticalPositions(matchId: string, clubId?: string): Promise<any> {
+    const params: Record<string, any> = {}
+    if (clubId) params.club = clubId
+    const response = await client.get<ApiResponse<any>>(`/competitions/matches/${matchId}/tactical_positions/`, { params })
+    return response.data.data
+  },
+
+  async upsertTacticalPositions(matchId: string, data: any, force: boolean = false): Promise<any> {
+    const url = `/competitions/matches/${matchId}/tactical_positions/` + (force ? '?force=true' : '')
+    const response = await client.post<ApiResponse<any>>(url, data)
+    return response.data.data
+  },
+
   async checkEligibility(competitionId: string, playerId: string): Promise<{ eligible: boolean; reason?: string }> {
     const response = await client.get<ApiResponse<{ eligible: boolean; reason?: string }>>(
       `/competitions/${competitionId}/eligibility/${playerId}/`
