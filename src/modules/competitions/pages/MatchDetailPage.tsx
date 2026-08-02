@@ -19,6 +19,7 @@ import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
+import { matchApi } from '../services/match.api'
 import type { Match } from '../types'
 import { MatchScoreboard, MatchTimeline, MatchStatsPanel } from '../components'
 
@@ -48,6 +49,31 @@ const TABS: TabConfig[] = [
 function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean {
   if (requiredRoles.includes('*')) return true
   return userRoles.some(role => requiredRoles.includes(role))
+}
+
+// Small start-match button component (keeps page code focused)
+function StartMatchButton({ competitionId, matchId, onStarted }: { competitionId: string; matchId: string; onStarted?: () => void }) {
+  const [isStarting, setIsStarting] = useState(false)
+  const handleStart = async () => {
+    const ok = window.confirm('Confirma iniciar a partida? Esta ação mudará o estado para "live" e liberará o registo de eventos.')
+    if (!ok) return
+    try {
+      setIsStarting(true)
+      await matchApi.updateStatus(competitionId, matchId, 'live')
+      onStarted?.()
+    } catch (err: any) {
+      console.error(err)
+      window.alert('Erro ao iniciar a partida: ' + (err?.message || String(err)))
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
+  return (
+    <Button variant="primary" size="sm" onClick={handleStart} disabled={isStarting}>
+      {isStarting ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : 'Iniciar Partida'}
+    </Button>
+  )
 }
 
 // ─── Match Detail Page (Hub Unificado) ───────────────────────────────────────
@@ -259,6 +285,17 @@ export function MatchDetailPage() {
 
           {/* Scoreboard */}
           <MatchScoreboard match={liveState.match ?? match} />
+
+          {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
+          {match && match.status === 'scheduled' && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (
+            <div className="mt-sm flex justify-center">
+              <StartMatchButton
+                competitionId={competitionId}
+                matchId={matchIdValue}
+                onStarted={() => liveState.refetch()}
+              />
+            </div>
+          )}
 
           {/* Live indicator */}
           {liveState.lastUpdated && (liveState.isLive || liveState.isHalftime) && (
