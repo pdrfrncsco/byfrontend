@@ -20,6 +20,7 @@ import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
 import { matchApi } from '../services/match.api'
+import { toast } from 'sonner'
 import type { Match } from '../types'
 import { MatchScoreboard, MatchTimeline, MatchStatsPanel } from '../components'
 
@@ -60,10 +61,11 @@ function StartMatchButton({ competitionId, matchId, onStarted }: { competitionId
     try {
       setIsStarting(true)
       await matchApi.updateStatus(competitionId, matchId, 'live')
+      toast.success('Partida iniciada. Eventos ao vivo podem agora ser registados.')
       onStarted?.()
     } catch (err: any) {
       console.error(err)
-      window.alert('Erro ao iniciar a partida: ' + (err?.message || String(err)))
+      toast.error('Erro ao iniciar a partida: ' + (err?.message || String(err)))
     } finally {
       setIsStarting(false)
     }
