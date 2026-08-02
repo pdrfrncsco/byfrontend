@@ -1,8 +1,9 @@
 // src/modules/competitions/hooks/useMatchLive.ts
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { matchApi } from '../services/match.api'
+import { matchApi, mapMatchEventFromBackend } from '../services/match.api'
 import { MATCH_QUERY_KEYS } from './useMatchCenter'
+import { useNotificationStream } from '@/modules/notifications/hooks'
 import type { Match, MatchEvent } from '../types'
 
 // ─── Polling Intervals (ms) ─────────────────────────────────────────────────
@@ -147,6 +148,69 @@ export function useMatchLive({
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [fetchData, setupPolling])
+
+  // Integrate notification stream (SSE) to receive match events in real time.
+  // Keeps polling as a fallback; notifications update local state and react-query cache immediately.
+  useNotificationStream({
+    enabled: Boolean(matchId),
+    onNewNotification: (notif) => {
+      try {
+        const payload = notif.payload || {}
+        const notifMatchId = payload.matchId || payload.match || payload.match_id
+        if (!notifMatchId || String(notifMatchId) !== String(matchId)) return
+
+        // If notification carries event data, map it and prepend to events
+        const eventData = payload.event || payload.event_data || payload.data || payload
+        const mapped = eventData ? mapMatchEventFromBackend(eventData) : null
+        if (mapped) {
+          setEvents((prev) => {
+            if (prev.some((e) => e.id === mapped.id)) return prev
+            const next = [mapped, ...prev]
+            // keep react-query events cache synced
+            queryClient.setQueryData(MATCH_QUERY_KEYS.events(matchId), (old: MatchEvent[] | undefined) =>
+              old ? [mapped, ...old] : [mapped]
+            )
+            return next
+          })
+        }
+
+        // If notification updates the match score or status, update match state and competition list cache
+        const hasScore = payload.home_score !== undefined || payload.away_score !== undefined
+        const hasStatus = payload.status !== undefined
+        if (hasScore || hasStatus) {
+          setMatch((prev) => {
+            if (!prev) return prev
+            const nextMatch = {
+              ...prev,
+              score: hasScore
+                ? {
+                    home: payload.home_score ?? prev.score?.home ?? 0,
+                    away: payload.away_score ?? prev.score?.away ?? 0,
+                    homeFirstHalf: payload.home_first_half ?? prev.score?.homeFirstHalf,
+                    awayFirstHalf: payload.away_first_half ?? prev.score?.awayFirstHalf,
+                    homePenalties: payload.home_penalties ?? prev.score?.homePenalties,
+                    awayPenalties: payload.away_penalties ?? prev.score?.awayPenalties,
+                  }
+                : prev.score,
+              status: hasStatus ? payload.status : prev.status,
+            }
+
+            // update competition-level list cache so other components (scoreboard) reflect change
+            queryClient.setQueryData(
+              MATCH_QUERY_KEYS.byCompetition(competitionId),
+              (old: Match[] | undefined) => (old ? old.map((m) => (m.id === matchId ? nextMatch : m)) : [nextMatch])
+            )
+
+            return nextMatch
+          })
+        }
+      } catch (err) {
+        // non-fatal — keep polling
+        // eslint-disable-next-line no-console
+        console.warn('[useMatchLive] failed to apply notification', err)
+      }
+    },
+  })
 
   // ─── Compute current minute from events ───────────────────────────────
   const currentMinute: number | null =
