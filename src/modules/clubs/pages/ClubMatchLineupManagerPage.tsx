@@ -90,23 +90,36 @@ export function formatPositionLabel(pos?: string, isGoalkeeper?: boolean): strin
 
 // ─── Formation Field Display ─────────────────────────────────────────────────
 
-function FormationField({ starters }: { starters: CallupPlayer[] }) {
-  const positionGroups = useMemo(() => {
-    const groups: Record<string, CallupPlayer[]> = { GK: [], DEF: [], MID: [], FWD: [] }
-    starters.forEach((p) => {
-      const pos = (p.positionSpecific || p.position || '').toUpperCase()
-      if (pos.includes('GK') || pos.includes('GR') || p.is_goalkeeper) {
-        groups.GK.push(p)
-      } else if (['CB', 'LB', 'RB', 'DF', 'DEF'].some((k) => pos.includes(k))) {
-        groups.DEF.push(p)
-      } else if (['CM', 'CDM', 'CAM', 'LM', 'RM', 'MF', 'MID'].some((k) => pos.includes(k))) {
-        groups.MID.push(p)
-      } else {
-        groups.FWD.push(p)
-      }
+const FORMATION_SCHEMAS: Record<string, number[]> = {
+  '4-4-2': [4, 4, 2],
+  '4-3-3': [4, 3, 3],
+  '4-2-3-1': [4, 2, 3, 1],
+  '3-5-2': [3, 5, 2],
+  '5-3-2': [5, 3, 2],
+  '3-4-3': [3, 4, 3],
+}
+
+function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPlayer[]; formation?: string }) {
+  const fieldRows = useMemo(() => {
+    const gk = starters.find((p) => p.is_goalkeeper || (p.positionSpecific || p.position || '').toUpperCase().includes('GK'))
+    const fieldPlayers = starters.filter((p) => p !== gk)
+
+    const schema = FORMATION_SCHEMAS[formation] || [4, 3, 3]
+    const rows: CallupPlayer[][] = []
+
+    let currentIdx = 0
+    schema.forEach((count) => {
+      rows.push(fieldPlayers.slice(currentIdx, currentIdx + count))
+      currentIdx += count
     })
-    return groups
-  }, [starters])
+
+    // Catch any remaining starters if array exceeds schema
+    if (currentIdx < fieldPlayers.length) {
+      rows[rows.length - 1] = [...(rows[rows.length - 1] || []), ...fieldPlayers.slice(currentIdx)]
+    }
+
+    return { gk, rows }
+  }, [starters, formation])
 
   return (
     <div className="relative mx-auto max-w-md my-md">
@@ -119,30 +132,25 @@ function FormationField({ starters }: { starters: CallupPlayer[] }) {
         </div>
 
         <div className="absolute inset-0 flex flex-col items-center justify-between py-md">
-          {/* GK */}
+          {/* Goalkeeper */}
           <div className="flex justify-center">
-            {positionGroups.GK.map((p) => (
-              <PlayerBadgeOnField key={p.playerId || p.id} player={p} />
-            ))}
+            {fieldRows.gk ? (
+              <PlayerBadgeOnField player={fieldRows.gk} />
+            ) : (
+              <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/40 flex items-center justify-center text-[10px] text-white/60">
+                GK
+              </div>
+            )}
           </div>
-          {/* DEF */}
-          <div className="flex w-full justify-around px-md">
-            {positionGroups.DEF.map((p) => (
-              <PlayerBadgeOnField key={p.playerId || p.id} player={p} />
-            ))}
-          </div>
-          {/* MID */}
-          <div className="flex w-full justify-around px-md">
-            {positionGroups.MID.map((p) => (
-              <PlayerBadgeOnField key={p.playerId || p.id} player={p} />
-            ))}
-          </div>
-          {/* FWD */}
-          <div className="flex justify-center gap-lg">
-            {positionGroups.FWD.map((p) => (
-              <PlayerBadgeOnField key={p.playerId || p.id} player={p} />
-            ))}
-          </div>
+
+          {/* Formation Lines (Defenders -> Midfielders -> Forwards) */}
+          {fieldRows.rows.map((rowPlayers, rowIndex) => (
+            <div key={rowIndex} className="flex w-full justify-around px-md">
+              {rowPlayers.map((player) => (
+                <PlayerBadgeOnField key={player.playerId || player.id} player={player} />
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -509,7 +517,7 @@ export default function ClubMatchLineupManagerPage() {
                   </div>
                 )}
 
-                <FormationField starters={starters} />
+                <FormationField starters={starters} formation={formation} />
 
                 <div className="mt-md space-y-xs text-xs text-on-surface-variant">
                   <div className="flex justify-between border-b border-outline-variant/10 py-1">
