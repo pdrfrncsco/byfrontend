@@ -214,9 +214,11 @@ interface LineupSectionProps {
   match: Match
   editable?: boolean
   onSave?: (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => Promise<void>
+  onConfirm?: (clubId: string) => void
+  onConfirmPending?: boolean
 }
 
-function LineupSection({ lineup, isHome, match, editable = false, onSave }: LineupSectionProps) {
+function LineupSection({ lineup, isHome, match, editable = false, onSave, onConfirm, onConfirmPending = false }: LineupSectionProps) {
   // Derive starters/substitutes from props (memoized so deps are stable)
   const derivedStarters = useMemo(
     () => lineup.starters ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'starter') ?? [],
@@ -238,6 +240,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave }: Line
 
   const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const statusConfig = LINEUP_STATUS_CONFIG[String(lineup.status).toLowerCase()] || LINEUP_STATUS_CONFIG.draft
   const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
   const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
@@ -278,9 +281,37 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave }: Line
           </h3>
           <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
         </div>
-        {lineup.formation && (
-          <span className="text-sm text-on-surface-variant">Formação: {lineup.formation}</span>
-        )}
+        <div className="flex items-center gap-sm">
+          {lineup.formation && (
+            <span className="text-sm text-on-surface-variant">Formação: {lineup.formation}</span>
+          )}
+
+          {onConfirm && String(lineup.status).toLowerCase() === 'submitted' && (
+            <>
+              <Button variant="primary" size="sm" onClick={() => setShowConfirm(true)} disabled={onConfirmPending}>
+                {onConfirmPending ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Check className="mr-xs h-4 w-4" />}
+                Aceitar
+              </Button>
+
+              {showConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40" onClick={() => setShowConfirm(false)} />
+                  <Card padding="lg" className="relative z-10 max-w-md mx-4">
+                    <h3 className="text-lg font-semibold">Confirmar aceitação</h3>
+                    <p className="text-sm text-on-surface-variant mt-sm">Tem a certeza que deseja aceitar a escalação do clube <strong>{isHome ? match.home_club_name : match.away_club_name}</strong>? Esta ação irá confirmar a escalação.</p>
+                    <div className="mt-md flex justify-end gap-sm">
+                      <Button variant="secondary" size="sm" onClick={() => setShowConfirm(false)}>Cancelar</Button>
+                      <Button variant="primary" size="sm" onClick={() => { setShowConfirm(false); onConfirm(lineup.club); }} disabled={onConfirmPending}>
+                        {onConfirmPending ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Check className="mr-xs h-4 w-4" />}
+                        Confirmar
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* Formation Field */}
@@ -458,7 +489,7 @@ export function MatchLineupPage() {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
               ) : homeLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -484,6 +515,8 @@ export function MatchLineupPage() {
                   match={match}
               editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
                   onSave={saveLineup}
+                  onConfirm={(clubId) => confirmLineup.mutate(clubId)}
+                  onConfirmPending={confirmLineup.isPending}
                 />
               )}
             </Card>
@@ -491,7 +524,7 @@ export function MatchLineupPage() {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
               ) : awayLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -517,6 +550,8 @@ export function MatchLineupPage() {
                   match={match}
                   editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
                   onSave={saveLineup}
+                  onConfirm={(clubId) => confirmLineup.mutate(clubId)}
+                  onConfirmPending={confirmLineup.isPending}
                 />
               )}
             </Card>
