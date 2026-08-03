@@ -35,6 +35,59 @@ interface CallupPlayer extends LineupPlayer {
   isStarter: boolean
 }
 
+// ─── Position Mapping Helper ──────────────────────────────────────────────────
+
+const POSITION_LABELS: Record<string, string> = {
+  // Main Categories
+  GK: 'Guarda-Redes',
+  GR: 'Guarda-Redes',
+  GOLO: 'Guarda-Redes',
+  GOALKEEPER: 'Guarda-Redes',
+  DF: 'Defesa',
+  DEF: 'Defesa',
+  MF: 'Médio',
+  MID: 'Médio',
+  FW: 'Avançado',
+  FWD: 'Avançado',
+  ATT: 'Avançado',
+
+  // Specific Positions
+  CB: 'Defesa Central',
+  DC: 'Defesa Central',
+  LB: 'Lateral Esquerdo',
+  LE: 'Lateral Esquerdo',
+  RB: 'Lateral Direito',
+  LD: 'Lateral Direito',
+  LWB: 'Ala Esquerdo',
+  RWB: 'Ala Direito',
+  CDM: 'Médio Defensivo',
+  MDF: 'Médio Defensivo',
+  CM: 'Médio Centro',
+  MC: 'Médio Centro',
+  CAM: 'Médio Ofensivo',
+  MCO: 'Médio Ofensivo',
+  MO: 'Médio Ofensivo',
+  LM: 'Médio Esquerdo',
+  ME: 'Médio Esquerdo',
+  RM: 'Médio Direito',
+  MD: 'Médio Direito',
+  LW: 'Extremo Esquerdo',
+  EE: 'Extremo Esquerdo',
+  RW: 'Extremo Direito',
+  ED: 'Extremo Direito',
+  ST: 'Ponta de Lança',
+  PL: 'Ponta de Lança',
+  CF: 'Avançado Centro',
+  AC: 'Avançado Centro',
+}
+
+export function formatPositionLabel(pos?: string, isGoalkeeper?: boolean): string {
+  if (isGoalkeeper) return 'Guarda-Redes'
+  if (!pos) return 'Jogador'
+  const upper = pos.trim().toUpperCase()
+  return POSITION_LABELS[upper] || pos
+}
+
 // ─── Formation Field Display ─────────────────────────────────────────────────
 
 function FormationField({ starters }: { starters: CallupPlayer[] }) {
@@ -506,7 +559,9 @@ export default function ClubMatchLineupManagerPage() {
                         </span>
                         <div>
                           <p className="font-bold text-on-surface">{p.playerName}</p>
-                          <span className="text-[10px] text-on-surface-variant">{p.positionSpecific || p.position}</span>
+                          <span className="text-[10px] text-on-surface-variant">
+                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                          </span>
                         </div>
                       </div>
 
@@ -553,7 +608,9 @@ export default function ClubMatchLineupManagerPage() {
                         </span>
                         <div>
                           <p className="font-semibold text-on-surface">{p.playerName}</p>
-                          <span className="text-[10px] text-on-surface-variant">{p.positionSpecific || p.position}</span>
+                          <span className="text-[10px] text-on-surface-variant">
+                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                          </span>
                         </div>
                       </div>
 
@@ -594,7 +651,9 @@ export default function ClubMatchLineupManagerPage() {
                           <p className={`font-medium ${p.eligible ? 'text-on-surface' : 'text-on-surface-variant line-through'}`}>
                             {p.playerName}
                           </p>
-                          <span className="text-[10px] text-on-surface-variant">{p.positionSpecific || p.position}</span>
+                          <span className="text-[10px] text-on-surface-variant">
+                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                          </span>
                         </div>
                       </div>
 
