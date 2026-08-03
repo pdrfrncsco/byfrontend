@@ -125,9 +125,14 @@ export function contentRouteElements() {
         path={competitionRoutes.matchLineup(':compId', ':matchId')}
         element={<Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>}
       />
+      {/* MatchReportPage: protected — only referees/admins */}
       <Route
         path={competitionRoutes.matchReport(':compId', ':matchId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>
+          </ProtectedRoute>
+        }
       />
       <Route
         path={competitionRoutes.tacticalView(':compId', ':matchId')}

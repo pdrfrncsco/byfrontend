@@ -22,7 +22,7 @@ import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchScoreboard, MatchTimeline, MatchStatsPanel } from '../components'
+import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -293,6 +293,16 @@ export function MatchDetailPage() {
               <Button variant="secondary" size="sm">Vista Táctica</Button>
             </Link>
           </div>
+
+          {/* Countdown — shown when scheduled, auto-refetches on expiry */}
+          {(liveState.match ?? match).status === 'scheduled' && ((liveState.match ?? match).scheduledAt || (liveState.match ?? match).match_date) && (
+            <div className="mt-sm flex justify-center">
+              <MatchCountdown
+                scheduledAt={(liveState.match ?? match).scheduledAt ?? (liveState.match ?? match).match_date!}
+                onExpire={() => liveState.refetch()}
+              />
+            </div>
+          )}
 
           {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
           {match && match.status === 'scheduled' && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (

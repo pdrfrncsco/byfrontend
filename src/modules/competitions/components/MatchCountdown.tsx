@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export interface MatchCountdownProps {
   scheduledAt: string
   className?: string
+  /** Called once when the countdown reaches zero */
+  onExpire?: () => void
 }
 
 function formatRemaining(milliseconds: number) {
@@ -17,15 +19,25 @@ function formatRemaining(milliseconds: number) {
   return 'Em breve'
 }
 
-export function MatchCountdown({ scheduledAt, className = '' }: MatchCountdownProps) {
+export function MatchCountdown({ scheduledAt, className = '', onExpire }: MatchCountdownProps) {
   const [remaining, setRemaining] = useState(() => new Date(scheduledAt).getTime() - Date.now())
+  const expiredRef = useRef(false)
 
   useEffect(() => {
-    const update = () => setRemaining(new Date(scheduledAt).getTime() - Date.now())
+    expiredRef.current = false
+    const update = () => {
+      const next = new Date(scheduledAt).getTime() - Date.now()
+      setRemaining(next)
+      if (next <= 0 && !expiredRef.current) {
+        expiredRef.current = true
+        onExpire?.()
+      }
+    }
     update()
-    const interval = window.setInterval(update, 60_000)
+    // Poll every 10s — precise enough for a minute-level countdown
+    const interval = window.setInterval(update, 10_000)
     return () => window.clearInterval(interval)
-  }, [scheduledAt])
+  }, [scheduledAt, onExpire])
 
   if (!Number.isFinite(remaining) || remaining < 0 || remaining > 7 * 24 * 60 * 60_000) return null
 

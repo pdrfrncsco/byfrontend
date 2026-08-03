@@ -139,6 +139,8 @@ export interface Match {
   awayLineup?: MatchLineup;
   refereeId?: string;
   refereeName?: string;
+  /** ID of the referee specifically designated to this match — used for granular permission checks */
+  designated_referee?: string;
   delegateId?: string;
   attendees?: number;
   streamUrl?: string;

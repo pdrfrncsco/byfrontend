@@ -152,6 +152,12 @@ Os componentes mais críticos do produto (jogo ao vivo, placar, escalação) nã
 | Drag-and-drop para montar escalação (admin) | Médio | Alto |
 | Vista tática (campo visual) | Alto | Alto |
 
+
+| Estado "escalação não publicada"
+| Timer de liberação automática
+| Drag-and-drop para montar escalação (admin de clubs)
+| Vista tática (campo visual, com a escalação das equipas do jogo)
+
 ---
 
 ## 4. Arquitetura Recomendada — MatchCenter

@@ -5,7 +5,7 @@ import { MATCH_QUERY_KEYS } from './useMatchCenter'
 import { useCompetitionAccess } from './useCompetitionAccess'
 import { useAuth } from '@/app/providers'
 import { toast } from 'sonner'
-import type { MatchReport } from '../types'
+import type { Match, MatchReport } from '../types'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -36,8 +36,11 @@ export interface UseMatchReportReturn {
 
 export function useMatchReport({
   matchId,
+  match,
 }: {
   matchId: string
+  /** Pass the match object so the hook can verify if the user is the designated referee */
+  match?: Match | null
 }): UseMatchReportReturn {
   const queryClient = useQueryClient()
   const { isAdmin } = useCompetitionAccess()
@@ -45,6 +48,19 @@ export function useMatchReport({
   const roles = new Set([...(user?.roles ?? []), user?.role ?? ''])
   const isReferee = roles.has('referee') || roles.has('match_referee')
   const canApprove = isAdmin || roles.has('federation')
+
+  // Granular check: user must be the designated referee for THIS specific match,
+  // not just any user with a referee role.
+  const designatedRefereeId: string | undefined =
+    (match as any)?.designated_referee ??
+    (match as any)?.referee_id ??
+    (match as any)?.referee ??
+    undefined
+  const isDesignatedReferee =
+    isReferee &&
+    (designatedRefereeId === undefined || // fallback: allow if match has no designated ref field yet
+      designatedRefereeId === user?.id ||
+      designatedRefereeId === (user as any)?.profile_id)
 
   const query = useQuery({
     queryKey: MATCH_QUERY_KEYS.report(matchId),
@@ -98,7 +114,7 @@ export function useMatchReport({
     isSubmitting: submitMutation.isPending,
     isApproving: approveMutation.isPending,
     uploadRefereeDocument: (file: File) => uploadMutation.mutateAsync(file),
-    canSubmit: isReferee,
+    canSubmit: isDesignatedReferee || isAdmin,
     canApprove,
     isLoading: query.isLoading,
     error: query.error as Error | null,

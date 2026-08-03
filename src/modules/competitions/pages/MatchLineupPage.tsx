@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -217,22 +217,24 @@ interface LineupSectionProps {
 }
 
 function LineupSection({ lineup, isHome, match, editable = false, onSave }: LineupSectionProps) {
-  // Helpers to extract starters/substitutes robustly (normalize status casing)
-  const extractStarters = () => (
-    lineup.starters ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'starter') ?? []
+  // Derive starters/substitutes from props (memoized so deps are stable)
+  const derivedStarters = useMemo(
+    () => lineup.starters ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'starter') ?? [],
+    [lineup],
   )
-  const extractSubstitutes = () => (
-    lineup.substitutes ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'substitute') ?? []
+  const derivedSubstitutes = useMemo(
+    () => lineup.substitutes ?? lineup.lineup_players?.filter((p) => String(p.status).toLowerCase() === 'substitute') ?? [],
+    [lineup],
   )
 
-  const [starterPlayers, setStarterPlayers] = useState<LineupPlayer[]>(extractStarters())
-  const [substitutePlayers, setSubstitutePlayers] = useState<LineupPlayer[]>(extractSubstitutes())
+  const [starterPlayers, setStarterPlayers] = useState<LineupPlayer[]>(derivedStarters)
+  const [substitutePlayers, setSubstitutePlayers] = useState<LineupPlayer[]>(derivedSubstitutes)
 
-  // Sync internal state when props change (fixes lifecycle anti-pattern)
+  // Sync internal drag-and-drop state when backend data changes
   useEffect(() => {
-    setStarterPlayers(extractStarters())
-    setSubstitutePlayers(extractSubstitutes())
-  }, [lineup])
+    setStarterPlayers(derivedStarters)
+    setSubstitutePlayers(derivedSubstitutes)
+  }, [derivedStarters, derivedSubstitutes])
 
   const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
   const [isSaving, setIsSaving] = useState(false)

@@ -23,6 +23,7 @@ import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import { useAddGoal } from '../hooks/useCompetitionAdvanced'
 import { useMatchReport as useMatchCenterReport } from '../hooks/useMatchReport'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
+import { useAuth } from '@/app/providers'
 import type { Match, Goal, MatchStats, GoalType } from '../types'
 import { MatchRefereeReport } from '../components'
 
@@ -316,11 +317,18 @@ export function MatchReportPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
   const { isAdmin } = useCompetitionAccess()
+  const { user } = useAuth()
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
+
+  // Find the specific match (safe to call before hooks that depend on it;
+  // hooks are still always called unconditionally below)
+  const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+
   const {
     report,
     isLoading: loadingReport,
@@ -331,13 +339,18 @@ export function MatchReportPage() {
     submitReport,
     approveReport,
     uploadRefereeDocument,
-  } = useMatchCenterReport({ matchId: matchIdValue })
+  } = useMatchCenterReport({ matchId: matchIdValue, match })
 
   const [showAddGoal, setShowAddGoal] = useState(false)
 
-  // Find the specific match
-  const match = (matches as Match[]).find((m) => m.id === matchIdValue)
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  // Role guard: only referee/admin can access the report page at all
+  const userRoles = new Set([...(user?.roles ?? []), user?.role ?? ''])
+  const hasReportAccess =
+    isAdmin ||
+    userRoles.has('referee') ||
+    userRoles.has('match_referee') ||
+    userRoles.has('delegate') ||
+    userRoles.has('federation')
 
   // Loading state
   if (loadingComp || loadingMatches) {
@@ -392,6 +405,40 @@ export function MatchReportPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
         <NotFoundComponent />
+      </div>
+    )
+  }
+
+  // Guard: User must have permission to access the report
+  if (!hasReportAccess) {
+    const AccessDeniedComponent = () => (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
+        <AlertCircle className="h-12 w-12 text-error opacity-70" />
+        <p className="text-lg font-medium text-on-surface">Acesso não autorizado</p>
+        <p className="text-sm text-on-surface-variant text-center max-w-md">
+          O relatório de árbitro é exclusivo para árbitros designados, delegados e administradores da competição.
+        </p>
+        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+          <Button variant="secondary" size="sm">
+            Voltar ao jogo
+          </Button>
+        </Link>
+      </div>
+    )
+    if (isDashboard) {
+      return (
+        <DashboardLayout
+          title="Acesso não autorizado"
+          dashboardType="competition"
+          sidebarLinks={sidebarLinks}
+        >
+          <AccessDeniedComponent />
+        </DashboardLayout>
+      )
+    }
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+        <AccessDeniedComponent />
       </div>
     )
   }
