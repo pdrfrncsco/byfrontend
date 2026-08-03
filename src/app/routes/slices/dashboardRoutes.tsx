@@ -48,6 +48,7 @@ const CompetitionMatchesPage = lazy(() => import('@/modules/competitions/pages/C
 const MatchDetailPage = lazy(() => import('@/modules/competitions/pages/MatchDetailPage').then(m => ({ default: m.MatchDetailPage })))
 const MatchLineupPage = lazy(() => import('@/modules/competitions/pages/MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
 const MatchReportPage = lazy(() => import('@/modules/competitions/pages/MatchReportPage').then(m => ({ default: m.MatchReportPage })))
+const OrganizationLineupSubmissionsPage = lazy(() => import('@/modules/organizations/pages/OrganizationLineupSubmissionsPage').then(m => ({ default: m.default })))
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
 )
@@ -196,6 +197,10 @@ export function dashboardRouteElements() {
       <Route
         path={organizationRoutes.affiliations}
         element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationAffiliationsPage /></ProtectedRoute>}
+      />
+      <Route
+        path={organizationRoutes.lineups}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationLineupSubmissionsPage /></Suspense></ProtectedRoute>}
       />
 
       {/* Competition admin list */}

@@ -27,6 +27,7 @@ export const ROUTES = {
   DASHBOARD_ORGANIZATION_COMPETITIONS: '/dashboard/organization/competitions',
   DASHBOARD_ORGANIZATION_MEMBERS: '/dashboard/organization/members',
   DASHBOARD_ORGANIZATION_AFFILIATIONS: '/dashboard/organization/affiliations',
+  DASHBOARD_ORGANIZATION_LINEUPS: '/dashboard/organization/lineups',
   DASHBOARD_CLUB: '/dashboard/club',
   DASHBOARD_CLUB_SETTINGS: '/dashboard/club/settings',
   DASHBOARD_CLUB_MEMBERS: '/dashboard/club/members',
