@@ -131,6 +131,11 @@ export const organizationApi = {
     return response.data.data
   },
 
+  async getPendingLineups(params?: Record<string, any>) {
+    const response = await client.get(API_ROUTES.ORGANIZATIONS.PENDING_LINEUPS, { params })
+    return response.data.data ?? response.data
+  },
+
   // ── Phase C: Member Management ──────────────────────────────────────────────
 
   async getMembers(): Promise<OrgMember[]> {

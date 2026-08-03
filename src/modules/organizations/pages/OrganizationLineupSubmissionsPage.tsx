@@ -4,7 +4,7 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { useOrganizationMe, useOrganizationTournaments } from '../hooks'
 import { Card, Button } from '@/components/ui'
-import { competitionApi } from '@/modules/competitions/services/competition.api'
+import { organizationApi } from '../services/organization.api'
 import type { LineupSubmission } from '@/modules/competitions/types/competition.types'
 import { format } from 'date-fns'
 
@@ -16,34 +16,15 @@ export default function OrganizationLineupSubmissionsPage() {
   const [submissions, setSubmissions] = useState<Array<{ competitionId: string; competitionName: string; matchId: string; matchLabel: string; lineup: LineupSubmission }>>([])
 
   useEffect(() => {
-    if (!competitions || (competitions as any).length === 0) return
     let mounted = true
     ;(async () => {
       setLoading(true)
       try {
-        const results: typeof submissions = []
-        for (const comp of competitions as any) {
-          try {
-            const matches = await competitionApi.listMatches(comp.id)
-            for (const match of matches ?? []) {
-              try {
-                const lineups = await competitionApi.getLineups(match.id)
-                if (Array.isArray(lineups)) {
-                  for (const l of lineups) {
-                    if (String(l.status).toLowerCase() === 'submitted') {
-                      results.push({ competitionId: comp.id, competitionName: comp.name, matchId: match.id, matchLabel: `${match.home_club_name} vs ${match.away_club_name}`, lineup: l })
-                    }
-                  }
-                }
-              } catch (e) {
-                // ignore per-match errors
-              }
-            }
-          } catch (e) {
-            // ignore per-competition errors
-          }
-        }
-        if (mounted) setSubmissions(results)
+        const resp = await organizationApi.getPendingLineups()
+        const results = Array.isArray(resp.results) ? resp.results : resp
+        if (mounted) setSubmissions(results.map((s: any) => ({ competitionId: s.competition_id, competitionName: s.competition_name, matchId: s.match, matchLabel: s.match_str, lineup: s })))
+      } catch (e) {
+        // ignore
       } finally {
         if (mounted) setLoading(false)
       }

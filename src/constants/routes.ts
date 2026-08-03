@@ -120,6 +120,7 @@ export const API_ROUTES = {
     MEMBER_DETAIL: (id: string) => `/organizations/me/members/${id}/`,
     CLUB_REQUESTS: '/organizations/me/club-requests/',
     CLUB_REQUEST_REVIEW: (id: string) => `/organizations/me/club-requests/${id}/`,
+    PENDING_LINEUPS: '/organizations/me/lineups/pending/',
     PUBLIC: {
       LIST: '/organizations/public/',
       GET: (slug: string) => `/organizations/public/${slug}/`,
