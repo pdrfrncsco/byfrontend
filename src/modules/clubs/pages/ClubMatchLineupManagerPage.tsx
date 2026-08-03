@@ -374,22 +374,56 @@ export default function ClubMatchLineupManagerPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-md">
-              <div className="text-right">
-                <p className="text-xs text-on-surface-variant">Convocados Totais</p>
-                <p className="text-xl font-bold text-on-surface">{starters.length + substitutes.length} / 18</p>
+              <div className="flex items-center gap-md">
+                <div className="text-right">
+                  <p className="text-xs text-on-surface-variant">Convocados Totais</p>
+                  <p className="text-xl font-bold text-on-surface">{starters.length + substitutes.length} / 18</p>
+                </div>
+                {(() => {
+                  const hasGK = starters.some((p) => p.position === 'GK' || p.is_goalkeeper)
+                  const isLocked =
+                    (existingLineup as any)?.status === 'locked' ||
+                    (existingLineup as any)?.status === 'confirmed' ||
+                    currentMatch?.status === 'live' ||
+                    currentMatch?.status === 'finished'
+
+                  const canSubmit = starters.length === 11 && hasGK && !isLocked
+
+                  return (
+                    <Button
+                      variant="primary"
+                      onClick={() => submitMutation.mutate()}
+                      disabled={submitMutation.isPending || !canSubmit}
+                      title={
+                        isLocked
+                          ? 'A escalação está bloqueada e já não pode ser alterada.'
+                          : starters.length !== 11
+                          ? 'Selecione exatamente 11 titulares'
+                          : !hasGK
+                          ? 'Defina um Guarda-redes no 11 inicial'
+                          : 'Submeter escalação oficial'
+                      }
+                    >
+                      {submitMutation.isPending ? (
+                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="mr-xs h-4 w-4" />
+                      )}
+                      {isLocked ? 'Escalação Bloqueada' : 'Submeter Escalação'}
+                    </Button>
+                  )
+                })()}
               </div>
-              <Button
-                variant="primary"
-                onClick={() => submitMutation.mutate()}
-                disabled={submitMutation.isPending || starters.length !== 11}
-              >
-                {submitMutation.isPending ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Send className="mr-xs h-4 w-4" />}
-                Submeter Escalação
-              </Button>
             </div>
-          </div>
-        </section>
+
+            {/* Aviso de bloqueio oficial */}
+            {((existingLineup as any)?.status === 'locked' || (existingLineup as any)?.status === 'confirmed') && (
+              <div className="mt-md flex items-center gap-sm rounded-xl bg-amber-500/10 border border-amber-500/30 p-sm text-xs font-medium text-amber-800">
+                <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-amber-600" />
+                <span>Esta escalação foi confirmada/bloqueada pela organização da competição e já não permite alterações pelo clube.</span>
+              </div>
+            )}
+          </section>
 
         {/* Layout de Gestão Táctica: Campo + Listas */}
         <div className="grid gap-xl lg:grid-cols-12">
