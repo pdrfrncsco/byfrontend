@@ -15,11 +15,8 @@ function wrapper({ children }: { children?: React.ReactNode }) {
 describe('useAddMatchEvent', () => {
   const competitionId = 'comp-1'
   const matchId = 'match-1'
-
   beforeEach(() => {
     vi.restoreAllMocks()
-    // By default, prevent real network calls for competitionApi.get unless a test overrides it
-    vi.spyOn(competitionApi, 'get').mockRejectedValue(new Error('not found'))
   })
 
   it('calls createSuspension with default matches_suspended for red_card', async () => {
@@ -45,7 +42,7 @@ describe('useAddMatchEvent', () => {
     })
 
     expect(createSuspensionSpy).toHaveBeenCalledTimes(1)
-    const payload = createSuspensionSpy.mock.calls[0][1]
+    const payload = createSuspensionSpy.mock.calls[0]?.[1] as any
     expect(payload.player).toBe(createdEvent.player)
     expect(payload.suspension_type).toBe('red_card')
     expect(payload.matches_suspended).toBe(1)
@@ -54,7 +51,7 @@ describe('useAddMatchEvent', () => {
   it('uses competition-level override for matches_suspended when provided', async () => {
     const createdEvent = {
       id: 'e2',
-      event_type: 'red_card',
+      event_type: 'yellow_red',
       player: 'player-2',
       club: 'club-2',
       minute: 10,
@@ -63,21 +60,21 @@ describe('useAddMatchEvent', () => {
     // Mock addMatchEvent to resolve with createdEvent
     vi.spyOn(competitionApi, 'addMatchEvent').mockResolvedValue(createdEvent as any)
 
-    // Mock competitionApi.get to return suspension rules override for red_card
-    vi.spyOn(competitionApi, 'get').mockResolvedValue({ id: competitionId, suspension_rules: { red_card: 2 } } as any)
+    // Mock competitionApi.get to return suspension rules override
+    vi.spyOn(competitionApi, 'get').mockResolvedValue({ id: competitionId, suspension_rules: { yellow_red: 2 } } as any)
 
     const createSuspensionSpy = vi.spyOn(competitionApi, 'createSuspension').mockResolvedValue({} as any)
 
     const { result } = renderHook(() => useAddMatchEvent(competitionId, matchId), { wrapper })
 
     await act(async () => {
-      await result.current.mutateAsync({ type: 'red_card', player: 'player-2' } as any)
+      await result.current.mutateAsync({ type: 'yellow_red', player: 'player-2' } as any)
     })
 
     expect(createSuspensionSpy).toHaveBeenCalledTimes(1)
-    const payload = createSuspensionSpy.mock.calls[0][1]
+    const payload = createSuspensionSpy.mock.calls[0]?.[1] as any
     expect(payload.player).toBe(createdEvent.player)
-    expect(payload.suspension_type).toBe('red_card')
+    expect(payload.suspension_type).toBe('double_yellow')
     expect(payload.matches_suspended).toBe(2)
   })
 })

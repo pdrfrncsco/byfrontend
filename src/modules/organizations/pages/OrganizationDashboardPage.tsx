@@ -20,13 +20,15 @@ import {
   useOrganizationClubs,
   useOrganizationTournaments,
   useLaunchOrganization,
+  useOnboardingStatus,
 } from '../hooks'
 import { KpiCard } from '../components'
-import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, PlusCircle, Rocket, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
+import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, PlusCircle, Rocket, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
 import type { OrganizationClub } from '../types'
+import { getOrganizationSidebarLinks } from '../constants/navigation'
 
 interface OrganizationTournamentRow {
   id: string
@@ -73,7 +75,9 @@ function formatTimeAgo(dateString?: string | null): string {
 
 export default function OrganizationDashboardPage() {
   const { data: org, isLoading: isLoadingOrg } = useOrganizationMe()
+  const { data: onboarding } = useOnboardingStatus()
   const slug = org?.slug
+  const showLineups = Boolean(onboarding?.is_organization_admin)
 
   const { data: kpis, isLoading: isLoadingKpis } = useOrganizationKpis(slug)
   const { data: clubs, isLoading: isLoadingClubs } = useOrganizationClubs(slug)
@@ -91,15 +95,7 @@ export default function OrganizationDashboardPage() {
     </Button>
   )
 
-  const sidebarLinks = [
-    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" />, active: true },
-    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Jogadores Registados', href: ROUTES.DASHBOARD_ORGANIZATION_PLAYERS, icon: <UserCheck className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getOrganizationSidebarLinks('overview', showLineups)
 
   const isLoadingKpiSection = isLoadingOrg || isLoadingKpis
   const isLoadingTournamentsSection = isLoadingOrg || isLoadingTournaments

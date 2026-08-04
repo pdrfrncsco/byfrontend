@@ -2,17 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
-import { useOrganizationMe, useOrganizationTournaments, useOnboardingStatus } from '../hooks'
+import { useOnboardingStatus } from '../hooks'
 import { Card, Button } from '@/components/ui'
 import { organizationApi } from '../services/organization.api'
+import { competitionApi } from '@/modules/competitions/services'
 import type { LineupSubmission } from '@/modules/competitions/types/competition.types'
 import { format } from 'date-fns'
 import { getOrganizationSidebarLinks } from '../constants/navigation'
 
 export default function OrganizationLineupSubmissionsPage() {
-  const { data: org } = useOrganizationMe()
-  const slug = org?.slug
-  const { data: competitions } = useOrganizationTournaments(slug)
   const { data: onboarding } = useOnboardingStatus()
   const showLineups = Boolean(onboarding?.is_organization_admin)
   const [loading, setLoading] = useState(false)
@@ -32,8 +30,10 @@ export default function OrganizationLineupSubmissionsPage() {
         if (mounted) setLoading(false)
       }
     })()
-    return () => { mounted = false }
-  }, [competitions])
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const accept = async (matchId: string, clubId: string) => {
     try {
