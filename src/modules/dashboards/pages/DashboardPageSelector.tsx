@@ -1,8 +1,6 @@
 import { useState, lazy, Suspense } from 'react'
 import { PendingOnboardingRedirect } from '@/app/routes'
 import { ExecutiveDashboardPage } from './ExecutiveDashboardPage'
-import { FederationDashboardPage } from './FederationDashboardPage'
-import { LeagueDashboardPage } from './LeagueDashboardPage'
 import { CompetitionDashboardPage } from './CompetitionDashboardPage'
 import ClubDashboardPage from '@/modules/clubs/pages/ClubDashboardPage'
 import OrganizationDashboardPage from '@/modules/organizations/pages/OrganizationDashboardPage'
@@ -15,8 +13,6 @@ import {
   Sliders,
   CheckCircle2,
   RotateCcw,
-  Shield,
-  Trophy,
   Building2,
   Users,
   Network,
@@ -50,22 +46,10 @@ const DEV_OPTIONS: DevDashboardOption[] = [
     color: '#94d3c1',
   },
   {
-    type: 'federation',
-    icon: <Shield className="w-4 h-4" />,
-    role: 'admin (FAF)',
-    color: '#60a5fa',
-  },
-  {
     type: 'organization',
     icon: <Building2 className="w-4 h-4" />,
     role: 'owner / admin',
     color: '#a78bfa',
-  },
-  {
-    type: 'league',
-    icon: <Trophy className="w-4 h-4" />,
-    role: 'admin (Liga)',
-    color: '#e9c349',
   },
   {
     type: 'competition',
@@ -109,14 +93,10 @@ function DashboardLoadingSkeleton() {
 
 function renderDashboard(type: DashboardType) {
   switch (type) {
-    case 'federation':
-      return <FederationDashboardPage />
     case 'executive':
       return <ExecutiveDashboardPage />
     case 'organization':
       return <OrganizationDashboardPage />
-    case 'league':
-      return <LeagueDashboardPage />
     case 'club':
       return <ClubDashboardPage />
     case 'competition':

@@ -12,8 +12,6 @@ import { ROUTES } from '@/constants/routes'
 import {
   DashboardPageSelector,
   ExecutiveDashboardPage,
-  FederationDashboardPage,
-  LeagueDashboardPage,
   CompetitionDashboardPage,
 } from '@/modules/dashboards'
 import {
@@ -101,14 +99,6 @@ export function dashboardRouteElements() {
       <Route
         path={dashboardRoutes.executive}
         element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><ExecutiveDashboardPage /></ProtectedRoute>}
-      />
-      <Route
-        path={dashboardRoutes.federation}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><FederationDashboardPage /></ProtectedRoute>}
-      />
-      <Route
-        path={dashboardRoutes.league}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><LeagueDashboardPage /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.competition}

@@ -9,10 +9,8 @@ import { useAuth } from '@/app/providers/AuthProvider'
  * The order here reflects the resolution priority (highest → lowest).
  */
 export type DashboardType =
-  | 'federation'   // FAF or federation-type tenant → full ecosystem view
   | 'executive'    // Platform super-admin / cross-org executive
   | 'organization' // Org owner/admin with no specific tenant context
-  | 'league'       // League/association tenant view
   | 'competition'  // Competition organizer within a league/federation
   | 'club'         // Club admin managing squads, transfers, licences
   | 'player'       // Individual athlete portal
@@ -112,16 +110,16 @@ function resolveFromTenant(
   type: string,
 ): DashboardType | null {
   // Explicit slug overrides (specific well-known tenants)
-  if (slug === 'faf') return 'federation'
-  if (slug === 'girabola') return 'league'
+  if (slug === 'faf') return 'executive'
+  if (slug === 'girabola') return 'executive'
 
   // Tenant type mapping
   switch (type) {
     case TENANT_TYPES.FEDERATION:
-      return 'federation'
+      return 'executive'
     case TENANT_TYPES.LEAGUE:
     case TENANT_TYPES.ASSOCIATION:
-      return 'league'
+      return 'executive'
     case TENANT_TYPES.ORGANIZER:
       return 'competition'
     case TENANT_TYPES.CLUB:
@@ -135,10 +133,8 @@ function resolveFromTenant(
 // ─── Labels ───────────────────────────────────────────────────────────────────
 
 const DASHBOARD_LABELS: Record<DashboardType, string> = {
-  federation: 'Federação (FAF)',
   executive: 'Administrador Executivo',
   organization: 'Proprietário de Organização',
-  league: 'Liga / Associação',
   competition: 'Organizador de Provas',
   club: 'Gestor de Clube',
   player: 'Portal do Jogador',
