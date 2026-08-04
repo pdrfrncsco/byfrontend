@@ -77,7 +77,7 @@ export function useConfirmLineup(matchId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: () => competitionApi.confirmLineup(matchId),
+    mutationFn: (clubId: string) => competitionApi.confirmLineup(matchId, clubId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lineupKeys.byMatch(matchId) })
       toast.success('Escalação confirmada!')
@@ -92,7 +92,7 @@ export function useLockLineup(matchId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: () => competitionApi.lockLineup(matchId),
+    mutationFn: (clubId?: string) => competitionApi.lockLineup(matchId, clubId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: lineupKeys.byMatch(matchId) })
       toast.success('Escalação bloqueada!')

@@ -158,9 +158,15 @@ DELETE /competitions/<id>/matches/<mid>/events/<eid>/ ← deleteMatchEvent()
 GET    /competitions/matches/<mid>/lineups/           ← getLineups()
 GET    /competitions/matches/<mid>/lineups/<id>/      ← getLineup()
 POST   /competitions/matches/<mid>/lineups/           ← submitLineup()
-POST   /competitions/matches/<mid>/lineups/confirm/   ← confirmLineup()
-POST   /competitions/matches/<mid>/lineups/lock/      ← lockLineup()
+POST   /competitions/matches/<mid>/lineups/confirm/   ← confirmLineup()  (body: { club_id: <uuid> })
+POST   /competitions/matches/<mid>/lineups/lock/      ← lockLineup()      (optional body: { club_id: <uuid> })
 ```
+
+Notas importantes:
+- confirmLineup() exige `club_id` no corpo e só pode ser executado por: superuser, administrador da organização (org-admin) ou membros do clube com papel `manager`, `coach` ou `assistant_coach`. Chamadas sem permissão retornam 403.
+- lockLineup() aceita opcionalmente `club_id` para bloquear apenas a escalação desse clube (requer permissão do clube ou org-admin); sem `club_id` bloqueia todas as escalações do jogo e exige permissão de org-admin ou superuser.
+- Frontend: ao confirmar/bloquear uma escalação, enviar `club_id` quando a ação for por parte do clube; para ações organizacionais não enviar `club_id`.
+
 
 ### Relatórios de Match
 ```

@@ -43,7 +43,8 @@
 | `/competitions/matches/:matchId/lineups/` | GET | ✅ | ✅ | Lista lineups |
 | `/competitions/matches/:matchId/lineups/` | POST | ✅ | ✅ | Submeter lineup |
 | `/competitions/matches/:matchId/lineups/:teamId/` | GET | ✅ | ✅ | **IMPLEMENTADO** - LineupSubmissionViewSet.retrieve() |
-| `/competitions/matches/:matchId/lineups/lock/` | POST | ✅ | ✅ | Bloquear lineup |
+| `/competitions/matches/:matchId/lineups/confirm/` | POST | ✅ | ✅ | Confirmar lineup — corpo: `{ "club_id": "<uuid>" }`. Requer `club_id` e permissão: org-admin, club manager/coach/assistant_coach ou superuser; responde 403 se não autorizado |
+| `/competitions/matches/:matchId/lineups/lock/` | POST | ✅ | ✅ | Bloquear lineup — aceita body opcional `{ "club_id": "<uuid>" }`. Com `club_id` bloqueia apenas a escalação do clube (requer permissão do clube ou org-admin); sem `club_id` bloqueia todas as escalações do jogo (requer org-admin ou superuser). |
 
 ### 2.4 Match Report & Stats
 

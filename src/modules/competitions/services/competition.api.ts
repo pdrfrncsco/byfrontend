@@ -279,9 +279,12 @@ export const competitionApi = {
     return response.data.data
   },
 
-  async lockLineup(matchId: string): Promise<LineupSubmission> {
+  async lockLineup(matchId: string, clubId?: string): Promise<LineupSubmission> {
+    const payload: Record<string, any> = {}
+    if (clubId) payload.club_id = clubId
     const response = await client.post<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/lock/`
+      `/competitions/matches/${matchId}/lineups/lock/`,
+      Object.keys(payload).length ? payload : undefined
     )
     return response.data.data
   },

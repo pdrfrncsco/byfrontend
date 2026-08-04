@@ -143,8 +143,8 @@ export * from './competition.schemas'
 | Remover Evento | DELETE .../events/<id>/ | deleteMatchEvent() | ✅ UUID validation |
 | Escalações | GET .../lineups/ | getLineups() | ✅ |
 | Submeter | POST .../lineups/ | submitLineup() | ✅ LineupSubmissionDataSchema |
-| Confirmar | POST .../lineups/confirm/ | confirmLineup() | ✅ |
-| Bloquear | POST .../lineups/lock/ | lockLineup() | ✅ |
+| Confirmar | POST .../lineups/confirm/ | confirmLineup(matchId, clubId) — body: { club_id } | ✅ (requires club_id; club/org permissions) |
+| Bloquear | POST .../lineups/lock/ | lockLineup(matchId, clubId?) — body optional { club_id } | ✅ (optional club_id; locks one club or all; permissions apply) |
 | Relatório | GET .../report/ | getMatchReport() | ✅ |
 | Criar Relatório | POST .../report/create/ | createMatchReport() | ✅ MatchReportCreateSchema |
 | Adicionar Golo | POST .../report/add-goal/ | addGoal() | ✅ GoalCreateSchema |

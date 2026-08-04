@@ -218,18 +218,18 @@ export const competitionApiValidated = {
     return handleApiCall(() => competitionApi.submitLineup(matchId, validated))
   },
 
-  async confirmLineup(matchId: string): Promise<LineupSubmission> {
-    if (!matchId) {
-      throw new ApiError(400, 'Match ID is required', 'MISSING_FIELD')
+  async confirmLineup(matchId: string, clubId: string): Promise<LineupSubmission> {
+    if (!matchId || !clubId) {
+      throw new ApiError(400, 'Match ID and Club ID are required', 'MISSING_FIELDS')
     }
-    return handleApiCall(() => competitionApi.confirmLineup(matchId))
+    return handleApiCall(() => competitionApi.confirmLineup(matchId, clubId))
   },
 
-  async lockLineup(matchId: string): Promise<LineupSubmission> {
+  async lockLineup(matchId: string, clubId?: string): Promise<LineupSubmission> {
     if (!matchId) {
       throw new ApiError(400, 'Match ID is required', 'MISSING_FIELD')
     }
-    return handleApiCall(() => competitionApi.lockLineup(matchId))
+    return handleApiCall(() => competitionApi.lockLineup(matchId, clubId))
   },
 
   // ─── Match Reports ───────────────────────────────────────────────────────
