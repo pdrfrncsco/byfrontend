@@ -178,4 +178,27 @@ describe('organizationApi', () => {
       expect(result.status).toBe('rejected')
     })
   })
+
+  describe('Lineup Reviews', () => {
+    it('should review pending lineup', async () => {
+      const lineup = {
+        id: 'lineup-1',
+        match: 'match-1',
+        club: 'club-1',
+        status: 'confirmed',
+      }
+      vi.mocked(client.patch).mockResolvedValueOnce(createMockResponse(lineup))
+
+      const result = await organizationApi.reviewPendingLineup('lineup-1', {
+        approve: true,
+        review_notes: 'Ok',
+      })
+
+      expect(result).toEqual(lineup)
+      expect(client.patch).toHaveBeenCalledWith(expect.stringContaining('/organizations/me/lineups/pending/lineup-1/review/'), {
+        approve: true,
+        review_notes: 'Ok',
+      })
+    })
+  })
 })

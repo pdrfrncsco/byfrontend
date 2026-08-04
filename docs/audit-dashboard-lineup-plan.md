@@ -312,3 +312,42 @@ Dia 2 (manhã): Fase 3 — Corrigir sidebar da organização
 Dia 2 (tarde): Fase 4 — Completar fluxo de aprovação de escalações
 Dia 3:          Fase 5 — Testes e validação E2E do fluxo completo
 ```
+
+
+
+
+
+
+
+
+• Fechei a fase 4 do fluxo de lineups.
+
+  - Backend: adicionei revisão de submissão com rejected, review_notes,      
+    reviewed_at/by, serviço review_lineup_submission e o endpoint PATCH /api/
+    v1/organizations/me/lineups/pending/<id>/review/ em backend/
+    organizations/views/organization_views.py:529, backend/competitions/     
+    models/match_lineup.py:212, backend/competitions/services/
+    lineup_service.py:345, backend/organizations/urls.py:42, backend/        
+    competitions/migrations/0017_linesubmission_review_fields.py.
+
+  - Frontend: a tela de submissões agora aprova/rejeita com notas e feedback 
+    visual em frontend/src/modules/organizations/pages/
+    OrganizationLineupSubmissionsPage.tsx:60, usando o novo client em        
+    frontend/src/modules/organizations/services/organization.api.ts:140 e a  
+    rota em frontend/src/constants/routes.ts:124.
+
+  - Tipos/API: atualizei o status e payload de revisão em frontend/src/      
+    modules/competitions/types/competition.types.ts:96.
+
+  - Testes: passei a suíte python manage.py test
+    organizations.tests.test_pending_lineups
+    competitions.tests.test_lineup_integration.
+
+  - Frontend lint: npx eslint nos arquivos tocados ficou limpo de erros;     
+    restam só warnings pré-existentes de any em organization.api.ts e no     
+    teste dela.
+
+  Se quiser, no próximo passo eu posso fechar a fase 5 com ajustes de UX fina
+  nessa tela ou revisar a integração dos badges/estados em outras listas     
+  similares.
+

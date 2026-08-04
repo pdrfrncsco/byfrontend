@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { format } from 'date-fns'
+import { toast } from 'sonner'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
+import { Button, Badge, Card, Textarea } from '@/components/ui'
 import { useOnboardingStatus } from '../hooks'
-import { Card, Button } from '@/components/ui'
 import { organizationApi } from '../services/organization.api'
-import { competitionApi } from '@/modules/competitions/services'
 import type { LineupSubmission } from '@/modules/competitions/types/competition.types'
-import { format } from 'date-fns'
 import { getOrganizationSidebarSections } from '../constants/navigation'
 
 interface PendingLineupSubmission extends LineupSubmission {
@@ -20,6 +20,9 @@ export default function OrganizationLineupSubmissionsPage() {
   const { data: onboarding } = useOnboardingStatus()
   const showLineups = Boolean(onboarding?.is_organization_admin)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [actionId, setActionId] = useState<string | null>(null)
+  const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({})
   const [submissions, setSubmissions] = useState<
     Array<{ competitionId: string; competitionName: string; matchId: string; matchLabel: string; lineup: LineupSubmission }>
   >([])
@@ -28,6 +31,7 @@ export default function OrganizationLineupSubmissionsPage() {
     let mounted = true
     ;(async () => {
       setLoading(true)
+      setError(null)
       try {
         const resp = await organizationApi.getPendingLineups()
         const results = Array.isArray(resp.results) ? resp.results : resp
@@ -43,7 +47,7 @@ export default function OrganizationLineupSubmissionsPage() {
           )
         }
       } catch (e) {
-        // ignore
+        setError('Não foi possível carregar as submissões de escalação.')
       } finally {
         if (mounted) setLoading(false)
       }
@@ -53,13 +57,26 @@ export default function OrganizationLineupSubmissionsPage() {
     }
   }, [])
 
-  const accept = async (matchId: string, clubId: string) => {
+  const submitReview = async (submissionId: string, approve: boolean) => {
+    const notes = reviewNotes[submissionId]?.trim() ?? ''
+    setActionId(submissionId)
     try {
-      await competitionApi.confirmLineup(matchId, clubId)
-      setSubmissions(prev => prev.filter(s => !(s.matchId === matchId && s.lineup.club === clubId)))
+      const reviewed = await organizationApi.reviewPendingLineup(submissionId, {
+        approve,
+        review_notes: notes || undefined,
+      })
+      setSubmissions((prev) => prev.filter((submission) => submission.lineup.id !== reviewed.id))
+      setReviewNotes((prev) => {
+        const next = { ...prev }
+        delete next[submissionId]
+        return next
+      })
+      toast.success(approve ? 'Escalação aprovada.' : 'Escalação rejeitada.')
     } catch (e) {
-      console.error('Failed to accept lineup', e)
-      // Could show toast here
+      console.error('Failed to review lineup', e)
+      toast.error('Não foi possível processar a revisão da escalação.')
+    } finally {
+      setActionId(null)
     }
   }
 
@@ -80,6 +97,12 @@ export default function OrganizationLineupSubmissionsPage() {
 
         {loading && <div>Carregando submissões...</div>}
 
+        {!loading && error && (
+          <Card padding="lg" variant="flat">
+            <div className="text-sm text-error">{error}</div>
+          </Card>
+        )}
+
         {!loading && submissions.length === 0 && (
           <Card padding="lg" variant="flat">
             <div className="text-center text-sm text-on-surface-variant">Nenhuma submissão de escalação pendente encontrada para as suas competições.</div>
@@ -89,21 +112,61 @@ export default function OrganizationLineupSubmissionsPage() {
         <div className="space-y-sm">
           {submissions.map((s) => (
             <Card key={`${s.matchId}-${s.lineup.club}`} padding="lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-on-surface-variant">{s.competitionName}</div>
-                  <div className="font-medium">{s.matchLabel}</div>
+              <div className="flex flex-col gap-md lg:flex-row lg:items-start lg:justify-between">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-sm">
+                    <Badge variant="outline">{s.competitionName}</Badge>
+                    <Badge variant="warning">Pendente</Badge>
+                  </div>
+                  <div className="text-lg font-semibold">{s.matchLabel}</div>
                   <div className="text-sm text-on-surface-variant">Clube: {s.lineup.club_name || s.lineup.club}</div>
-                  <div className="text-xs text-on-surface-variant">Submetida: {s.lineup.submitted_at ? format(new Date(s.lineup.submitted_at), 'Pp') : '—'}</div>
+                  <div className="text-xs text-on-surface-variant">
+                    Submetida: {s.lineup.submitted_at ? format(new Date(s.lineup.submitted_at), 'Pp') : '—'}
+                  </div>
+                  <div className="text-xs text-on-surface-variant">
+                    Estado atual: {s.lineup.status_display || s.lineup.status}
+                  </div>
                 </div>
+
                 <div className="flex gap-sm">
                   <Button size="sm" variant="ghost" asChild>
                     <Link to={ROUTES.DASHBOARD_MATCH_LINEUP(s.competitionId, s.matchId)}>Ver</Link>
                   </Button>
-                  <Button size="sm" variant="primary" onClick={() => void accept(s.matchId, s.lineup.club)}>
-                    Aceitar
-                  </Button>
                 </div>
+              </div>
+
+              <div className="mt-md space-y-sm">
+                <label className="text-sm font-medium text-on-surface">Notas de revisão</label>
+                <Textarea
+                  value={reviewNotes[s.lineup.id] ?? ''}
+                  onChange={(event) =>
+                    setReviewNotes((prev) => ({
+                      ...prev,
+                      [s.lineup.id]: event.target.value,
+                    }))
+                  }
+                  placeholder="Adicione um comentário opcional para a aprovação ou rejeição."
+                  rows={3}
+                />
+              </div>
+
+              <div className="mt-md flex flex-wrap justify-end gap-sm">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => void submitReview(s.lineup.id, false)}
+                  disabled={actionId === s.lineup.id}
+                >
+                  {actionId === s.lineup.id ? 'Processando...' : 'Rejeitar'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => void submitReview(s.lineup.id, true)}
+                  disabled={actionId === s.lineup.id}
+                >
+                  {actionId === s.lineup.id ? 'Processando...' : 'Aprovar'}
+                </Button>
               </div>
             </Card>
           ))}

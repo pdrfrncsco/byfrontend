@@ -17,6 +17,7 @@ import type {
   ClubAffiliationReviewData,
   OrganizationClub,
 } from '../types'
+import type { LineupSubmission, LineupSubmissionReviewData } from '@/modules/competitions/types/competition.types'
 
 export const organizationApi = {
   async getMe(): Promise<Organization> {
@@ -134,6 +135,14 @@ export const organizationApi = {
   async getPendingLineups(params?: Record<string, any>) {
     const response = await client.get(API_ROUTES.ORGANIZATIONS.PENDING_LINEUPS, { params })
     return response.data.data ?? response.data
+  },
+
+  async reviewPendingLineup(submissionId: string, data: LineupSubmissionReviewData): Promise<LineupSubmission> {
+    const response = await client.patch<ApiResponse<LineupSubmission>>(
+      API_ROUTES.ORGANIZATIONS.PENDING_LINEUP_REVIEW(submissionId),
+      data,
+    )
+    return response.data.data
   },
 
   // ── Phase C: Member Management ──────────────────────────────────────────────

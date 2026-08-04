@@ -93,7 +93,7 @@ export interface PlayerStats {
 
 // ─── Lineup Types ──────────────────────────────────────────────────────────
 
-export type LineupStatus = 'draft' | 'submitted' | 'confirmed' | 'locked'
+export type LineupStatus = 'draft' | 'submitted' | 'confirmed' | 'rejected' | 'locked'
 export type LineupPlayerStatus = 'starter' | 'substitute'
 
 
@@ -109,6 +109,10 @@ export interface LineupSubmission {
   submitted_at?: string
   submitted_by?: string
   confirmed_at?: string
+  reviewed_at?: string
+  reviewed_by?: string
+  reviewed_by_email?: string
+  review_notes?: string
   locked_at?: string
   lineup_players?: LineupPlayer[]
   starters?: LineupPlayer[]
@@ -128,6 +132,11 @@ export interface LineupSubmissionData {
     is_goalkeeper?: boolean
     formation_position?: number
   }[]
+}
+
+export interface LineupSubmissionReviewData {
+  approve: boolean
+  review_notes?: string
 }
 
 // ─── Match Report Types ────────────────────────────────────────────────────

@@ -121,6 +121,7 @@ export const API_ROUTES = {
     CLUB_REQUESTS: '/organizations/me/club-requests/',
     CLUB_REQUEST_REVIEW: (id: string) => `/organizations/me/club-requests/${id}/`,
     PENDING_LINEUPS: '/organizations/me/lineups/pending/',
+    PENDING_LINEUP_REVIEW: (id: string) => `/organizations/me/lineups/pending/${id}/review/`,
     PUBLIC: {
       LIST: '/organizations/public/',
       GET: (slug: string) => `/organizations/public/${slug}/`,
