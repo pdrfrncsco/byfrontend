@@ -28,7 +28,7 @@ import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
 import type { OrganizationClub } from '../types'
-import { getOrganizationSidebarLinks } from '../constants/navigation'
+import { getOrganizationSidebarSections } from '../constants/navigation'
 
 interface OrganizationTournamentRow {
   id: string
@@ -83,7 +83,7 @@ export default function OrganizationDashboardPage() {
   const { data: clubs, isLoading: isLoadingClubs } = useOrganizationClubs(slug)
   const { data: tournaments, isLoading: isLoadingTournaments } = useOrganizationTournaments(slug)
   const { data: transfers, isLoading: isLoadingTransfers } = useTransfers({ page_size: 4 })
-  const transferResults = transfers?.results ?? []
+  const transferResults = useMemo(() => transfers?.results ?? [], [transfers])
   const launchOrganization = useLaunchOrganization()
 
   const headerActions = (
@@ -95,7 +95,7 @@ export default function OrganizationDashboardPage() {
     </Button>
   )
 
-  const sidebarLinks = getOrganizationSidebarLinks('overview', showLineups)
+  const sidebarSections = getOrganizationSidebarSections('overview', { showLineups })
 
   const isLoadingKpiSection = isLoadingOrg || isLoadingKpis
   const isLoadingTournamentsSection = isLoadingOrg || isLoadingTournaments
@@ -247,7 +247,7 @@ export default function OrganizationDashboardPage() {
       title={org ? `Portal — ${org.name}` : 'Portal da Organização'}
       subtitle="Painel administrativo de gestão de clubes, competições e estatísticas"
       dashboardType="organization"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={headerActions}
     >
       <div className="mb-xl flex animate-fade-in flex-col justify-between gap-lg lg:flex-row lg:items-end">

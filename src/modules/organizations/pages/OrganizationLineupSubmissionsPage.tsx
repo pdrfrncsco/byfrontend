@@ -8,13 +8,21 @@ import { organizationApi } from '../services/organization.api'
 import { competitionApi } from '@/modules/competitions/services'
 import type { LineupSubmission } from '@/modules/competitions/types/competition.types'
 import { format } from 'date-fns'
-import { getOrganizationSidebarLinks } from '../constants/navigation'
+import { getOrganizationSidebarSections } from '../constants/navigation'
+
+interface PendingLineupSubmission extends LineupSubmission {
+  competition_id?: string
+  competition_name?: string
+  match_str?: string
+}
 
 export default function OrganizationLineupSubmissionsPage() {
   const { data: onboarding } = useOnboardingStatus()
   const showLineups = Boolean(onboarding?.is_organization_admin)
   const [loading, setLoading] = useState(false)
-  const [submissions, setSubmissions] = useState<Array<{ competitionId: string; competitionName: string; matchId: string; matchLabel: string; lineup: LineupSubmission }>>([])
+  const [submissions, setSubmissions] = useState<
+    Array<{ competitionId: string; competitionName: string; matchId: string; matchLabel: string; lineup: LineupSubmission }>
+  >([])
 
   useEffect(() => {
     let mounted = true
@@ -23,7 +31,17 @@ export default function OrganizationLineupSubmissionsPage() {
       try {
         const resp = await organizationApi.getPendingLineups()
         const results = Array.isArray(resp.results) ? resp.results : resp
-        if (mounted) setSubmissions(results.map((s: any) => ({ competitionId: s.competition_id, competitionName: s.competition_name, matchId: s.match, matchLabel: s.match_str, lineup: s })))
+        if (mounted) {
+          setSubmissions(
+            (results as PendingLineupSubmission[]).map((submission) => ({
+              competitionId: submission.competition_id ?? '',
+              competitionName: submission.competition_name ?? 'Competição',
+              matchId: submission.match,
+              matchLabel: submission.match_str ?? 'Jogo',
+              lineup: submission,
+            })),
+          )
+        }
       } catch (e) {
         // ignore
       } finally {
@@ -46,7 +64,12 @@ export default function OrganizationLineupSubmissionsPage() {
   }
 
   return (
-    <DashboardLayout title="Submissões de Escalações" subtitle="Gerir submissões pendentes" dashboardType="organization" sidebarLinks={getOrganizationSidebarLinks('lineups', showLineups)}>
+    <DashboardLayout
+      title="Submissões de Escalações"
+      subtitle="Gerir submissões pendentes"
+      dashboardType="organization"
+      sidebarSections={getOrganizationSidebarSections('lineups', { showLineups })}
+    >
       <div className="mx-auto max-w-4xl px-lg py-xl">
         <div className="mb-lg flex items-center justify-between">
           <h2 className="text-xl font-semibold">Submissões pendentes</h2>

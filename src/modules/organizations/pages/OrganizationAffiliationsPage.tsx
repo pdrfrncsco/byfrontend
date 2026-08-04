@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Settings, Shield, Trophy, Users, CheckCircle, XCircle } from 'lucide-react'
+import { Shield, CheckCircle, XCircle } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { ROUTES } from '@/constants/routes'
 import {
   Badge,
   Button,
@@ -11,8 +10,9 @@ import {
   EmptyState,
   Skeleton,
 } from '@/components/ui'
-import { useOrganizationClubRequests, useReviewClubRequest } from '../hooks'
+import { useOrganizationClubRequests, useReviewClubRequest, useOnboardingStatus } from '../hooks'
 import type { ClubAffiliationRequest } from '../types'
+import { getOrganizationSidebarSections } from '../constants/navigation'
 
 function formatDate(dateString?: string | null): string {
   if (!dateString) return '—'
@@ -38,6 +38,7 @@ interface RowNotesState {
 
 export function OrganizationAffiliationsPage() {
   const { data: requests, isLoading } = useOrganizationClubRequests()
+  const { data: onboarding } = useOnboardingStatus()
   const reviewRequest = useReviewClubRequest()
 
   // per-row state for inline review notes textarea
@@ -70,14 +71,9 @@ export function OrganizationAffiliationsPage() {
     )
   }
 
-  const sidebarLinks = [
-    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" />, active: true },
-    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-  ]
+  const sidebarSections = getOrganizationSidebarSections('affiliations', {
+    showLineups: Boolean(onboarding?.is_organization_admin),
+  })
 
   const columns = useMemo<ColumnDef<ClubAffiliationRequest>[]>(
     () => [
@@ -215,7 +211,7 @@ export function OrganizationAffiliationsPage() {
       title="Pedidos de Filiação de Clubes"
       subtitle="Aprove ou rejeite pedidos de clubes que pretendem filiar-se à sua organização."
       dashboardType="organization"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
     >
       <div className="animate-fade-in">
         {isLoading ? (

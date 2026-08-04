@@ -1,59 +1,115 @@
-import { Settings, Shield, Trophy, Users, Check } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { ClipboardList, Home, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
-export type OrganizationNavKey = 'overview' | 'clubs' | 'competitions' | 'members' | 'affiliations' | 'lineups' | 'settings'
+export type OrganizationNavKey =
+  | 'overview'
+  | 'lineups'
+  | 'clubs'
+  | 'players'
+  | 'competitions'
+  | 'members'
+  | 'affiliations'
+  | 'settings'
 
-export function getOrganizationSidebarLinks(active: OrganizationNavKey, showLineups = false) {
-  const links = [
-    {
-      label: 'Início',
-      href: ROUTES.DASHBOARD_ORGANIZATION,
-      icon: <Trophy className="h-4 w-4" />,
-      active: active === 'overview',
-    },
-    {
-      label: 'Clubes Associados',
-      href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS,
-      icon: <Shield className="h-4 w-4" />,
-      active: active === 'clubs',
-    },
-    {
-      label: 'Competições',
-      href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS,
-      icon: <Trophy className="h-4 w-4" />,
-      active: active === 'competitions',
-    },
-  ] as any[]
+interface OrganizationSidebarOptions {
+  showLineups?: boolean
+}
 
-  if (showLineups) {
-    links.push({
-      label: 'Submissões de Escalações',
-      href: ROUTES.DASHBOARD_ORGANIZATION_LINEUPS,
-      icon: <Check className="h-4 w-4" />,
-      active: active === 'lineups',
-    })
+interface OrganizationSidebarLink {
+  label: string
+  href: string
+  icon: ReactNode
+  active: boolean
+}
+
+export interface OrganizationSidebarSection {
+  title?: string
+  links: OrganizationSidebarLink[]
+}
+
+const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSidebarLink, 'active'>> = {
+  overview: {
+    label: 'Início',
+    href: ROUTES.DASHBOARD_ORGANIZATION,
+    icon: <Home className="h-4 w-4" />,
+  },
+  lineups: {
+    label: 'Submissões de Escalações',
+    href: ROUTES.DASHBOARD_ORGANIZATION_LINEUPS,
+    icon: <ClipboardList className="h-4 w-4" />,
+  },
+  clubs: {
+    label: 'Clubes Associados',
+    href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS,
+    icon: <Shield className="h-4 w-4" />,
+  },
+  players: {
+    label: 'Jogadores Registados',
+    href: ROUTES.DASHBOARD_ORGANIZATION_PLAYERS,
+    icon: <UserCheck className="h-4 w-4" />,
+  },
+  competitions: {
+    label: 'Competições',
+    href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS,
+    icon: <Trophy className="h-4 w-4" />,
+  },
+  members: {
+    label: 'Membros',
+    href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS,
+    icon: <Users className="h-4 w-4" />,
+  },
+  affiliations: {
+    label: 'Pedidos de Filiação',
+    href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
+    icon: <Shield className="h-4 w-4" />,
+  },
+  settings: {
+    label: 'Configurações',
+    href: ROUTES.ORGANIZATION_SETTINGS,
+    icon: <Settings className="h-4 w-4" />,
+  },
+}
+
+const SECTION_ORDER: Array<'context' | 'management'> = ['context', 'management']
+
+function buildLink(key: OrganizationNavKey, active: OrganizationNavKey): OrganizationSidebarLink {
+  return {
+    ...ORGANIZATION_SIDEBAR_LINKS[key],
+    active: key === active,
+  }
+}
+
+export function getOrganizationSidebarSections(
+  active: OrganizationNavKey,
+  options: OrganizationSidebarOptions = {},
+): OrganizationSidebarSection[] {
+  const { showLineups = false } = options
+
+  const sections: Record<'context' | 'management', OrganizationSidebarSection> = {
+    context: {
+      title: 'Contexto',
+      links: [
+        buildLink('overview', active),
+        ...(showLineups ? [buildLink('lineups', active)] : []),
+      ],
+    },
+    management: {
+      title: 'Gestão',
+      links: [
+        buildLink('clubs', active),
+        buildLink('players', active),
+        buildLink('competitions', active),
+        buildLink('members', active),
+        buildLink('affiliations', active),
+        buildLink('settings', active),
+      ],
+    },
   }
 
-  links.push(
-    {
-      label: 'Membros',
-      href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS,
-      icon: <Users className="h-4 w-4" />,
-      active: active === 'members',
-    },
-    {
-      label: 'Pedidos de Filiação',
-      href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
-      icon: <Shield className="h-4 w-4" />,
-      active: active === 'affiliations',
-    },
-    {
-      label: 'Configurações',
-      href: ROUTES.ORGANIZATION_SETTINGS,
-      icon: <Settings className="h-4 w-4" />,
-      active: active === 'settings',
-    },
-  )
+  return SECTION_ORDER.map((sectionKey) => sections[sectionKey]).filter((section) => section.links.length > 0)
+}
 
-  return links
+export function getOrganizationSidebarLinks(active: OrganizationNavKey, options: OrganizationSidebarOptions = {}) {
+  return getOrganizationSidebarSections(active, options).flatMap((section) => section.links)
 }

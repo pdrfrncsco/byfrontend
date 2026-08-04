@@ -12,6 +12,12 @@ interface SidebarLink {
   href: string
   icon: React.ReactNode
   active?: boolean
+  disabled?: boolean
+}
+
+interface SidebarSection {
+  title?: string
+  links: SidebarLink[]
 }
 
 interface DashboardLayoutProps {
@@ -19,7 +25,8 @@ interface DashboardLayoutProps {
   title: string
   subtitle?: string
   dashboardType: 'federation' | 'executive' | 'organization' | 'league' | 'club' | 'competition' | 'player'
-  sidebarLinks: SidebarLink[]
+  sidebarLinks?: SidebarLink[]
+  sidebarSections?: SidebarSection[]
   headerActions?: React.ReactNode
 }
 
@@ -28,7 +35,8 @@ export function DashboardLayout({
   title,
   subtitle,
   dashboardType,
-  sidebarLinks,
+  sidebarLinks = [],
+  sidebarSections,
   headerActions
 }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
@@ -94,13 +102,14 @@ export function DashboardLayout({
       </div>
 
       {/* Desktop Sidebar */}
-      <DashboardSidebar
-        logo={getLogo()}
-        dashboardType={dashboardType}
-        sidebarLinks={sidebarLinks}
-        subLabel={getSubLabel()}
-        onLogout={handleLogout}
-      />
+        <DashboardSidebar
+          logo={getLogo()}
+          dashboardType={dashboardType}
+          sidebarLinks={sidebarLinks}
+          sidebarSections={sidebarSections}
+          subLabel={getSubLabel()}
+          onLogout={handleLogout}
+        />
 
       {/* Mobile Sidebar Overlay */}
       <DashboardMobileMenu
@@ -109,6 +118,7 @@ export function DashboardLayout({
         logo={getLogo()}
         dashboardType={dashboardType}
         sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
         subLabel={getSubLabel()}
         onLogout={handleLogout}
       />

@@ -3,9 +3,10 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Card, DataTable, Skeleton, EmptyState, Button } from '@/components/ui'
-import { useOrganizationTournaments, useOrganizationMe } from '../hooks'
-import { Settings, Shield, Trophy, Users, PlusCircle } from 'lucide-react'
+import { useOrganizationTournaments, useOrganizationMe, useOnboardingStatus } from '../hooks'
+import { Trophy, PlusCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { getOrganizationSidebarSections } from '../constants/navigation'
 
 interface OrganizationTournamentRow {
   id: string
@@ -30,16 +31,11 @@ function getStatusBadge(status: string) {
 
 export function OrganizationCompetitionsPage() {
   const { data: org } = useOrganizationMe()
+  const { data: onboarding } = useOnboardingStatus()
   const { data: tournaments, isLoading: isLoadingTournaments } = useOrganizationTournaments(org?.slug)
-
-  const sidebarLinks = [
-    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" />, active: true },
-    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-  ]
+  const sidebarSections = getOrganizationSidebarSections('competitions', {
+    showLineups: Boolean(onboarding?.is_organization_admin),
+  })
 
   const columns = useMemo<ColumnDef<OrganizationTournamentRow>[]>(
     () => [
@@ -98,7 +94,7 @@ export function OrganizationCompetitionsPage() {
       title="Competições"
       subtitle="Gerencie as competições organizadas pela sua organização."
       dashboardType="organization"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button variant="primary" size="sm" asChild>
           <Link to={ROUTES.COMPETITION_CREATE}>

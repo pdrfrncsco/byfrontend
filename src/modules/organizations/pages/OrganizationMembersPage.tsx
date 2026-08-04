@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Settings, Shield, Trophy, Users, UserMinus, UserPlus } from 'lucide-react'
+import { Users, UserMinus, UserPlus } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { ROUTES } from '@/constants/routes'
 import {
   Badge,
   Button,
@@ -21,8 +20,10 @@ import {
   useOrganizationMembers,
   useAddMember,
   useRemoveMember,
+  useOnboardingStatus,
 } from '../hooks'
 import type { OrgMember } from '../types'
+import { getOrganizationSidebarSections } from '../constants/navigation'
 
 function formatDate(dateString?: string | null): string {
   if (!dateString) return '—'
@@ -53,6 +54,7 @@ function ActiveBadge({ isActive }: { isActive: boolean }) {
 
 export function OrganizationMembersPage() {
   const { data: members, isLoading } = useOrganizationMembers()
+  const { data: onboarding } = useOnboardingStatus()
   const addMember = useAddMember()
   const removeMember = useRemoveMember()
 
@@ -60,14 +62,9 @@ export function OrganizationMembersPage() {
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteRole, setInviteRole] = useState('member')
 
-  const sidebarLinks = [
-    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" />, active: true },
-    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-  ]
+  const sidebarSections = getOrganizationSidebarSections('members', {
+    showLineups: Boolean(onboarding?.is_organization_admin),
+  })
 
   const headerActions = (
     <Button
@@ -166,7 +163,7 @@ export function OrganizationMembersPage() {
       title="Membros da Organização"
       subtitle="Gira os utilizadores que têm acesso ao painel de administração da sua organização."
       dashboardType="organization"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={headerActions}
     >
       <div className="space-y-lg animate-fade-in">

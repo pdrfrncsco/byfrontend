@@ -3,9 +3,10 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Card, DataTable, Skeleton, EmptyState, Input } from '@/components/ui'
-import { useOrganizationMe, useOrganizationPlayers } from '../hooks'
-import { Settings, Shield, Trophy, Users, UserCheck, Search } from 'lucide-react'
+import { useOrganizationMe, useOrganizationPlayers, useOnboardingStatus } from '../hooks'
+import { Shield, UserCheck, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { getOrganizationSidebarSections } from '../constants/navigation'
 
 export interface OrganizationPlayerRow {
   id: string
@@ -25,18 +26,12 @@ export interface OrganizationPlayerRow {
 
 export function OrganizationPlayersPage() {
   const { data: org } = useOrganizationMe()
+  const { data: onboarding } = useOnboardingStatus()
   const { data: players, isLoading: isLoadingPlayers } = useOrganizationPlayers(org?.slug)
   const [searchTerm, setSearchTerm] = useState('')
-
-  const sidebarLinks = [
-    { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Clubes Associados', href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Jogadores Registados', href: ROUTES.DASHBOARD_ORGANIZATION_PLAYERS, icon: <UserCheck className="h-4 w-4" />, active: true },
-    { label: 'Competições', href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Membros', href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS, icon: <Users className="h-4 w-4" /> },
-    { label: 'Pedidos de Filiação', href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS, icon: <Shield className="h-4 w-4" /> },
-    { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-  ]
+  const sidebarSections = getOrganizationSidebarSections('players', {
+    showLineups: Boolean(onboarding?.is_organization_admin),
+  })
 
   const columns = useMemo<ColumnDef<OrganizationPlayerRow>[]>(
     () => [
@@ -134,7 +129,7 @@ export function OrganizationPlayersPage() {
       title="Jogadores Registados"
       subtitle="Lista oficial de atletas registados na organização através dos clubes vinculados."
       dashboardType="organization"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
     >
       <div className="animate-fade-in space-y-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
