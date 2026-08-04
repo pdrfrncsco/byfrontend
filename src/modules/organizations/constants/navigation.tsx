@@ -1,12 +1,12 @@
-import { Settings, Shield, Trophy, Users } from 'lucide-react'
+import { Settings, Shield, Trophy, Users, Check } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
-export type OrganizationNavKey = 'overview' | 'clubs' | 'competitions' | 'settings'
+export type OrganizationNavKey = 'overview' | 'clubs' | 'competitions' | 'members' | 'affiliations' | 'lineups' | 'settings'
 
-export function getOrganizationSidebarLinks(active: OrganizationNavKey) {
-  return [
+export function getOrganizationSidebarLinks(active: OrganizationNavKey, showLineups = false) {
+  const links = [
     {
-      label: 'Visão Geral',
+      label: 'Início',
       href: ROUTES.DASHBOARD_ORGANIZATION,
       icon: <Trophy className="h-4 w-4" />,
       active: active === 'overview',
@@ -23,15 +23,29 @@ export function getOrganizationSidebarLinks(active: OrganizationNavKey) {
       icon: <Trophy className="h-4 w-4" />,
       active: active === 'competitions',
     },
+  ] as any[]
+
+  if (showLineups) {
+    links.push({
+      label: 'Submissões de Escalações',
+      href: ROUTES.DASHBOARD_ORGANIZATION_LINEUPS,
+      icon: <Check className="h-4 w-4" />,
+      active: active === 'lineups',
+    })
+  }
+
+  links.push(
     {
       label: 'Membros',
       href: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS,
       icon: <Users className="h-4 w-4" />,
+      active: active === 'members',
     },
     {
       label: 'Pedidos de Filiação',
       href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
       icon: <Shield className="h-4 w-4" />,
+      active: active === 'affiliations',
     },
     {
       label: 'Configurações',
@@ -39,5 +53,7 @@ export function getOrganizationSidebarLinks(active: OrganizationNavKey) {
       icon: <Settings className="h-4 w-4" />,
       active: active === 'settings',
     },
-  ]
+  )
+
+  return links
 }

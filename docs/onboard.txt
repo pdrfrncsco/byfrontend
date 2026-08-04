@@ -817,3 +817,27 @@
    424           ])
    425
    426           return lineup_entry/
+
+
+
+
+
+
+
+
+
+
+
+
+
+   Feito — implementação aplicada: o item "Submissões de Escalações" aparece agora só para administradores da organização.
+
+O que foi alterado
+
+• byfrontend/src/modules/organizations/constants/navigation.tsx
+• getOrganizationSidebarLinks(active, showLineups = false) — o link de lineup é adicionado somente quando showLineups=true.
+• byfrontend/src/modules/organizations/pages/OrganizationLineupSubmissionsPage.tsx
+• Usa useOnboardingStatus() para detectar is_organization_admin e passa showLineups ao sidebar.
+
+Próximo passo
+Deseja que eu execute o build/TS checks (npm ci && npm run build) e/ou rode os testes frontend para validar?

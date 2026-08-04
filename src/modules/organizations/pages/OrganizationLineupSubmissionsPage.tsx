@@ -2,16 +2,19 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
-import { useOrganizationMe, useOrganizationTournaments } from '../hooks'
+import { useOrganizationMe, useOrganizationTournaments, useOnboardingStatus } from '../hooks'
 import { Card, Button } from '@/components/ui'
 import { organizationApi } from '../services/organization.api'
 import type { LineupSubmission } from '@/modules/competitions/types/competition.types'
 import { format } from 'date-fns'
+import { getOrganizationSidebarLinks } from '../constants/navigation'
 
 export default function OrganizationLineupSubmissionsPage() {
   const { data: org } = useOrganizationMe()
   const slug = org?.slug
   const { data: competitions } = useOrganizationTournaments(slug)
+  const { data: onboarding } = useOnboardingStatus()
+  const showLineups = Boolean(onboarding?.is_organization_admin)
   const [loading, setLoading] = useState(false)
   const [submissions, setSubmissions] = useState<Array<{ competitionId: string; competitionName: string; matchId: string; matchLabel: string; lineup: LineupSubmission }>>([])
 
@@ -43,7 +46,7 @@ export default function OrganizationLineupSubmissionsPage() {
   }
 
   return (
-    <DashboardLayout title="Submissões de Escalações" subtitle="Gerir submissões pendentes" dashboardType="organization" sidebarLinks={[]}>
+    <DashboardLayout title="Submissões de Escalações" subtitle="Gerir submissões pendentes" dashboardType="organization" sidebarLinks={getOrganizationSidebarLinks('lineups', showLineups)}>
       <div className="mx-auto max-w-4xl px-lg py-xl">
         <div className="mb-lg flex items-center justify-between">
           <h2 className="text-xl font-semibold">Submissões pendentes</h2>
