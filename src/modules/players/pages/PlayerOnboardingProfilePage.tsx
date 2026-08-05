@@ -62,14 +62,29 @@ export function PlayerOnboardingProfilePage() {
   if (data && !data.has_player_profile) {
     return (
       <PlayerOnboardingLayout step={1}>
-        <div className="flex items-start gap-md rounded-lg border border-error/30 bg-error-container/10 p-md text-sm">
-          <AlertCircle className="mt-0.5 h-5 w-5 text-error" />
-          <div>
-            <h2 className="font-semibold text-on-surface">Perfil de jogador não encontrado</h2>
-            <p className="mt-xs text-on-surface-variant">
-              Esta conta ainda não tem um perfil de jogador associado.
-            </p>
+        <div className="flex flex-col gap-md rounded-lg border border-error/30 bg-error-container/10 p-md text-sm">
+          <div className="flex items-start gap-md">
+            <AlertCircle className="mt-0.5 h-5 w-5 text-error" />
+            <div>
+              <h2 className="font-semibold text-on-surface">Perfil de jogador não encontrado</h2>
+              <p className="mt-xs text-on-surface-variant">
+                Esta conta ainda não tem um perfil de jogador associado.
+              </p>
+            </div>
           </div>
+
+          <div className="flex flex-wrap gap-sm mt-sm">
+            <Button variant="primary" onClick={() => navigate(ROUTES.PLAYER_CREATE)}>
+              Criar perfil de jogador
+            </Button>
+            <Button variant="outline" onClick={() => navigate(ROUTES.PLAYERS)}>
+              Explorar jogadores
+            </Button>
+          </div>
+
+          <p className="mt-sm text-xs text-on-surface-variant">
+            Ao criar o perfil será possível completar o onboarding e usar o portal do jogador para pedidos de vínculo a clubes.
+          </p>
         </div>
       </PlayerOnboardingLayout>
     )

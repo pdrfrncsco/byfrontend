@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,11 +40,19 @@ export function PlayerCreatePage() {
   })
 
   // Reset form after successful creation
+  const [searchParams] = useSearchParams()
+  const from = searchParams.get('from')
+
   useEffect(() => {
     if (createMutation.isSuccess && createMutation.data?.slug) {
-      navigate(ROUTES.PLAYER_DETAIL(createMutation.data.slug))
+      if (from === 'onboarding') {
+        // Continue the onboarding flow after creating a player profile
+        navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)
+      } else {
+        navigate(ROUTES.PLAYER_DETAIL(createMutation.data.slug))
+      }
     }
-  }, [createMutation.isSuccess, createMutation.data, navigate])
+  }, [createMutation.isSuccess, createMutation.data, navigate, from])
 
   const onSubmit = (data: PlayerCreateFormData) => {
     // Clean empty strings and undefined values
