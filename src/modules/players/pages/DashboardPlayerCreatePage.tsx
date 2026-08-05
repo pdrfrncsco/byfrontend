@@ -9,6 +9,8 @@ import { ROUTES } from '@/constants/routes'
 import { useCreatePlayer, useUpdatePlayerMe } from '../hooks'
 import { playerCreateSchema, type PlayerCreateFormData } from '../schemas'
 import { ALL_POSITIONS } from '../constants'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { playerRoutes } from '../routes'
 
 export function DashboardPlayerCreatePage() {
   const { t } = useTranslation()
@@ -93,98 +95,105 @@ export function DashboardPlayerCreatePage() {
     reset()
   }
 
+  const sidebarLinks = [
+    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
+    { label: t('players.dashboard.sidebar.publicProfile'), href: ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
+  ]
+
   return (
-    <div className="player-create-page space-y-lg">
-      {/* Back Navigation */}
-      <button
-        onClick={() => navigate(ROUTES.PLAYERS)}
-        className="inline-flex items-center gap-sm text-sm text-on-surface-variant hover:text-primary transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        {t('players.create.back')}
-      </button>
+    <DashboardLayout
+      title={t('players.create.title')}
+      subtitle={t('players.create.subtitle')}
+      dashboardType="player"
+      sidebarLinks={sidebarLinks}
+    >
+      <div className="player-create-page space-y-lg">
+        {/* Back Navigation */}
+        <button
+          onClick={() => navigate(ROUTES.PLAYERS)}
+          className="inline-flex items-center gap-sm text-sm text-on-surface-variant hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t('players.create.back')}
+        </button>
 
-      {/* Header */}
-      <div className="space-y-sm">
-        <h1 className="text-2xl font-bold text-on-surface">{t('players.create.title')}</h1>
-        <p className="text-on-surface-variant">{t('players.create.subtitle')}</p>
-      </div>
-
-      {/* Form */}
-      <Card variant="flat" padding="none">
-        <CardContent className="p-lg">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
-            {/* Personal Information */}
-            <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.personalInfo')}</h2>
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField
+        {/* Form */}
+        <Card variant="flat" padding="none">
+          <CardContent className="p-lg">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
+              {/* Personal Information */}
+              <div className="space-y-md">
+                <h2 className="text-lg font-semibold text-on-surface">{t('players.form.personalInfo')}</h2>
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
                   label={t('players.form.firstName')}
                   htmlFor="first_name"
                   error={errors.first_name?.message}
                   required
-                >
+                  >
                   <Input
                     id="first_name"
                     {...register('first_name')}
                     state={errors.first_name ? 'error' : 'default'}
                     placeholder="Ex: João"
                   />
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.lastName')}
                   htmlFor="last_name"
                   error={errors.last_name?.message}
                   required
-                >
+                  >
                   <Input
                     id="last_name"
                     {...register('last_name')}
                     state={errors.last_name ? 'error' : 'default'}
                     placeholder="Ex: Silva"
                   />
-                </FormField>
-              </div>
+                  </FormField>
+                </div>
 
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
                   label={t('players.form.dateOfBirth')}
                   htmlFor="date_of_birth"
                   error={errors.date_of_birth?.message}
-                >
+                  >
                   <Input
                     id="date_of_birth"
                     type="date"
                     {...register('date_of_birth')}
                     state={errors.date_of_birth ? 'error' : 'default'}
                   />
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.nationality')}
                   htmlFor="nationality"
                   error={errors.nationality?.message}
-                >
+                  >
                   <Input
                     id="nationality"
                     {...register('nationality')}
                     state={errors.nationality ? 'error' : 'default'}
                     placeholder="Ex: Angola, Portugal"
                   />
-                </FormField>
+                  </FormField>
+                </div>
               </div>
-            </div>
 
-            {/* Football Information */}
-            <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.footballInfo')}</h2>
-              <div className="grid gap-md md:grid-cols-3">
-                <FormField
+              {/* Football Information */}
+              <div className="space-y-md">
+                <h2 className="text-lg font-semibold text-on-surface">{t('players.form.footballInfo')}</h2>
+                <div className="grid gap-md md:grid-cols-3">
+                  <FormField
                   label={t('players.form.primaryPosition')}
                   htmlFor="primary_position"
                   error={errors.primary_position?.message}
-                >
+                  >
                   <select
                     id="primary_position"
                     {...register('primary_position')}
@@ -197,13 +206,13 @@ export function DashboardPlayerCreatePage() {
                       </option>
                     ))}
                   </select>
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.foot')}
                   htmlFor="foot"
                   error={errors.foot?.message}
-                >
+                  >
                   <select
                     id="foot"
                     {...register('foot')}
@@ -214,32 +223,32 @@ export function DashboardPlayerCreatePage() {
                     <option value="right">{t('players.form.footRight')}</option>
                     <option value="both">{t('players.form.footBoth')}</option>
                   </select>
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.avatarUrl')}
                   htmlFor="avatar"
                   error={errors.avatar?.message}
-                >
+                  >
                   <Input
                     id="avatar"
                     {...register('avatar')}
                     state={errors.avatar ? 'error' : 'default'}
                     placeholder="https://..."
                   />
-                </FormField>
+                  </FormField>
+                </div>
               </div>
-            </div>
 
-            {/* Physical Information */}
-            <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.physicalInfo')}</h2>
-              <div className="grid gap-md md:grid-cols-3">
-                <FormField
+              {/* Physical Information */}
+              <div className="space-y-md">
+                <h2 className="text-lg font-semibold text-on-surface">{t('players.form.physicalInfo')}</h2>
+                <div className="grid gap-md md:grid-cols-3">
+                  <FormField
                   label={t('players.form.height')}
                   htmlFor="height_cm"
                   error={errors.height_cm?.message}
-                >
+                  >
                   <Input
                     id="height_cm"
                     type="number"
@@ -247,13 +256,13 @@ export function DashboardPlayerCreatePage() {
                     state={errors.height_cm ? 'error' : 'default'}
                     placeholder="Ex: 180"
                   />
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.weight')}
                   htmlFor="weight_kg"
                   error={errors.weight_kg?.message}
-                >
+                  >
                   <Input
                     id="weight_kg"
                     type="number"
@@ -261,19 +270,19 @@ export function DashboardPlayerCreatePage() {
                     state={errors.weight_kg ? 'error' : 'default'}
                     placeholder="Ex: 75"
                   />
-                </FormField>
+                  </FormField>
+                </div>
               </div>
-            </div>
 
-            {/* Contact Information */}
-            <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField
+              {/* Contact Information */}
+              <div className="space-y-md">
+                <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
+                <div className="grid gap-md md:grid-cols-2">
+                  <FormField
                   label={t('players.form.email')}
                   htmlFor="email"
                   error={errors.email?.message}
-                >
+                  >
                   <Input
                     id="email"
                     type="email"
@@ -281,13 +290,13 @@ export function DashboardPlayerCreatePage() {
                     state={errors.email ? 'error' : 'default'}
                     placeholder="email@exemplo.com"
                   />
-                </FormField>
+                  </FormField>
 
-                <FormField
+                  <FormField
                   label={t('players.form.phone')}
                   htmlFor="phone"
                   error={errors.phone?.message}
-                >
+                  >
                   <Input
                     id="phone"
                     type="tel"
@@ -295,56 +304,57 @@ export function DashboardPlayerCreatePage() {
                     state={errors.phone ? 'error' : 'default'}
                     placeholder="+244 9XX XXX XXX"
                   />
-                </FormField>
+                  </FormField>
+                </div>
               </div>
-            </div>
 
-            {/* Bio */}
-            <div className="space-y-md">
-              <FormField
-                label={t('players.form.bio')}
-                htmlFor="bio"
-                error={errors.bio?.message}
-              >
-                <Textarea
+              {/* Bio */}
+              <div className="space-y-md">
+                <FormField
+                  label={t('players.form.bio')}
+                  htmlFor="bio"
+                  error={errors.bio?.message}
+                >
+                  <Textarea
                   id="bio"
                   {...register('bio')}
                   placeholder="Breve descrição sobre o jogador..."
                   rows={4}
-                />
-              </FormField>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-wrap items-center justify-between gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/50 p-md">
-              <div className="space-y-xs">
-                <p className="font-semibold text-on-surface">{t('players.form.create')}</p>
-                <p className="text-sm text-on-surface-variant">{t('players.form.verifyHint')}</p>
+                  />
+                </FormField>
               </div>
-              <div className="flex gap-sm">
-                <Button type="button" variant="outline" onClick={handleReset} disabled={!isDirty}>
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/50 p-md">
+                <div className="space-y-xs">
+                  <p className="font-semibold text-on-surface">{t('players.form.create')}</p>
+                  <p className="text-sm text-on-surface-variant">{t('players.form.verifyHint')}</p>
+                </div>
+                <div className="flex gap-sm">
+                  <Button type="button" variant="outline" onClick={handleReset} disabled={!isDirty}>
                   {t('players.form.clear')}
-                </Button>
-                <Button
+                  </Button>
+                  <Button
                   type="submit"
                   loading={from === 'onboarding' ? updateMeMutation.isPending : createMutation.isPending}
                   disabled={!isDirty || !isValid}
-                >
+                  >
                   <Save className="h-4 w-4" />
                   {from === 'onboarding' ? (updateMeMutation.isPending ? t('players.form.creating') : t('players.form.create')) : (createMutation.isPending ? t('players.form.creating') : t('players.form.create'))}
-                </Button>
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            {/* Error Message */}
-            {(createMutation.isError || updateMeMutation.isError) && (
-              <div className="rounded-lg bg-error/10 border border-error/30 p-md text-sm text-error">
-                {t('players.form.createError')}
-              </div>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              {/* Error Message */}
+              {(createMutation.isError || updateMeMutation.isError) && (
+                <div className="rounded-lg bg-error/10 border border-error/30 p-md text-sm text-error">
+                  {t('players.form.createError')}
+                </div>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
   )
 }
