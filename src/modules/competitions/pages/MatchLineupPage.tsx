@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
-  ArrowLeft,
   Users,
   Shield,
   Crown,

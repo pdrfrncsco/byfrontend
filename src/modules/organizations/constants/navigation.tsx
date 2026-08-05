@@ -14,6 +14,7 @@ export type OrganizationNavKey =
 
 interface OrganizationSidebarOptions {
   showLineups?: boolean
+  pendingLineupsCount?: number
 }
 
 interface OrganizationSidebarLink {
@@ -21,6 +22,7 @@ interface OrganizationSidebarLink {
   href: string
   icon: ReactNode
   active: boolean
+  count?: number
 }
 
 export interface OrganizationSidebarSection {
@@ -73,10 +75,11 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
 
 const SECTION_ORDER: Array<'context' | 'management'> = ['context', 'management']
 
-function buildLink(key: OrganizationNavKey, active: OrganizationNavKey): OrganizationSidebarLink {
+function buildLink(key: OrganizationNavKey, active: OrganizationNavKey, count?: number): OrganizationSidebarLink {
   return {
     ...ORGANIZATION_SIDEBAR_LINKS[key],
     active: key === active,
+    count,
   }
 }
 
@@ -84,14 +87,14 @@ export function getOrganizationSidebarSections(
   active: OrganizationNavKey,
   options: OrganizationSidebarOptions = {},
 ): OrganizationSidebarSection[] {
-  const { showLineups = false } = options
+  const { showLineups = false, pendingLineupsCount } = options
 
   const sections: Record<'context' | 'management', OrganizationSidebarSection> = {
     context: {
       title: 'Contexto',
       links: [
         buildLink('overview', active),
-        ...(showLineups ? [buildLink('lineups', active)] : []),
+        ...(showLineups ? [buildLink('lineups', active, pendingLineupsCount)] : []),
       ],
     },
     management: {

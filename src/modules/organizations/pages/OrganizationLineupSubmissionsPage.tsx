@@ -85,7 +85,7 @@ export default function OrganizationLineupSubmissionsPage() {
       title="Submissões de Escalações"
       subtitle="Gerir submissões pendentes"
       dashboardType="organization"
-      sidebarSections={getOrganizationSidebarSections('lineups', { showLineups })}
+      sidebarSections={getOrganizationSidebarSections('lineups', { showLineups, pendingLineupsCount: submissions.length })}
     >
       <div className="mx-auto max-w-4xl px-lg py-xl">
         <div className="mb-lg flex items-center justify-between">

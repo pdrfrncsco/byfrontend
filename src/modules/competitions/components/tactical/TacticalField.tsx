@@ -50,7 +50,7 @@ export default function TacticalField({ players: initialPlayers, onPositionsChan
     setPlayers(next)
   }
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = (_e: React.PointerEvent) => {
     if (!dragging.current) return
     const id = dragging.current.id
     dragging.current = null

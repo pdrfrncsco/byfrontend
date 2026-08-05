@@ -29,7 +29,7 @@ export function MatchStatusBadge({ status, currentMinute, className = '' }: Matc
       {status !== 'live' && <Icon className="h-3.5 w-3.5" aria-hidden="true" />}
       <span>{config.label}</span>
       {isLive && currentMinute !== null && currentMinute !== undefined && (
-        <span className="font-mono tabular-nums">{currentMinute}'</span>
+        <span className="font-mono tabular-nums">{currentMinute}&apos;</span>
       )}
     </span>
   )

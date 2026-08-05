@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import { Calendar, Activity, Filter, ArrowLeft, Loader2 } from 'lucide-react'
+import { Calendar, Activity, Filter, ArrowLeft } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
@@ -9,7 +9,7 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
-import { MatchCard, CompetitionSkeleton } from '../components'
+import { MatchCard } from '../components'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
 

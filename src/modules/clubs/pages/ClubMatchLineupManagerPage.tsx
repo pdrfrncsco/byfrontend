@@ -11,9 +11,7 @@ import {
   Calendar,
   AlertTriangle,
   UserCheck,
-  Check,
   Send,
-  RefreshCw,
   Trophy,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -24,7 +22,7 @@ import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubMeMatches, useClubSquad } from '@/modules/clubs/hooks/useClubs'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { matchApi } from '@/modules/competitions/services/match.api'
-import type { Match, LineupPlayer } from '@/modules/competitions/types'
+import type { LineupPlayer } from '@/modules/competitions/types'
 import { toast } from 'sonner'
 import { ROUTES } from '@/constants/routes'
 
@@ -556,7 +554,7 @@ export default function ClubMatchLineupManagerPage() {
               <CardContent className="p-none space-y-xs">
                 {starters.length === 0 ? (
                   <p className="py-md text-center text-xs text-on-surface-variant italic">
-                    Nenhum titular selecionado. Clique em "+ Titular" nos convocados abaixo.
+                    Nenhum titular selecionado. Clique em &quot;+ Titular&quot; nos convocados abaixo.
                   </p>
                 ) : (
                   starters.map((p) => (

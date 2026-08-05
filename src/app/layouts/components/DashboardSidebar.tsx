@@ -10,6 +10,7 @@ interface SidebarLink {
   icon: React.ReactNode
   active?: boolean
   disabled?: boolean
+  count?: number
 }
 
 interface SidebarSection {
@@ -95,6 +96,11 @@ export function DashboardSidebar({
                     >
                       {link.icon}
                       <span className="font-title-md text-sm">{link.label}</span>
+                      {link.count !== undefined && link.count > 0 && (
+                        <span className="ml-auto text-xs font-semibold bg-[#e9c349] text-[#031427] px-2 py-0.5 rounded-full">
+                          {link.count}
+                        </span>
+                      )}
                     </Link>
                   )
                 ))}
@@ -127,6 +133,11 @@ export function DashboardSidebar({
               >
                 {link.icon}
                 <span className="font-title-md text-sm">{link.label}</span>
+                {link.count !== undefined && link.count > 0 && (
+                  <span className="ml-auto text-xs font-semibold bg-[#e9c349] text-[#031427] px-2 py-0.5 rounded-full">
+                    {link.count}
+                  </span>
+                )}
               </Link>
             )
           ))
