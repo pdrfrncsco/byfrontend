@@ -53,6 +53,9 @@ const PlayerDashboardPage = lazy(() =>
 const PlayerDashboardSettingsPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardSettingsPage').then((m) => ({ default: m.PlayerDashboardSettingsPage })),
 )
+const DashboardPlayerCreatePage = lazy(() =>
+  import('@/modules/players/pages/DashboardPlayerCreatePage').then((m) => ({ default: m.DashboardPlayerCreatePage })),
+)
 const ClubPlayerRegisterPage = lazy(() =>
   import('@/modules/players/pages/ClubPlayerRegisterPage').then((m) => ({ default: m.ClubPlayerRegisterPage })),
 )
@@ -127,6 +130,15 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
             <Suspense fallback={<RouteFallback />}><PlayerDashboardSettingsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.DASHBOARD_PLAYERS_CREATE}
+        element={
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
+            <Suspense fallback={<RouteFallback />}><DashboardPlayerCreatePage /></Suspense>
           </ProtectedRoute>
         }
       />

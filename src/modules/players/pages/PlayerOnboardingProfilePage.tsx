@@ -74,7 +74,7 @@ export function PlayerOnboardingProfilePage() {
           </div>
 
           <div className="flex flex-wrap gap-sm mt-sm">
-            <Button variant="primary" onClick={() => navigate(ROUTES.PLAYER_CREATE)}>
+                      <Button variant="primary" onClick={() => navigate(`${ROUTES.DASHBOARD_PLAYERS_CREATE}?from=onboarding`)}>
               Criar perfil de jogador
             </Button>
             <Button variant="outline" onClick={() => navigate(ROUTES.PLAYERS)}>

@@ -50,6 +50,7 @@ export const ROUTES = {
   PLAYERS: '/players',
   PLAYER_DETAIL: (slug: string) => `/players/${slug}`,
   PLAYER_CREATE: '/players/create',
+  DASHBOARD_PLAYERS_CREATE: '/dashboard/players/create',
   PLAYER_EDIT: (slug: string) => `/players/${slug}/edit`,
   DASHBOARD_PLAYER: '/dashboard/player',
   DASHBOARD_PLAYER_SETTINGS: '/dashboard/player/settings',

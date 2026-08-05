@@ -285,7 +285,7 @@ notificationsApi.send({
 - [ ] Escalação aprovada visível em `MatchLineupPage` e `MatchCenterPage`
 - [ ] Dashboards obsoletos removidos e sem referências quebradas
 
-
+Ye
 ---
 
 ## 6. Resumo Executivo dos Gaps
