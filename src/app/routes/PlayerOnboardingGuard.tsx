@@ -12,9 +12,9 @@ interface PlayerOnboardingGuardProps {
  * Guards the player onboarding flow:
  * - Redirects unauthenticated users to login
  * - Redirects non-players to main dashboard
- * - Redirects already-complete players to player dashboard
- * - Prevents skipping steps: if a user tries to access /football without completing /profile,
- *   they are redirected back to the correct step
+ * - On the /complete route: always renders (no redirect loop)
+ * - On the /review route: only renders when steps 1+2 are done; does NOT redirect to complete
+ * - Prevents skipping steps: redirects back to the correct incomplete step
  */
 export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) {
   const location = useLocation()
@@ -41,46 +41,46 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
     return <Navigate to={ROUTES.DASHBOARD} replace />
   }
 
-  // ── Welcome page: always accessible (entry point of the flow) ─────────────────
-  const isWelcomePath = location.pathname === ROUTES.ONBOARDING_PLAYER
+  const pathname = location.pathname
 
-  if (isWelcomePath) {
-    // If already complete, send to dashboard
+  // ── /complete: always render — never redirect (prevents loop) ─────────────────
+  // The complete page manages its own navigation after showing success.
+  if (pathname === ROUTES.ONBOARDING_PLAYER_COMPLETE) {
+    return <>{children}</>
+  }
+
+  // ── /review: render if steps 1+2 done; redirect if not — but never to /complete
+  // The review page itself shows the "Entrar no portal" CTA when everything is done.
+  if (pathname === ROUTES.ONBOARDING_PLAYER_REVIEW) {
+    const hasBasicInfo = Boolean(data?.has_basic_info)
+    const hasFootballInfo = Boolean(data?.has_football_info)
+    if (!hasBasicInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
+    if (!hasFootballInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
+    // Both done → let /review render; user decides when to proceed
+    return <>{children}</>
+  }
+
+  // ── Welcome page: entry point ─────────────────────────────────────────────────
+  if (pathname === ROUTES.ONBOARDING_PLAYER) {
+    // Already fully complete → go to player dashboard, not to /complete
     if (onboardingState?.isComplete) {
       return <Navigate to={ROUTES.DASHBOARD_PLAYER} replace />
     }
     return <>{children}</>
   }
 
-  // ── Onboarding complete: redirect away from any onboarding step ────────────────
+  // ── For profile + football: if fully complete, go to dashboard (not /complete) ─
   if (onboardingState?.isComplete) {
-    return <Navigate to={ROUTES.ONBOARDING_PLAYER_COMPLETE} replace />
+    return <Navigate to={ROUTES.DASHBOARD_PLAYER} replace />
   }
 
   // ── Step access control: prevent jumping ahead ─────────────────────────────────
   const hasBasicInfo = Boolean(data?.has_basic_info)
   const hasFootballInfo = Boolean(data?.has_football_info)
 
-  const pathname = location.pathname
-
   // Trying to access Football step without completing Profile
-  if (
-    pathname === ROUTES.ONBOARDING_PLAYER_FOOTBALL &&
-    !hasBasicInfo
-  ) {
+  if (pathname === ROUTES.ONBOARDING_PLAYER_FOOTBALL && !hasBasicInfo) {
     return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
-  }
-
-  // Trying to access Review step without completing Profile or Football
-  if (pathname === ROUTES.ONBOARDING_PLAYER_REVIEW) {
-    if (!hasBasicInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
-    if (!hasFootballInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
-  }
-
-  // Trying to access Complete page without finishing all steps
-  if (pathname === ROUTES.ONBOARDING_PLAYER_COMPLETE) {
-    if (!hasBasicInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
-    if (!hasFootballInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
   }
 
   return <>{children}</>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CheckCircle2, CircleAlert, ExternalLink } from 'lucide-react'
+import { CheckCircle2, CircleAlert } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { usePlayerOnboardingStatus } from '../hooks'
@@ -84,21 +84,19 @@ export function PlayerOnboardingReviewPage() {
 
             <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
               <Button asChild variant="secondary">
-                <Link to={data?.has_basic_info ? ROUTES.ONBOARDING_PLAYER_FOOTBALL : ROUTES.ONBOARDING_PLAYER}>
-                  Voltar à etapa pendente
+                <Link to={ROUTES.ONBOARDING_PLAYER_FOOTBALL}>
+                  Voltar ao passo anterior
                 </Link>
               </Button>
               {complete ? (
                 <Button asChild>
-                  <Link to={ROUTES.DASHBOARD_PLAYER}>
-                    Entrar no portal
-                    <ExternalLink className="h-4 w-4" />
+                  <Link to={ROUTES.ONBOARDING_PLAYER_COMPLETE}>
+                    Concluir onboarding
                   </Link>
                 </Button>
               ) : (
                 <Button type="button" disabled>
-                  Entrar no portal
-                  <ExternalLink className="h-4 w-4" />
+                  Concluir onboarding
                 </Button>
               )}
             </div>

@@ -1,71 +1,81 @@
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { CheckCircle, Users, Trophy, ExternalLink } from 'lucide-react'
-import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { CheckCircle2, Users, Trophy, LayoutDashboard } from 'lucide-react'
+import { Button } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { playerRoutes } from '../../routes'
 
 export function PlayerOnboardingCompletePage() {
-  const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const handleLinkClub = () => {
-    // Navigate to club link request page within onboarding flow
-    navigate(playerRoutes.linkClub)
-  }
-
-  const handleExplore = () => navigate(ROUTES.COMPETITIONS)
-  const handleViewProfile = () => navigate(playerRoutes.dashboard)
-
   return (
-    <DashboardLayout
-      title={t('players.onboarding.complete.title', 'Perfil criado com sucesso!')}
-      subtitle={t('players.onboarding.complete.subtitle', 'O seu perfil está pronto. Escolha o que deseja fazer a seguir.')}
-      dashboardType="player"
-      sidebarLinks={[]}
-    >
-      <div className="max-w-4xl mx-auto space-y-lg">
-        <Card variant="flat" padding="none">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-sm">
-              <CheckCircle className="h-6 w-6 text-primary" />
-              {t('players.onboarding.complete.header', 'Tudo pronto!')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-md md:grid-cols-3 items-center">
-            <div className="md:col-span-2 space-y-md">
-              <p className="text-on-surface">{t('players.onboarding.complete.copy', 'O seu perfil foi criado com sucesso. Pode agora solicitar ligação a um clube, explorar competições ou ver o seu perfil público.')}</p>
+    <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-center p-lg">
+      <div className="w-full max-w-lg space-y-xl text-center">
 
-              <div className="flex flex-wrap gap-sm">
-                <Button variant="primary" onClick={handleLinkClub}>
-                  <Users className="h-4 w-4" />
-                  {t('players.onboarding.complete.linkClub', 'Solicitar vínculo a um clube')}
-                </Button>
+        {/* Icon */}
+        <div className="flex justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-container">
+            <CheckCircle2 className="h-10 w-10 text-primary" />
+          </div>
+        </div>
 
-                <Button variant="ghost" onClick={handleExplore}>
-                  <Trophy className="h-4 w-4" />
-                  {t('players.onboarding.complete.explore', 'Explorar competições')}
-                </Button>
+        {/* Title */}
+        <div className="space-y-sm">
+          <h1 className="text-3xl font-bold tracking-tight text-on-surface">
+            Perfil criado com sucesso!
+          </h1>
+          <p className="text-base text-on-surface-variant">
+            O seu perfil de jogador está pronto. Escolha o que quer fazer a seguir.
+          </p>
+        </div>
 
-                <Button variant="outline" onClick={handleViewProfile}>
-                  <ExternalLink className="h-4 w-4" />
-                  {t('players.onboarding.complete.viewProfile', 'Ver meu perfil')}
-                </Button>
-              </div>
+        {/* Action cards */}
+        <div className="grid gap-md text-left sm:grid-cols-1">
+          <button
+            type="button"
+            onClick={() => navigate(playerRoutes.linkClub)}
+            className="group flex items-start gap-md rounded-xl border border-outline-variant/40 bg-surface-container-low p-md text-left transition-all hover:border-primary/40 hover:bg-surface-container"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-container group-hover:bg-primary/10">
+              <Users className="h-5 w-5 text-primary" />
             </div>
-
-            <div className="hidden md:block">
-              <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-                <rect width="220" height="220" rx="24" fill="#0B1C30" />
-                <circle cx="110" cy="80" r="36" fill="#1E3A8A" />
-                <path d="M70 140c10-12 26-20 40-20s30 8 40 20" stroke="#60A5FA" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M100 70l10 10 20-20" stroke="#34D399" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            <div>
+              <p className="font-semibold text-on-surface">Solicitar vínculo a um clube</p>
+              <p className="mt-0.5 text-sm text-on-surface-variant">
+                Envie um pedido de registo a um clube existente na plataforma.
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.COMPETITIONS)}
+            className="group flex items-start gap-md rounded-xl border border-outline-variant/40 bg-surface-container-low p-md text-left transition-all hover:border-primary/40 hover:bg-surface-container"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary-container group-hover:bg-secondary/10">
+              <Trophy className="h-5 w-5 text-secondary" />
+            </div>
+            <div>
+              <p className="font-semibold text-on-surface">Explorar competições</p>
+              <p className="mt-0.5 text-sm text-on-surface-variant">
+                Veja as competições disponíveis e saiba como participar.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        {/* Primary CTA */}
+        <Button
+          className="w-full"
+          onClick={() => navigate(playerRoutes.dashboard)}
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          Ir para o meu portal
+        </Button>
+
+        <p className="text-xs text-on-surface-variant">
+          Pode sempre actualizar o seu perfil a partir das definições do portal.
+        </p>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
