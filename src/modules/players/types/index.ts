@@ -11,6 +11,19 @@ export type PlayerStatus = 'active' | 'retired' | 'banned' | 'inactive'
 
 export type PlayerFoot = 'left' | 'right' | 'both'
 
+export type PlayerOnboardingStatus =
+  | 'not_started'
+  | 'pending_profile'
+  | 'pending_football'
+  | 'complete'
+
+export type PlayerLinkStatus =
+  | 'none'
+  | 'pending_approval'
+  | 'active'
+  | 'rejected'
+  | 'terminated'
+
 // ─── Player Base Types ───────────────────────────────────────────────────────
 
 export interface Player {

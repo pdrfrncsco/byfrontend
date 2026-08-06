@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Player } from '../types'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
+import { PlayerLinkStatusBadge } from './PlayerLinkStatusBadge'
 
 interface PlayerCardProps {
   player: Player
@@ -66,16 +67,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
               >
                 {player.position_label}
               </Badge>
-              <Badge
-                variant="outline"
-                style={{
-                  borderColor: statusColor,
-                  color: statusColor,
-                  background: `${statusColor}15`,
-                }}
-              >
-                {player.status_label}
-              </Badge>
               {player.current_club ? (
                 <Badge
                   variant="secondary"
@@ -85,13 +76,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
                   🔗 {player.current_club.name}
                 </Badge>
               ) : (
-                <Badge
-                  variant="outline"
-                  className="text-[11px]"
-                  style={{ borderColor: '#10b981', color: '#10b981', background: '#10b98112' }}
-                >
-                  ✓ {t('players.card.available')}
-                </Badge>
+                <PlayerLinkStatusBadge status="none" className="text-[11px]" />
               )}
             </div>
 
@@ -121,22 +106,22 @@ export function PlayerCard({ player }: PlayerCardProps) {
                 <span>{player.total_assists}</span>
               </div>
               <div className="flex items-center gap-1">
-                <User size={12} />
+                <User size={12} style={{ color: '#3b82f6' }} />
                 <span>{player.total_matches}</span>
               </div>
             </div>
-
-            {/* Link */}
-            <div className="flex items-center justify-end pt-sm">
-              <Link
-                to={`/players/${player.slug}`}
-                className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5"
-              >
-                {t('players.card.viewProfile')}
-                <span aria-hidden="true">→</span>
-              </Link>
-            </div>
           </div>
+        </div>
+
+        {/* Action Link */}
+        <div className="mt-md border-t border-outline-variant/15 pt-sm">
+          <Link
+            to={`/players/${player.slug}`}
+            className="flex items-center justify-between text-xs font-semibold text-primary hover:underline"
+          >
+            <span>{t('players.card.view_profile')}</span>
+            <span>→</span>
+          </Link>
         </div>
       </CardContent>
     </Card>
