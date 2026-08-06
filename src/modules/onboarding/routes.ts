@@ -9,4 +9,5 @@ export const onboardingRoutes = {
   playerFootball: ROUTES.ONBOARDING_PLAYER_FOOTBALL,
   playerProfile: ROUTES.ONBOARDING_PLAYER_PROFILE,
   playerReview: ROUTES.ONBOARDING_PLAYER_REVIEW,
+  playerComplete: ROUTES.ONBOARDING_PLAYER_COMPLETE,
 }

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/app/providers'
-import { usePlayerOnboardingStatus } from '@/modules/players'
+import { usePlayerOnboardingState } from '@/modules/players'
 import { ROUTES } from '@/constants/routes'
 
 interface PlayerOnboardingGuardProps {
@@ -12,7 +12,7 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
   const location = useLocation()
   const { isAuthenticated, user, loading: authLoading } = useAuth()
   const isPlayer = Boolean(user?.roles.includes('player') || user?.profileType === 'player')
-  const { data, isLoading } = usePlayerOnboardingStatus(isAuthenticated && isPlayer)
+  const { onboardingState, isLoading } = usePlayerOnboardingState(isAuthenticated && isPlayer)
 
   if (authLoading || (isAuthenticated && isPlayer && isLoading)) {
     return (
@@ -30,11 +30,11 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
     return <Navigate to={ROUTES.DASHBOARD} replace />
   }
 
-  if (data && !data.onboarding_required) {
+  if (onboardingState?.isComplete) {
     return <Navigate to={ROUTES.DASHBOARD_PLAYER} replace />
   }
 
-  if (location.pathname === ROUTES.ONBOARDING_PLAYER && data?.next_step === 'football') {
+  if (location.pathname === ROUTES.ONBOARDING_PLAYER && onboardingState?.nextStep === 'football') {
     return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
   }
 

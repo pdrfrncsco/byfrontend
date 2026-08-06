@@ -82,6 +82,11 @@ const PlayerOnboardingReviewPage = lazy(() =>
     default: m.PlayerOnboardingReviewPage,
   })),
 )
+const PlayerOnboardingCompletePage = lazy(() =>
+  import('@/modules/players/pages/onboarding/PlayerOnboardingCompletePage').then((m) => ({
+    default: m.PlayerOnboardingCompletePage,
+  })),
+)
 
 function RouteFallback() {
   return (
@@ -137,7 +142,7 @@ export function dashboardRouteElements() {
       <Route
         path={ROUTES.DASHBOARD_PLAYERS_CREATE}
         element={
-          <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
+          <ProtectedRoute requiredRoles={['owner', 'admin']}>
             <Suspense fallback={<RouteFallback />}><DashboardPlayerCreatePage /></Suspense>
           </ProtectedRoute>
         }
@@ -420,6 +425,16 @@ export function dashboardRouteElements() {
           <ProtectedRoute requiredRoles={['player']}>
             <PlayerOnboardingGuard>
               <Suspense fallback={<RouteFallback />}><PlayerOnboardingReviewPage /></Suspense>
+            </PlayerOnboardingGuard>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={onboardingRoutes.playerComplete}
+        element={
+          <ProtectedRoute requiredRoles={['player']}>
+            <PlayerOnboardingGuard>
+              <Suspense fallback={<RouteFallback />}><PlayerOnboardingCompletePage /></Suspense>
             </PlayerOnboardingGuard>
           </ProtectedRoute>
         }

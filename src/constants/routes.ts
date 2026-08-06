@@ -15,6 +15,7 @@ export const ROUTES = {
   ONBOARDING_PLAYER_FOOTBALL: '/onboarding/player/football',
   ONBOARDING_PLAYER_PROFILE: '/onboarding/player/profile',
   ONBOARDING_PLAYER_REVIEW: '/onboarding/player/review',
+  ONBOARDING_PLAYER_COMPLETE: '/onboarding/player/complete',
   REGISTER_PLAYER: '/register/player',
   REGISTER_CLUB: '/register/club',
   REGISTER_FAN: '/register/fan',

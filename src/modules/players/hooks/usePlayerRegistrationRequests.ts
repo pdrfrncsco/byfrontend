@@ -25,6 +25,11 @@ export function useMyRegistrationRequests() {
   })
 }
 
+// Backwards-compatible alias: outgoing requests from the player
+export function usePlayerOutgoingRequests() {
+  return useMyRegistrationRequests()
+}
+
 export function useSubmitRegistrationRequest() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -50,6 +55,11 @@ export function useClubPlayerRegistrationRequests() {
     queryFn: listClubPlayerRegistrationRequests,
     enabled: isAuthenticated,
   })
+}
+
+// Backwards-compatible alias: incoming requests for clubs
+export function useClubIncomingRequests() {
+  return useClubPlayerRegistrationRequests()
 }
 
 export function useReviewClubPlayerRegistrationRequest() {

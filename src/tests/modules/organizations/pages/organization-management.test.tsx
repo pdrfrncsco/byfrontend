@@ -47,6 +47,7 @@ vi.mock('@/modules/organizations/hooks', () => ({
   useRemoveMember: vi.fn(),
   useOrganizationClubRequests: vi.fn(),
   useReviewClubRequest: vi.fn(),
+  useOnboardingStatus: vi.fn(),
 }))
 
 vi.mock('@/modules/transfers', () => ({
@@ -68,6 +69,7 @@ import {
   useRemoveMember,
   useOrganizationClubRequests,
   useReviewClubRequest,
+  useOnboardingStatus,
 } from '@/modules/organizations/hooks'
 import { useTransfers } from '@/modules/transfers'
 
@@ -99,6 +101,10 @@ describe('organization management pages', () => {
     vi.mocked(useUpdateMember).mockReturnValue(mockMutation)
     vi.mocked(useRemoveMember).mockReturnValue(mockMutation)
     vi.mocked(useReviewClubRequest).mockReturnValue(mockMutation)
+    vi.mocked(useOnboardingStatus).mockReturnValue({
+      data: { is_organization_admin: true, completed: true },
+      isLoading: false,
+    } as any)
   })
 
   describe('OrganizationDashboardPage', () => {
@@ -127,8 +133,8 @@ describe('organization management pages', () => {
       renderPage(<OrganizationDashboardPage />)
 
       expect(screen.getByText(/Bem-vindo, Federação Angolana de Futebol/i)).toBeInTheDocument()
-      expect(screen.getByText('Torneios Ativos')).toBeInTheDocument()
-      expect(screen.getByText('Clubes Associados')).toBeInTheDocument()
+      expect(screen.getByText('Org. Afiliadas')).toBeInTheDocument()
+      expect(screen.getByText('Clubes Ativos')).toBeInTheDocument()
     })
   })
 

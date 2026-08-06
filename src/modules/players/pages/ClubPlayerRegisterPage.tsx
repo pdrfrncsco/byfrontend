@@ -132,6 +132,9 @@ export function ClubPlayerRegisterPage() {
             <CardTitle>{t('players.register.stepSelect')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-md">
+            <div className="text-sm text-on-surface-variant mb-sm">
+              Este formulário permite registar um jogador que já existe na plataforma no seu clube. Não criaremos um novo perfil de jogador sem o consentimento do jogador.
+            </div>
             <div className="relative">
               <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
               <Input
