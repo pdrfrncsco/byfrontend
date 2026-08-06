@@ -1,163 +1,371 @@
-import { z } from 'zod'
+import { z } from "zod";
 
-// ─── Player Form Schema ───────────────────────────────────────────────────────
+// ─── Enums ────────────────────────────────────────────────────────────────────
 
-export const playerCreateSchema = z.object({
-  first_name: z
+export const playerStatusEnum = z.enum([
+  "active",
+  "free_agent",
+  "injured",
+  "on_loan",
+  "retired",
+]);
+
+export const playerFootEnum = z.enum(["right", "left", "both"]);
+
+export const profileVisibilityEnum = z.enum([
+  "public",
+  "clubs_only",
+  "private",
+]);
+
+export const footballPositionEnum = z.enum([
+  "GK",
+  "CB",
+  "LB",
+  "RB",
+  "LWB",
+  "RWB",
+  "CDM",
+  "CM",
+  "CAM",
+  "LM",
+  "RM",
+  "LW",
+  "RW",
+  "SS",
+  "ST",
+  "CF",
+]);
+
+export const achievementTypeEnum = z.enum([
+  'league_title',
+  'cup_title',
+  'super_cup',
+  'tournament',
+  'international_club',
+  'top_scorer',
+  'best_player',
+  'mvp',
+  'best_goalkeeper',
+  'best_young_player',
+  'golden_boot',
+  'golden_ball',
+  'milestone_100_goals',
+  'milestone_500_appearances',
+  'milestone_100_caps',
+  'national_team_cap',
+  'world_cup',
+  'continental_cup',
+  'olympics',
+  'other',
+]);
+
+export const achievementLevelEnum = z.enum(['club', 'national', 'continental', 'international', 'world']);
+
+export const documentTypeEnum = z.enum([
+  "passport",
+  "id_card",
+  "medical",
+  "contract",
+  "transfer_certificate",
+  "other",
+]);
+
+export const videoTypeEnum = z.enum([
+  "highlight_reel",
+  "match_clip",
+  "training",
+  "interview",
+]);
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Optional string that converts empty string → undefined */
+const optionalString = z
+  .string()
+  .optional()
+  .transform((v) => (v === "" ? undefined : v));
+
+/** Optional URL with empty-string passthrough */
+const optionalUrl = z
+  .string()
+  .url("Must be a valid URL")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+/** Optional email with empty-string passthrough */
+const optionalEmail = z
+  .string()
+  .email("Must be a valid email")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+/** ISO date string (YYYY-MM-DD) */
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date (YYYY-MM-DD)")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+// ─── Section schemas ──────────────────────────────────────────────────────────
+
+export const playerIdentitySchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(50),
+  lastName: z.string().min(1, "Last name is required").max(50),
+  preferredName: optionalString,
+  dateOfBirth: isoDate,
+  nationality: optionalString,
+  countryOfBirth: optionalString,
+  height: z.coerce
+    .number()
+    .min(140, "Min 140 cm")
+    .max(230, "Max 230 cm")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+  weight: z.coerce
+    .number()
+    .min(40, "Min 40 kg")
+    .max(130, "Max 130 kg")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+});
+
+export const playerContactSchema = z.object({
+  email: optionalEmail,
+  phone: optionalString,
+  emergencyContactName: optionalString,
+  emergencyContactPhone: optionalString,
+});
+
+export const playerFootballSchema = z.object({
+  primaryPosition: footballPositionEnum.optional(),
+  secondaryPosition: footballPositionEnum.optional(),
+  preferredFoot: playerFootEnum.optional(),
+  squadNumber: z.coerce
+    .number()
+    .int()
+    .min(1, "Min 1")
+    .max(99, "Max 99")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+  bio: z
     .string()
-    .min(2, 'O nome deve ter pelo menos 2 caracteres.')
-    .max(255, 'O nome não pode exceder 255 caracteres.'),
-  last_name: z
+    .max(500, "Bio must be 500 characters or fewer")
+    .optional()
+    .transform((v) => (v === "" ? undefined : v)),
+});
+
+export const playerAgentSchema = z.object({
+  agentName: optionalString,
+  agencyName: optionalString,
+  agentEmail: optionalEmail,
+  agentPhone: optionalString,
+});
+
+export const playerSocialSchema = z
+  .object({
+    instagram: optionalString,
+    twitterX: optionalString,
+    linkedin: optionalString,
+    website: optionalUrl,
+  })
+  .refine(
+    (data) => {
+      if (data.instagram && data.instagram.startsWith("@")) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Enter your username without the @ symbol",
+      path: ["instagram"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.twitterX && data.twitterX.startsWith("@")) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Enter your username without the @ symbol",
+      path: ["twitterX"],
+    }
+  );
+
+export const playerAvailabilitySchema = z.object({
+  status: playerStatusEnum.optional(),
+  contractExpiry: isoDate,
+  availableForTransfer: z.boolean().optional(),
+});
+
+export const playerPrivacySchema = z.object({
+  profileVisibility: profileVisibilityEnum.default("clubs_only"),
+  showContactToClubs: z.boolean().default(true),
+  showAgentToPublic: z.boolean().default(false),
+});
+
+// ─── Full settings schema (all sections merged) ───────────────────────────────
+
+export const playerSettingsSchema = playerIdentitySchema
+  .merge(playerContactSchema)
+  .merge(playerFootballSchema)
+  .merge(playerAgentSchema)
+  .merge(playerSocialSchema)
+  .merge(playerAvailabilitySchema)
+  .merge(z.object({ privacy: playerPrivacySchema }));
+
+export type PlayerSettingsFormData = z.infer<typeof playerSettingsSchema>;
+
+// ─── Career entry ─────────────────────────────────────────────────────────────
+
+export const careerEntrySchema = z
+  .object({
+    clubName: z.string().min(1, "Club name is required").max(100),
+    clubId: optionalString,
+    startDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date")
+      .min(1, "Start date is required"),
+    endDate: isoDate,
+    position: footballPositionEnum.optional(),
+    appearances: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v === "" ? undefined : Number(v))),
+    goals: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v === "" ? undefined : Number(v))),
+    assists: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .optional()
+      .or(z.literal(""))
+      .transform((v) => (v === "" ? undefined : Number(v))),
+    isLoan: z.boolean().optional(),
+    notes: optionalString,
+  })
+  .refine(
+    (data) => {
+      if (data.endDate && data.startDate > data.endDate) {
+        return false;
+      }
+      return true;
+    },
+    { message: "End date must be after start date", path: ["endDate"] }
+  );
+
+export type CareerEntryFormData = z.infer<typeof careerEntrySchema>;
+
+// ─── Achievement ──────────────────────────────────────────────────────────────
+
+export const achievementSchema = z.object({
+  type: achievementTypeEnum,
+  title: z.string().min(1, "Title is required").max(100),
+  season: optionalString,
+  clubName: optionalString,
+  description: z
     .string()
-    .min(2, 'O apelido deve ter pelo menos 2 caracteres.')
-    .max(255, 'O apelido não pode exceder 255 caracteres.'),
-  date_of_birth: z.string().optional().or(z.literal('')),
-  nationality: z.string().max(100, 'A nacionalidade não pode exceder 100 caracteres.').optional().or(z.literal('')),
-  primary_position: z.enum(
-    ['gk', 'cb', 'lb', 'rb', 'lwb', 'rwb', 'cm', 'cdm', 'cam', 'lm', 'rm', 'lw', 'rw', 'st', 'cf', 'multiple'],
-    { errorMap: () => ({ message: 'Selecione uma posição válida.' }) }
-  ).optional(),
-  email: z.string().email('Email inválido.').optional().or(z.literal('')),
-  phone: z.string().max(20, 'O telefone não pode exceder 20 caracteres.').optional().or(z.literal('')),
-  height_cm: z.union([z.coerce.number().int().min(100).max(250), z.literal('')]).optional(),
-  weight_kg: z.union([z.coerce.number().int().min(30).max(200), z.literal('')]).optional(),
-  foot: z.enum(['left', 'right', 'both'], { errorMap: () => ({ message: 'Selecione um pé preferido.' }) }).optional(),
-  bio: z.string().max(2000, 'A biografia não pode exceder 2000 caracteres.').optional().or(z.literal('')),
-  avatar: z.string().url('URL inválida.').optional().or(z.literal('')),
-  is_public: z.boolean().optional(),
-})
+    .max(300, "Max 300 characters")
+    .optional()
+    .transform((v) => (v === "" ? undefined : v)),
+});
 
-export type PlayerCreateFormData = z.infer<typeof playerCreateSchema>
+export type AchievementFormData = z.infer<typeof achievementSchema>;
 
-export const playerUpdateSchema = playerCreateSchema.extend({
-  status: z.enum(['active', 'retired', 'banned', 'inactive'], {
-    errorMap: () => ({ message: 'Selecione um estado válido.' }),
-  }).optional(),
-})
+// ─── Onboarding schemas (step-by-step) ────────────────────────────────────────
 
-export type PlayerUpdateFormData = z.infer<typeof playerUpdateSchema>
+/** Step 1 — profile basics */
+export const onboardingProfileSchema = playerIdentitySchema.pick({
+  firstName: true,
+  lastName: true,
+  dateOfBirth: true,
+  nationality: true,
+});
 
-// ─── Player Registration Schema ───────────────────────────────────────────────
+/** Step 2 — football profile */
+export const onboardingFootballSchema = playerFootballSchema
+  .pick({
+    primaryPosition: true,
+    preferredFoot: true,
+  })
+  .required({ primaryPosition: true });
 
-export const playerRegisterSchema = z.object({
-  club_id: z.string().min(1, 'Selecione um clube.'),
-  joined_date: z.string().min(1, 'A data de entrada é obrigatória.'),
-  shirt_number: z.union([z.coerce.number().int().min(1).max(99), z.literal('')]).optional(),
-  competition_id: z.string().optional().or(z.literal('')),
-})
+export type OnboardingProfileData = z.infer<typeof onboardingProfileSchema>;
+export type OnboardingFootballData = z.infer<typeof onboardingFootballSchema>;
 
-export type PlayerRegisterFormData = z.infer<typeof playerRegisterSchema>
+// ─── Compatibility exports (legacy names used across the codebase) ─────────────
+export const playerAchievementSchema = z.object({
+  title: z.string().min(1).max(100),
+  achievement_type: achievementTypeEnum, // legacy key
+  level: achievementLevelEnum.optional(),
+  description: z.string().max(300).optional().transform((v) => (v === "" ? undefined : v)),
+  date_achieved: isoDate,
+  season: optionalString,
+  competition: optionalString,
+  club: optionalString,
+  trophy_image: z.any().optional(),
+  trophy_image_url: optionalUrl.optional(),
+  certificate: z.any().optional(),
+  certificate_url: optionalUrl.optional(),
+});
+export type PlayerAchievementFormData = z.infer<typeof playerAchievementSchema>;
+
+// Minimal document schema expected by existing components
+export const playerDocumentSchema = z.object({
+  title: z.string().min(1).max(200),
+  category: documentTypeEnum.optional(),
+  description: z.string().max(500).optional().transform((v) => (v === "" ? undefined : v)),
+  valid_from: isoDate,
+  valid_until: isoDate,
+  club: optionalString,
+  is_private: z.boolean().optional(),
+  document: z.any().optional(),
+});
+export type PlayerDocumentFormData = z.infer<typeof playerDocumentSchema>;
+
+// Minimal video schema (legacy field names expected by components)
+export const playerVideoSchema = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().max(1000).optional().transform((v) => (v === "" ? undefined : v)),
+  video_type: z.string().optional(),
+  video_url: optionalUrl.optional(),
+  thumbnail_url: optionalUrl.optional(),
+  video: z.any().optional(),
+  match: optionalString.optional(),
+  is_featured: z.boolean().optional(),
+  order: z.coerce.number().optional().or(z.literal('')).transform((v) => (v === '' ? undefined : Number(v))),
+});
+export type PlayerVideoFormData = z.infer<typeof playerVideoSchema>;
+
+// Player register / create / update compatibility schemas (map to relevant sections)
+export const playerRegisterSchema = playerContactSchema.merge(playerIdentitySchema);
+export type PlayerRegisterFormData = z.infer<typeof playerRegisterSchema>;
+
+export const playerCreateSchema = playerRegisterSchema;
+export type PlayerCreateFormData = PlayerRegisterFormData;
+
+export const playerUpdateSchema = playerSettingsSchema.partial();
+export type PlayerUpdateFormData = Partial<PlayerSettingsFormData>;
 
 export const playerLinkRequestSchema = z.object({
-  club_id: z.string().min(1, 'Selecione um clube.'),
-  joined_date: z.string().min(1, 'A data de entrada é obrigatória.'),
-  shirt_number: z.union([z.coerce.number().int().min(1).max(99), z.literal('')]).optional(),
-  competition_id: z.string().optional().or(z.literal('')),
-})
+  club_id: z.string(),
+  message: optionalString.optional(),
+});
+export type PlayerLinkRequestFormData = z.infer<typeof playerLinkRequestSchema>;
 
-export type PlayerLinkRequestFormData = z.infer<typeof playerLinkRequestSchema>
-
-// ─── Player Document Schema ───────────────────────────────────────────────────
-
-export const playerDocumentSchema = z.object({
-  title: z
-    .string()
-    .min(2, 'O título deve ter pelo menos 2 caracteres.')
-    .max(255, 'O título não pode exceder 255 caracteres.'),
-  category: z.enum(
-    ['contract', 'passport', 'medical', 'license', 'certificate', 'transfer', 'insurance', 'other'],
-    { errorMap: () => ({ message: 'Selecione uma categoria válida.' }) }
-  ),
-  description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').optional().or(z.literal('')),
-  valid_from: z.string().optional().or(z.literal('')),
-  valid_until: z.string().optional().or(z.literal('')),
-  club: z.string().optional().or(z.literal('')),
-  is_private: z.boolean(),
-  document: z
-    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
-    .optional(),
-}).refine((data) => data.document instanceof File, {
-  message: 'O documento é obrigatório.',
-  path: ['document'],
-})
-
-export type PlayerDocumentFormData = z.infer<typeof playerDocumentSchema>
-
-// ─── Player Video Schema ──────────────────────────────────────────────────────
-
-export const playerVideoSchema = z.object({
-  title: z
-    .string()
-    .min(2, 'O título deve ter pelo menos 2 caracteres.')
-    .max(255, 'O título não pode exceder 255 caracteres.'),
-  description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').optional().or(z.literal('')),
-  video_type: z.enum(['highlights', 'skills', 'interview', 'match_clip', 'training', 'other'], {
-    errorMap: () => ({ message: 'Selecione um tipo de vídeo válido.' }),
-  }),
-  video_url: z.string().url('URL do vídeo inválida.').optional().or(z.literal('')),
-  thumbnail_url: z.string().url('URL da miniatura inválida.').optional().or(z.literal('')),
-  video: z
-    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
-    .optional(),
-  media_asset: z.string().optional().or(z.literal('')),
-  match: z.string().optional().or(z.literal('')),
-  is_featured: z.boolean(),
-  order: z.union([z.coerce.number().int().min(0), z.literal('')]).optional(),
-}).refine((data) => data.video_url || data.video instanceof File, {
-  message: 'Indique uma URL do vídeo ou carregue um ficheiro.',
-  path: ['video'],
-})
-
-export type PlayerVideoFormData = z.infer<typeof playerVideoSchema>
-
-// ─── Player Achievement Schema ────────────────────────────────────────────────
-
-export const playerAchievementSchema = z.object({
-  title: z
-    .string()
-    .min(2, 'O título deve ter pelo menos 2 caracteres.')
-    .max(255, 'O título não pode exceder 255 caracteres.'),
-  achievement_type: z.enum(
-    [
-      'league_title', 'cup_title', 'super_cup', 'tournament', 'international_club',
-      'top_scorer', 'best_player', 'mvp', 'best_goalkeeper', 'best_young_player',
-      'golden_boot', 'golden_ball',
-      'milestone_100_goals', 'milestone_500_appearances', 'milestone_100_caps',
-      'national_team_cap', 'world_cup', 'continental_cup', 'olympics', 'other'
-    ],
-    { errorMap: () => ({ message: 'Selecione um tipo de conquista válido.' }) }
-  ),
-  level: z.enum(['club', 'national', 'continental', 'international', 'world'], {
-    errorMap: () => ({ message: 'Selecione um nível válido.' }),
-  }),
-  description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').optional().or(z.literal('')),
-  date_achieved: z.string().optional().or(z.literal('')),
-  season: z.string().max(20, 'A época não pode exceder 20 caracteres.').optional().or(z.literal('')),
-  competition: z.string().optional().or(z.literal('')),
-  club: z.string().optional().or(z.literal('')),
-  trophy_image: z
-    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione uma imagem válida.')
-    .optional(),
-  trophy_image_url: z.string().url('URL da imagem inválida.').optional().or(z.literal('')),
-  certificate: z
-    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
-    .optional(),
-  certificate_url: z.string().url('URL do certificado inválida.').optional().or(z.literal('')),
-}).superRefine((data, ctx) => {
-  if (data.trophy_image instanceof File && data.trophy_image_url) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Indique uma URL ou carregue uma imagem do troféu, não ambos.',
-      path: ['trophy_image'],
-    })
-  }
-  if (data.certificate instanceof File && data.certificate_url) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Indique uma URL ou carregue um certificado, não ambos.',
-      path: ['certificate'],
-    })
-  }
-})
-
-export type PlayerAchievementFormData = z.infer<typeof playerAchievementSchema>

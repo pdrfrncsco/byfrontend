@@ -1,124 +1,151 @@
-// Players module — React Query query hooks
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { playerApi } from "@/modules/players/services/player.api";
+import type { PlayerListParams } from "@/modules/players/types";
 
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import {
-  listPlayers,
-  getPlayer,
-  searchPlayers,
-  listPlayerDocuments,
-  listPlayerVideos,
-  listPlayerAchievements,
-  getPlayerMe,
-  getPlayerOnboardingStatus,
-} from '../services'
-import type { PlayerListParams } from '../types'
+// ─── Query key factory ────────────────────────────────────────────────────────
 
-export const playerKeys = {
-  all: ['players'] as const,
-  lists: () => [...playerKeys.all, 'list'] as const,
-  list: (params: PlayerListParams) => [...playerKeys.lists(), params] as const,
-  details: () => [...playerKeys.all, 'detail'] as const,
-  detail: (slug: string) => [...playerKeys.details(), slug] as const,
-  search: (q: string) => [...playerKeys.all, 'search', q] as const,
-  documents: (slug: string) => [...playerKeys.all, 'documents', slug] as const,
-  videos: (slug: string) => [...playerKeys.all, 'videos', slug] as const,
-  achievements: (slug: string) => [...playerKeys.all, 'achievements', slug] as const,
-  me: () => [...playerKeys.all, 'me'] as const,
-  onboardingStatus: () => [...playerKeys.all, 'onboarding-status'] as const,
-}
+export const PLAYER_QUERY_KEYS = {
+  all: ["players"] as const,
+  lists: () => [...PLAYER_QUERY_KEYS.all, "list"] as const,
+  list: (params?: PlayerListParams) =>
+    [...PLAYER_QUERY_KEYS.lists(), params ?? {}] as const,
+  details: () => [...PLAYER_QUERY_KEYS.all, "detail"] as const,
+  detail: (id: string) => [...PLAYER_QUERY_KEYS.details(), id] as const,
+  current: () => [...PLAYER_QUERY_KEYS.all, "current"] as const,
+  career: (id: string) => [...PLAYER_QUERY_KEYS.detail(id), "career"] as const,
+  achievements: (id: string) =>
+    [...PLAYER_QUERY_KEYS.detail(id), "achievements"] as const,
+  documents: (id: string) =>
+    [...PLAYER_QUERY_KEYS.detail(id), "documents"] as const,
+  videos: (id: string) => [...PLAYER_QUERY_KEYS.detail(id), "videos"] as const,
+  completion: (id: string) =>
+    [...PLAYER_QUERY_KEYS.detail(id), "completion"] as const,
+  registrationRequests: (id: string) =>
+    [...PLAYER_QUERY_KEYS.detail(id), "registration-requests"] as const,
+  onboarding: () => [...PLAYER_QUERY_KEYS.current(), 'onboarding'] as const,
+};
 
-/**
- * Hook: list players with optional position/nationality/page filter.
- */
-export function usePlayers(params: PlayerListParams = {}) {
+
+// Backwards-compatible alias for older imports
+export const playerKeys = PLAYER_QUERY_KEYS;
+
+// ─── Stale-time constants ─────────────────────────────────────────────────────
+
+const STALE_SHORT = 30_000;      // 30 s — live data (availability, status)
+const STALE_MEDIUM = 60_000 * 5; // 5 min — profile sections
+const STALE_LONG = 60_000 * 15;  // 15 min — rarely-changing data (career, achievements)
+
+// ─── List ─────────────────────────────────────────────────────────────────────
+
+export function usePlayers(params?: PlayerListParams) {
   return useQuery({
-    queryKey: playerKeys.list(params),
-    queryFn: () => listPlayers(params),
-    placeholderData: keepPreviousData,
-    staleTime: 30_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.list(params),
+    queryFn: () => playerApi.list(params),
+    staleTime: STALE_SHORT,
+  });
 }
 
-/**
- * Hook: get a single player detail by slug.
- */
-export function usePlayer(slug: string) {
+// ─── Single player ────────────────────────────────────────────────────────────
+
+export function usePlayer(id: string) {
   return useQuery({
-    queryKey: playerKeys.detail(slug),
-    queryFn: () => getPlayer(slug),
-    enabled: Boolean(slug),
-    staleTime: 60_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.detail(id),
+    queryFn: () => playerApi.getById(id),
+    staleTime: STALE_MEDIUM,
+    enabled: !!id,
+  });
 }
 
 /**
- * Hook: search players by name (debounce at call site).
- * Only fires when query is >= 2 chars.
+ * Suspense variant — use inside pages that are already wrapped in a Suspense boundary.
  */
-export function usePlayerSearch(q: string) {
+export function usePlayerSuspense(id: string) {
+  return useSuspenseQuery({
+    queryKey: PLAYER_QUERY_KEYS.detail(id),
+    queryFn: () => playerApi.getById(id),
+    staleTime: STALE_MEDIUM,
+  });
+}
+
+// ─── Current authenticated user's player profile (provided from separate hook) ──
+import { useCurrentPlayer } from './useCurrentPlayer'
+
+// Backwards-compatible alias expected by older code
+export const usePlayerMe = useCurrentPlayer;
+
+// ─── Career history ───────────────────────────────────────────────────────────
+
+export function usePlayerCareer(playerId: string) {
   return useQuery({
-    queryKey: playerKeys.search(q),
-    queryFn: () => searchPlayers(q),
-    enabled: q.length >= 2,
-    staleTime: 15_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.career(playerId),
+    queryFn: () => playerApi.getCareerHistory(playerId),
+    staleTime: STALE_LONG,
+    enabled: !!playerId,
+  });
 }
 
-/**
- * Hook: list player documents.
- */
-export function usePlayerDocuments(slug: string) {
+// ─── Achievements ─────────────────────────────────────────────────────────────
+
+export function usePlayerAchievements(playerId: string) {
   return useQuery({
-    queryKey: playerKeys.documents(slug),
-    queryFn: () => listPlayerDocuments(slug),
-    enabled: Boolean(slug),
-    staleTime: 60_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.achievements(playerId),
+    queryFn: () => playerApi.getAchievements(playerId),
+    staleTime: STALE_LONG,
+    enabled: !!playerId,
+  });
 }
 
-/**
- * Hook: list player videos.
- */
-export function usePlayerVideos(slug: string) {
+// ─── Documents ───────────────────────────────────────────────────────────────
+
+export function usePlayerDocuments(playerId: string) {
   return useQuery({
-    queryKey: playerKeys.videos(slug),
-    queryFn: () => listPlayerVideos(slug),
-    enabled: Boolean(slug),
-    staleTime: 60_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.documents(playerId),
+    queryFn: () => playerApi.getDocuments(playerId),
+    staleTime: STALE_MEDIUM,
+    enabled: !!playerId,
+  });
 }
 
-/**
- * Hook: list player achievements.
- */
-export function usePlayerAchievements(slug: string) {
+// ─── Videos ──────────────────────────────────────────────────────────────────
+
+export function usePlayerVideos(playerId: string) {
   return useQuery({
-    queryKey: playerKeys.achievements(slug),
-    queryFn: () => listPlayerAchievements(slug),
-    enabled: Boolean(slug),
-    staleTime: 60_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.videos(playerId),
+    queryFn: () => playerApi.getVideos(playerId),
+    staleTime: STALE_MEDIUM,
+    enabled: !!playerId,
+  });
 }
 
-/**
- * Hook: get the authenticated user's linked player profile.
- */
-export function usePlayerMe() {
+// ─── Profile completion ───────────────────────────────────────────────────────
+
+export function usePlayerProfileCompletion(playerId: string) {
   return useQuery({
-    queryKey: playerKeys.me(),
-    queryFn: () => getPlayerMe(),
-    staleTime: 60_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.completion(playerId),
+    queryFn: () => playerApi.getProfileCompletion(playerId),
+    staleTime: STALE_SHORT,
+    enabled: !!playerId,
+  });
 }
 
-/**
- * Hook: get onboarding status for the authenticated user's linked player profile.
- */
+// ─── Onboarding status (current user) ─────────────────────────────────────────
+
 export function usePlayerOnboardingStatus(enabled = true) {
   return useQuery({
-    queryKey: playerKeys.onboardingStatus(),
-    queryFn: () => getPlayerOnboardingStatus(),
-    enabled,
-    staleTime: 30_000,
-  })
+    queryKey: PLAYER_QUERY_KEYS.onboarding(),
+    queryFn: () => playerApi.getPlayerOnboardingStatus(),
+    staleTime: STALE_SHORT,
+    enabled: !!enabled,
+  });
+}
+
+// ─── Registration requests ────────────────────────────────────────────────────
+
+export function usePlayerRegistrationRequests(playerId: string) {
+  return useQuery({
+    queryKey: PLAYER_QUERY_KEYS.registrationRequests(playerId),
+    queryFn: () => playerApi.getRegistrationRequests(playerId),
+    staleTime: STALE_SHORT,
+    enabled: !!playerId,
+  });
 }

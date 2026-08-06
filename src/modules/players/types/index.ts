@@ -11,7 +11,7 @@ export type PlayerStatus = 'active' | 'retired' | 'banned' | 'inactive'
 
 export type PlayerFoot = 'left' | 'right' | 'both'
 
-export type PlayerOnboardingStatus =
+export type PlayerOnboardingStage =
   | 'not_started'
   | 'pending_profile'
   | 'pending_football'
@@ -351,6 +351,22 @@ export interface PlayerUpdate {
   is_public?: boolean
   status?: PlayerStatus
 }
+
+// Backwards-compatible payload aliases
+export type UpdatePlayerIdentityPayload = Partial<PlayerUpdate>
+export type UpdatePlayerContactPayload = Partial<PlayerUpdate>
+export type UpdatePlayerFootballPayload = Partial<PlayerUpdate>
+export type UpdatePlayerAgentPayload = Partial<PlayerUpdate>
+export type UpdatePlayerSocialPayload = Partial<PlayerUpdate>
+export type UpdatePlayerAvailabilityPayload = Partial<PlayerUpdate>
+export type UpdatePlayerPrivacyPayload = Partial<PlayerUpdate>
+export type UpdatePlayerProfilePayload = Partial<PlayerUpdate>
+
+export type CreateCareerEntryPayload = Partial<PlayerCareerEntry>
+export type UpdateCareerEntryPayload = Partial<PlayerCareerEntry>
+export type CreateAchievementPayload = Partial<PlayerAchievement>
+
+export type PlayerProfileCompletion = any
 
 export interface PlayerRegisterPayload {
   club_id: string
