@@ -58,7 +58,7 @@ export function PlayerOnboardingFootballPage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={2}>
+    <PlayerOnboardingLayout step={2} maxReachedStep={2}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Perfil futebolístico</h2>
@@ -121,7 +121,7 @@ export function PlayerOnboardingFootballPage() {
 
         <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
           <Button asChild variant="secondary">
-            <Link to={ROUTES.ONBOARDING_PLAYER}>
+            <Link to={ROUTES.ONBOARDING_PLAYER_PROFILE}>
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Link>

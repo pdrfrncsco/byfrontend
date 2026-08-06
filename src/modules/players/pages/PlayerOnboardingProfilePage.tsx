@@ -53,7 +53,7 @@ export function PlayerOnboardingProfilePage() {
 
   if (isLoading) {
     return (
-      <PlayerOnboardingLayout step={1}>
+      <PlayerOnboardingLayout step={1} maxReachedStep={1}>
         <div className="text-sm text-on-surface-variant">A carregar perfil...</div>
       </PlayerOnboardingLayout>
     )
@@ -61,7 +61,7 @@ export function PlayerOnboardingProfilePage() {
 
   if (data && !data.has_player_profile) {
     return (
-      <PlayerOnboardingLayout step={1}>
+      <PlayerOnboardingLayout step={1} maxReachedStep={1}>
         <div className="flex flex-col gap-md rounded-lg border border-error/30 bg-error-container/10 p-md text-sm">
           <div className="flex items-start gap-md">
             <AlertCircle className="mt-0.5 h-5 w-5 text-error" />
@@ -91,7 +91,7 @@ export function PlayerOnboardingProfilePage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={1}>
+    <PlayerOnboardingLayout step={1} maxReachedStep={1}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Dados pessoais</h2>

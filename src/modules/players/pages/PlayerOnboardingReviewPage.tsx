@@ -24,7 +24,7 @@ export function PlayerOnboardingReviewPage() {
   const complete = Boolean(data && !data.onboarding_required)
 
   return (
-    <PlayerOnboardingLayout step={3}>
+    <PlayerOnboardingLayout step={3} maxReachedStep={3}>
       <div className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Revisão final</h2>

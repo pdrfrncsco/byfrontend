@@ -29,7 +29,7 @@ export function PendingOnboardingRedirect() {
   if (deservesPlayerOnboardingCheck) {
     if (isPlayerLoading) return null
     if (playerData?.onboarding_required) {
-      return <Navigate to={ROUTES.ONBOARDING_PLAYER} replace />
+      return <Navigate to={ROUTES.ONBOARDING_PLAYER_WELCOME} replace />
     }
     return null
   }

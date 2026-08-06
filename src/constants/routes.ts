@@ -12,6 +12,7 @@ export const ROUTES = {
   ONBOARDING_COMPETITION: '/onboarding/competition',
   ONBOARDING_REVIEW: '/onboarding/review',
   ONBOARDING_PLAYER: '/onboarding/player',
+  ONBOARDING_PLAYER_WELCOME: '/onboarding/player/welcome',
   ONBOARDING_PLAYER_FOOTBALL: '/onboarding/player/football',
   ONBOARDING_PLAYER_PROFILE: '/onboarding/player/profile',
   ONBOARDING_PLAYER_REVIEW: '/onboarding/player/review',
