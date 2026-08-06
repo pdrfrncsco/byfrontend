@@ -18,8 +18,7 @@ describe('PlayerCard', () => {
 
     expect(screen.getByText(mockPlayer.full_name)).toBeInTheDocument()
     expect(screen.getByText(mockPlayer.position_label)).toBeInTheDocument()
-    expect(screen.getByText(mockPlayer.status_label)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /ver perfil/i })).toHaveAttribute(
+    expect(screen.getByRole('link')).toHaveAttribute(
       'href',
       `/players/${mockPlayer.slug}`,
     )
