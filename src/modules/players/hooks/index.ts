@@ -10,17 +10,21 @@ export * from './usePlayerOnboardingState'
 import { usePlayers, usePlayers as usePlayerSearch } from './usePlayerQueries'
 import {
   useCreatePlayer,
+  useUpdatePlayer,
   useUpdatePlayerMe,
   useAddAchievement,
   useDeleteAchievement,
   useUploadPlayerDocument,
   useAddPlayerVideo,
-  usePlayerVideos,
+  usePublishPlayerVideo,
 } from './usePlayerMutations'
+import { usePlayerVideos } from './usePlayerQueries'
 
 export { usePlayerSearch }
 export { useCreatePlayer }
+export { useUpdatePlayer }
 export { useUpdatePlayerMe }
+export { usePublishPlayerVideo }
 
 // Provide a simple grouped hook for legacy imports that expect usePlayerMutations
 export function usePlayerMutations() {

@@ -56,6 +56,18 @@ export function useUpdatePlayerIdentity(playerId: string) {
   });
 }
 
+// Compatibility: generic update player by ID/slug
+export function useUpdatePlayer(playerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) => playerApi.updateIdentity(playerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.lists() });
+    },
+  });
+}
+
 // Compatibility: create player
 export function useCreatePlayer() {
   const queryClient = useQueryClient();
@@ -371,6 +383,19 @@ export function useDeletePlayerVideo(playerId: string) {
 
   return useMutation({
     mutationFn: (videoId: string) => playerApi.deleteVideo(playerId, videoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.videos(playerId),
+      });
+    },
+  });
+}
+
+export function usePublishPlayerVideo(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (videoId: string) => playerApi.publishVideo(playerId, videoId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: PLAYER_QUERY_KEYS.videos(playerId),

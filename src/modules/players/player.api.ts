@@ -190,6 +190,10 @@ export const playerApi = {
     return apiClient.delete(`${BASE}/${id}/videos/${videoId}`);
   },
 
+  publishVideo(id: string, videoId: string): Promise<PlayerVideo> {
+    return apiClient.post(`${BASE}/${id}/videos/${videoId}/publish`);
+  },
+
   // ─── Registration / club link ─────────────────────────────────────────────
 
   getRegistrationRequests(id: string): Promise<PlayerRegistrationRequest[]> {
