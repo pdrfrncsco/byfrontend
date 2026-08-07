@@ -110,6 +110,21 @@ export default function ClubDashboardPage() {
       headerActions={headerActions}
     >
       <div className="space-y-xl">
+        {/* Affiliation request banner */}
+        {club.affiliation_request_status === 'pending' && (
+          <div className="rounded-2xl border border-primary/20 bg-primary-container/10 p-md text-sm text-on-surface flex items-center justify-between">
+            <div>
+              <strong>Pedido de vinculação enviado</strong>
+              <div className="text-xs text-on-surface-variant">O pedido de vinculação à organização foi submetido e aguarda validação. Ser-lhe-á notificado quando for aprovado ou rejeitado.</div>
+            </div>
+            <div>
+              <Button asChild size="sm">
+                <Link to={ROUTES.DASHBOARD}>Fechar</Link>
+              </Button>
+            </div>
+          </div>
+        )}
+
         <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/80 p-xl shadow-[0_24px_80px_-48px_rgba(0,0,0,0.75)] backdrop-blur lg:grid-cols-[1.3fr_0.7fr]">
           <div className="space-y-md">
             <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
