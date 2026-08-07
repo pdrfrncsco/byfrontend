@@ -48,7 +48,7 @@ export default function ClubDashboardPage() {
     </Button>
   )
 
-  if (clubLoading || !club) {
+  if (clubLoading) {
     return (
       <DashboardLayout
         title="Portal do Clube"
@@ -62,6 +62,33 @@ export default function ClubDashboardPage() {
             {Array.from({ length: 4 }).map((_, index) => (
               <Skeleton key={index} className="h-28 w-full rounded-2xl" />
             ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  // If user is authenticated but has no club membership yet, show onboarding CTA
+  if (!club) {
+    return (
+      <DashboardLayout
+        title="Portal do Clube"
+        subtitle="Ainda não tem um clube associado"
+        dashboardType="club"
+        sidebarLinks={sidebarLinks}
+      >
+        <div className="max-w-2xl">
+          <div className="rounded-xl border border-outline-variant bg-surface-container-low p-xl text-center">
+            <h2 className="text-headline-md font-display-lg">Bem-vindo(a) — configurar o seu clube</h2>
+            <p className="mt-sm text-sm text-on-surface-variant">Complete o onboarding do clube ou solicite a vinculação a uma organização para começar a gerir o seu perfil.</p>
+            <div className="mt-lg flex justify-center gap-sm">
+              <Button onClick={() => navigate(ROUTES.CLUB_ONBOARDING)}>
+                Solicitar vinculação / Onboarding
+              </Button>
+              <Button variant="secondary" onClick={() => navigate(ROUTES.DASHBOARD)}>
+                Voltar ao dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </DashboardLayout>
@@ -155,6 +182,16 @@ export default function ClubDashboardPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
+
+              {/* Show a request-affiliation shortcut when the club is not linked to an organization */}
+              {(!club.tenant_name && !club.tenant_slug) && (
+                <Button asChild variant="outline" className="w-full justify-between">
+                  <Link to={ROUTES.CLUB_ONBOARDING}>
+                    <span>Solicitar vinculação</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         </section>

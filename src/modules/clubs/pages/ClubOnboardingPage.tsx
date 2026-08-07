@@ -28,6 +28,7 @@ export default function ClubOnboardingPage() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<ClubOnboardingFormData>({
     defaultValues: {
@@ -170,10 +171,36 @@ export default function ClubOnboardingPage() {
             <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.DASHBOARD)}>
               Fazer depois
             </Button>
-            <Button type="submit" loading={submitRequest.isPending}>
-              <Send className="h-4 w-4" />
-              Submeter pedido
-            </Button>
+            <div className="flex gap-sm">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={async () => {
+                  const { organization_slug, founded_year, stadium_capacity, ...payload } = getValues()
+                  try {
+                    const res = await submitRequest.mutateAsync({
+                      slug: organization_slug,
+                      data: {
+                        ...payload,
+                        founded_year: founded_year ? Number(founded_year) : null,
+                        stadium_capacity: stadium_capacity ? Number(stadium_capacity) : null,
+                        is_draft: true,
+                      },
+                    })
+                    // Navigate to dashboard where the provisional club appears for editing
+                    navigate(ROUTES.DASHBOARD)
+                  } catch (err) {
+                    // handled by hook toast
+                  }
+                }}
+              >
+                Guardar rascunho
+              </Button>
+              <Button type="submit" loading={submitRequest.isPending}>
+                <Send className="h-4 w-4" />
+                Submeter pedido
+              </Button>
+            </div>
           </div>
         </form>
       </div>
