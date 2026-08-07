@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import * as React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -20,7 +20,7 @@ vi.mock('@/modules/clubs/hooks', () => ({
   }),
 }))
 
-import { usePlayerMe, usePlayerMutations, usePlayerOutgoingRequests, useMyRegistrationRequests, useSubmitRegistrationRequest } from '@/modules/players/hooks'
+import { usePlayerMe, useMyRegistrationRequests, useSubmitRegistrationRequest } from '@/modules/players/hooks'
 
 const renderWithProviders = (ui: React.ReactElement) => {
   const queryClient = new QueryClient({

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Save, LayoutDashboard, UserCheck, Settings, Handshake, Eye, ShieldAlert, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Save, LayoutDashboard, Settings, Handshake, ExternalLink } from 'lucide-react'
 import { Button, Card, CardContent, FormField, Input, Textarea } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { useCreatePlayer, useUpdatePlayerMe } from '../hooks'
@@ -49,12 +49,12 @@ export function DashboardPlayerCreatePage() {
   useEffect(() => {
     // On success navigate accordingly depending on source. If onboarding and either updateMe OR create succeeds, continue onboarding.
     if (from === 'onboarding') {
-      if ((updateMeMutation.isSuccess && updateMeMutation.data?.slug) || (createMutation.isSuccess && createMutation.data?.slug)) {
+      if ((updateMeMutation.isSuccess && (updateMeMutation.data as any)?.slug) || (createMutation.isSuccess && (createMutation.data as any)?.slug)) {
         navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)
       }
     } else {
-      if (createMutation.isSuccess && createMutation.data?.slug) {
-        navigate(ROUTES.PLAYER_DETAIL(createMutation.data.slug))
+      if (createMutation.isSuccess && (createMutation.data as any)?.slug) {
+        navigate(ROUTES.PLAYER_DETAIL((createMutation.data as any).slug))
       }
     }
   }, [createMutation.isSuccess, createMutation.data, updateMeMutation.isSuccess, updateMeMutation.data, navigate, from])

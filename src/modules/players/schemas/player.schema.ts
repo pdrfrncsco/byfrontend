@@ -161,3 +161,143 @@ export const playerAchievementSchema = z.object({
 })
 
 export type PlayerAchievementFormData = z.infer<typeof playerAchievementSchema>
+
+// ─── Section Schemas (Merged from reference files) ────────────────────────────
+
+const optionalString = z
+  .string()
+  .optional()
+  .transform((v) => (v === "" ? undefined : v));
+
+const optionalUrl = z
+  .string()
+  .url("Must be a valid URL")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+const optionalEmail = z
+  .string()
+  .email("Must be a valid email")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date (YYYY-MM-DD)")
+  .optional()
+  .or(z.literal(""))
+  .transform((v) => (v === "" ? undefined : v));
+
+export const playerIdentitySchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(50),
+  lastName: z.string().min(1, "Last name is required").max(50),
+  preferredName: optionalString,
+  dateOfBirth: isoDate,
+  nationality: optionalString,
+  countryOfBirth: optionalString,
+  height: z.coerce
+    .number()
+    .min(140, "Min 140 cm")
+    .max(230, "Max 230 cm")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+  weight: z.coerce
+    .number()
+    .min(40, "Min 40 kg")
+    .max(130, "Max 130 kg")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+});
+
+export const playerContactSchema = z.object({
+  email: optionalEmail,
+  phone: optionalString,
+  emergencyContactName: optionalString,
+  emergencyContactPhone: optionalString,
+});
+
+export const playerFootballSchema = z.object({
+  primaryPosition: z.string().optional(),
+  secondaryPosition: z.string().optional(),
+  preferredFoot: z.enum(["right", "left", "both", ""]).optional(),
+  squadNumber: z.coerce
+    .number()
+    .int()
+    .min(1, "Min 1")
+    .max(99, "Max 99")
+    .optional()
+    .or(z.literal(""))
+    .transform((v) => (v === "" ? undefined : Number(v) || undefined)),
+  bio: z
+    .string()
+    .max(500, "Bio must be 500 characters or fewer")
+    .optional()
+    .transform((v) => (v === "" ? undefined : v)),
+});
+
+export const playerAgentSchema = z.object({
+  agentName: optionalString,
+  agencyName: optionalString,
+  agentEmail: optionalEmail,
+  agentPhone: optionalString,
+});
+
+const playerSocialBase = z.object({
+  instagram: optionalString,
+  twitterX: optionalString,
+  linkedin: optionalString,
+  website: optionalUrl,
+});
+
+export const playerSocialSchema = playerSocialBase
+  .refine(
+    (data) => {
+      if (data.instagram && data.instagram.startsWith("@")) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Enter your username without the @ symbol",
+      path: ["instagram"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.twitterX && data.twitterX.startsWith("@")) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Enter your username without the @ symbol",
+      path: ["twitterX"],
+    }
+  );
+
+export const playerAvailabilitySchema = z.object({
+  status: z.enum(["active", "free_agent", "injured", "on_loan", "retired"]).optional(),
+  contractExpiry: isoDate,
+  availableForTransfer: z.boolean().optional(),
+});
+
+export const playerPrivacySchema = z.object({
+  profileVisibility: z.enum(["public", "clubs_only", "private"]).default("clubs_only"),
+  showContactToClubs: z.boolean().default(true),
+  showAgentToPublic: z.boolean().default(false),
+});
+
+export const playerSettingsSchema = playerIdentitySchema
+  .merge(playerContactSchema)
+  .merge(playerFootballSchema)
+  .merge(playerAgentSchema)
+  .merge(playerSocialBase)
+  .merge(playerAvailabilitySchema)
+  .merge(z.object({ privacy: playerPrivacySchema }));
+
+export type PlayerSettingsFormData = z.infer<typeof playerSettingsSchema>;
+

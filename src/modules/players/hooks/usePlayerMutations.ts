@@ -1,243 +1,438 @@
-// Players module — React Query mutation hooks
-
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  createPlayer,
-  updatePlayer,
-  registerPlayer,
-  createPlayerDocument,
-  updatePlayerDocument,
-  deletePlayerDocument,
-  verifyPlayerDocument,
-  createPlayerVideo,
-  updatePlayerVideo,
-  deletePlayerVideo,
-  publishPlayerVideo,
-  createPlayerAchievement,
-  updatePlayerAchievement,
-  deletePlayerAchievement,
-  verifyPlayerAchievement,
-  updatePlayerMe,
-  uploadPlayerAvatar,
-} from '../services'
-import { playerKeys } from './usePlayerQueries'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { playerApi } from "@/modules/players/services/player.api";
+import * as playerServices from "@/modules/players/services";
+import { PLAYER_QUERY_KEYS } from "./usePlayerQueries";
 import type {
-  PlayerCreate,
-  PlayerUpdate,
-  PlayerRegisterPayload,
-  PlayerDocumentCreate,
-  PlayerDocumentUpdate,
-  PlayerVideoCreate,
-  PlayerVideoUpdate,
+  Player,
+  UpdatePlayerIdentityPayload,
+  UpdatePlayerContactPayload,
+  UpdatePlayerFootballPayload,
+  UpdatePlayerAgentPayload,
+  UpdatePlayerSocialPayload,
+  UpdatePlayerAvailabilityPayload,
+  UpdatePlayerPrivacyPayload,
+  CreateCareerEntryPayload,
+  UpdateCareerEntryPayload,
   PlayerAchievementCreate,
-  PlayerAchievementUpdate,
-} from '../types'
+  PlayerDocumentCreate,
+  PlayerVideoCreate,
+} from "@/modules/players/types";
 
-function invalidatePlayerDetail(queryClient: ReturnType<typeof useQueryClient>, slug: string) {
-  queryClient.invalidateQueries({ queryKey: playerKeys.detail(slug) })
-  queryClient.invalidateQueries({ queryKey: playerKeys.documents(slug) })
-  queryClient.invalidateQueries({ queryKey: playerKeys.videos(slug) })
-  queryClient.invalidateQueries({ queryKey: playerKeys.achievements(slug) })
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Optimistically updates the player cache and returns a rollback function.
+ * Used in every section mutation's onMutate callback.
+ */
+function useOptimisticPlayer(queryClient: ReturnType<typeof useQueryClient>) {
+  return async (playerId: string, patch: Record<string, any>) => {
+    const key = PLAYER_QUERY_KEYS.detail(playerId);
+    await queryClient.cancelQueries({ queryKey: key });
+    const previous = queryClient.getQueryData<Player>(key);
+    queryClient.setQueryData<Player>(key, (old) =>
+      old ? { ...old, ...patch } : old
+    );
+    return previous;
+  };
 }
 
-// ─── Player Mutations ────────────────────────────────────────────────────────
+// ─── Identity ─────────────────────────────────────────────────────────────────
 
+export function useUpdatePlayerIdentity(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
+
+  return useMutation({
+    mutationFn: (payload: UpdatePlayerIdentityPayload) =>
+      playerApi.updateIdentity(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
+}
+
+// Compatibility: generic update player by ID/slug
+export function useUpdatePlayer(playerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) => playerApi.updateIdentity(playerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.lists() });
+    },
+  });
+}
+
+// Compatibility: create player
 export function useCreatePlayer() {
-  const queryClient = useQueryClient()
-
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: PlayerCreate) => createPlayer(data),
+    mutationFn: (payload: any) => (playerServices as any).createPlayer(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.lists() });
     },
-  })
+  });
 }
 
-export function useUpdatePlayer(slug: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: PlayerUpdate) => updatePlayer(slug, data),
-    onSuccess: (response) => {
-      queryClient.setQueryData(playerKeys.detail(slug), response)
-      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
-    },
-  })
-}
-
-export function useRegisterPlayer(slug: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: PlayerRegisterPayload) => registerPlayer(slug, data),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
-      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
-    },
-  })
-}
-
+// Compatibility: update current authenticated player (me)
 export function useUpdatePlayerMe() {
-  const queryClient = useQueryClient()
-
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: PlayerUpdate) => updatePlayerMe(data),
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
-      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
-    },
-  })
-}
-
-export function useUploadPlayerAvatar(slug?: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (file: File) => uploadPlayerAvatar(file, slug),
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
-      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
-      queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
-      queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
-    },
-  })
-}
-
-// ─── Player Document Mutations ───────────────────────────────────────────────
-
-export function useCreatePlayerDocument(slug: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: PlayerDocumentCreate) => createPlayerDocument(slug, data),
+    mutationFn: (payload: any) => (playerServices as any).updatePlayerMe(payload),
     onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.current() });
     },
-  })
+  });
 }
 
-export function useUpdatePlayerDocument(slug: string, documentId: string) {
-  const queryClient = useQueryClient()
+// ─── Contact ──────────────────────────────────────────────────────────────────
+
+export function useUpdatePlayerContact(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (data: PlayerDocumentUpdate) => updatePlayerDocument(slug, documentId, data),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerContactPayload) =>
+      playerApi.updateContact(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-export function useDeletePlayerDocument(slug: string) {
-  const queryClient = useQueryClient()
+// ─── Football profile ─────────────────────────────────────────────────────────
+
+export function useUpdatePlayerFootball(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (documentId: string) => deletePlayerDocument(slug, documentId),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerFootballPayload) =>
+      playerApi.updateFootball(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-export function useVerifyPlayerDocument(slug: string) {
-  const queryClient = useQueryClient()
+// ─── Agent ────────────────────────────────────────────────────────────────────
+
+export function useUpdatePlayerAgent(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (documentId: string) => verifyPlayerDocument(slug, documentId),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerAgentPayload) =>
+      playerApi.updateAgent(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-// ─── Player Video Mutations ──────────────────────────────────────────────────
+// ─── Social ───────────────────────────────────────────────────────────────────
 
-export function useCreatePlayerVideo(slug: string) {
-  const queryClient = useQueryClient()
+export function useUpdatePlayerSocial(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (data: PlayerVideoCreate) => createPlayerVideo(slug, data),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerSocialPayload) =>
+      playerApi.updateSocial(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-export function useUpdatePlayerVideo(slug: string, videoId: string) {
-  const queryClient = useQueryClient()
+// ─── Availability ─────────────────────────────────────────────────────────────
+
+export function useUpdatePlayerAvailability(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (data: PlayerVideoUpdate) => updatePlayerVideo(slug, videoId, data),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerAvailabilityPayload) =>
+      playerApi.updateAvailability(playerId, payload),
+    onMutate: (payload) => optimistic(playerId, payload),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-export function useDeletePlayerVideo(slug: string) {
-  const queryClient = useQueryClient()
+// ─── Privacy ──────────────────────────────────────────────────────────────────
+
+export function useUpdatePlayerPrivacy(playerId: string) {
+  const queryClient = useQueryClient();
+  const optimistic = useOptimisticPlayer(queryClient);
 
   return useMutation({
-    mutationFn: (videoId: string) => deletePlayerVideo(slug, videoId),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (payload: UpdatePlayerPrivacyPayload) =>
+      playerApi.updatePrivacy(playerId, payload),
+    onMutate: (payload) =>
+      optimistic(playerId, { privacy: { ...(payload as any) } }),
+    onError: (_err, _vars, context) => {
+      if (context) {
+        queryClient.setQueryData(PLAYER_QUERY_KEYS.detail(playerId), context);
+      }
     },
-  })
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.detail(playerId) });
+    },
+  });
 }
 
-export function usePublishPlayerVideo(slug: string) {
-  const queryClient = useQueryClient()
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+
+export function useUploadPlayerAvatar(playerId: string) {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (videoId: string) => publishPlayerVideo(slug, videoId),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (file: File) => playerApi.uploadAvatar(playerId, file),
+    onSuccess: (data) => {
+      // Normalize server response into both `avatar` and `avatarUrl` to keep compatibility
+      const url = (data as any).avatarUrl ?? (data as any).avatar ?? undefined;
+      queryClient.setQueryData<Player>(
+        PLAYER_QUERY_KEYS.detail(playerId),
+        (old) => (old ? { ...old, avatar: url, avatarUrl: url } : old)
+      );
     },
-  })
+  });
 }
 
-// ─── Player Achievement Mutations ────────────────────────────────────────────
-
-export function useCreatePlayerAchievement(slug: string) {
-  const queryClient = useQueryClient()
+export function useDeletePlayerAvatar(playerId: string) {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: PlayerAchievementCreate) => createPlayerAchievement(slug, data),
+    mutationFn: () => playerApi.deleteAvatar(playerId),
     onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+      queryClient.setQueryData<Player>(
+        PLAYER_QUERY_KEYS.detail(playerId),
+        (old) => (old ? { ...old, avatarUrl: undefined } : old)
+      );
     },
-  })
+  });
 }
 
-export function useUpdatePlayerAchievement(slug: string, achievementId: string) {
-  const queryClient = useQueryClient()
+// ─── Career history ───────────────────────────────────────────────────────────
+
+export function useAddCareerEntry(playerId: string) {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: PlayerAchievementUpdate) => updatePlayerAchievement(slug, achievementId, data),
+    mutationFn: (payload: CreateCareerEntryPayload) =>
+      playerApi.addCareerEntry(playerId, payload),
     onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.career(playerId),
+      });
     },
-  })
+  });
 }
 
-export function useDeletePlayerAchievement(slug: string) {
-  const queryClient = useQueryClient()
+export function useUpdateCareerEntry(playerId: string, entryId: string) {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (achievementId: string) => deletePlayerAchievement(slug, achievementId),
+    mutationFn: (payload: UpdateCareerEntryPayload) =>
+      playerApi.updateCareerEntry(playerId, entryId, payload),
     onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.career(playerId),
+      });
     },
-  })
+  });
 }
 
-export function useVerifyPlayerAchievement(slug: string) {
-  const queryClient = useQueryClient()
+export function useDeleteCareerEntry(playerId: string) {
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (achievementId: string) => verifyPlayerAchievement(slug, achievementId),
+    mutationFn: (entryId: string) =>
+      playerApi.deleteCareerEntry(playerId, entryId),
     onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.career(playerId),
+      });
     },
-  })
+  });
+}
+
+// ─── Achievements ─────────────────────────────────────────────────────────────
+
+export function useAddAchievement(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: PlayerAchievementCreate) =>
+      playerApi.addAchievement(playerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.achievements(playerId),
+      });
+    },
+  });
+}
+
+export function useDeleteAchievement(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (achievementId: string) =>
+      playerApi.deleteAchievement(playerId, achievementId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.achievements(playerId),
+      });
+    },
+  });
+}
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+
+export function useUploadPlayerDocument(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: PlayerDocumentCreate) =>
+      playerApi.createDocument(playerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.documents(playerId),
+      });
+    },
+  });
+}
+
+export function useDeletePlayerDocument(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      playerApi.deleteDocument(playerId, documentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.documents(playerId),
+      });
+    },
+  });
+}
+
+// ─── Videos ───────────────────────────────────────────────────────────────────
+
+export function useAddPlayerVideo(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: PlayerVideoCreate) =>
+      playerApi.createVideo(playerId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.videos(playerId),
+      });
+    },
+  });
+}
+
+export function useDeletePlayerVideo(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (videoId: string) => playerApi.deleteVideo(playerId, videoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.videos(playerId),
+      });
+    },
+  });
+}
+
+export function usePublishPlayerVideo(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (videoId: string) => playerApi.publishVideo(playerId, videoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.videos(playerId),
+      });
+    },
+  });
+}
+
+// ─── Club link / registration ─────────────────────────────────────────────────
+
+// Compatibility: register player to a club (wraps requestClubLink for legacy pages)
+export function useRegisterPlayer(playerSlug: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      (playerServices as any).registerPlayer(playerSlug, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PLAYER_QUERY_KEYS.lists() });
+    },
+  });
+}
+
+export function useRequestClubLink(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (clubId: string) => playerApi.requestClubLink(playerId, clubId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.detail(playerId),
+      });
+    },
+  });
+}
+
+export function useCancelClubLink(playerId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (requestId: string) =>
+      playerApi.cancelClubLink(playerId, requestId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: PLAYER_QUERY_KEYS.detail(playerId),
+      });
+    },
+  });
 }

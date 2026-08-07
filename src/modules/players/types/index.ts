@@ -11,7 +11,7 @@ export type PlayerStatus = 'active' | 'retired' | 'banned' | 'inactive'
 
 export type PlayerFoot = 'left' | 'right' | 'both'
 
-export type PlayerOnboardingStatus =
+export type PlayerOnboardingStep =
   | 'not_started'
   | 'pending_profile'
   | 'pending_football'
@@ -71,6 +71,117 @@ export interface PlayerCurrentClub {
   slug: string
   registered_since: string
   shirt_number: number | null
+}
+
+export interface PlayerIdentity {
+  firstName: string;
+  lastName: string;
+  preferredName?: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  countryOfBirth?: string;
+  height?: number;
+  weight?: number;
+  avatarUrl?: string;
+}
+
+export interface PlayerContact {
+  email?: string;
+  phone?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+}
+
+export interface PlayerFootballProfile {
+  primaryPosition?: FootballPosition;
+  secondaryPosition?: FootballPosition;
+  preferredFoot?: PlayerFoot;
+  squadNumber?: number;
+  bio?: string;
+}
+
+export interface PlayerAgent {
+  agentName?: string;
+  agencyName?: string;
+  agentEmail?: string;
+  agentPhone?: string;
+}
+
+export interface PlayerSocial {
+  instagram?: string;
+  twitterX?: string;
+  linkedin?: string;
+  website?: string;
+}
+
+export interface PlayerAvailability {
+  status?: PlayerStatus;
+  contractExpiry?: string;
+  availableForTransfer?: boolean;
+}
+
+export type ProfileVisibility = "public" | "clubs_only" | "private";
+
+export interface PlayerPrivacy {
+  profileVisibility: ProfileVisibility;
+  showContactToClubs: boolean;
+  showAgentToPublic: boolean;
+}
+
+export type FootballPosition =
+  | "GK" | "CB" | "LB" | "RB" | "LWB" | "RWB"
+  | "CDM" | "CM" | "CAM" | "LM" | "RM" | "LW" | "RW" | "SS" | "ST" | "CF";
+
+export type UpdatePlayerIdentityPayload = Partial<PlayerIdentity>;
+export type UpdatePlayerContactPayload = Partial<PlayerContact>;
+export type UpdatePlayerFootballPayload = Partial<PlayerFootballProfile>;
+export type UpdatePlayerAgentPayload = Partial<PlayerAgent>;
+export type UpdatePlayerSocialPayload = Partial<PlayerSocial>;
+export type UpdatePlayerAvailabilityPayload = Partial<PlayerAvailability>;
+export type UpdatePlayerPrivacyPayload = Partial<PlayerPrivacy>;
+
+export type UpdatePlayerProfilePayload = Partial<
+  PlayerIdentity &
+    PlayerContact &
+    PlayerFootballProfile &
+    PlayerAgent &
+    PlayerSocial &
+    PlayerAvailability & { privacy: Partial<PlayerPrivacy> }
+>;
+
+export type CreateCareerEntryPayload = Omit<PlayerCareerEntry, "club" | "status" | "matches" | "goals" | "assists"> & {
+  clubName: string;
+  startDate: string;
+  endDate?: string;
+  position?: FootballPosition;
+  appearances?: number;
+  goals?: number;
+  assists?: number;
+  isLoan?: boolean;
+  notes?: string;
+};
+
+export type UpdateCareerEntryPayload = Partial<CreateCareerEntryPayload>;
+
+export type CreateAchievementPayload = {
+  type: string;
+  title: string;
+  season?: string;
+  clubName?: string;
+  description?: string;
+};
+
+export interface PlayerProfileCompletion {
+  overall: number;
+  sections: {
+    identity: number;
+    contact: number;
+    football: number;
+    agent: number;
+    social: number;
+    availability: number;
+    privacy: number;
+  };
 }
 
 export interface PlayerDetail extends Player {

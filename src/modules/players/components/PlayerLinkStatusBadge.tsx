@@ -26,7 +26,7 @@ export function PlayerLinkStatusBadge({ status, className }: PlayerLinkStatusBad
       )
     case 'rejected':
       return (
-        <Badge variant="destructive" className={className}>
+        <Badge variant="danger" className={className}>
           Rejeitado
         </Badge>
       )

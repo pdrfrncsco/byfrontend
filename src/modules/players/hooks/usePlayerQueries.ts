@@ -16,9 +16,11 @@ import type { PlayerListParams } from '../types'
 export const playerKeys = {
   all: ['players'] as const,
   lists: () => [...playerKeys.all, 'list'] as const,
-  list: (params: PlayerListParams) => [...playerKeys.lists(), params] as const,
+  list: (params?: PlayerListParams) => [...playerKeys.lists(), params ?? {}] as const,
   details: () => [...playerKeys.all, 'detail'] as const,
   detail: (slug: string) => [...playerKeys.details(), slug] as const,
+  current: () => [...playerKeys.all, 'me'] as const,
+  career: (slug: string) => [...playerKeys.detail(slug), 'career'] as const,
   search: (q: string) => [...playerKeys.all, 'search', q] as const,
   documents: (slug: string) => [...playerKeys.all, 'documents', slug] as const,
   videos: (slug: string) => [...playerKeys.all, 'videos', slug] as const,
@@ -26,6 +28,8 @@ export const playerKeys = {
   me: () => [...playerKeys.all, 'me'] as const,
   onboardingStatus: () => [...playerKeys.all, 'onboarding-status'] as const,
 }
+
+export const PLAYER_QUERY_KEYS = playerKeys;
 
 /**
  * Hook: list players with optional position/nationality/page filter.

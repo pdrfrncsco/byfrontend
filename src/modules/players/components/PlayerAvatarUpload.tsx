@@ -21,16 +21,17 @@ export function PlayerAvatarUpload({
 }: PlayerAvatarUploadProps) {
   const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
-  const uploadMutation = useUploadPlayerAvatar(slug)
+  const uploadMutation = useUploadPlayerAvatar(slug ?? '')
 
   const handlePick = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (!file) return
+    if (!file || !slug) return
 
     uploadMutation.mutate(file, {
-      onSuccess: (player) => {
-        if (player.avatar) {
-          onUploaded?.(player.avatar)
+      onSuccess: (data: any) => {
+        const url = data?.avatarUrl || data?.avatar
+        if (url) {
+          onUploaded?.(url)
         }
       },
     })

@@ -16,7 +16,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
   const { t } = useTranslation()
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#6b7280'
-  const statusColor = STATUS_COLOR[player.status] ?? '#6b7280'
 
   const accentStyle = {
     '--player-accent': positionColor,

@@ -76,7 +76,7 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
 
   // ── Step access control: prevent jumping ahead ─────────────────────────────────
   const hasBasicInfo = Boolean(data?.has_basic_info)
-  const hasFootballInfo = Boolean(data?.has_football_info)
+  const _hasFootballInfo = Boolean(data?.has_football_info)
 
   // Trying to access Football step without completing Profile
   if (pathname === ROUTES.ONBOARDING_PLAYER_FOOTBALL && !hasBasicInfo) {
