@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import {
   ArrowRight,
   Sparkles,
@@ -38,6 +39,16 @@ export default function ClubDashboardPage() {
   const { data: transfers, isLoading: transfersLoading } = useTransfers({ page_size: 5 })
 
   const sidebarLinks = getClubSidebarLinks()
+
+  useEffect(() => {
+    // Temporary debug: inspect club payload returned by useClubMe
+    try {
+      // eslint-disable-next-line no-console
+      console.log('ClubDashboardPage club:', club)
+    } catch (err) {
+      // ignore
+    }
+  }, [club])
 
   const headerActions = (
     <Button asChild variant="primary" size="sm" disabled={!club}>

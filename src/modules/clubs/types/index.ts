@@ -36,6 +36,8 @@ export interface Club {
   is_verified?: boolean
   status?: ClubStatus
   status_label?: string
+  affiliation_request_status?: 'draft' | 'pending' | 'approved' | 'rejected' | null
+  affiliation_request_id?: string | null
   created_at?: string
   updated_at?: string
 }
