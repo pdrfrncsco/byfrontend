@@ -18,6 +18,8 @@ export { PlayerMedicalConsentForm } from './forms/PlayerMedicalConsentForm'
 export { PlayerContractForm } from './forms/PlayerContractForm'
 export { PlayerAgentForm } from './forms/PlayerAgentForm'
 export { PlayerTransferForm } from './forms/PlayerTransferForm'
+export { PlayerMedicalProfileForm } from './forms/PlayerMedicalProfileForm'
+export { PlayerMedicalDocumentForm } from './forms/PlayerMedicalDocumentForm'
 
 // Sections
 export { PlayerPrivacySection } from './sections/PlayerPrivacySection'
@@ -26,6 +28,8 @@ export { PlayerContractSection } from './sections/PlayerContractSection'
 export { PlayerAgentSection } from './sections/PlayerAgentSection'
 export { PlayerTransferSection } from './sections/PlayerTransferSection'
 export { PlayerMedicalSection } from './sections/PlayerMedicalSection'
+export { PlayerNationalTeamPerformanceSection } from './sections/PlayerNationalTeamPerformanceSection'
+export { PlayerComplianceSection } from './sections/PlayerComplianceSection'
 
 // Filters
 export { PlayerFilterPanel } from './filters/PlayerFilterPanel'
