@@ -1,0 +1,103 @@
+{
+  "validProfileData": {
+    "first_name": "João",
+    "last_name": "Silva",
+    "date_of_birth": "1995-05-15",
+    "nationality": "Angolana",
+    "phone": "+244 923456789"
+  },
+  "validFootballData": {
+    "primary_position": "st",
+    "foot": "right"
+  },
+  "invalidData": {
+    "shortName": {
+      "first_name": "A",
+      "last_name": "Silva"
+    },
+    "invalidEmail": {
+      "email": "invalid-email"
+    },
+    "missingRequired": {
+      "first_name": "",
+      "last_name": ""
+    }
+  },
+  "mockPlayers": [
+    {
+      "id": "player-001",
+      "slug": "joao-silva",
+      "first_name": "João",
+      "last_name": "Silva",
+      "full_name": "João Silva",
+      "email": "joao@example.com",
+      "date_of_birth": "1995-05-15",
+      "age": 31,
+      "nationality": "Angolana",
+      "primary_position": "st",
+      "status": "active",
+      "position_label": "Avançado",
+      "status_label": "Ativo"
+    },
+    {
+      "id": "player-002",
+      "slug": "carlos-santos",
+      "first_name": "Carlos",
+      "last_name": "Santos",
+      "full_name": "Carlos Santos",
+      "email": "carlos@example.com",
+      "date_of_birth": "1998-03-22",
+      "age": 28,
+      "nationality": "Angolana",
+      "primary_position": "cm",
+      "status": "active",
+      "position_label": "Médio",
+      "status_label": "Ativo"
+    }
+  ],
+  "onboardingStatuses": {
+    "notStarted": {
+      "onboarding_required": true,
+      "has_player_profile": true,
+      "has_basic_info": false,
+      "has_football_info": false,
+      "next_step": "profile"
+    },
+    "profileComplete": {
+      "onboarding_required": true,
+      "has_player_profile": true,
+      "has_basic_info": true,
+      "has_football_info": false,
+      "next_step": "football"
+    },
+    "complete": {
+      "onboarding_required": false,
+      "has_player_profile": true,
+      "has_basic_info": true,
+      "has_football_info": true,
+      "next_step": null
+    }
+  },
+  "positions": [
+    { "value": "gk", "label": "Guarda-redes" },
+    { "value": "cb", "label": "Defesa Central" },
+    { "value": "lb", "label": "Lateral Esquerdo" },
+    { "value": "rb", "label": "Lateral Direito" },
+    { "value": "lwb", "label": "Lateral Esquerdo (Defesa)" },
+    { "value": "rwb", "label": "Lateral Direito (Defesa)" },
+    { "value": "cm", "label": "Médio" },
+    { "value": "cdm", "label": "Médio Defensivo" },
+    { "value": "cam", "label": "Médio Ofensivo" },
+    { "value": "lm", "label": "Extremo Esquerdo" },
+    { "value": "rm", "label": "Extremo Direito" },
+    { "value": "lw", "label": "Ala Esquerda" },
+    { "value": "rw", "label": "Ala Direita" },
+    { "value": "st", "label": "Avançado" },
+    { "value": "cf", "label": "Extremo Central" }
+  ],
+  "feet": [
+    { "value": "left", "label": "Esquerda" },
+    { "value": "right", "label": "Direita" },
+    { "value": "both", "label": "Ambidestro" }
+  ]
+}

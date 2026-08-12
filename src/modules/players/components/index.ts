@@ -11,3 +11,21 @@ export { PlayerAchievementsSection } from './PlayerAchievementsSection'
 export { PlayerAvatarUpload } from './PlayerAvatarUpload'
 export { PlayerLinkStatusBadge } from './PlayerLinkStatusBadge'
 export { PlayerProfileLayout } from './PlayerProfileLayout'
+
+// Forms
+export { PlayerGuardianForm } from './forms/PlayerGuardianForm'
+export { PlayerMedicalConsentForm } from './forms/PlayerMedicalConsentForm'
+export { PlayerContractForm } from './forms/PlayerContractForm'
+export { PlayerAgentForm } from './forms/PlayerAgentForm'
+
+// Sections
+export { PlayerPrivacySection } from './sections/PlayerPrivacySection'
+export { PlayerCareerStatsSection } from './sections/PlayerCareerStatsSection'
+export { PlayerContractSection } from './sections/PlayerContractSection'
+export { PlayerAgentSection } from './sections/PlayerAgentSection'
+
+// Filters
+export { PlayerFilterPanel } from './filters/PlayerFilterPanel'
+
+// Comparison
+export { PlayerComparison } from './PlayerComparison'
