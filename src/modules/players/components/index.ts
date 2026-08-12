@@ -17,12 +17,15 @@ export { PlayerGuardianForm } from './forms/PlayerGuardianForm'
 export { PlayerMedicalConsentForm } from './forms/PlayerMedicalConsentForm'
 export { PlayerContractForm } from './forms/PlayerContractForm'
 export { PlayerAgentForm } from './forms/PlayerAgentForm'
+export { PlayerTransferForm } from './forms/PlayerTransferForm'
 
 // Sections
 export { PlayerPrivacySection } from './sections/PlayerPrivacySection'
 export { PlayerCareerStatsSection } from './sections/PlayerCareerStatsSection'
 export { PlayerContractSection } from './sections/PlayerContractSection'
 export { PlayerAgentSection } from './sections/PlayerAgentSection'
+export { PlayerTransferSection } from './sections/PlayerTransferSection'
+export { PlayerMedicalSection } from './sections/PlayerMedicalSection'
 
 // Filters
 export { PlayerFilterPanel } from './filters/PlayerFilterPanel'
