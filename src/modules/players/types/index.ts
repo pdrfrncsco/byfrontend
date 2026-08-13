@@ -414,6 +414,14 @@ export interface PlayerUpdate {
   status?: PlayerStatus
 }
 
+/** Transitional payload for integrations that still send legacy contact fields. */
+export interface PlayerUpdateLegacy extends PlayerUpdate {
+  /** @deprecated Use PlayerContact.primary_email. Remove after September 2026. */
+  email?: string
+  /** @deprecated Use PlayerContact.mobile_phone. Remove after September 2026. */
+  phone?: string
+}
+
 export interface PlayerRegisterPayload {
   club_id: string
   joined_date: string

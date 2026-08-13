@@ -15,9 +15,9 @@ import { playerKeys } from './usePlayerQueries'
 
 // Re-export playerKeys contracts for backward compatibility
 export const contractKeys = {
-  all: ['player-contracts'] as const,
-  list: (playerId: string) => [...contractKeys.all, playerId] as const,
-  detail: (playerId: string, contractId: string) => [...contractKeys.all, playerId, contractId] as const,
+  all: playerKeys.all,
+  list: playerKeys.contracts,
+  detail: playerKeys.contractDetail,
 }
 
 // ─── Query Hooks ──────────────────────────────────────────────────────────────
