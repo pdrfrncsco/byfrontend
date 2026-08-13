@@ -1,325 +1,174 @@
-import { useCallback, useMemo } from 'react'
+// Players module — Contract hooks (using services layer)
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Player } from '../types'
+import {
+  listPlayerContracts,
+  getContractDetail,
+  createPlayerContract,
+  updatePlayerContract,
+  deletePlayerContract,
+  signPlayerContract,
+  renewPlayerContract,
+  terminatePlayerContract,
+} from '../services'
+import { playerKeys } from './usePlayerQueries'
 
-export interface PlayerContract {
-  id: string
-  player: string
-  club: {
-    id: string
-    name: string
-    slug: string
-    logo?: string
-  }
-  contract_type: 'professional' | 'youth' | 'amateur' | 'short_term' | 'trial' | 'loan' | 'extension'
-  status: 'draft' | 'active' | 'expired' | 'terminated' | 'suspended'
-  start_date: string
-  end_date: string
-  signed_date?: string
-  salary?: number
-  currency: string
-  bonuses?: Record<string, number>
-  release_clause?: number
-  has_image_rights: boolean
-  option_year: boolean
-  termination_clause?: string
-  contract_document?: {
-    id: string
-    url: string
-    name: string
-  }
-  signed_by_player: boolean
-  signed_by_club: boolean
-  verified_at?: string
-  verified_by?: {
-    id: string
-    name: string
-  }
-  created_at: string
-  updated_at: string
+// Re-export playerKeys contracts for backward compatibility
+export const contractKeys = {
+  all: ['player-contracts'] as const,
+  list: (playerId: string) => [...contractKeys.all, playerId] as const,
+  detail: (playerId: string, contractId: string) => [...contractKeys.all, playerId, contractId] as const,
 }
 
-export interface CreateContractInput {
-  club: string
-  contract_type: string
-  status?: string
-  start_date: string
-  end_date: string
-  salary?: number
-  currency?: string
-  bonuses?: Record<string, number>
-  release_clause?: number
-  has_image_rights?: boolean
-  option_year?: boolean
-  termination_clause?: string
-}
+// ─── Query Hooks ──────────────────────────────────────────────────────────────
 
-export interface UpdateContractInput extends Partial<CreateContractInput> {
-  signed_by_player?: boolean
-  signed_by_club?: boolean
-}
-
-/**
- * Hook to fetch player contracts
- */
 export function usePlayerContracts(playerId: string, enabled = true) {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useQuery({
-    queryKey: ['player-contracts', playerId],
-    queryFn: async () => {
-      const response = await fetch(`${apiUrl}/players/${playerId}/contracts/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch contracts: ${response.statusText}`)
-      }
-
-      return response.json()
-    },
+    queryKey: playerKeys.contracts(playerId),
+    queryFn: () => listPlayerContracts(playerId),
     enabled: enabled && !!playerId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 5 * 60_000,
   })
 }
 
-/**
- * Hook to fetch single contract details
- */
 export function useContractDetails(playerId: string, contractId: string, enabled = true) {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useQuery({
-    queryKey: ['contract', playerId, contractId],
-    queryFn: async () => {
-      const response = await fetch(
-        `${apiUrl}/players/${playerId}/contracts/${contractId}/`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch contract: ${response.statusText}`)
-      }
-
-      return response.json()
-    },
+    queryKey: playerKeys.contractDetail(playerId, contractId),
+    queryFn: () => getContractDetail(playerId, contractId),
     enabled: enabled && !!playerId && !!contractId,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 5 * 60_000,
   })
 }
 
-/**
- * Hook to create a new contract
- */
+// ─── Mutation Hooks ───────────────────────────────────────────────────────────
+
 export function useCreateContract(playerId: string) {
   const queryClient = useQueryClient()
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useMutation({
-    mutationFn: async (data: CreateContractInput) => {
-      const response = await fetch(`${apiUrl}/players/${playerId}/contracts/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to create contract: ${response.statusText}`)
-      }
-
-      return response.json()
-    },
+    mutationFn: (data: Parameters<typeof createPlayerContract>[1]) =>
+      createPlayerContract(playerId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['player-contracts', playerId] })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
     },
   })
 }
 
-/**
- * Hook to update a contract
- */
 export function useUpdateContract(playerId: string, contractId: string) {
   const queryClient = useQueryClient()
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useMutation({
-    mutationFn: async (data: UpdateContractInput) => {
-      const response = await fetch(
-        `${apiUrl}/players/${playerId}/contracts/${contractId}/`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-          body: JSON.stringify(data),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to update contract: ${response.statusText}`)
-      }
-
-      return response.json()
-    },
+    mutationFn: (data: Parameters<typeof updatePlayerContract>[2]) =>
+      updatePlayerContract(playerId, contractId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['player-contracts', playerId] })
-      queryClient.invalidateQueries({ queryKey: ['contract', playerId, contractId] })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contractDetail(playerId, contractId) })
     },
   })
 }
 
-/**
- * Hook to delete a contract
- */
 export function useDeleteContract(playerId: string) {
   const queryClient = useQueryClient()
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useMutation({
-    mutationFn: async (contractId: string) => {
-      const response = await fetch(
-        `${apiUrl}/players/${playerId}/contracts/${contractId}/`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to delete contract: ${response.statusText}`)
-      }
-    },
+    mutationFn: (contractId: string) => deletePlayerContract(playerId, contractId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['player-contracts', playerId] })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
     },
   })
 }
 
-/**
- * Get active contract from list
- */
-export function getActiveContract(contracts: PlayerContract[]): PlayerContract | null {
-  return contracts.find((c) => c.status === 'active') || null
+export function useSignContract(playerId: string, contractId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Parameters<typeof signPlayerContract>[2]) =>
+      signPlayerContract(playerId, contractId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contractDetail(playerId, contractId) })
+    },
+  })
 }
 
-/**
- * Format currency amount
- */
-export function formatCurrency(amount: number | undefined, currency = 'USD'): string {
-  if (amount === undefined) return '—'
-  
-  const formatter = new Intl.NumberFormat('pt-PT', {
+export function useRenewContract(playerId: string, contractId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Parameters<typeof renewPlayerContract>[2]) =>
+      renewPlayerContract(playerId, contractId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contractDetail(playerId, contractId) })
+    },
+  })
+}
+
+export function useTerminateContract(playerId: string, contractId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Parameters<typeof terminatePlayerContract>[2]) =>
+      terminatePlayerContract(playerId, contractId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.contracts(playerId) })
+      queryClient.invalidateQueries({ queryKey: playerKeys.contractDetail(playerId, contractId) })
+    },
+  })
+}
+
+// ─── Utility Functions ────────────────────────────────────────────────────────
+
+export function getActiveContract(contracts: PlayerContract[]): PlayerContract | null {
+  return contracts.find((c) => c.status === 'active') ?? null
+}
+
+export function formatCurrency(amount: number | undefined | null, currency = 'USD'): string {
+  if (amount == null) return '—'
+  return new Intl.NumberFormat('pt-PT', {
     style: 'currency',
     currency: currency || 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  })
-
-  return formatter.format(amount)
+  }).format(amount)
 }
 
-/**
- * Get contract status label and color
- */
 export function getContractStatusInfo(status: string): {
   label: string
   color: string
   bgColor: string
   borderColor: string
 } {
-  const statusMap: Record<string, any> = {
-    draft: {
-      label: 'Rascunho',
-      color: 'text-gray-700',
-      bgColor: 'bg-gray-100',
-      borderColor: 'border-gray-200',
-    },
-    active: {
-      label: 'Ativo',
-      color: 'text-green-700',
-      bgColor: 'bg-green-100',
-      borderColor: 'border-green-200',
-    },
-    expired: {
-      label: 'Expirado',
-      color: 'text-orange-700',
-      bgColor: 'bg-orange-100',
-      borderColor: 'border-orange-200',
-    },
-    terminated: {
-      label: 'Terminado',
-      color: 'text-red-700',
-      bgColor: 'bg-red-100',
-      borderColor: 'border-red-200',
-    },
-    suspended: {
-      label: 'Suspenso',
-      color: 'text-yellow-700',
-      bgColor: 'bg-yellow-100',
-      borderColor: 'border-yellow-200',
-    },
+  const map: Record<string, ReturnType<typeof getContractStatusInfo>> = {
+    draft:      { label: 'Rascunho',  color: 'text-gray-700',   bgColor: 'bg-gray-100',   borderColor: 'border-gray-200' },
+    active:     { label: 'Ativo',     color: 'text-green-700',  bgColor: 'bg-green-100',  borderColor: 'border-green-200' },
+    expired:    { label: 'Expirado',  color: 'text-orange-700', bgColor: 'bg-orange-100', borderColor: 'border-orange-200' },
+    terminated: { label: 'Terminado', color: 'text-red-700',    bgColor: 'bg-red-100',    borderColor: 'border-red-200' },
+    suspended:  { label: 'Suspenso',  color: 'text-yellow-700', bgColor: 'bg-yellow-100', borderColor: 'border-yellow-200' },
   }
-
-  return statusMap[status] || statusMap['draft']
+  return map[status] ?? map['draft']
 }
 
-/**
- * Get contract type label
- */
 export function getContractTypeLabel(type: string): string {
-  const typeMap: Record<string, string> = {
+  const map: Record<string, string> = {
     professional: 'Profissional',
-    youth: 'Juniores',
-    amateur: 'Amador',
-    short_term: 'Curto Prazo',
-    trial: 'Período de Teste',
-    loan: 'Empréstimo',
-    extension: 'Renovação',
+    youth:        'Juniores',
+    amateur:      'Amador',
+    short_term:   'Curto Prazo',
+    trial:        'Período de Teste',
+    loan:         'Empréstimo',
+    extension:    'Renovação',
   }
-
-  return typeMap[type] || type
+  return map[type] ?? type
 }
 
-/**
- * Calculate contract duration in days
- */
 export function getContractDuration(startDate: string, endDate: string): number {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  const diffTime = Math.abs(end.getTime() - start.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays
+  return Math.ceil(
+    Math.abs(new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+  )
 }
 
-/**
- * Check if contract is expiring soon (within 90 days)
- */
 export function isContractExpiringSoon(endDate: string): boolean {
-  const end = new Date(endDate)
-  const today = new Date()
-  const daysUntilExpiry = Math.floor((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  return daysUntilExpiry > 0 && daysUntilExpiry <= 90
+  const days = Math.floor(
+    (new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  )
+  return days > 0 && days <= 90
 }
 
-/**
- * Check if contract is fully signed
- */
 export function isContractFullySigned(contract: PlayerContract): boolean {
   return contract.signed_by_player && contract.signed_by_club
 }
