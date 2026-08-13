@@ -200,7 +200,6 @@ export function getCountryName(countryCode: string): string {
     POL: 'Polónia',
     CZE: 'República Checa',
     GRC: 'Grécia',
-    PRT: 'Portugal',
   }
 
   return countryMap[countryCode] || countryCode

@@ -16,10 +16,7 @@ export const medicalProfileSchema = z.object({
     .describe('Tipo de sangue do jogador'),
 
   medical_status: z
-    .enum(['fit', 'injured', 'recovering', 'suspended_medical'], {
-      required_error: 'Estado médico é obrigatório',
-      invalid_enum_value: 'Estado médico inválido',
-    })
+    .enum(['fit', 'injured', 'recovering', 'suspended_medical'])
     .describe('Estado de saúde atual'),
 
   injury_status: z
@@ -123,23 +120,17 @@ export type MedicalProfile = z.infer<typeof medicalProfileSchema>
  */
 export const medicalDocumentUploadSchema = z.object({
   document_type: z
-    .enum(
-      [
-        'medical_certificate',
-        'injury_report',
-        'scan_result',
-        'lab_result',
-        'vaccination_record',
-        'surgery_report',
-        'physical_exam',
-        'cardiac_screening',
-        'other',
-      ],
-      {
-        required_error: 'Tipo de documento é obrigatório',
-        invalid_enum_value: 'Tipo de documento inválido',
-      }
-    )
+    .enum([
+      'medical_certificate',
+      'injury_report',
+      'scan_result',
+      'lab_result',
+      'vaccination_record',
+      'surgery_report',
+      'physical_exam',
+      'cardiac_screening',
+      'other',
+    ])
     .describe('Tipo de documento médico'),
 
   title: z

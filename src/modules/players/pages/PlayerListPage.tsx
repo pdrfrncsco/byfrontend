@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import { PlayerCard, PlayerEmptyState, PlayerListSkeleton } from '../components'
-import { usePlayers, usePlayerSearch } from '../hooks'
+import { usePlayers, usePlayerSearchQuery as usePlayerSearch } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
 import type { Player, PlayerPosition } from '../types'
 

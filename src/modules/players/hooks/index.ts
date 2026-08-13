@@ -15,3 +15,7 @@ export * from './usePlayerMedical'
 export * from './usePlayerNationalTeam'
 export * from './usePlayerPerformance'
 export * from './usePlayerCompliance'
+
+// Re-export with specific names to avoid ambiguity
+export { usePlayerSearch as usePlayerSearchQuery } from './usePlayerQueries'
+export { usePlayerSearch as usePlayerSearchFilter } from './usePlayerFilters'

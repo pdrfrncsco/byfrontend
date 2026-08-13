@@ -11,12 +11,6 @@ export type PlayerStatus = 'active' | 'retired' | 'banned' | 'inactive'
 
 export type PlayerFoot = 'left' | 'right' | 'both'
 
-export type PlayerOnboardingStatus =
-  | 'not_started'
-  | 'pending_profile'
-  | 'pending_football'
-  | 'complete'
-
 export type PlayerLinkStatus =
   | 'none'
   | 'pending_approval'
@@ -402,7 +396,7 @@ export interface PlayerRegistrationRequestReview {
 
 // ─── Player Onboarding Types ───────────────────────────────────────────────────
 
-export interface PlayerOnboardingStatus {
+export type PlayerOnboardingResponse = {
   onboarding_required: boolean
   has_player_profile: boolean
   has_basic_info?: boolean

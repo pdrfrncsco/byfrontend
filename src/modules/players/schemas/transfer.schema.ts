@@ -14,10 +14,7 @@ export const transferRequestSchema = z.object({
     .describe('ID do clube destino'),
 
   transfer_type: z
-    .enum(['permanent', 'loan', 'free', 'youth'], {
-      required_error: 'Tipo de transferência é obrigatório',
-      invalid_enum_value: 'Tipo de transferência inválido',
-    })
+    .enum(['permanent', 'loan', 'free', 'youth'])
     .describe('Tipo de transferência'),
 
   effective_date: z
@@ -102,16 +99,19 @@ export type TransferRequest = z.infer<typeof transferRequestSchema>
  * Transfer update schema
  * Validações para atualizações de transferência
  */
-export const transferUpdateSchema = transferRequestSchema
-  .partial()
-  .extend({
-    status: z
-      .enum(['requested', 'pending', 'approved', 'rejected', 'completed'], {
-        invalid_enum_value: 'Status de transferência inválido',
-      })
-      .optional()
-      .describe('Novo status da transferência'),
-  })
+export const transferUpdateSchema = z.object({
+  to_club: z.string().optional(),
+  transfer_type: z.enum(['permanent', 'loan', 'free', 'youth']).optional(),
+  effective_date: z.string().datetime().optional().nullable(),
+  transfer_fee: z.number().positive().optional().nullable(),
+  currency: z.string().max(3).optional(),
+  loan_duration_months: z.number().int().positive().max(60).optional().nullable(),
+  notes: z.string().max(1000).optional().nullable(),
+  status: z
+    .enum(['requested', 'pending', 'approved', 'rejected', 'completed'])
+    .optional()
+    .describe('Novo status da transferência'),
+})
 
 export type TransferUpdate = z.infer<typeof transferUpdateSchema>
 
