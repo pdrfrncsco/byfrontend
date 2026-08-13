@@ -73,7 +73,7 @@ export type PlayerIdentityDocumentFormData = z.infer<typeof playerIdentityDocume
 
 // ─── Document Verification Schema ────────────────────────────────────────────
 
-export const documentVerificationSchema = z.object({
+export const identityDocumentVerificationSchema = z.object({
   verification_notes: z
     .string()
     .max(500, 'Notas não podem exceder 500 caracteres.')
@@ -81,15 +81,15 @@ export const documentVerificationSchema = z.object({
     .or(z.literal('')),
 })
 
-export type DocumentVerificationFormData = z.infer<typeof documentVerificationSchema>
+export type IdentityDocumentVerificationFormData = z.infer<typeof identityDocumentVerificationSchema>
 
 // ─── Document Rejection Schema ────────────────────────────────────────────────
 
-export const documentRejectionSchema = z.object({
+export const identityDocumentRejectionSchema = z.object({
   reason: z
     .string()
     .min(10, 'Indique o motivo da rejeição (mínimo 10 caracteres).')
     .max(500, 'Motivo não pode exceder 500 caracteres.'),
 })
 
-export type DocumentRejectionFormData = z.infer<typeof documentRejectionSchema>
+export type IdentityDocumentRejectionFormData = z.infer<typeof identityDocumentRejectionSchema>

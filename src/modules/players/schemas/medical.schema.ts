@@ -222,7 +222,7 @@ export type MedicalDocumentUpload = z.infer<typeof medicalDocumentUploadSchema>
 /**
  * Document verification schema (staff-only)
  */
-export const documentVerificationSchema = z.object({
+export const medicalDocumentVerificationSchema = z.object({
   verification_notes: z
     .string()
     .max(500, 'Notas não podem exceder 500 caracteres')
@@ -230,12 +230,12 @@ export const documentVerificationSchema = z.object({
     .describe('Notas de verificação'),
 })
 
-export type DocumentVerification = z.infer<typeof documentVerificationSchema>
+export type MedicalDocumentVerification = z.infer<typeof medicalDocumentVerificationSchema>
 
 /**
  * Document rejection schema (staff-only)
  */
-export const documentRejectionSchema = z.object({
+export const medicalDocumentRejectionSchema = z.object({
   reason: z
     .string({
       required_error: 'Motivo de rejeição é obrigatório',
@@ -245,4 +245,4 @@ export const documentRejectionSchema = z.object({
     .describe('Motivo da rejeição do documento'),
 })
 
-export type DocumentRejection = z.infer<typeof documentRejectionSchema>
+export type MedicalDocumentRejection = z.infer<typeof medicalDocumentRejectionSchema>

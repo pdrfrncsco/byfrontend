@@ -2,6 +2,7 @@ import type { Player, PlayerDetail, PlayerListResponse } from '@/modules/players
 
 export const mockPlayer: Player = {
   id: 'player-1',
+  global_id: 'BY-PLY-0001',
   slug: 'joao-pedro',
   first_name: 'João',
   last_name: 'Pedro',
@@ -18,6 +19,8 @@ export const mockPlayer: Player = {
   shirt_number: 9,
   bio: 'Avançado completo com boa finalização.',
   avatar: 'https://cdn.example.com/joao-pedro.jpg',
+  profile_photo_url: 'https://cdn.example.com/joao-pedro.jpg',
+  is_minor: false,
   is_public: true,
   status: 'active',
   status_label: 'Ativo',

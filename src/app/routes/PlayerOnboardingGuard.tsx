@@ -52,8 +52,8 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
   // ── /review: render if steps 1+2 done; redirect if not — but never to /complete
   // The review page itself shows the "Entrar no portal" CTA when everything is done.
   if (pathname === ROUTES.ONBOARDING_PLAYER_REVIEW) {
-    const hasBasicInfo = Boolean(data?.has_basic_info)
-    const hasFootballInfo = Boolean(data?.has_football_info)
+    const hasBasicInfo = Boolean(data?.personal_complete)
+    const hasFootballInfo = Boolean(data?.football_complete)
     if (!hasBasicInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
     if (!hasFootballInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
     // Both done → let /review render; user decides when to proceed
@@ -75,8 +75,7 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
   }
 
   // ── Step access control: prevent jumping ahead ─────────────────────────────────
-  const hasBasicInfo = Boolean(data?.has_basic_info)
-  const hasFootballInfo = Boolean(data?.has_football_info)
+  const hasBasicInfo = Boolean(data?.personal_complete)
 
   // Trying to access Football step without completing Profile
   if (pathname === ROUTES.ONBOARDING_PLAYER_FOOTBALL && !hasBasicInfo) {
