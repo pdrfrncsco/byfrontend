@@ -218,6 +218,7 @@ export const API_ROUTES = {
     FOOTBALL_PROFILE: (slug: string) => `/players/${slug}/football-profile/`,
     // Contact & Identity (slug-based, Phase 1)
     CONTACT: (slug: string) => `/players/${slug}/contact/`,
+    PRIVACY: (slug: string) => `/players/${slug}/privacy/`,
     EMERGENCY_CONTACTS: (slug: string) => `/players/${slug}/emergency-contacts/`,
     IDENTITY_DOCUMENTS: (slug: string) => `/players/${slug}/identity-documents/`,
     IDENTITY_DOCUMENT_DETAIL: (slug: string, docId: string) => `/players/${slug}/identity-documents/${docId}/`,

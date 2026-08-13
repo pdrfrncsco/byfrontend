@@ -22,6 +22,7 @@ import {
   PlayerCareerTimeline,
   PlayerDocumentsTab,
   PlayerVideosTab,
+  PlayerDashboardSections,
 } from '../components'
 import { usePlayerMe } from '../hooks'
 import { playerRoutes } from '../routes'
@@ -211,6 +212,8 @@ export function PlayerDashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        <PlayerDashboardSections slug={player.slug} playerId={player.id} />
       </div>
     </DashboardLayout>
   )

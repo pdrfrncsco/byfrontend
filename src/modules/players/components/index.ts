@@ -11,6 +11,9 @@ export { PlayerAchievementsSection } from './PlayerAchievementsSection'
 export { PlayerAvatarUpload } from './PlayerAvatarUpload'
 export { PlayerLinkStatusBadge } from './PlayerLinkStatusBadge'
 export { PlayerProfileLayout } from './PlayerProfileLayout'
+export { PlayerDashboardSections } from './PlayerDashboardSections'
+export { PlayerContactSettingsPanel } from './PlayerContactSettingsPanel'
+export { PlayerPrivacySettingsPanel } from './PlayerPrivacySettingsPanel'
 
 // Forms
 export { PlayerGuardianForm } from './forms/PlayerGuardianForm'

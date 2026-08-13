@@ -26,6 +26,7 @@ import {
   verifyPlayerAchievement,
   // Contact
   updatePlayerContact,
+  updatePlayerPrivacySettings,
   createPlayerEmergencyContact,
   deletePlayerEmergencyContact,
   // Identity Documents
@@ -69,6 +70,7 @@ import type {
   PlayerAchievementCreate,
   PlayerAchievementUpdate,
   PlayerContactUpdate,
+  PlayerPrivacySettingsUpdate,
   EmergencyContactCreate,
   PlayerIdentityDocumentCreate,
   PlayerIdentityDocumentUpdate,
@@ -276,6 +278,14 @@ export function useUpdatePlayerContact(slug: string) {
       queryClient.invalidateQueries({ queryKey: playerKeys.contact(slug) })
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
     },
+  })
+}
+
+export function useUpdatePlayerPrivacySettings(slug: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: PlayerPrivacySettingsUpdate) => updatePlayerPrivacySettings(slug, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: playerKeys.privacy(slug) }),
   })
 }
 

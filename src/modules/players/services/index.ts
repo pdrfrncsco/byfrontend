@@ -30,6 +30,8 @@ import type {
   PlayerFootballProfile,
   // Phase 1: Contact & Identity
   PlayerContact,
+  PlayerPrivacySettings,
+  PlayerPrivacySettingsUpdate,
   PlayerContactUpdate,
   EmergencyContact,
   EmergencyContactCreate,
@@ -399,6 +401,19 @@ export async function updatePlayerContact(
   data: PlayerContactUpdate
 ): Promise<PlayerContact> {
   const res = await apiClient.patch(API_ROUTES.PLAYERS.CONTACT(slug), data)
+  return unwrapData(res.data)
+}
+
+export async function getPlayerPrivacySettings(slug: string): Promise<PlayerPrivacySettings> {
+  const res = await apiClient.get(API_ROUTES.PLAYERS.PRIVACY(slug))
+  return unwrapData(res.data)
+}
+
+export async function updatePlayerPrivacySettings(
+  slug: string,
+  data: PlayerPrivacySettingsUpdate
+): Promise<PlayerPrivacySettings> {
+  const res = await apiClient.patch(API_ROUTES.PLAYERS.PRIVACY(slug), data)
   return unwrapData(res.data)
 }
 

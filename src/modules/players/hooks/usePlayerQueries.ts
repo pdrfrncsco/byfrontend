@@ -14,6 +14,7 @@ import {
   getPlayerSeasonStatistics,
   getPlayerFootballProfile,
   getPlayerContact,
+  getPlayerPrivacySettings,
   listPlayerEmergencyContacts,
   listPlayerIdentityDocuments,
   listPlayerContracts,
@@ -56,6 +57,7 @@ export const playerKeys = {
   contact: (slug: string) => [...playerKeys.all, 'contact', slug] as const,
   emergencyContacts: (slug: string) => [...playerKeys.all, 'emergency-contacts', slug] as const,
   identityDocuments: (slug: string) => [...playerKeys.all, 'identity-documents', slug] as const,
+  privacy: (slug: string) => [...playerKeys.all, 'privacy', slug] as const,
 
   // Auth
   me: () => [...playerKeys.all, 'me'] as const,
@@ -200,6 +202,15 @@ export function usePlayerContact(slug: string) {
   return useQuery({
     queryKey: playerKeys.contact(slug),
     queryFn: () => getPlayerContact(slug),
+    enabled: Boolean(slug),
+    staleTime: 60_000,
+  })
+}
+
+export function usePlayerPrivacySettings(slug: string) {
+  return useQuery({
+    queryKey: playerKeys.privacy(slug),
+    queryFn: () => getPlayerPrivacySettings(slug),
     enabled: Boolean(slug),
     staleTime: 60_000,
   })
