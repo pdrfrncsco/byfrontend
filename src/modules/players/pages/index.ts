@@ -11,4 +11,12 @@ export { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 export { PlayerOnboardingProfilePage } from './PlayerOnboardingProfilePage'
 export { PlayerOnboardingFootballPage } from './PlayerOnboardingFootballPage'
 export { PlayerOnboardingReviewPage } from './PlayerOnboardingReviewPage'
+export { PlayerOnboardingIdentityPage } from './PlayerOnboardingIdentityPage'
+export { PlayerOnboardingContactPage } from './PlayerOnboardingContactPage'
+export {
+  PlayerOnboardingSupplementalPage,
+  PlayerOnboardingGuardianPage,
+  PlayerOnboardingDocumentsPage,
+  PlayerOnboardingClubPage,
+} from './PlayerOnboardingSupplementalPage'
 export { PlayerOnboardingCompletePage } from './onboarding/PlayerOnboardingCompletePage'

@@ -92,6 +92,21 @@ const PlayerOnboardingWelcomePage = lazy(() =>
     default: m.PlayerOnboardingWelcomePage,
   })),
 )
+const PlayerOnboardingIdentityPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingIdentityPage').then((m) => ({ default: m.PlayerOnboardingIdentityPage })),
+)
+const PlayerOnboardingContactPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingContactPage').then((m) => ({ default: m.PlayerOnboardingContactPage })),
+)
+const PlayerOnboardingGuardianPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingGuardianPage })),
+)
+const PlayerOnboardingDocumentsPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingDocumentsPage })),
+)
+const PlayerOnboardingClubPage = lazy(() =>
+  import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingClubPage })),
+)
 
 function RouteFallback() {
   return (
@@ -433,6 +448,26 @@ export function dashboardRouteElements() {
             </PlayerOnboardingGuard>
           </ProtectedRoute>
         }
+      />
+      <Route
+        path={onboardingRoutes.playerIdentity}
+        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingIdentityPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
+      />
+      <Route
+        path={onboardingRoutes.playerContact}
+        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingContactPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
+      />
+      <Route
+        path={onboardingRoutes.playerGuardian}
+        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingGuardianPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
+      />
+      <Route
+        path={onboardingRoutes.playerDocuments}
+        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingDocumentsPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
+      />
+      <Route
+        path={onboardingRoutes.playerClub}
+        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingClubPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.playerReview}

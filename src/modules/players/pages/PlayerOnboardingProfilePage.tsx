@@ -12,7 +12,6 @@ interface ProfileFormData {
   last_name: string
   date_of_birth: string
   nationality: string
-  phone: string
 }
 
 export function PlayerOnboardingProfilePage() {
@@ -25,7 +24,6 @@ export function PlayerOnboardingProfilePage() {
       last_name: '',
       date_of_birth: '',
       nationality: '',
-      phone: '',
     },
   })
 
@@ -36,7 +34,6 @@ export function PlayerOnboardingProfilePage() {
       last_name: data.player.last_name ?? '',
       date_of_birth: data.player.date_of_birth ?? '',
       nationality: data.player.nationality ?? '',
-      phone: '',
     })
   }, [data?.player, form])
 
@@ -46,7 +43,6 @@ export function PlayerOnboardingProfilePage() {
       last_name: values.last_name.trim(),
       date_of_birth: values.date_of_birth,
       nationality: values.nationality.trim(),
-      phone: values.phone.trim() || undefined,
     })
     navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)
   }
@@ -116,10 +112,6 @@ export function PlayerOnboardingProfilePage() {
           <div>
             <Label htmlFor="nationality">Nacionalidade</Label>
             <Input id="nationality" placeholder="Angolana" {...form.register('nationality', { required: true })} />
-          </div>
-          <div className="md:col-span-2">
-            <Label htmlFor="phone">Telemóvel</Label>
-            <Input id="phone" type="tel" placeholder="+244 923 000 000" {...form.register('phone')} />
           </div>
         </div>
 
