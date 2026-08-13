@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { Button, Input, Label, Select, Textarea } from '@/components/ui'
+import { Button, Input, Label, NativeSelect, Textarea } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { ALL_POSITIONS } from '../constants'
 import { usePlayerOnboardingStatus, useUpdatePlayerMe } from '../hooks'
@@ -70,7 +70,7 @@ export function PlayerOnboardingFootballPage() {
         <div className="grid gap-md md:grid-cols-2">
           <div>
             <Label htmlFor="primary_position">Posição principal</Label>
-            <Select
+            <NativeSelect
               id="primary_position"
               {...form.register('primary_position', {
                 validate: value => value !== 'multiple',
@@ -82,7 +82,7 @@ export function PlayerOnboardingFootballPage() {
                   {position.label} - {position.fullLabel}
                 </option>
               ))}
-            </Select>
+            </NativeSelect>
             {form.formState.errors.primary_position && (
               <p className="mt-xs text-xs text-error">Selecione uma posição principal.</p>
             )}
@@ -90,12 +90,12 @@ export function PlayerOnboardingFootballPage() {
 
           <div>
             <Label htmlFor="foot">Pé preferido</Label>
-            <Select id="foot" {...form.register('foot')}>
+            <NativeSelect id="foot" {...form.register('foot')}>
               <option value="">Selecionar</option>
               <option value="right">Direito</option>
               <option value="left">Esquerdo</option>
               <option value="both">Ambos</option>
-            </Select>
+            </NativeSelect>
           </div>
 
           <div>
