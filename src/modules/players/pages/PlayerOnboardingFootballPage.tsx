@@ -59,7 +59,7 @@ export function PlayerOnboardingFootballPage() {
 
   return (
     <PlayerOnboardingLayout step={2} maxReachedStep={2}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Perfil futebolístico</h2>
           <p className="mt-xs text-sm text-on-surface-variant">
@@ -118,6 +118,12 @@ export function PlayerOnboardingFootballPage() {
             />
           </div>
         </div>
+
+        {updatePlayer.isError && (
+          <p role="alert" className="rounded-md bg-error-container/20 p-sm text-sm text-error">
+            Não foi possível guardar o perfil futebolístico. Verifique os dados e tente novamente.
+          </p>
+        )}
 
         <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
           <Button asChild variant="secondary">

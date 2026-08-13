@@ -322,6 +322,9 @@ export interface PlayerOnboardingStatus {
   /** Compat flag: true when onboarding is not complete */
   onboarding_required: boolean
   has_player_profile: boolean
+  /** Fields returned by the current self-service onboarding endpoint. */
+  has_basic_info?: boolean
+  has_football_info?: boolean
 }
 
 /**

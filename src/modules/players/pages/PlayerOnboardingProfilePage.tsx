@@ -32,7 +32,7 @@ export function PlayerOnboardingProfilePage() {
     form.reset({
       first_name: data.player.first_name ?? '',
       last_name: data.player.last_name ?? '',
-      date_of_birth: data.player.date_of_birth ?? '',
+      date_of_birth: data.player.date_of_birth?.split('T')[0] ?? '',
       nationality: data.player.nationality ?? '',
     })
   }, [data?.player, form])
@@ -88,7 +88,7 @@ export function PlayerOnboardingProfilePage() {
 
   return (
     <PlayerOnboardingLayout step={1} maxReachedStep={1}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Dados pessoais</h2>
           <p className="mt-xs text-sm text-on-surface-variant">
@@ -99,21 +99,63 @@ export function PlayerOnboardingProfilePage() {
         <div className="grid gap-md md:grid-cols-2">
           <div>
             <Label htmlFor="first_name">Nome</Label>
-            <Input id="first_name" {...form.register('first_name', { required: true, minLength: 2 })} />
+            <Input
+              id="first_name"
+              aria-invalid={Boolean(form.formState.errors.first_name)}
+              {...form.register('first_name', {
+                required: 'O nome é obrigatório.',
+                minLength: { value: 2, message: 'Informe pelo menos 2 caracteres.' },
+              })}
+            />
+            {form.formState.errors.first_name && (
+              <p className="mt-xs text-xs text-error">{form.formState.errors.first_name.message}</p>
+            )}
           </div>
           <div>
             <Label htmlFor="last_name">Apelido</Label>
-            <Input id="last_name" {...form.register('last_name', { required: true, minLength: 2 })} />
+            <Input
+              id="last_name"
+              aria-invalid={Boolean(form.formState.errors.last_name)}
+              {...form.register('last_name', {
+                required: 'O apelido é obrigatório.',
+                minLength: { value: 2, message: 'Informe pelo menos 2 caracteres.' },
+              })}
+            />
+            {form.formState.errors.last_name && (
+              <p className="mt-xs text-xs text-error">{form.formState.errors.last_name.message}</p>
+            )}
           </div>
           <div>
             <Label htmlFor="date_of_birth">Data de nascimento</Label>
-            <Input id="date_of_birth" type="date" {...form.register('date_of_birth', { required: true })} />
+            <Input
+              id="date_of_birth"
+              type="date"
+              aria-invalid={Boolean(form.formState.errors.date_of_birth)}
+              {...form.register('date_of_birth', { required: 'A data de nascimento é obrigatória.' })}
+            />
+            {form.formState.errors.date_of_birth && (
+              <p className="mt-xs text-xs text-error">{form.formState.errors.date_of_birth.message}</p>
+            )}
           </div>
           <div>
             <Label htmlFor="nationality">Nacionalidade</Label>
-            <Input id="nationality" placeholder="Angolana" {...form.register('nationality', { required: true })} />
+            <Input
+              id="nationality"
+              placeholder="Angolana"
+              aria-invalid={Boolean(form.formState.errors.nationality)}
+              {...form.register('nationality', { required: 'A nacionalidade é obrigatória.' })}
+            />
+            {form.formState.errors.nationality && (
+              <p className="mt-xs text-xs text-error">{form.formState.errors.nationality.message}</p>
+            )}
           </div>
         </div>
+
+        {updatePlayer.isError && (
+          <p role="alert" className="rounded-md bg-error-container/20 p-sm text-sm text-error">
+            Não foi possível guardar os dados do perfil. Verifique os campos e tente novamente.
+          </p>
+        )}
 
         <div className="flex justify-end">
           <Button type="submit" loading={updatePlayer.isPending}>

@@ -134,9 +134,9 @@ export function useUpdatePlayerMe() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: PlayerUpdate) => updatePlayerMe(data),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
-      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
+      await queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
     },
   })

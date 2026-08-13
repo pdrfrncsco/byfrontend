@@ -151,7 +151,7 @@ export async function getPlayerOnboardingStatus(): Promise<PlayerOnboardingStatu
 }
 
 export async function completeOnboardingStep(step: string): Promise<PlayerOnboardingStatus> {
-  const res = await apiClient.post(API_ROUTES.PLAYERS.ME_ONBOARDING_COMPLETE_STEP, { step })
+  const res = await apiClient.patch(API_ROUTES.PLAYERS.ME_ONBOARDING_COMPLETE_STEP, { step })
   return unwrapData(res.data)
 }
 
