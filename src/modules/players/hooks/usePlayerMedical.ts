@@ -1,24 +1,30 @@
 // Players module — Medical hooks (migrated to apiClient)
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import apiClient from '@/lib/api-client'
-import { API_ROUTES } from '@/constants/routes'
+import {
+  getPlayerMedicalProfile,
+  getPlayerMedicalHistory,
+  listPlayerMedicalDocuments,
+  updatePlayerMedicalProfile,
+  createPlayerMedicalDocument,
+  verifyMedicalDocument,
+  rejectMedicalDocument,
+} from '../services'
+import { playerKeys } from './usePlayerQueries'
 import type {
   PlayerMedicalProfile,
   PlayerMedicalProfileUpdate,
-  MedicalDocument,
   MedicalDocumentCreate,
   MedicalDocumentReject,
-  PlayerMedicalHistory,
 } from '../types'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const medicalKeys = {
-  all: ['player-medical'] as const,
-  profile: (playerId: string) => [...medicalKeys.all, 'profile', playerId] as const,
-  history: (playerId: string) => [...medicalKeys.all, 'history', playerId] as const,
-  documents: (playerId: string) => [...medicalKeys.all, 'documents', playerId] as const,
+  all: playerKeys.medical,
+  profile: playerKeys.medical,
+  history: playerKeys.medicalHistory,
+  documents: playerKeys.medicalDocuments,
 }
 
 // ─── Query Hooks ──────────────────────────────────────────────────────────────
@@ -26,17 +32,7 @@ export const medicalKeys = {
 export function usePlayerMedicalProfile(playerId: string, enabled = true) {
   return useQuery({
     queryKey: medicalKeys.profile(playerId),
-    queryFn: async (): Promise<PlayerMedicalProfile | null> => {
-      try {
-        const res = await apiClient.get<PlayerMedicalProfile>(
-          API_ROUTES.PLAYERS.MEDICAL(playerId)
-        )
-        return res.data
-      } catch (err: any) {
-        if (err?.response?.status === 404) return null
-        throw err
-      }
-    },
+    queryFn: () => getPlayerMedicalProfile(playerId),
     enabled: enabled && !!playerId,
     staleTime: 1000 * 60 * 5,
   })
@@ -46,10 +42,7 @@ export function usePlayerMedicalHistory(playerId: string, enabled = true) {
   return useQuery({
     queryKey: medicalKeys.history(playerId),
     queryFn: async () => {
-      const res = await apiClient.get<PlayerMedicalHistory>(
-        API_ROUTES.PLAYERS.MEDICAL_HISTORY(playerId)
-      )
-      return res.data
+      return getPlayerMedicalHistory(playerId)
     },
     enabled: enabled && !!playerId,
     staleTime: 1000 * 60 * 5,
@@ -60,11 +53,7 @@ export function usePlayerMedicalDocuments(playerId: string, enabled = true) {
   return useQuery({
     queryKey: medicalKeys.documents(playerId),
     queryFn: async () => {
-      const res = await apiClient.get<MedicalDocument[]>(
-        API_ROUTES.PLAYERS.MEDICAL_DOCUMENTS(playerId)
-      )
-      const data = res.data
-      return Array.isArray(data) ? data : (data as any)?.results ?? []
+      return listPlayerMedicalDocuments(playerId)
     },
     enabled: enabled && !!playerId,
     staleTime: 1000 * 60 * 5,
@@ -77,11 +66,7 @@ export function useUpdateMedicalProfile(playerId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (data: PlayerMedicalProfileUpdate) => {
-      const res = await apiClient.patch<PlayerMedicalProfile>(
-        API_ROUTES.PLAYERS.MEDICAL(playerId),
-        data
-      )
-      return res.data
+      return updatePlayerMedicalProfile(playerId, data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: medicalKeys.profile(playerId) })
@@ -94,22 +79,7 @@ export function useUploadMedicalDocument(playerId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (data: MedicalDocumentCreate) => {
-      const formData = new FormData()
-      formData.append('document_type', data.document_type)
-      formData.append('title', data.title)
-      formData.append('issued_at', data.issued_at)
-      formData.append('file', data.file)
-      if (data.description) formData.append('description', data.description)
-      if (data.expires_at) formData.append('expires_at', data.expires_at)
-      if (data.is_confidential !== undefined)
-        formData.append('is_confidential', String(data.is_confidential))
-
-      const res = await apiClient.post<MedicalDocument>(
-        API_ROUTES.PLAYERS.MEDICAL_DOCUMENTS(playerId),
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      )
-      return res.data
+      return createPlayerMedicalDocument(playerId, data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: medicalKeys.documents(playerId) })
@@ -122,11 +92,7 @@ export function useVerifyMedicalDocument(playerId: string, documentId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async () => {
-      const res = await apiClient.patch<MedicalDocument>(
-        API_ROUTES.PLAYERS.MEDICAL_DOCUMENT_VERIFY(playerId, documentId),
-        {}
-      )
-      return res.data
+      return verifyMedicalDocument(playerId, documentId)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: medicalKeys.documents(playerId) })
@@ -138,11 +104,7 @@ export function useRejectMedicalDocument(playerId: string, documentId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (data: MedicalDocumentReject) => {
-      const res = await apiClient.patch<MedicalDocument>(
-        API_ROUTES.PLAYERS.MEDICAL_DOCUMENT_REJECT(playerId, documentId),
-        data
-      )
-      return res.data
+      return rejectMedicalDocument(playerId, documentId, data)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: medicalKeys.documents(playerId) })

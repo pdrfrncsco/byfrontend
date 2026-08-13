@@ -76,6 +76,18 @@ export const playerKeys = {
   medicalHistory: (playerId: string) => [...playerKeys.all, 'medical-history', playerId] as const,
   medicalDocuments: (playerId: string) =>
     [...playerKeys.all, 'medical-documents', playerId] as const,
+  performance: (playerId: string, metricType?: string) =>
+    [...playerKeys.all, 'performance', playerId, metricType ?? 'all'] as const,
+  performanceSummary: (playerId: string) =>
+    [...playerKeys.all, 'performance-summary', playerId] as const,
+  performanceTrends: (playerId: string, days: number) =>
+    [...playerKeys.all, 'performance-trends', playerId, days] as const,
+  compliance: (playerId: string) =>
+    [...playerKeys.all, 'compliance', playerId] as const,
+  complianceSummary: (playerId: string) =>
+    [...playerKeys.all, 'compliance-summary', playerId] as const,
+  overdueCompliance: (playerId: string) =>
+    [...playerKeys.all, 'overdue-compliance', playerId] as const,
 }
 
 // ─── Core Queries (Phase 1 / slug-based) ─────────────────────────────────────

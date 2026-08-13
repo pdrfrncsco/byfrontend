@@ -8,14 +8,15 @@ import type {
   CompliancePriority,
   ComplianceStatus,
 } from '../types'
+import { playerKeys } from './usePlayerQueries'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const complianceKeys = {
-  all: ['player-compliance'] as const,
-  records: (playerId: string) => [...complianceKeys.all, 'records', playerId] as const,
-  summary: (playerId: string) => [...complianceKeys.all, 'summary', playerId] as const,
-  overdue: (playerId: string) => [...complianceKeys.all, 'overdue', playerId] as const,
+  all: playerKeys.all,
+  records: playerKeys.compliance,
+  summary: playerKeys.complianceSummary,
+  overdue: playerKeys.overdueCompliance,
 }
 
 // ─── Query Hooks ──────────────────────────────────────────────────────────────

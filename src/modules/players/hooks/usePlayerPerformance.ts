@@ -3,16 +3,15 @@
 import { useQuery } from '@tanstack/react-query'
 import apiClient from '@/lib/api-client'
 import type { PlayerPerformanceMetric, PlayerPerformanceSummary } from '../types'
+import { playerKeys } from './usePlayerQueries'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const performanceKeys = {
-  all: ['player-performance'] as const,
-  metrics: (playerId: string, metricType?: string) =>
-    [...performanceKeys.all, 'metrics', playerId, metricType ?? 'all'] as const,
-  summary: (playerId: string) => [...performanceKeys.all, 'summary', playerId] as const,
-  trends: (playerId: string, days: number) =>
-    [...performanceKeys.all, 'trends', playerId, days] as const,
+  all: playerKeys.all,
+  metrics: playerKeys.performance,
+  summary: playerKeys.performanceSummary,
+  trends: playerKeys.performanceTrends,
 }
 
 // ─── Query Hooks ──────────────────────────────────────────────────────────────
