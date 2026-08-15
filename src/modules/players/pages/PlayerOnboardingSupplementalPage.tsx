@@ -25,7 +25,7 @@ export function PlayerOnboardingSupplementalPage({ kind }: { kind: SupplementalK
   }
 
   return (
-    <PlayerOnboardingLayout step={item.step} maxReachedStep={item.step}>
+    <PlayerOnboardingLayout step={item.step}>
       <div className="space-y-lg">
         <div><h2 className="text-xl font-semibold text-on-surface">{item.title}</h2><p className="mt-xs text-sm text-on-surface-variant">{item.description}</p></div>
         <div className="flex items-start gap-md rounded-lg border border-primary/30 bg-primary-container/10 p-md text-sm text-on-surface-variant"><Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" /><p>Este passo pode ser concluído agora e complementado mais tarde nas definições do jogador.</p></div>

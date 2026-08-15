@@ -2,12 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { Trophy, ShieldCheck, Search, ArrowRight, UserCheck } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
+import { usePlayerOnboardingState } from '@/modules/players/hooks/usePlayerOnboardingState'
 
 export function PlayerOnboardingWelcomePage() {
   const navigate = useNavigate()
+  const { onboardingState } = usePlayerOnboardingState()
 
   const handleStart = () => {
-    navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)
+    // Resume from where the player left off; default to step 2 (identity) for fresh starts
+    const destination = onboardingState?.nextRoute ?? ROUTES.ONBOARDING_PLAYER_IDENTITY
+    // Don't go back to the welcome page itself
+    navigate(destination === ROUTES.ONBOARDING_PLAYER ? ROUTES.ONBOARDING_PLAYER_IDENTITY : destination)
   }
 
   return (

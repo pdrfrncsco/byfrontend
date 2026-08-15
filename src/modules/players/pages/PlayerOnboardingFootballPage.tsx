@@ -25,6 +25,7 @@ export function PlayerOnboardingFootballPage() {
   const navigate = useNavigate()
   const { data } = usePlayerOnboardingStatus()
   const updatePlayer = useUpdatePlayerMe()
+  const completeStep = useCompleteOnboardingStep()
   const form = useForm<FootballFormData>({
     defaultValues: {
       primary_position: 'multiple',
@@ -54,11 +55,12 @@ export function PlayerOnboardingFootballPage() {
       weight_kg: optionalNumber(values.weight_kg),
       bio: values.bio.trim() || undefined,
     })
-    navigate(ROUTES.ONBOARDING_PLAYER_REVIEW)
+    await completeStep.mutateAsync('football')
+    navigate(ROUTES.ONBOARDING_PLAYER_CONTACT)
   }
 
   return (
-    <PlayerOnboardingLayout step={2} maxReachedStep={2}>
+    <PlayerOnboardingLayout step={4}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Perfil futebolístico</h2>

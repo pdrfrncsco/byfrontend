@@ -33,7 +33,7 @@ export function PlayerOnboardingIdentityPage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={2} maxReachedStep={2}>
+    <PlayerOnboardingLayout step={2}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
         <div><h2 className="text-xl font-semibold text-on-surface">Identidade</h2><p className="mt-xs text-sm text-on-surface-variant">Registe um documento oficial para validar a identidade do jogador.</p></div>
         <div className="grid gap-md md:grid-cols-2">
