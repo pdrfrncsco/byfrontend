@@ -313,12 +313,17 @@ export function useOrganizationClubRequests() {
 export function useSubmitClubRequest() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ slug, data }: { slug: string; data: ClubAffiliationCreateData }) =>
+    mutationFn: ({ slug, data }: { slug: string; data: ClubAffiliationCreateData & { is_draft?: boolean } }) =>
       organizationApi.submitClubRequest(slug, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['organization', 'club-requests'] })
+      // Refresh clubs cache so the provisional club and membership (draft) are reflected in UI
+      queryClient.invalidateQueries({ queryKey: ['clubs'] })
+      // Also refresh the current user's club (me) so dashboard shows the provisional club request/banner
+      queryClient.invalidateQueries({ queryKey: ['clubs', 'me'] })
       toast.success('Pedido de filiação submetido com sucesso.')
     },
+
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||

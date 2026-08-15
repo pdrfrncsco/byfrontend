@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Palette, Globe } from 'lucide-react'
-import { Button, Card, CardContent, CardHeader, CardTitle, FormField, Input, Textarea } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { clubSettingsSchema, type ClubSettingsFormData } from '../schemas'
 
 interface ClubSettingsFormProps {

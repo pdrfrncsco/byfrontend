@@ -129,9 +129,17 @@ export async function getClubPublicSponsors(slug: string): Promise<ClubSponsor[]
 // Authenticated Club Management
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function getClubMe(): Promise<Club> {
-  const res = await apiClient.get<Envelope<Club>>(API_ROUTES.CLUBS.ME)
-  return unwrapData(res.data)
+export async function getClubMe(): Promise<Club | null> {
+  try {
+    const res = await apiClient.get<Envelope<Club>>(API_ROUTES.CLUBS.ME)
+    return unwrapData(res.data)
+  } catch (err: unknown) {
+    // If the user has no club membership, backend returns 404 with no_club_membership.
+    // Treat as 'no club yet' and return null so UI can show onboarding CTA.
+    const status = (err as { response?: { status?: number } })?.response?.status
+    if (status === 404) return null
+    throw err
+  }
 }
 
 export async function createClub(data: ClubCreateData): Promise<Club> {

@@ -3,8 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowLeft, Save, LayoutDashboard, UserCheck, Settings, Handshake, Eye, ShieldAlert, ExternalLink } from 'lucide-react'
-import { Button, Card, CardContent, FormField, Input, Textarea } from '@/components/ui'
+import { ArrowLeft, Save, LayoutDashboard, Settings, Handshake, ExternalLink } from 'lucide-react'
+import { Button, Card, CardContent, Input, Textarea } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { ROUTES } from '@/constants/routes'
 import { useCreatePlayer, useUpdatePlayerMe } from '../hooks'
 import { playerCreateSchema, type PlayerCreateFormData } from '../schemas'
@@ -33,8 +34,6 @@ export function DashboardPlayerCreatePage() {
       date_of_birth: '',
       nationality: '',
       primary_position: undefined,
-      email: '',
-      phone: '',
       height_cm: undefined,
       weight_kg: undefined,
       foot: undefined,
@@ -65,8 +64,6 @@ export function DashboardPlayerCreatePage() {
       date_of_birth: data.date_of_birth || undefined,
       nationality: data.nationality || undefined,
       primary_position: data.primary_position || 'multiple',
-      email: data.email || undefined,
-      phone: data.phone || undefined,
       height_cm: data.height_cm || undefined,
       weight_kg: data.weight_kg || undefined,
       foot: data.foot || undefined,
@@ -269,40 +266,6 @@ export function DashboardPlayerCreatePage() {
                     {...register('weight_kg')}
                     state={errors.weight_kg ? 'error' : 'default'}
                     placeholder="Ex: 75"
-                  />
-                  </FormField>
-                </div>
-              </div>
-
-              {/* Contact Information */}
-              <div className="space-y-md">
-                <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
-                <div className="grid gap-md md:grid-cols-2">
-                  <FormField
-                  label={t('players.form.email')}
-                  htmlFor="email"
-                  error={errors.email?.message}
-                  >
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register('email')}
-                    state={errors.email ? 'error' : 'default'}
-                    placeholder="email@exemplo.com"
-                  />
-                  </FormField>
-
-                  <FormField
-                  label={t('players.form.phone')}
-                  htmlFor="phone"
-                  error={errors.phone?.message}
-                  >
-                  <Input
-                    id="phone"
-                    type="tel"
-                    {...register('phone')}
-                    state={errors.phone ? 'error' : 'default'}
-                    placeholder="+244 9XX XXX XXX"
                   />
                   </FormField>
                 </div>

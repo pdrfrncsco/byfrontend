@@ -1,20 +1,26 @@
 import { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Activity, CheckCircle2, UserRound, Lock } from 'lucide-react'
+import { Activity, CheckCircle2, UserRound, Lock, FileCheck2, Phone, Users, FolderOpen, Building2 } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 interface PlayerOnboardingLayoutProps {
   children: ReactNode
-  /** Current step (1 = Profile, 2 = Football, 3 = Review) */
-  step: 1 | 2 | 3
+  /** Current step in the nine-step player onboarding flow. */
+  step: number
   /** Highest step the user has unlocked based on saved data */
-  maxReachedStep?: 1 | 2 | 3
+  maxReachedStep?: number
 }
 
 const steps = [
-  { number: 1 as const, label: 'Perfil', href: ROUTES.ONBOARDING_PLAYER_PROFILE, icon: UserRound },
-  { number: 2 as const, label: 'Futebol', href: ROUTES.ONBOARDING_PLAYER_FOOTBALL, icon: Activity },
-  { number: 3 as const, label: 'Revisão', href: ROUTES.ONBOARDING_PLAYER_REVIEW, icon: CheckCircle2 },
+  { number: 1, label: 'Conta', href: ROUTES.ONBOARDING_PLAYER_PROFILE, icon: UserRound },
+  { number: 2, label: 'Identidade', href: ROUTES.ONBOARDING_PLAYER_IDENTITY, icon: FileCheck2 },
+  { number: 3, label: 'Dados pessoais', href: ROUTES.ONBOARDING_PLAYER_PROFILE, icon: UserRound },
+  { number: 4, label: 'Futebol', href: ROUTES.ONBOARDING_PLAYER_FOOTBALL, icon: Activity },
+  { number: 5, label: 'Contacto', href: ROUTES.ONBOARDING_PLAYER_CONTACT, icon: Phone },
+  { number: 6, label: 'Responsável', href: ROUTES.ONBOARDING_PLAYER_GUARDIAN, icon: Users },
+  { number: 7, label: 'Documentos', href: ROUTES.ONBOARDING_PLAYER_DOCUMENTS, icon: FolderOpen },
+  { number: 8, label: 'Clube', href: ROUTES.ONBOARDING_PLAYER_CLUB, icon: Building2 },
+  { number: 9, label: 'Revisão', href: ROUTES.ONBOARDING_PLAYER_REVIEW, icon: CheckCircle2 },
 ]
 
 export function PlayerOnboardingLayout({
@@ -77,7 +83,7 @@ export function PlayerOnboardingLayout({
             }
 
             return (
-              <div
+            <div
                 key={item.number}
                 className={`${baseClass} ${stateClass}`}
                 title={!unlocked ? 'Complete o passo anterior primeiro' : undefined}
@@ -96,7 +102,7 @@ export function PlayerOnboardingLayout({
         <div className="mb-lg h-1 w-full overflow-hidden rounded-full bg-surface-container-high">
           <div
             className="h-full rounded-full bg-primary transition-all duration-500"
-            style={{ width: `${((step - 1) / 2) * 100}%` }}
+            style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
           />
         </div>
 

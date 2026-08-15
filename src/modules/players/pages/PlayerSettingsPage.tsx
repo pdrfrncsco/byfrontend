@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
-import { Button, Card, CardContent, FormField, Input, Textarea, Badge } from '@/components/ui'
+import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ROUTES } from '@/constants/routes'
 import { usePlayer, useUpdatePlayer } from '../hooks'
@@ -50,8 +51,6 @@ export function PlayerSettingsPage() {
         date_of_birth: player.date_of_birth?.split('T')[0] || '',
         nationality: player.nationality || '',
         primary_position: player.primary_position || undefined,
-        email: player.email || '',
-        phone: player.phone || '',
         height_cm: player.height_cm || undefined,
         weight_kg: player.weight_kg || undefined,
         foot: player.foot || undefined,
@@ -76,8 +75,6 @@ export function PlayerSettingsPage() {
       date_of_birth: data.date_of_birth || undefined,
       nationality: data.nationality || undefined,
       primary_position: data.primary_position || undefined,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
       height_cm: data.height_cm || undefined,
       weight_kg: data.weight_kg || undefined,
       foot: data.foot || undefined,
@@ -353,37 +350,6 @@ export function PlayerSettingsPage() {
                     type="number"
                     {...register('weight_kg')}
                     state={errors.weight_kg ? 'error' : 'default'}
-                  />
-                </FormField>
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="space-y-md">
-              <h2 className="text-lg font-semibold text-on-surface">{t('players.form.contactInfo')}</h2>
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField
-                  label={t('players.form.email')}
-                  htmlFor="email"
-                  error={errors.email?.message}
-                >
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register('email')}
-                    state={errors.email ? 'error' : 'default'}
-                  />
-                </FormField>
-
-                <FormField
-                  label={t('players.form.phone')}
-                  htmlFor="phone"
-                  error={errors.phone?.message}
-                >
-                  <Input
-                    id="phone"
-                    {...register('phone')}
-                    state={errors.phone ? 'error' : 'default'}
                   />
                 </FormField>
               </div>

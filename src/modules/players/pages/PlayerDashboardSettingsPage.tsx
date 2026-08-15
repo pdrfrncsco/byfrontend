@@ -6,7 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ExternalLink, Handshake, LayoutDashboard, Save, Settings } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button, Card, CardContent, FormField, Input, Textarea, Badge } from '@/components/ui'
+import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -15,6 +16,8 @@ import {
   PlayerDocumentsSection,
   PlayerFormSkeleton,
   PlayerVideosSection,
+  PlayerContactSettingsPanel,
+  PlayerPrivacySettingsPanel,
 } from '../components'
 import { usePlayerMe, useUpdatePlayerMe } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
@@ -60,8 +63,6 @@ export function PlayerDashboardSettingsPage() {
         date_of_birth: player.date_of_birth?.split('T')[0] || '',
         nationality: player.nationality || '',
         primary_position: player.primary_position || undefined,
-        email: player.email || '',
-        phone: player.phone || '',
         height_cm: player.height_cm || undefined,
         weight_kg: player.weight_kg || undefined,
         foot: player.foot || undefined,
@@ -79,8 +80,6 @@ export function PlayerDashboardSettingsPage() {
       date_of_birth: data.date_of_birth || undefined,
       nationality: data.nationality || undefined,
       primary_position: data.primary_position || undefined,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
       height_cm: data.height_cm || undefined,
       weight_kg: data.weight_kg || undefined,
       foot: data.foot || undefined,
@@ -145,6 +144,8 @@ export function PlayerDashboardSettingsPage() {
       <Tabs defaultValue="profile">
         <TabsList className="mb-lg flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
           <TabsTrigger value="profile">{t('players.settings.tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="contact">Contacto</TabsTrigger>
+          <TabsTrigger value="privacy">Privacidade</TabsTrigger>
           <TabsTrigger value="documents">{t('players.settings.tabs.documents')}</TabsTrigger>
           <TabsTrigger value="videos">{t('players.settings.tabs.videos')}</TabsTrigger>
           <TabsTrigger value="achievements">{t('players.settings.tabs.achievements')}</TabsTrigger>
@@ -237,6 +238,13 @@ export function PlayerDashboardSettingsPage() {
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="contact">
+          <PlayerContactSettingsPanel slug={player.slug} />
+        </TabsContent>
+        <TabsContent value="privacy">
+          <PlayerPrivacySettingsPanel slug={player.slug} />
         </TabsContent>
 
         <TabsContent value="documents">

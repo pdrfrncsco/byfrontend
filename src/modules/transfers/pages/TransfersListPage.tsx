@@ -13,9 +13,13 @@ import {
   CardTitle,
   DataTable,
   EmptyState,
-  FormField,
   Input,
+  Label,
   Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Skeleton,
 } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
@@ -244,32 +248,42 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
                   />
                 </div>
               </FormField>
-              <FormField label="Estado" htmlFor="transfer-status">
+              <div className="space-y-2">
+                <Label htmlFor="transfer-status">Estado</Label>
                 <Select
-                  id="transfer-status"
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as TransferStatus | 'all')}
+                  onValueChange={(value) => setStatusFilter(value as TransferStatus | 'all')}
                 >
-                  <option value="all">Todos</option>
-                  <option value="pending">Pendente</option>
-                  <option value="approved">Aprovada</option>
-                  <option value="completed">Concluída</option>
-                  <option value="cancelled">Cancelada</option>
-                  <option value="returned">Devolvida</option>
+                  <SelectTrigger id="transfer-status">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="pending">Pendente</SelectItem>
+                    <SelectItem value="approved">Aprovada</SelectItem>
+                    <SelectItem value="completed">Concluída</SelectItem>
+                    <SelectItem value="cancelled">Cancelada</SelectItem>
+                    <SelectItem value="returned">Devolvida</SelectItem>
+                  </SelectContent>
                 </Select>
-              </FormField>
-              <FormField label="Tipo" htmlFor="transfer-type">
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="transfer-type">Tipo</Label>
                 <Select
-                  id="transfer-type"
                   value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value as TransferType | 'all')}
+                  onValueChange={(value) => setTypeFilter(value as TransferType | 'all')}
                 >
-                  <option value="all">Todos</option>
-                  <option value="permanent">Permanente</option>
-                  <option value="loan">Empréstimo</option>
-                  <option value="free_agent">Livre</option>
+                  <SelectTrigger id="transfer-type">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="permanent">Permanente</SelectItem>
+                    <SelectItem value="loan">Empréstimo</SelectItem>
+                    <SelectItem value="free_agent">Livre</SelectItem>
+                  </SelectContent>
                 </Select>
-              </FormField>
+              </div>
             </div>
           </CardContent>
         </Card>
