@@ -25,7 +25,7 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
   const location = useLocation()
   const { isAuthenticated, user, loading: authLoading } = useAuth()
   const isPlayer = Boolean(user?.roles.includes('player') || user?.profileType === 'player')
-  const { onboardingState, isLoading, data } = usePlayerOnboardingState(isAuthenticated && isPlayer)
+  const { onboardingState, isLoading } = usePlayerOnboardingState(isAuthenticated && isPlayer)
 
   // ── Loading ───────────────────────────────────────────────────────────────────
   if (authLoading || (isAuthenticated && isPlayer && isLoading)) {

@@ -1,77 +1,44 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft } from 'lucide-react'
-import { Button, Input, Label } from '@/components/ui'
+import { ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react'
+import { Button, Card, CardContent } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import {
-  STEP_ROUTE_MAP,
-  useCreateIdentityDocument,
-  useCompleteOnboardingStep,
-  usePlayerOnboardingStatus,
-} from '../hooks'
-import type { OnboardingStep, PlayerIdentityDocumentCreate } from '../types'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
-
-type IdentityForm = Omit<PlayerIdentityDocumentCreate, 'document_front' | 'document_back'> & { document_front?: FileList; document_back?: FileList }
 
 export function PlayerOnboardingIdentityPage() {
   const navigate = useNavigate()
-  const { data: status } = usePlayerOnboardingStatus()
-  const slug = status?.player?.slug ?? ''
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const { register, handleSubmit } = useForm<IdentityForm>({ defaultValues: { document_type: 'national_id' } })
-  const create = useCreateIdentityDocument(slug)
-  const complete = useCompleteOnboardingStep()
-
-  const onSubmit = async (values: IdentityForm) => {
-    setSubmitError(null)
-    if (!slug) {
-      setSubmitError('Não foi possível identificar o jogador para guardar a identidade.')
-      return
-    }
-
-    try {
-      await create.mutateAsync({
-        document_type: values.document_type,
-        document_number: values.document_number?.trim() || undefined,
-        issuing_country: values.issuing_country?.trim() || undefined,
-        issuing_authority: values.issuing_authority?.trim() || undefined,
-        issue_date: values.issue_date || undefined,
-        expiry_date: values.expiry_date || undefined,
-        document_front: values.document_front?.[0],
-        document_back: values.document_back?.[0],
-      })
-    } catch {
-      setSubmitError('Não foi possível guardar a documentação. Verifique os campos e tente novamente.')
-      return
-    }
-
-    const nextStatus = await complete.mutateAsync('identity')
-    const nextStep = (nextStatus.next_step ?? 'personal') as NonNullable<OnboardingStep>
-    const nextRoute = nextStatus.onboarding_required
-      ? STEP_ROUTE_MAP[nextStep] ?? ROUTES.ONBOARDING_PLAYER_PROFILE
-      : ROUTES.ONBOARDING_PLAYER_COMPLETE
-    navigate(nextRoute, { replace: true })
-  }
 
   return (
     <PlayerOnboardingLayout step={2}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
-        <div><h2 className="text-xl font-semibold text-on-surface">Identidade</h2><p className="mt-xs text-sm text-on-surface-variant">Registe um documento oficial para validar a identidade do jogador.</p></div>
-        <div className="grid gap-md md:grid-cols-2">
-          <div><Label htmlFor="document_type">Tipo de documento</Label><select id="document_type" {...register('document_type')} className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md text-sm"><option value="national_id">Bilhete de identidade</option><option value="passport">Passaporte</option><option value="birth_certificate">Certidão de nascimento</option><option value="residence_permit">Título de residência</option><option value="other">Outro</option></select></div>
-          <div><Label htmlFor="document_number">Número</Label><Input id="document_number" {...register('document_number')} /></div>
-          <div><Label htmlFor="issuing_country">País emissor</Label><Input id="issuing_country" maxLength={3} {...register('issuing_country')} /></div>
-          <div><Label htmlFor="issuing_authority">Autoridade emissora</Label><Input id="issuing_authority" {...register('issuing_authority')} /></div>
-          <div><Label htmlFor="issue_date">Data de emissão</Label><Input id="issue_date" type="date" {...register('issue_date')} /></div>
-          <div><Label htmlFor="expiry_date">Data de validade</Label><Input id="expiry_date" type="date" {...register('expiry_date')} /></div>
-          <div><Label htmlFor="document_front">Frente do documento</Label><Input id="document_front" type="file" {...register('document_front')} /></div>
-          <div><Label htmlFor="document_back">Verso do documento</Label><Input id="document_back" type="file" {...register('document_back')} /></div>
-        </div>
-        {submitError && <p role="alert" className="rounded-md bg-error-container/20 p-sm text-sm text-error">{submitError}</p>}
-        <div className="flex justify-between gap-sm"><Button type="button" variant="secondary" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER)}><ArrowLeft className="h-4 w-4" />Voltar</Button><Button type="submit" loading={create.isPending || complete.isPending}>Continuar<ArrowRight className="h-4 w-4" /></Button></div>
-      </form>
+      <Card variant="flat" className="border-outline-variant/30">
+        <CardContent className="space-y-lg p-lg">
+          <div className="flex items-start gap-md">
+            <div className="rounded-xl bg-primary-container/20 p-sm text-primary">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div className="space-y-xs">
+              <h2 className="text-xl font-semibold text-on-surface">Identidade opcional</h2>
+              <p className="text-sm text-on-surface-variant">
+                Este passo deixou de bloquear o onboarding. Pode preencher os dados do documento mais tarde no dashboard do jogador.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-outline-variant/30 bg-surface-container p-md text-sm text-on-surface-variant">
+            Se quiser guardar a identidade agora, abra o dashboard e use a secção de identidade para anexar frente e verso.
+          </div>
+
+          <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
+            <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)}>
+              <ArrowLeft className="h-4 w-4" />
+              Continuar onboarding
+            </Button>
+            <Button type="button" onClick={() => navigate(ROUTES.DASHBOARD_PLAYER_SETTINGS)}>
+              Ir para o dashboard
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </PlayerOnboardingLayout>
   )
 }

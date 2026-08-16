@@ -14,6 +14,7 @@ import {
   PlayerAchievementsSection,
   PlayerAvatarUpload,
   PlayerDocumentsSection,
+  PlayerIdentityDocumentsSection,
   PlayerFormSkeleton,
   PlayerVideosSection,
   PlayerContactSettingsPanel,
@@ -144,6 +145,7 @@ export function PlayerDashboardSettingsPage() {
       <Tabs defaultValue="profile">
         <TabsList className="mb-lg flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
           <TabsTrigger value="profile">{t('players.settings.tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="identity">Identidade</TabsTrigger>
           <TabsTrigger value="contact">Contacto</TabsTrigger>
           <TabsTrigger value="privacy">Privacidade</TabsTrigger>
           <TabsTrigger value="documents">{t('players.settings.tabs.documents')}</TabsTrigger>
@@ -238,6 +240,10 @@ export function PlayerDashboardSettingsPage() {
               </form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="identity">
+          <PlayerIdentityDocumentsSection slug={player.slug} />
         </TabsContent>
 
         <TabsContent value="contact">

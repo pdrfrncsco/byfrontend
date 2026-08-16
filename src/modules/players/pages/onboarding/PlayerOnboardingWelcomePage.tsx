@@ -9,10 +9,10 @@ export function PlayerOnboardingWelcomePage() {
   const { onboardingState } = usePlayerOnboardingState()
 
   const handleStart = () => {
-    // Resume from where the player left off; default to step 2 (identity) for fresh starts
-    const destination = onboardingState?.nextRoute ?? ROUTES.ONBOARDING_PLAYER_IDENTITY
+    // Resume from where the player left off; default to the profile step for fresh starts
+    const destination = onboardingState?.nextRoute ?? ROUTES.ONBOARDING_PLAYER_PROFILE
     // Don't go back to the welcome page itself
-    navigate(destination === ROUTES.ONBOARDING_PLAYER ? ROUTES.ONBOARDING_PLAYER_IDENTITY : destination)
+    navigate(destination === ROUTES.ONBOARDING_PLAYER ? ROUTES.ONBOARDING_PLAYER_PROFILE : destination)
   }
 
   return (
