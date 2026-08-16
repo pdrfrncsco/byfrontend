@@ -159,7 +159,10 @@ export function useCompleteOnboardingStep() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (step: string) => completeOnboardingStep(step),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      if (data) {
+        queryClient.setQueryData(playerKeys.onboardingStatus(), data)
+      }
       await queryClient.refetchQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
     },

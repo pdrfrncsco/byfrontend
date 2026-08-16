@@ -29,7 +29,22 @@ export function PendingOnboardingRedirect() {
   if (deservesPlayerOnboardingCheck) {
     if (isPlayerLoading) return null
     if (playerData?.onboarding_required) {
-      return <Navigate to={ROUTES.ONBOARDING_PLAYER_WELCOME} replace />
+      const nextStep = playerData.next_step ?? 'welcome'
+      const stepRoutes: Record<string, string> = {
+        welcome: ROUTES.ONBOARDING_PLAYER,
+        account: ROUTES.ONBOARDING_PLAYER,
+        identity: ROUTES.ONBOARDING_PLAYER_IDENTITY,
+        personal: ROUTES.ONBOARDING_PLAYER_PROFILE,
+        profile: ROUTES.ONBOARDING_PLAYER_PROFILE,
+        football: ROUTES.ONBOARDING_PLAYER_FOOTBALL,
+        contact: ROUTES.ONBOARDING_PLAYER_CONTACT,
+        guardian: ROUTES.ONBOARDING_PLAYER_GUARDIAN,
+        documents: ROUTES.ONBOARDING_PLAYER_DOCUMENTS,
+        club: ROUTES.ONBOARDING_PLAYER_CLUB,
+        review: ROUTES.ONBOARDING_PLAYER_REVIEW,
+      }
+      const targetRoute = stepRoutes[nextStep] || ROUTES.ONBOARDING_PLAYER
+      return <Navigate to={targetRoute} replace />
     }
     return null
   }

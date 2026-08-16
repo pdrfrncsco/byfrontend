@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Button, Input, Label, NativeSelect, Textarea } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { ALL_POSITIONS } from '../constants'
-import { usePlayerOnboardingStatus, useUpdatePlayerMe } from '../hooks'
+import { usePlayerOnboardingStatus, useUpdatePlayerMe, useCompleteOnboardingStep } from '../hooks'
 import type { PlayerFoot, PlayerPosition } from '../types'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 

@@ -7,10 +7,27 @@ import type { User } from '@/types'
  * Decide where to send the user immediately after login/register.
  */
 export async function resolvePostAuthRedirect(user?: User): Promise<string> {
-  if (user?.profile_type === 'player') {
+  if (user?.profile_type === 'player' || user?.profileType === 'player' || user?.roles?.includes('player')) {
     try {
       const status = await getPlayerOnboardingStatus()
-      return status.onboarding_required ? ROUTES.ONBOARDING_PLAYER : ROUTES.DASHBOARD_PLAYER
+      if (status.onboarding_required) {
+        const nextStep = status.next_step ?? 'welcome'
+        const stepRoutes: Record<string, string> = {
+          welcome: ROUTES.ONBOARDING_PLAYER,
+          account: ROUTES.ONBOARDING_PLAYER,
+          identity: ROUTES.ONBOARDING_PLAYER_IDENTITY,
+          personal: ROUTES.ONBOARDING_PLAYER_PROFILE,
+          profile: ROUTES.ONBOARDING_PLAYER_PROFILE,
+          football: ROUTES.ONBOARDING_PLAYER_FOOTBALL,
+          contact: ROUTES.ONBOARDING_PLAYER_CONTACT,
+          guardian: ROUTES.ONBOARDING_PLAYER_GUARDIAN,
+          documents: ROUTES.ONBOARDING_PLAYER_DOCUMENTS,
+          club: ROUTES.ONBOARDING_PLAYER_CLUB,
+          review: ROUTES.ONBOARDING_PLAYER_REVIEW,
+        }
+        return stepRoutes[nextStep] || ROUTES.ONBOARDING_PLAYER
+      }
+      return ROUTES.DASHBOARD_PLAYER
     } catch {
       return ROUTES.DASHBOARD_PLAYER
     }

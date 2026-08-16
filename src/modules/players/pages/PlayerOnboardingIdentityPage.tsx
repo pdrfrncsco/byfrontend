@@ -1,10 +1,16 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { Button, Input, Label } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { useCreateIdentityDocument, useCompleteOnboardingStep, usePlayerOnboardingStatus } from '../hooks'
-import type { PlayerIdentityDocumentCreate } from '../types'
+import {
+  STEP_ROUTE_MAP,
+  useCreateIdentityDocument,
+  useCompleteOnboardingStep,
+  usePlayerOnboardingStatus,
+} from '../hooks'
+import type { OnboardingStep, PlayerIdentityDocumentCreate } from '../types'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 type IdentityForm = Omit<PlayerIdentityDocumentCreate, 'document_front' | 'document_back'> & { document_front?: FileList; document_back?: FileList }
@@ -13,23 +19,40 @@ export function PlayerOnboardingIdentityPage() {
   const navigate = useNavigate()
   const { data: status } = usePlayerOnboardingStatus()
   const slug = status?.player?.slug ?? ''
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const { register, handleSubmit } = useForm<IdentityForm>({ defaultValues: { document_type: 'national_id' } })
   const create = useCreateIdentityDocument(slug)
   const complete = useCompleteOnboardingStep()
 
   const onSubmit = async (values: IdentityForm) => {
-    await create.mutateAsync({
-      document_type: values.document_type,
-      document_number: values.document_number,
-      issuing_country: values.issuing_country,
-      issuing_authority: values.issuing_authority,
-      issue_date: values.issue_date,
-      expiry_date: values.expiry_date,
-      document_front: values.document_front?.[0],
-      document_back: values.document_back?.[0],
-    })
-    await complete.mutateAsync('identity')
-    navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)
+    setSubmitError(null)
+    if (!slug) {
+      setSubmitError('Não foi possível identificar o jogador para guardar a identidade.')
+      return
+    }
+
+    try {
+      await create.mutateAsync({
+        document_type: values.document_type,
+        document_number: values.document_number?.trim() || undefined,
+        issuing_country: values.issuing_country?.trim() || undefined,
+        issuing_authority: values.issuing_authority?.trim() || undefined,
+        issue_date: values.issue_date || undefined,
+        expiry_date: values.expiry_date || undefined,
+        document_front: values.document_front?.[0],
+        document_back: values.document_back?.[0],
+      })
+    } catch {
+      setSubmitError('Não foi possível guardar a documentação. Verifique os campos e tente novamente.')
+      return
+    }
+
+    const nextStatus = await complete.mutateAsync('identity')
+    const nextStep = (nextStatus.next_step ?? 'personal') as NonNullable<OnboardingStep>
+    const nextRoute = nextStatus.onboarding_required
+      ? STEP_ROUTE_MAP[nextStep] ?? ROUTES.ONBOARDING_PLAYER_PROFILE
+      : ROUTES.ONBOARDING_PLAYER_COMPLETE
+    navigate(nextRoute, { replace: true })
   }
 
   return (
@@ -46,6 +69,7 @@ export function PlayerOnboardingIdentityPage() {
           <div><Label htmlFor="document_front">Frente do documento</Label><Input id="document_front" type="file" {...register('document_front')} /></div>
           <div><Label htmlFor="document_back">Verso do documento</Label><Input id="document_back" type="file" {...register('document_back')} /></div>
         </div>
+        {submitError && <p role="alert" className="rounded-md bg-error-container/20 p-sm text-sm text-error">{submitError}</p>}
         <div className="flex justify-between gap-sm"><Button type="button" variant="secondary" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER)}><ArrowLeft className="h-4 w-4" />Voltar</Button><Button type="submit" loading={create.isPending || complete.isPending}>Continuar<ArrowRight className="h-4 w-4" /></Button></div>
       </form>
     </PlayerOnboardingLayout>

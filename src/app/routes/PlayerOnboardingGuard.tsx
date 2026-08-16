@@ -58,24 +58,17 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
     return <>{children}</>
   }
 
-  // ── Enforce sequential step access ───────────────────────────────────────────
-  // Find which step this pathname corresponds to.
+  // ── Enforce step access: user can navigate to completed steps or the next pending step ──
   const targetStep = (Object.entries(STEP_ROUTE_MAP) as [NonNullable<OnboardingStep>, string][])
     .find(([, route]) => route === pathname)?.[0]
 
-  if (targetStep) {
-    const targetIndex  = STEP_ORDER.indexOf(targetStep)
+  if (targetStep && onboardingState?.nextStep) {
+    const targetIndex = STEP_ORDER.indexOf(targetStep)
+    const allowedIndex = STEP_ORDER.indexOf(onboardingState.nextStep)
 
-    // Determine the furthest step the user is allowed to access.
-    // The backend's next_step is the first *incomplete* step, so the user
-    // may access anything UP TO (but not past) that step.
-    const nextStep     = (onboardingState?.nextStep ?? 'account') as NonNullable<OnboardingStep>
-    const allowedIndex = STEP_ORDER.indexOf(nextStep)
-
-    // If the user tries to jump ahead of what's allowed, redirect them to the
-    // correct next incomplete step.
+    // Only block if trying to jump past the current incomplete step
     if (targetIndex > allowedIndex) {
-      const redirectRoute = onboardingState?.nextRoute ?? ROUTES.ONBOARDING_PLAYER
+      const redirectRoute = onboardingState.nextRoute ?? ROUTES.ONBOARDING_PLAYER
       return <Navigate to={redirectRoute} replace />
     }
   }
