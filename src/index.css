@@ -36,6 +36,14 @@
   
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --glass-blur: blur(12px);
+
+  --profile-bg: #f4f6f8;
+  --profile-surface: rgba(255, 255, 255, 0.86);
+  --profile-surface-muted: rgba(226, 232, 240, 0.72);
+  --profile-border: rgba(100, 116, 139, 0.24);
+  --profile-text: #0f1117;
+  --profile-muted: #64748b;
+  --profile-input: #ffffff;
 }
 
 /* Dark Theme System (Active by default or system preferences) */
@@ -61,6 +69,43 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --profile-bg: #031427;
+  --profile-surface: rgba(16, 32, 52, 0.78);
+  --profile-surface-muted: rgba(0, 15, 33, 0.62);
+  --profile-border: rgba(38, 54, 74, 0.9);
+  --profile-text: #d3e4fe;
+  --profile-muted: #bfc9c4;
+  --profile-input: #000f21;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Tailwind's palette is intentionally shared by all feature modules. These
+   light-mode overrides keep existing semantic utility classes readable while
+   the legacy hard-coded screens are migrated to theme tokens. */
+:root[data-theme="light"] .bg-background,
+:root[data-theme="light"] .bg-surface,
+:root[data-theme="light"] .bg-surface-container,
+:root[data-theme="light"] .bg-surface-container-low,
+:root[data-theme="light"] .bg-surface-container-high,
+:root[data-theme="light"] .bg-surface-container-highest {
+  background-color: var(--bg-app) !important;
+}
+
+:root[data-theme="light"] .text-on-surface,
+:root[data-theme="light"] .text-on-background {
+  color: var(--text-main) !important;
+}
+
+:root[data-theme="light"] .text-on-surface-variant {
+  color: var(--text-muted) !important;
+}
+
+:root[data-theme="light"] .border-outline,
+:root[data-theme="light"] .border-outline-variant {
+  border-color: var(--profile-border) !important;
 }
 
 /* Base Styles */

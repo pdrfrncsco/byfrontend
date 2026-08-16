@@ -40,7 +40,7 @@ export function DashboardSidebar({
   const activeHref = getActiveSidebarHref(location, sidebarLinks)
 
   return (
-    <aside className="w-64 border-r border-[#26364a] bg-[#102034]/85 backdrop-blur-xl flex flex-col p-md hidden md:flex sticky top-0 h-screen z-40">
+    <aside className="w-64 border-r border-[var(--bg-card-border)] bg-[var(--bg-card)] backdrop-blur-xl flex flex-col p-md hidden md:flex sticky top-0 h-screen z-40">
       <div className="mb-xl px-md flex flex-col items-center text-center">
         {logo ? (
           <img 
@@ -49,7 +49,7 @@ export function DashboardSidebar({
             src={logo} 
           />
         ) : (
-          <div className="w-16 h-16 rounded-full bg-[#1b2b3f] flex items-center justify-center mb-md border border-[#26364a]">
+          <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center mb-md border border-outline-variant">
             <LayoutDashboard className="text-primary w-8 h-8" />
           </div>
         )}
@@ -90,14 +90,14 @@ export function DashboardSidebar({
                       aria-current={activeHref === link.href ? 'page' : undefined}
                       className={`flex items-center gap-md p-md rounded-lg transition-all duration-200 ${
                         link.active || activeHref === link.href
-                          ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                          : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
+                          ? 'bg-primary-container/20 text-primary font-bold border-r-4 border-primary'
+                          : 'text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)]'
                       }`}
                     >
                       {link.icon}
                       <span className="font-title-md text-sm">{link.label}</span>
                       {link.count !== undefined && link.count > 0 && (
-                        <span className="ml-auto text-xs font-semibold bg-[#e9c349] text-[#031427] px-2 py-0.5 rounded-full">
+                        <span className="ml-auto text-xs font-semibold bg-tertiary text-on-tertiary px-2 py-0.5 rounded-full">
                           {link.count}
                         </span>
                       )}
@@ -127,14 +127,14 @@ export function DashboardSidebar({
                 aria-current={activeHref === link.href ? 'page' : undefined}
                 className={`flex items-center gap-md p-md rounded-lg transition-all duration-200 ${
                   link.active || activeHref === link.href
-                    ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                    : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
+                  ? 'bg-primary-container/20 text-primary font-bold border-r-4 border-primary'
+                  : 'text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)]'
                 }`}
               >
                 {link.icon}
                 <span className="font-title-md text-sm">{link.label}</span>
                 {link.count !== undefined && link.count > 0 && (
-                  <span className="ml-auto text-xs font-semibold bg-[#e9c349] text-[#031427] px-2 py-0.5 rounded-full">
+                  <span className="ml-auto text-xs font-semibold bg-tertiary text-on-tertiary px-2 py-0.5 rounded-full">
                     {link.count}
                   </span>
                 )}
@@ -144,17 +144,17 @@ export function DashboardSidebar({
         )}
       </nav>
 
-      <div className="pt-lg border-t border-[#26364a]/50 mt-auto space-y-1">
+      <div className="pt-lg border-t border-[var(--bg-card-border)] mt-auto space-y-1">
         <Link
           to="/settings"
-          className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all"
+          className="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)] transition-all"
         >
           <Settings className="w-5 h-5" />
           <span className="font-title-md text-sm">{t('dashboard.sidebar.settings')}</span>
         </Link>
         <button
           type="button"
-          className="w-full flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe] transition-all text-left"
+          className="w-full flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)] transition-all text-left"
         >
           <HelpCircle className="w-5 h-5" />
           <span className="font-title-md text-sm">{t('dashboard.sidebar.support')}</span>

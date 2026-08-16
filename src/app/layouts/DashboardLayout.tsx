@@ -94,7 +94,7 @@ export function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#031427] text-[#d3e4fe] flex">
+    <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-main)] flex">
       {/* Dynamic Background Glow Effect */}
       <div className="glow-bg">
         <div className="glow-circle glow-1" />
@@ -142,7 +142,7 @@ export function DashboardLayout({
           {/* Header Section */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-md mb-xl animate-fade-in">
             <div>
-              <h2 className="font-display-lg text-3xl md:text-4xl text-[#d3e4fe] uppercase tracking-tight">
+              <h2 className="font-display-lg text-3xl md:text-4xl text-[var(--text-main)] uppercase tracking-tight">
                 {title}
               </h2>
               {subtitle && (
