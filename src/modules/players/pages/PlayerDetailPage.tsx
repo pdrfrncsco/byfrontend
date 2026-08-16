@@ -1,18 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  Activity,
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  Ruler,
-  Settings,
-  Star,
-  Target,
-  Trophy,
-  User,
-  Weight,
-} from 'lucide-react'
+import { Activity, ArrowLeft, Calendar, MapPin, Ruler, Star, Target, Trophy, User, Weight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,12 +11,12 @@ import {
   PlayerCareerTimeline,
   PlayerDetailSkeleton,
   PlayerDocumentsTab,
+  PlayerStatisticsTab,
   PlayerVideosTab,
 } from '../components'
 import { usePlayer } from '../hooks'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
 import { playerRoutes } from '../routes'
-import { ROUTES } from '@/constants/routes'
 
 function DetailStat({
   icon: Icon,
@@ -208,11 +196,8 @@ export function PlayerDetailPage() {
             </div>
 
             <div className="flex flex-wrap gap-sm">
-              <Button asChild variant="secondary">
-                <Link to={ROUTES.PLAYER_EDIT(slug)}>
-                  <Settings className="h-4 w-4" />
-                  {t('players.detail.editProfile')}
-                </Link>
+              <Button variant="secondary" onClick={() => navigator.clipboard?.writeText(window.location.href)}>
+                Partilhar perfil
               </Button>
             </div>
           </div>
@@ -232,6 +217,12 @@ export function PlayerDetailPage() {
               className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
             >
               {t('players.detail.tabs.career')}
+            </TabsTrigger>
+            <TabsTrigger 
+              value="statistics"
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Desempenho
             </TabsTrigger>
             <TabsTrigger 
               value="documents" 
@@ -265,6 +256,13 @@ export function PlayerDetailPage() {
                 <PlayerCareerTimeline career={player.career_history ?? []} />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent 
+            value="statistics"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <PlayerStatisticsTab slug={slug} />
           </TabsContent>
 
           <TabsContent 
