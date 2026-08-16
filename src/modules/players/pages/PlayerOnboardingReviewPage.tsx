@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { CheckCircle2, CircleAlert } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { usePlayerOnboardingStatus } from '../hooks'
+import { useCompleteOnboardingStep, usePlayerOnboardingStatus } from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 function StatusRow({ label, complete }: { label: string; complete: boolean }) {
@@ -19,9 +19,24 @@ function StatusRow({ label, complete }: { label: string; complete: boolean }) {
 }
 
 export function PlayerOnboardingReviewPage() {
+  const navigate = useNavigate()
   const { data, isLoading } = usePlayerOnboardingStatus()
+  const completeStep = useCompleteOnboardingStep()
   const player = data?.player
-  const complete = Boolean(data && !data.onboarding_required)
+  const readyToComplete = Boolean(
+    data?.account_complete
+      && data.personal_complete
+      && data.football_complete
+      && data.contact_complete
+      && (data.guardian_complete || !player?.is_minor)
+      && data.documents_complete
+      && data.club_complete
+  )
+
+  const handleComplete = async () => {
+    await completeStep.mutateAsync('review')
+    navigate(ROUTES.ONBOARDING_PLAYER_COMPLETE, { replace: true })
+  }
 
   return (
     <PlayerOnboardingLayout step={9}>
@@ -63,7 +78,7 @@ export function PlayerOnboardingReviewPage() {
               </div>
             )}
 
-            {!complete && (
+            {!readyToComplete && (
               <div className="flex items-start gap-md rounded-lg border border-warning/30 bg-warning-container/10 p-md">
                 <CircleAlert className="mt-0.5 h-5 w-5 text-warning" />
                 <div className="text-sm">
@@ -75,7 +90,7 @@ export function PlayerOnboardingReviewPage() {
               </div>
             )}
 
-            {complete && (
+            {readyToComplete && (
               <div className="flex items-start gap-md rounded-lg border border-primary/30 bg-primary-container/10 p-md">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 text-primary" />
                 <div className="text-sm">
@@ -93,17 +108,14 @@ export function PlayerOnboardingReviewPage() {
                   Voltar ao passo anterior
                 </Link>
               </Button>
-              {complete ? (
-                <Button asChild>
-                  <Link to={ROUTES.ONBOARDING_PLAYER_COMPLETE}>
-                    Concluir onboarding
-                  </Link>
-                </Button>
-              ) : (
-                <Button type="button" disabled>
-                  Concluir onboarding
-                </Button>
-              )}
+              <Button
+                type="button"
+                onClick={handleComplete}
+                loading={completeStep.isPending}
+                disabled={!readyToComplete || completeStep.isPending}
+              >
+                Concluir onboarding
+              </Button>
             </div>
           </>
         )}
