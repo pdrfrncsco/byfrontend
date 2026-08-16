@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Trophy, Target, User, MapPin } from 'lucide-react'
+import { ArrowUpRight, Trophy, Target, User, MapPin, Shield } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Player } from '../types'
-import { POSITION_COLOR, STATUS_COLOR } from '../constants'
+import { POSITION_COLOR } from '../constants'
 import { PlayerLinkStatusBadge } from './PlayerLinkStatusBadge'
 
 interface PlayerCardProps {
@@ -16,7 +16,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
   const { t } = useTranslation()
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#6b7280'
-  const statusColor = STATUS_COLOR[player.status] ?? '#6b7280'
 
   const accentStyle = {
     '--player-accent': positionColor,
@@ -45,8 +44,8 @@ export function PlayerCard({ player }: PlayerCardProps) {
               boxShadow: `0 10px 30px ${positionColor}33`,
             }}
           >
-            {player.avatar ? (
-              <img src={player.avatar} alt={player.full_name} className="h-full w-full rounded-2xl object-cover" />
+            {player.profile_photo_url || player.avatar ? (
+              <img src={player.profile_photo_url || player.avatar || ''} alt={player.full_name} className="h-full w-full rounded-2xl object-cover" />
             ) : (
               initials
             )}
@@ -73,7 +72,8 @@ export function PlayerCard({ player }: PlayerCardProps) {
                   className="max-w-[160px] truncate text-[11px]"
                   title={player.current_club.name}
                 >
-                  🔗 {player.current_club.name}
+                  <Shield className="mr-1 inline h-3 w-3" aria-hidden="true" />
+                  {player.current_club.name}
                 </Badge>
               ) : (
                 <PlayerLinkStatusBadge status="none" className="text-[11px]" />
@@ -96,17 +96,17 @@ export function PlayerCard({ player }: PlayerCardProps) {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-md pt-sm text-xs text-on-surface-variant">
-              <div className="flex items-center gap-1">
-                <Trophy size={12} style={{ color: '#f59e0b' }} />
+            <div className="flex items-center gap-md pt-sm text-xs text-on-surface-variant" aria-label={t('players.card.stats')}>
+              <div className="flex items-center gap-1" title={t('players.card.goals')}>
+                <Trophy size={12} style={{ color: '#f59e0b' }} aria-hidden="true" />
                 <span>{player.total_goals}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <Target size={12} style={{ color: '#10b981' }} />
+              <div className="flex items-center gap-1" title={t('players.card.assists')}>
+                <Target size={12} style={{ color: '#10b981' }} aria-hidden="true" />
                 <span>{player.total_assists}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <User size={12} style={{ color: '#3b82f6' }} />
+              <div className="flex items-center gap-1" title={t('players.card.matches')}>
+                <User size={12} style={{ color: '#3b82f6' }} aria-hidden="true" />
                 <span>{player.total_matches}</span>
               </div>
             </div>
@@ -120,7 +120,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
             className="flex items-center justify-between text-xs font-semibold text-primary hover:underline"
           >
             <span>{t('players.card.view_profile')}</span>
-            <span>→</span>
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
           </Link>
         </div>
       </CardContent>
