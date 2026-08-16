@@ -11,10 +11,10 @@ import {
   CardHeader,
   CardTitle,
   EmptyState,
-  FormField,
   Input,
   Textarea,
 } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import {
   useCreatePlayerAchievement,
   useDeletePlayerAchievement,

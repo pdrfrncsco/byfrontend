@@ -6,7 +6,6 @@ import {
   Form,
   FormControl,
   FormDescription,
-  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -23,6 +22,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  FormField,
 } from '@/components/ui'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { medicalProfileSchema, type MedicalProfile } from '../../schemas/medical.schema'
