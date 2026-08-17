@@ -170,7 +170,7 @@ export default function ClubSquadPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {players.map((player: ClubMember | ClubSquadMember) => (
-                  <Card key={player.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={player.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="space-y-sm p-lg">
                       <div className="flex items-center justify-between">
                         <p className="font-semibold text-on-surface">
@@ -212,7 +212,7 @@ export default function ClubSquadPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {staff.map((member: ClubMember | ClubStaffMember) => (
-                  <Card key={member.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={member.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="space-y-sm p-lg">
                       <p className="font-semibold text-on-surface">
                         {'display_name' in member ? member.display_name : ('full_name' in member ? member.full_name : 'Sem nome')}

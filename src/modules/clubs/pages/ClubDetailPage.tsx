@@ -208,7 +208,7 @@ export default function ClubDetailPage() {
         {kpisQuery.data && <ClubKpisCard kpis={kpisQuery.data} />}
 
         <div className="grid gap-lg lg:grid-cols-[1.3fr_0.7fr]">
-          <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
+          <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
             <CardHeader>
               <CardTitle>Visão geral</CardTitle>
             </CardHeader>
@@ -223,7 +223,7 @@ export default function ClubDetailPage() {
             </CardContent>
           </Card>
 
-          <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
+          <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
             <CardHeader>
               <CardTitle>Resumo rápido</CardTitle>
             </CardHeader>
@@ -298,7 +298,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {squad.map((player) => (
-                  <Card key={player.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={player.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="space-y-sm p-lg">
                       <div className="flex items-center justify-between">
                         <p className="font-semibold text-on-surface">{player.display_name}</p>
@@ -328,7 +328,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {staff.map((member) => (
-                  <Card key={member.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={member.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="space-y-sm p-lg">
                       <p className="font-semibold text-on-surface">{member.display_name}</p>
                       <p className="text-sm text-on-surface-variant">{member.role_label || member.role || 'Staff'}</p>
@@ -353,7 +353,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="space-y-sm">
                 {documents.map((document) => (
-                  <Card key={document.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={document.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="flex flex-col gap-md p-lg md:flex-row md:items-center md:justify-between">
                       <div className="space-y-xs">
                         <div className="flex flex-wrap items-center gap-sm">
@@ -391,7 +391,7 @@ export default function ClubDetailPage() {
             ) : (
               <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
                 {sponsors.map((sponsor) => (
-                  <Card key={sponsor.id} variant="flat" padding="none" className="shadow-lg shadow-black/10">
+                  <Card key={sponsor.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                     <CardContent className="space-y-sm p-lg">
                       <div className="flex items-center gap-md">
                         <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-surface-container-high text-sm font-bold text-primary">

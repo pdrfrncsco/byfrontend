@@ -248,7 +248,7 @@ export function PlayerDetailPage() {
             value="career" 
             className="animate-in fade-in slide-in-from-bottom-2 duration-500"
           >
-            <Card variant="flat" padding="none" className="shadow-lg shadow-black/10">
+            <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
               <CardHeader>
                 <CardTitle>{t('players.detail.careerHistory')}</CardTitle>
               </CardHeader>

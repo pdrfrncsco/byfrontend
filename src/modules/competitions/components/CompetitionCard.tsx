@@ -38,7 +38,7 @@ export function CompetitionCard({ competition }: CompetitionCardProps) {
 
         <div className="relative flex items-center gap-lg">
           {/* Icon with Gradient */}
-          <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${typeCfg.gradient} text-white shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+          <div className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${typeCfg.gradient} text-on-primary shadow-lg transition-transform duration-300 group-hover:scale-110`}>
             <Icon className="h-7 w-7" />
           </div>
 

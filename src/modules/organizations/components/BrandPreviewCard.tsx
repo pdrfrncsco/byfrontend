@@ -53,7 +53,7 @@ export function BrandPreviewCard({
             />
           ) : (
             <div
-              className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-surface-container-high font-display-lg text-xl text-white shadow-md transition-colors duration-500"
+              className="flex h-16 w-16 items-center justify-center rounded-lg border-2 border-surface-container-high font-display-lg text-xl text-on-primary shadow-md transition-colors duration-500"
               style={{ backgroundColor: primaryColor || '#1B4D3E' }}
             >
               {firstLetter}

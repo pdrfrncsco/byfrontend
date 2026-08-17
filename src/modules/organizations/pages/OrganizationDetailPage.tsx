@@ -117,7 +117,7 @@ export function OrganizationDetailPage() {
               />
             ) : (
               <div
-                className="flex h-32 w-32 items-center justify-center rounded-3xl border border-outline-variant/20 font-display-lg text-4xl text-white shadow-lg shadow-black/30"
+                className="flex h-32 w-32 items-center justify-center rounded-3xl border border-outline-variant/20 font-display-lg text-4xl text-on-primary shadow-lg shadow-black/30"
                 style={{ backgroundColor: primaryColor }}
               >
                 {firstLetter}
@@ -130,7 +130,7 @@ export function OrganizationDetailPage() {
             { icon: CheckCircle2, label: verifiedLabel },
             { label: statusLabel },
           ]}
-          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.76))]"
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.82))]"
           actions={
             <>
               <Button variant="outline" size="sm" asChild>
@@ -182,7 +182,7 @@ export function OrganizationDetailPage() {
           >
             <div className="grid grid-cols-12 gap-lg">
               <div className="col-span-12 space-y-lg lg:col-span-8">
-                <Card padding="md" className="shadow-lg shadow-black/10">
+                <Card padding="md" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                   <CardHeader className="border-none bg-transparent p-0 pb-md">
                     <CardTitle>
                       <Info className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -224,7 +224,7 @@ export function OrganizationDetailPage() {
                   <span>Contactos</span>
                 </h3>
 
-                <Card padding="md" className="space-y-md text-sm shadow-lg shadow-black/10">
+                <Card padding="md" className="space-y-md text-sm shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                   {organization.email && (
                     <div className="flex items-start gap-md">
                       <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
@@ -291,7 +291,7 @@ export function OrganizationDetailPage() {
             {history && history.length > 0 ? (
               <OrganizationHistoryTable history={history} />
             ) : (
-              <Card padding="lg" className="py-16 text-center shadow-lg shadow-black/10">
+              <Card padding="lg" className="py-16 text-center shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
                 <Trophy className="mx-auto mb-md h-12 w-12 text-outline opacity-40" aria-hidden="true" />
                 <h4 className="mb-xs font-title-md text-base text-on-surface">Sem Histórico Registado</h4>
                 <p className="mx-auto max-w-sm text-sm text-on-surface-variant">

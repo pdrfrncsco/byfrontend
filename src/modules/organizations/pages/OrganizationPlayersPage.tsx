@@ -46,7 +46,7 @@ export function OrganizationPlayersPage() {
           return (
             <div className="flex items-center gap-sm">
               {photo ? (
-                <img src={photo} alt={name} className="h-9 w-9 rounded-full object-cover border border-white/10" />
+                <img src={photo} alt={name} className="h-9 w-9 rounded-full object-cover border border-outline/10" />
               ) : (
                 <div className="h-9 w-9 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-xs">
                   {name.slice(0, 2).toUpperCase()}

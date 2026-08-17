@@ -63,7 +63,7 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
           { label: typeLabel },
           { icon: Calendar, label: `Época ${competition.season}` },
         ]}
-        backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(66,153,225,0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(17,94,89,0.12),transparent_36%),linear-gradient(180deg,rgba(7,16,29,0.92),rgba(7,16,29,0.78))]"
+        backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.82))]"
         actions={
           <Badge variant={statusCfg.variant} className="self-start">
             {statusCfg.label}

@@ -251,16 +251,16 @@ export default function CompetitionStep() {
 
             <div className="space-y-sm">
               <div className="flex items-center gap-md">
-                <div className="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center text-primary">
+                <div className="w-8 h-8 rounded-full bg-surface-container-highest border border-outline/10 flex items-center justify-center text-primary">
                   <Users className="w-4 h-4" />
                 </div>
-                <div className="flex-1 h-[2px] bg-white/10" />
-                <div className="w-24 p-xs bg-surface-container-lowest border border-white/5 rounded text-center">
+                <div className="flex-1 h-[2px] bg-outline/10" />
+                <div className="w-24 p-xs bg-surface-container-lowest border border-outline/10 rounded text-center">
                   <span className="font-data-tabular text-label-sm">Equipas</span>
                 </div>
               </div>
 
-              <div className="ml-4 border-l-2 border-white/5 pl-md py-xs space-y-sm">
+              <div className="ml-4 border-l-2 border-outline/10 pl-md py-xs space-y-sm">
                 <div className="flex items-center gap-sm p-sm bg-primary/5 rounded border border-primary/10">
                   <ListOrdered className="w-4 h-4 text-primary shrink-0" />
                   <div>
@@ -297,7 +297,7 @@ export default function CompetitionStep() {
             </div>
           </div>
 
-          <div className="glass-card p-md rounded-xl border border-white/5">
+          <div className="glass-card p-md rounded-xl border border-outline/10">
             <div className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-tight mb-xs">
               {previewTitle}
             </div>

@@ -92,7 +92,7 @@ export function PlayerListPage() {
             { label: t('players.list.page'), value: page },
             { label: t('players.list.results'), value: isLoading ? '...' : totalCount },
           ]}
-          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.14),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]"
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.10),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.78))]"
         />
 
         <Card variant="flat" padding="none">

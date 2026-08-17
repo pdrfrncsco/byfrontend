@@ -121,12 +121,12 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
 
   return (
     <div className="relative mx-auto max-w-md my-md">
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-emerald-600 to-green-800 p-md shadow-xl border border-emerald-400/30">
-        <div className="relative h-full rounded-xl border-2 border-white/20">
-          <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/20" />
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-white/20" />
-          <div className="absolute left-1/2 top-0 h-12 w-28 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-white/20" />
-          <div className="absolute bottom-0 left-1/2 h-12 w-28 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-white/20" />
+      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary-container/40 via-surface-container to-surface-container-high p-md shadow-xl border border-primary/20">
+        <div className="relative h-full rounded-xl border-2 border-outline-variant/50">
+          <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-outline-variant/50" />
+          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-outline/30" />
+          <div className="absolute left-1/2 top-0 h-12 w-28 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-outline-variant/50" />
+          <div className="absolute bottom-0 left-1/2 h-12 w-28 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-outline-variant/50" />
         </div>
 
         <div className="absolute inset-0 flex flex-col items-center justify-between py-md">
@@ -135,7 +135,7 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
             {fieldRows.gk ? (
               <PlayerBadgeOnField player={fieldRows.gk} />
             ) : (
-              <div className="h-9 w-9 rounded-full border-2 border-dashed border-white/40 flex items-center justify-center text-[10px] text-white/60">
+              <div className="h-9 w-9 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center text-[10px] text-on-surface-variant">
                 GK
               </div>
             )}
@@ -159,13 +159,13 @@ function PlayerBadgeOnField({ player }: { player: CallupPlayer }) {
   return (
     <div className="flex flex-col items-center">
       <div
-        className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shadow-lg border-2 ${
-          player.is_goalkeeper ? 'bg-amber-500 border-amber-300' : 'bg-primary border-primary-container'
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold shadow-lg border-2 ${
+          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-primary-container text-primary border-primary/30'
         }`}
       >
         {player.playerNumber || player.shirt_number || '#'}
       </div>
-      <span className="mt-1 max-w-[70px] truncate text-center text-[10px] font-bold text-white drop-shadow-md">
+      <span className="mt-1 max-w-[70px] truncate text-center text-[10px] font-bold text-on-surface">
         {player.playerName || player.player?.full_name?.split(' ').pop()}
       </span>
     </div>
@@ -560,7 +560,7 @@ export default function ClubMatchLineupManagerPage() {
                   starters.map((p) => (
                     <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary-container/10 p-sm text-xs">
                       <div className="flex items-center gap-sm">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-white">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-on-primary">
                           {p.playerNumber || '#'}
                         </span>
                         <div>
@@ -576,7 +576,7 @@ export default function ClubMatchLineupManagerPage() {
                           type="button"
                           onClick={() => setCaptain(p.playerId)}
                           className={`rounded-lg p-1 text-[11px] font-semibold transition-all ${
-                            p.is_captain ? 'bg-amber-500 text-white' : 'bg-surface-container-high text-on-surface-variant hover:bg-amber-500/20'
+                            p.is_captain ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-surface-container-high text-on-surface-variant hover:bg-amber-500/20'
                           }`}
                           title="Definir Capitão"
                         >

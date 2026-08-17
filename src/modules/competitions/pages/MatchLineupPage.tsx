@@ -71,16 +71,16 @@ function FormationField({ starters }: FormationFieldProps) {
   return (
     <div className="relative mx-auto max-w-md">
       {/* Field background */}
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary/40 to-primary/80 p-lg shadow-lg shadow-primary/10">
+      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary-container/40 via-surface-container to-surface-container-high p-lg shadow-lg shadow-primary/10">
         {/* Field markings */}
-        <div className="relative h-full rounded-xl border-2 border-white/30 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_60%)]">
+        <div className="relative h-full rounded-xl border-2 border-outline-variant/50 bg-[radial-gradient(circle_at_center,rgba(var(--color-primary-rgb),0.08),transparent_60%)]">
           {/* Center circle */}
-          <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30" />
+          <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-outline-variant/50" />
           {/* Center line */}
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-white/30" />
+          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-outline/40" />
           {/* Goal areas */}
-          <div className="absolute left-1/2 top-0 h-16 w-32 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-white/30" />
-          <div className="absolute bottom-0 left-1/2 h-16 w-32 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-white/30" />
+          <div className="absolute left-1/2 top-0 h-16 w-32 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-outline-variant/50" />
+          <div className="absolute bottom-0 left-1/2 h-16 w-32 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-outline-variant/50" />
         </div>
 
         {/* Players on field */}
@@ -126,16 +126,16 @@ function PlayerMarker({ player }: { player?: LineupPlayer }) {
   return (
     <div className="group relative flex flex-col items-center">
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white shadow-md ${
-          player.is_goalkeeper ? 'bg-amber-500' : 'bg-blue-600'
+        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shadow-md ${
+          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-2 border-amber-300' : 'bg-primary-container text-primary border-2 border-primary/30'
         }`}
       >
         {player.shirt_number}
       </div>
       {player.is_captain && (
-        <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-400" />
+        <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-500" />
       )}
-      <span className="mt-1 max-w-20 truncate text-center text-xs font-medium text-white drop-shadow">
+      <span className="mt-1 max-w-20 truncate text-center text-xs font-medium text-on-surface">
         {player.player?.full_name?.split(' ').pop() || 'Jogador'}
       </span>
     </div>
@@ -173,7 +173,7 @@ function PlayerCard({
       <div
         className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ${
           player.is_goalkeeper
-            ? 'bg-amber-500 text-white'
+            ? 'bg-amber-100 text-amber-700 border border-amber-200'
             : 'bg-primary-container/20 text-primary'
         }`}
       >
@@ -294,7 +294,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
 
               {showConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-black/40" onClick={() => setShowConfirm(false)} />
+                  <div className="absolute inset-0 bg-surface-container/70 backdrop-blur-[1px]" onClick={() => setShowConfirm(false)} />
                   <Card padding="lg" className="relative z-10 max-w-md mx-4">
                     <h3 className="text-lg font-semibold">Confirmar aceitação</h3>
                     <p className="text-sm text-on-surface-variant mt-sm">Tem a certeza que deseja aceitar a escalação do clube <strong>{isHome ? match.home_club_name : match.away_club_name}</strong>? Esta ação irá confirmar a escalação.</p>

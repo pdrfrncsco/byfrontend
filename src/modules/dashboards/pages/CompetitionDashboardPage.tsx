@@ -78,7 +78,7 @@ export function CompetitionDashboardPage() {
         {/* ── Tournaments block ─────────────────────────────────────────────────── */}
         <section className="glass-card rounded-xl p-md lg:col-span-8 flex flex-col justify-between">
           <div>
-            <div className="flex justify-between items-center border-b border-[#26364a]/50 pb-sm mb-md">
+            <div className="flex justify-between items-center border-b border-outline/30 pb-sm mb-md">
               <h3 className="font-display text-lg text-on-surface">Torneios Recentes</h3>
               <span className="text-xs text-on-surface-variant font-semibold">
                 {isLoading ? '—' : (
@@ -105,7 +105,7 @@ export function CompetitionDashboardPage() {
                     <Link
                       key={comp.id}
                       to={ROUTES.COMPETITION_SETTINGS(comp.id)}
-                      className="p-3 bg-[#0b1c30] rounded-lg border border-[#26364a]/30 flex items-center justify-between hover:border-primary/40 hover:bg-[#102034] transition-all group"
+                      className="p-3 bg-surface-container rounded-lg border border-outline/30 flex items-center justify-between hover:border-primary/40 hover:bg-surface-container-high transition-all group"
                     >
                       <div className="flex items-center gap-sm min-w-0">
                         {comp.logo ? (
@@ -136,7 +136,7 @@ export function CompetitionDashboardPage() {
           </div>
 
           <Link to={ROUTES.DASHBOARD_COMPETITIONS_LIST} className="w-full mt-lg">
-            <button className="w-full bg-[#1b2b3f] hover:bg-[#26364a] text-on-surface py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1">
+            <button className="w-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface py-2 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1">
               Visualizar Todos os Torneios <ArrowRight className="w-4 h-4" />
             </button>
           </Link>
@@ -145,7 +145,7 @@ export function CompetitionDashboardPage() {
         {/* ── Upcoming / Live Matches ───────────────────────────────────────────── */}
         <section className="glass-card rounded-xl p-md lg:col-span-4 flex flex-col justify-between">
           <div>
-            <div className="flex justify-between items-center border-b border-[#26364a]/50 pb-sm mb-md">
+            <div className="flex justify-between items-center border-b border-outline/30 pb-sm mb-md">
               <h3 className="font-display text-lg text-on-surface">
                 {liveMatches.length > 0 ? 'Jogos em Direto' : 'Próximos Jogos'}
               </h3>

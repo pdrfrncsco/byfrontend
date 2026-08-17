@@ -110,7 +110,7 @@ export default function BrandingStep() {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleBanner(e.target.files?.[0])}
-                className="block w-full text-body-sm file:mr-md file:py-sm file:px-md file:rounded-lg file:border-0 file:text-label-sm file:bg-surface-container-high file:text-on-surface hover:file:bg-white/10 cursor-pointer"
+                className="block w-full text-body-sm file:mr-md file:py-sm file:px-md file:rounded-lg file:border-0 file:text-label-sm file:bg-surface-container-high file:text-on-surface hover:file:bg-surface-container-highest cursor-pointer"
               />
               <div className="text-label-sm text-on-surface-variant mt-xs">
                 Recomendado: 1920x400 px. {uploadingBanner ? 'A carregar...' : ''}
@@ -120,7 +120,7 @@ export default function BrandingStep() {
             <div className="glass-panel p-md rounded-xl space-y-md">
               <label className="font-label-sm text-on-surface-variant block">Definição das Cores</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
-                <div className="flex items-center gap-md p-sm bg-surface-container-low rounded-lg border border-white/5">
+                <div className="flex items-center gap-md p-sm bg-surface-container-low rounded-lg border border-outline/10">
                   <input
                     type="color"
                     value={primary}
@@ -133,7 +133,7 @@ export default function BrandingStep() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-md p-sm bg-surface-container-low rounded-lg border border-white/5">
+                <div className="flex items-center gap-md p-sm bg-surface-container-low rounded-lg border border-outline/10">
                   <input
                     type="color"
                     value={secondary}
@@ -151,9 +151,9 @@ export default function BrandingStep() {
 
           <aside className="space-y-md">
             <h3 className="font-label-sm text-on-surface-variant">Pré-visualização em Tempo Real</h3>
-            <div className="bg-surface-container rounded-xl overflow-hidden border border-white/10 relative">
+            <div className="bg-surface-container rounded-xl overflow-hidden border border-outline/10 relative">
               <div className="h-36 relative" style={{ background: `linear-gradient(135deg, ${primary}44, ${secondary}44)` }}>
-                <div className="absolute -bottom-6 left-4 w-16 h-16 bg-surface-container rounded-lg border border-white/10 flex items-center justify-center p-2 shadow-lg">
+                <div className="absolute -bottom-6 left-4 w-16 h-16 bg-surface-container rounded-lg border border-outline/10 flex items-center justify-center p-2 shadow-lg">
                   {org?.logo_url || org?.logo ? (
                     <img src={(org.logo_url || org.logo) as string} alt="logo" className="w-12 h-12 object-contain"/>
                   ) : (

@@ -158,7 +158,7 @@ export function PlayerContractSection({
                     className={`mt-1 rounded-lg px-md py-sm text-center text-xs font-semibold ${
                       activeContract.signed_by_player
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-surface-container-high text-on-surface-variant'
                     }`}
                   >
                     {activeContract.signed_by_player ? '✓ Assinado' : 'Pendente'}
@@ -170,7 +170,7 @@ export function PlayerContractSection({
                     className={`mt-1 rounded-lg px-md py-sm text-center text-xs font-semibold ${
                       activeContract.signed_by_club
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-surface-container-high text-on-surface-variant'
                     }`}
                   >
                     {activeContract.signed_by_club ? '✓ Assinado' : 'Pendente'}

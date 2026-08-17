@@ -45,7 +45,7 @@ export function MediaSettingsCard({
             />
           ) : (
             <div
-              className="flex h-20 w-20 items-center justify-center rounded-xl font-display-lg text-2xl text-white"
+              className="flex h-20 w-20 items-center justify-center rounded-xl font-display-lg text-2xl text-on-primary"
               style={{ backgroundColor: primaryColor }}
             >
               {firstLetter}

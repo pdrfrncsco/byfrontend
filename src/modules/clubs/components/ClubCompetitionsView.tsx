@@ -172,7 +172,7 @@ export function ClubCompetitionsView({
                 const finishedCount = compMatches.filter((m) => m.status === 'finished').length
 
                 return (
-                  <Card key={comp.id} variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5 hover:border-primary/40 transition-all">
+                  <Card key={comp.id} variant="flat" padding="none" className="overflow-hidden shadow-[0_14px_32px_-24px_rgba(15,17,23,0.18)] hover:border-primary/40 transition-all">
                     <CardHeader className="border-b border-outline-variant/10 bg-surface-container-high/40 p-lg">
                       <div className="flex items-center justify-between">
                         <Badge variant={comp.status === 'active' ? 'primary' : 'outline'}>
@@ -220,7 +220,7 @@ export function ClubCompetitionsView({
               description="Ainda não existem dados de tabela de classificação para este filtro."
             />
           ) : (
-            <Card variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5">
+            <Card variant="flat" padding="none" className="overflow-hidden shadow-[0_14px_32px_-24px_rgba(15,17,23,0.18)]">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-on-surface">
                   <thead className="bg-surface-container-high/80 text-xs font-bold uppercase tracking-wider text-on-surface-variant">
@@ -257,9 +257,9 @@ export function ClubCompetitionsView({
                                 row.position === 1
                                   ? 'bg-amber-500 text-black'
                                   : row.position === 2
-                                  ? 'bg-slate-300 text-black'
+                                  ? 'bg-surface-container-high text-on-surface'
                                   : row.position === 3
-                                  ? 'bg-amber-700 text-white'
+                                  ? 'bg-amber-100 text-amber-700'
                                   : 'text-on-surface-variant'
                               }`}
                             >
@@ -402,7 +402,7 @@ export function ClubCompetitionsView({
                     to={clubRoutes.matchLineup(match.id)}
                     className="block hover:shadow-lg transition-all hover:-translate-y-0.5"
                   >
-                    <Card variant="flat" padding="none" className="overflow-hidden shadow-lg shadow-black/5 border-l-4 border-l-primary hover:shadow-xl transition-all">
+                    <Card variant="flat" padding="none" className="overflow-hidden shadow-[0_14px_32px_-24px_rgba(15,17,23,0.18)] border-l-4 border-l-primary hover:shadow-xl transition-all">
                       <CardHeader className="bg-surface-container-high/40 p-md flex flex-row items-center justify-between">
                         <Badge variant="outline" className="text-xs">
                           Jornada {match.round_number}

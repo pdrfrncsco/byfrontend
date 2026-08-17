@@ -34,7 +34,7 @@ export function OrganizationCard({ organization, className }: OrganizationCardPr
             />
           ) : (
             <div
-              className="flex h-14 w-14 items-center justify-center rounded-lg font-display-lg text-xl text-white shadow-inner transition-transform duration-300 group-hover:scale-105"
+              className="flex h-14 w-14 items-center justify-center rounded-lg font-display-lg text-xl text-on-primary shadow-inner transition-transform duration-300 group-hover:scale-105"
               style={{ backgroundColor: primaryColor }}
             >
               {firstLetter}
