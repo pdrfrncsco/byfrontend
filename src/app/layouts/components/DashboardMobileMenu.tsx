@@ -45,11 +45,11 @@ export function DashboardMobileMenu({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-[#000f21]/80 backdrop-blur-sm z-50 md:hidden flex justify-start">
-      <aside className="w-64 border-r border-[#26364a] bg-[#102034] flex flex-col p-md h-full relative animate-fade-in">
+    <div className="dashboard-overlay fixed inset-0 z-50 flex justify-start backdrop-blur-sm md:hidden">
+      <aside className="dashboard-sidebar-surface relative flex h-full w-64 flex-col border-r p-md animate-fade-in">
         <button 
           onClick={onClose}
-          className="absolute top-md right-md p-sm text-on-surface-variant hover:text-[#d3e4fe]"
+          className="dashboard-muted absolute right-md top-md p-sm transition-colors hover:text-[var(--dashboard-strong)]"
         >
           <X className="w-6 h-6" />
         </button>
@@ -61,8 +61,8 @@ export function DashboardMobileMenu({
               src={logo} 
             />
           )}
-          <h1 className="font-display-lg text-xl text-[#94d3c1] uppercase tracking-tighter">BOLA YETU</h1>
-          <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest mt-1">
+          <h1 className="font-display-lg text-primary text-xl uppercase tracking-tighter">BOLA YETU</h1>
+          <p className="dashboard-muted mt-1 text-[10px] font-semibold uppercase tracking-widest">
             {subLabel}
           </p>
         </div>
@@ -71,7 +71,7 @@ export function DashboardMobileMenu({
             sidebarSections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="space-y-1">
                 {section.title && (
-                  <p className="px-md text-[10px] font-bold uppercase tracking-[0.22em] text-on-surface-variant/80">
+                  <p className="dashboard-muted px-md text-[10px] font-bold uppercase tracking-[0.22em] opacity-80">
                     {section.title}
                   </p>
                 )}
@@ -83,7 +83,7 @@ export function DashboardMobileMenu({
                         type="button"
                         disabled
                         title={link.label}
-                        className="flex w-full items-center gap-md rounded-lg p-md text-left text-on-surface-variant opacity-55 transition-all cursor-not-allowed"
+                        className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all"
                       >
                         {link.icon}
                         <span className="font-title-md text-sm">{link.label}</span>
@@ -96,8 +96,8 @@ export function DashboardMobileMenu({
                         aria-current={activeHref === link.href ? 'page' : undefined}
                         className={`flex items-center gap-md p-md rounded-lg transition-all ${
                           link.active || activeHref === link.href
-                            ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                            : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
+                            ? 'dashboard-active text-primary font-bold border-r-4'
+                            : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                         }`}
                       >
                         {link.icon}
@@ -116,7 +116,7 @@ export function DashboardMobileMenu({
                   type="button"
                   disabled
                   title={link.label}
-                  className="flex w-full items-center gap-md rounded-lg p-md text-left text-on-surface-variant opacity-55 transition-all cursor-not-allowed"
+                  className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all"
                 >
                   {link.icon}
                   <span className="font-title-md text-sm">{link.label}</span>
@@ -129,8 +129,8 @@ export function DashboardMobileMenu({
                   aria-current={activeHref === link.href ? 'page' : undefined}
                   className={`flex items-center gap-md p-md rounded-lg transition-all ${
                     link.active || activeHref === link.href
-                      ? 'bg-primary-container/20 text-[#94d3c1] font-bold border-r-4 border-[#94d3c1]'
-                      : 'text-on-surface-variant hover:bg-[#1b2b3f] hover:text-[#d3e4fe]'
+                      ? 'dashboard-active text-primary font-bold border-r-4'
+                      : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                   }`}
                 >
                   {link.icon}
@@ -140,7 +140,7 @@ export function DashboardMobileMenu({
             ))
           )}
         </nav>
-        <div className="pt-lg border-t border-[#26364a] mt-auto space-y-1">
+        <div className="mt-auto space-y-1 border-t pt-lg" style={{ borderColor: 'var(--dashboard-border)' }}>
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"

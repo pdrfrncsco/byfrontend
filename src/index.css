@@ -33,6 +33,21 @@
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 24px;
+  --dashboard-shell: #f2f6f2;
+  --dashboard-surface: rgba(255, 255, 255, 0.88);
+  --dashboard-sidebar: rgba(236, 243, 238, 0.92);
+  --dashboard-overlay: rgba(15, 23, 42, 0.45);
+  --dashboard-border: rgba(15, 61, 50, 0.14);
+  --dashboard-heading: #16362f;
+  --dashboard-muted: #5b6f69;
+  --dashboard-strong: #0f2a24;
+  --dashboard-soft: rgba(148, 211, 193, 0.12);
+  --dashboard-soft-hover: rgba(148, 211, 193, 0.2);
+  --dashboard-active: rgba(27, 77, 62, 0.14);
+  --dashboard-active-border: rgba(27, 77, 62, 0.68);
+  --dashboard-search: rgba(255, 255, 255, 0.88);
+  --dashboard-search-border: rgba(15, 61, 50, 0.16);
+  --dashboard-avatar: linear-gradient(135deg, rgba(148, 211, 193, 0.24), rgba(27, 77, 62, 0.14));
   
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --glass-blur: blur(12px);
@@ -49,6 +64,21 @@
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    --dashboard-shell: #061713;
+    --dashboard-surface: rgba(10, 28, 23, 0.78);
+    --dashboard-sidebar: rgba(7, 24, 20, 0.9);
+    --dashboard-overlay: rgba(2, 10, 8, 0.72);
+    --dashboard-border: rgba(148, 211, 193, 0.12);
+    --dashboard-heading: #e0f4ed;
+    --dashboard-muted: #9ab7ae;
+    --dashboard-strong: #f4fbf8;
+    --dashboard-soft: rgba(148, 211, 193, 0.08);
+    --dashboard-soft-hover: rgba(148, 211, 193, 0.14);
+    --dashboard-active: rgba(148, 211, 193, 0.12);
+    --dashboard-active-border: rgba(148, 211, 193, 0.74);
+    --dashboard-search: rgba(4, 17, 14, 0.9);
+    --dashboard-search-border: rgba(148, 211, 193, 0.16);
+    --dashboard-avatar: linear-gradient(135deg, rgba(148, 211, 193, 0.18), rgba(3, 20, 39, 0.22));
   }
 }
 
@@ -61,6 +91,21 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --dashboard-shell: #061713;
+  --dashboard-surface: rgba(10, 28, 23, 0.78);
+  --dashboard-sidebar: rgba(7, 24, 20, 0.9);
+  --dashboard-overlay: rgba(2, 10, 8, 0.72);
+  --dashboard-border: rgba(148, 211, 193, 0.12);
+  --dashboard-heading: #e0f4ed;
+  --dashboard-muted: #9ab7ae;
+  --dashboard-strong: #f4fbf8;
+  --dashboard-soft: rgba(148, 211, 193, 0.08);
+  --dashboard-soft-hover: rgba(148, 211, 193, 0.14);
+  --dashboard-active: rgba(148, 211, 193, 0.12);
+  --dashboard-active-border: rgba(148, 211, 193, 0.74);
+  --dashboard-search: rgba(4, 17, 14, 0.9);
+  --dashboard-search-border: rgba(148, 211, 193, 0.16);
+  --dashboard-avatar: linear-gradient(135deg, rgba(148, 211, 193, 0.18), rgba(3, 20, 39, 0.22));
 }
 
 /* Base Styles */
@@ -178,6 +223,67 @@ h1, h2, h3, h4, h5, h6 {
 }
 .hero-gradient {
   background: radial-gradient(circle at 50% 50%, rgba(0, 77, 64, 0.15) 0%, rgba(3, 20, 39, 1) 70%);
+}
+
+.dashboard-shell {
+  background:
+    radial-gradient(circle at top right, rgba(var(--color-primary-rgb), 0.1), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(var(--color-secondary-rgb), 0.08), transparent 28%),
+    var(--dashboard-shell);
+  color: var(--text-main);
+}
+
+.dashboard-surface {
+  background: var(--dashboard-surface);
+  border-color: var(--dashboard-border);
+}
+
+.dashboard-sidebar-surface {
+  background: var(--dashboard-sidebar);
+  border-color: var(--dashboard-border);
+}
+
+.dashboard-overlay {
+  background: var(--dashboard-overlay);
+}
+
+.dashboard-title {
+  color: var(--dashboard-heading);
+}
+
+.dashboard-muted {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-strong {
+  color: var(--dashboard-strong);
+}
+
+.dashboard-soft {
+  background: var(--dashboard-soft);
+}
+
+.dashboard-soft-hover:hover {
+  background: var(--dashboard-soft-hover);
+}
+
+.dashboard-active {
+  background: var(--dashboard-active);
+  border-color: var(--dashboard-active-border);
+}
+
+.dashboard-search {
+  background: var(--dashboard-search);
+  border-color: var(--dashboard-search-border);
+  color: var(--dashboard-strong);
+}
+
+.dashboard-search::placeholder {
+  color: var(--dashboard-muted);
+}
+
+.dashboard-avatar {
+  background: var(--dashboard-avatar);
 }
 
 /* Premium Buttons & Hover effects */
