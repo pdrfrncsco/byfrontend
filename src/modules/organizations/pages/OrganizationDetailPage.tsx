@@ -161,7 +161,7 @@ export function OrganizationDetailPage() {
         />
 
         <Tabs defaultValue="overview" className="space-y-lg">
-          <TabsList className="h-auto rounded-full p-sm bg-surface-container/50 border border-outline-variant/30">
+          <TabsList className="h-auto rounded-full p-sm bg-surface-container border border-outline-variant/30">
             <TabsTrigger 
               value="overview" 
               className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"

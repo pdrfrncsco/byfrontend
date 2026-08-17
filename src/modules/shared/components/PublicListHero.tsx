@@ -44,7 +44,7 @@ export function PublicListHero({
           backgroundClassName,
         )}
       />
-      <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/70 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur md:grid-cols-[1.4fr_0.9fr]">
+      <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur md:grid-cols-[1.4fr_0.9fr]">
         <div className="space-y-md">
           <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             <Sparkles className="h-3.5 w-3.5" />

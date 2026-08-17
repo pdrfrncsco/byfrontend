@@ -325,7 +325,7 @@ export function CompetitionDetailPage() {
       {/* Main Content */}
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl relative z-10">
         <Tabs defaultValue="standings" className="space-y-lg">
-          <TabsList className="p-1 bg-surface-container/70 rounded-full backdrop-blur flex-wrap h-auto gap-xs">
+          <TabsList className="p-1 bg-surface-container rounded-full backdrop-blur flex-wrap h-auto gap-xs">
             <TabsTrigger value="standings" id="comp-tab-standings" className="rounded-full">
               <Trophy className="mr-xs h-4 w-4" />
               {isCup ? 'Eliminatórias' : isTournament ? 'Grupos' : 'Classificação'}

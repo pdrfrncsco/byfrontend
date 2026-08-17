@@ -167,7 +167,7 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
       }
     >
       <div className="space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/80 p-xl lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-md">
             <div className="flex flex-wrap items-center gap-sm">
               <Badge variant={transferStatusVariant(transfer.status)}>

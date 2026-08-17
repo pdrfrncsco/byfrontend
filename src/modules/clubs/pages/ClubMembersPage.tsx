@@ -231,7 +231,7 @@ export default function ClubMembersPage() {
       }
     >
       <div className="space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container/80 p-xl lg:grid-cols-[1fr_0.8fr]">
+        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_0.8fr]">
           <div className="space-y-md">
             <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <Users className="h-3.5 w-3.5" />

@@ -91,7 +91,7 @@ export function ClubCompetitionsView({
     <div className="space-y-lg">
       {/* Top Filter Bar */}
       {competitions.length > 1 && (
-        <div className="flex flex-wrap items-center justify-between gap-md rounded-2xl border border-outline-variant/20 bg-surface-container/60 p-md backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-md rounded-2xl border border-outline-variant/20 bg-surface-container p-md backdrop-blur">
           <div className="flex items-center gap-sm text-sm font-semibold text-on-surface">
             <Filter className="h-4 w-4 text-primary" />
             <span>Filtrar por Competição:</span>
@@ -126,7 +126,7 @@ export function ClubCompetitionsView({
 
       {/* Main Tabs */}
       <Tabs defaultValue="competitions" className="space-y-lg">
-        <TabsList className="flex h-auto flex-wrap gap-xs rounded-full border border-outline-variant/20 bg-surface-container/60 p-xs">
+        <TabsList className="flex h-auto flex-wrap gap-xs rounded-full border border-outline-variant/20 bg-surface-container p-xs">
           <TabsTrigger
             value="competitions"
             className="rounded-full px-lg py-sm text-sm font-medium data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all"

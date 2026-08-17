@@ -34,7 +34,7 @@ export function DetailHeroCard({
       variant="flat"
       padding="none"
       className={cn(
-        'overflow-hidden rounded-[2rem] border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]',
+        'overflow-hidden rounded-[2rem] border-outline-variant/20 shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]',
         className,
       )}
     >

@@ -169,8 +169,19 @@
 :root[data-theme="light"] .bg-surface-container-low,
 :root[data-theme="light"] .bg-surface-container-high,
 :root[data-theme="light"] .bg-surface-container-highest,
-:root[data-theme="light"] .bg-surface-container-lowest {
-  background-color: var(--bg-app) !important;
+:root[data-theme="light"] .bg-surface-container-lowest,
+:root[data-theme="light"] .bg-surface-container\/75,
+:root[data-theme="light"] .bg-surface-container\/70,
+:root[data-theme="light"] .bg-surface-container\/60,
+:root[data-theme="light"] .bg-surface-container\/50,
+:root[data-theme="light"] .bg-surface-container\/40,
+:root[data-theme="light"] .bg-surface-container\/30,
+:root[data-theme="light"] .bg-surface-container\/20,
+:root[data-theme="light"] .bg-surface-container-high\/40,
+:root[data-theme="light"] .bg-surface-container-high\/30,
+:root[data-theme="light"] .bg-surface-container-high\/20,
+:root[data-theme="light"] .bg-surface-container-high\/15 {
+  background-color: var(--surface-container) !important;
 }
 
 :root[data-theme="light"] .text-on-surface,

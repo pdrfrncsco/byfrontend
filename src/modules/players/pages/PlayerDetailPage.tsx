@@ -99,7 +99,7 @@ export function PlayerDetailPage() {
           {t('players.detail.back')}
         </Link>
 
-        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur">
+        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
           <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-start">
             <div className="space-y-md">
               <div

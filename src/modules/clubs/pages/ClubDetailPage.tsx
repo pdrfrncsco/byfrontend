@@ -155,7 +155,7 @@ export default function ClubDetailPage() {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] backdrop-blur">
+        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
           <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-center">
             <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-high text-3xl font-bold text-primary shadow-lg">
               {club.logo_url ? (

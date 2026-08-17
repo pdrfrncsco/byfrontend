@@ -39,7 +39,7 @@ export function OrganizationDetailSkeleton() {
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <Card
           padding="none"
-          className="overflow-hidden rounded-[2rem] border border-outline-variant/20 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)]"
+          className="overflow-hidden rounded-[2rem] border border-outline-variant/20 shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]"
         >
           <div className="grid gap-xl bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.14),transparent_38%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.82))] p-xl md:grid-cols-[auto_1fr_auto] md:items-center">
             <Skeleton className="h-32 w-32 rounded-3xl" />

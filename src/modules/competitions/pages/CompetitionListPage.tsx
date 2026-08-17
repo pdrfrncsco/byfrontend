@@ -192,7 +192,7 @@ export function CompetitionListPage() {
               ))}
             </div>
 
-            <div className="flex flex-col items-center justify-between gap-md rounded-[1.5rem] border border-outline-variant/20 bg-surface-container/70 px-lg py-md backdrop-blur md:flex-row">
+            <div className="flex flex-col items-center justify-between gap-md rounded-[1.5rem] border border-outline-variant/20 bg-surface-container px-lg py-md shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur md:flex-row">
               <p className="text-sm text-on-surface-variant">
                 Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
                 <span className="font-semibold text-on-surface">{totalPages}</span>

@@ -417,7 +417,7 @@ export default function ClubMatchLineupManagerPage() {
     >
       <div className="space-y-xl">
         {/* Banner Informacional da Partida */}
-        <section className="rounded-2xl border border-outline-variant/20 bg-surface-container/80 p-lg shadow-sm">
+        <section className="rounded-2xl border border-outline-variant/20 bg-surface-container p-lg shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
           <div className="flex flex-wrap items-center justify-between gap-md">
             <div>
               <span className="inline-flex items-center gap-xs rounded-full bg-primary-container/30 px-md py-0.5 text-xs font-semibold text-primary uppercase tracking-wider">

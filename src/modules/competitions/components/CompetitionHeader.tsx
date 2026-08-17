@@ -31,7 +31,7 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
   if (isLoading) {
     return (
       <div className="mx-auto max-w-8xl px-md py-xl sm:px-xl relative z-10">
-        <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] md:grid-cols-[auto_1fr_auto]">
+        <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] md:grid-cols-[auto_1fr_auto]">
           <div className="h-16 w-16 rounded-2xl bg-surface-container-highest" />
           <div className="space-y-sm">
             <div className="h-5 w-24 rounded-full bg-surface-container-highest" />
@@ -81,7 +81,7 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
 export function CompetitionHeaderSkeleton() {
   return (
     <div className="mx-auto max-w-8xl px-md py-xl sm:px-xl relative z-10">
-      <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container/75 p-xl shadow-[0_24px_80px_-40px_rgba(0,0,0,0.7)] md:grid-cols-[auto_1fr_auto]">
+      <div className="grid animate-pulse gap-xl rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] md:grid-cols-[auto_1fr_auto]">
         <div className="h-16 w-16 rounded-2xl bg-surface-container-highest" />
         <div className="space-y-sm">
           <div className="h-5 w-24 rounded-full bg-surface-container-highest" />
