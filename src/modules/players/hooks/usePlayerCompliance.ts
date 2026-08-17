@@ -10,6 +10,9 @@ import type {
 } from '../types'
 import { playerKeys } from './usePlayerQueries'
 
+export type { PlayerComplianceRecord }
+export type ComplianceRecord = PlayerComplianceRecord
+
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const complianceKeys = {

@@ -17,7 +17,7 @@ import {
   EmptyState,
   FormField,
   Input,
-  Select,
+  NativeSelect,
   Skeleton,
   Textarea,
 } from '@/components/ui'
@@ -217,13 +217,13 @@ export default function ClubDocumentsPage() {
                 </FormField>
                 <div className="grid gap-md sm:grid-cols-2">
                   <FormField label="Categoria" htmlFor="category" error={errors.category?.message} required>
-                    <Select id="category" {...register('category')} state={errors.category ? 'error' : 'default'}>
+                    <NativeSelect id="category" {...register('category')} state={errors.category ? 'error' : 'default'}>
                       <option value="contract">Contrato</option>
                       <option value="certificate">Certificado</option>
                       <option value="license">Licença</option>
                       <option value="regulation">Regulamento</option>
                       <option value="other">Outro</option>
-                    </Select>
+                    </NativeSelect>
                   </FormField>
                   <FormField label="Validade" htmlFor="valid_until" error={errors.valid_until?.message}>
                     <Input id="valid_until" type="date" {...register('valid_until')} state={errors.valid_until ? 'error' : 'default'} />

@@ -3,12 +3,12 @@ import { cn } from '@/lib/utils'
 import { Label } from './label'
 
 export interface FormFieldProps {
-  label: string
+  label?: string
   htmlFor?: string
   error?: string
   hint?: string
   required?: boolean
-  children: React.ReactNode
+  children?: React.ReactNode
   className?: string
 }
 

@@ -9,11 +9,16 @@ export * from './usePlayerOnboardingState'
 // usePlayerStatistics name. The canonical implementation lives in
 // usePlayerQueries and supports optional season filtering.
 export { usePlayerCareerStats, usePlayerRegistrations } from './usePlayerCareerStats'
-export * from './usePlayerFilters'
+export {
+  usePlayerFilters,
+  useFilteredPlayers,
+  usePlayerSearch as usePlayerSearchFilter,
+  usePositionFilter,
+} from './usePlayerFilters'
 export * from './usePlayerComparison'
-export * from './usePlayerContracts'
-export * from './usePlayerAgents'
-export * from './usePlayerTransfers'
+export { usePlayerContracts, useContractDetails, useCreateContract, useUpdateContract, useDeleteContract, useSignContract, useRenewContract, useTerminateContract, getActiveContract, formatCurrency, getContractStatusInfo, getContractTypeLabel, getContractDuration, isContractExpiringSoon, isContractFullySigned } from './usePlayerContracts'
+export { usePlayerAgents, useAgentDetails, useAgentSearch, useCreateAgentRelationship, useUpdateAgentRelationship, useDeleteAgentRelationship, getActiveAgentRelationship, getAgentRelationshipStatusInfo, getAgencyTypeLabel, isRelationshipActive, getRelationshipDuration } from './usePlayerAgents'
+export { usePlayerTransfers, useTransferDetails, useCreateTransfer, useUpdateTransfer, useCancelTransfer, getTransferStatusInfo, getTransferTypeLabel, formatTransferFee, isTransferPendingApproval, canCancelTransfer, getTransferTimelineSteps, getDaysUntilEffective } from './usePlayerTransfers'
 export * from './usePlayerMedical'
 export * from './usePlayerNationalTeam'
 export * from './usePlayerPerformance'
@@ -21,4 +26,3 @@ export * from './usePlayerCompliance'
 
 // Re-export with specific names to avoid ambiguity
 export { usePlayerSearch as usePlayerSearchQuery } from './usePlayerQueries'
-export { usePlayerSearch as usePlayerSearchFilter } from './usePlayerFilters'

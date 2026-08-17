@@ -32,7 +32,7 @@ export function PlayerContractSection({
   const { t } = useTranslation()
   const { data, isLoading, error } = usePlayerContracts(playerId)
 
-  const contracts = useMemo(() => data?.results || [], [data])
+  const contracts = useMemo(() => (Array.isArray(data) ? data : (data as { results?: PlayerContract[] } | undefined)?.results ?? []), [data])
   const activeContract = useMemo(() => getActiveContract(contracts), [contracts])
 
   if (isLoading) {
@@ -80,7 +80,7 @@ export function PlayerContractSection({
                   )}
                 </CardTitle>
                 <CardDescription>
-                  {activeContract.club.name} • {getContractTypeLabel(activeContract.contract_type)}
+                  {typeof activeContract.club === 'string' ? activeContract.club_name : activeContract.club.name} • {getContractTypeLabel(activeContract.contract_type)}
                 </CardDescription>
               </div>
               {isContractExpiringSoon(activeContract.end_date) && (
@@ -233,7 +233,7 @@ export function PlayerContractSection({
                     <div className="flex items-start justify-between gap-md">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-sm flex-wrap">
-                          <h4 className="font-semibold text-on-surface">{contract.club.name}</h4>
+                          <h4 className="font-semibold text-on-surface">{typeof contract.club === 'string' ? contract.club_name : contract.club.name}</h4>
                           <Badge variant="outline" className="text-xs">
                             {getContractTypeLabel(contract.contract_type)}
                           </Badge>

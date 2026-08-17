@@ -9,6 +9,8 @@ import type {
   PlayerAgentRelationshipCreate,
 } from '../types'
 
+export type { Agent, PlayerAgentRelationship, PlayerAgentRelationshipCreate }
+
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const agentKeys = {
@@ -23,7 +25,7 @@ export const agentKeys = {
 // ─── Query Hooks ──────────────────────────────────────────────────────────────
 
 export function usePlayerAgents(playerId: string, enabled = true) {
-  return useQuery({
+  return useQuery<PlayerAgentRelationship[]>({
     queryKey: agentKeys.list(playerId),
     queryFn: async () => {
       const res = await apiClient.get<PlayerAgentRelationship[]>(
@@ -52,7 +54,7 @@ export function useAgentDetails(agentId: string, enabled = true) {
 }
 
 export function useAgentSearch(query: string, enabled = true) {
-  return useQuery({
+  return useQuery<Agent[]>({
     queryKey: agentKeys.agentSearch(query),
     queryFn: async () => {
       const res = await apiClient.get<{ results: Agent[] }>(

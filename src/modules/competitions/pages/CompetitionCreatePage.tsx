@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Trophy, Loader2, ChevronRight, ChevronLeft, Check } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect, Select } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useCreateCompetition } from '../hooks/useCompetitions'
 import { createCompetitionSchema, type CreateCompetitionFormData } from '../schemas'
@@ -200,10 +200,10 @@ export function CompetitionCreatePage() {
               </FormField>
 
               <FormField label="Estado Inicial" htmlFor="comp-status" error={errors.status?.message}>
-                <Select id="comp-status" {...register('status')}>
+                <NativeSelect id="comp-status" {...register('status')}>
                   <option value="draft">Rascunho — visível apenas para admins</option>
                   <option value="active">Ativa — visível publicamente</option>
-                </Select>
+                </NativeSelect>
               </FormField>
 
               <div className="flex items-center justify-end gap-sm pt-sm">
@@ -504,10 +504,10 @@ export function CompetitionCreatePage() {
                   <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mt-lg mb-sm">Fase Final (Eliminatórias)</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                     <FormField label="Ronda Inicial da Fase Final" htmlFor="config-knockout-start-round">
-                      <Select
+                      <NativeSelect
                         id="config-knockout-start-round"
                         value={(watch('config') as TournamentConfig | undefined)?.knockoutStage?.rounds?.[0] || 'final'}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                           const val = e.target.value as KnockoutRound
                           let rounds: KnockoutRound[] = ['final']
                           if (val === 'semi-final') rounds = ['semi-final', 'final']
@@ -522,7 +522,7 @@ export function CompetitionCreatePage() {
                         <option value="quarter-final">Quartos-de-Final (8 equipas)</option>
                         <option value="round-of-16">Oitavos-de-Final (16 equipas)</option>
                         <option value="round-of-32">16-Avos-de-Final (32 equipas)</option>
-                      </Select>
+                      </NativeSelect>
                     </FormField>
 
                     <FormField label="Eliminatórias a Duas Mãos" htmlFor="config-tournament-knockout-twolegs">
@@ -574,10 +574,10 @@ export function CompetitionCreatePage() {
                 <div className="space-y-md">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                     <FormField label="Ronda Inicial da Taça" htmlFor="config-cup-start-round">
-                      <Select
+                      <NativeSelect
                         id="config-cup-start-round"
                         value={(watch('config') as CupConfig | undefined)?.rounds?.[0] || 'final'}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                           const val = e.target.value as CupRound
                           let rounds: CupRound[] = ['final']
                           if (val === 'semi-final') rounds = ['semi-final', 'final']
@@ -594,7 +594,7 @@ export function CompetitionCreatePage() {
                         <option value="round-of-16">Oitavos-de-Final (16 equipas)</option>
                         <option value="round-of-32">16-Avos-de-Final (32 equipas)</option>
                         <option value="round-of-64">32-Avos-de-Final (64 equipas)</option>
-                      </Select>
+                      </NativeSelect>
                     </FormField>
 
                     <FormField label="Sorteio com Cabeças-de-Série" htmlFor="config-cup-seeded">

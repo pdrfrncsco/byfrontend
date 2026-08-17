@@ -25,6 +25,7 @@ import {
   FormField,
 } from '@/components/ui'
 import { AlertCircle, Loader2, Upload, FileText } from 'lucide-react'
+import { z } from 'zod'
 import {
   medicalDocumentUploadSchema,
   type MedicalDocumentUpload,
@@ -48,8 +49,26 @@ export function PlayerMedicalDocumentForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileSizeError, setFileSizeError] = useState<string | null>(null)
 
+  const baseMedicalDocumentUploadSchema = z.object({
+    document_type: z.enum([
+      'medical_certificate',
+      'injury_report',
+      'scan_result',
+      'lab_result',
+      'vaccination_record',
+      'surgery_report',
+      'physical_exam',
+      'cardiac_screening',
+      'other',
+    ]),
+    title: z.string().min(5, 'Título deve ter pelo menos 5 caracteres').max(255, 'Título não pode exceder 255 caracteres'),
+    description: z.string().max(1000, 'Descrição não pode exceder 1000 caracteres').optional().nullable(),
+    issued_at: z.string().datetime(),
+    expires_at: z.string().datetime().optional().nullable(),
+    is_confidential: z.boolean().default(true),
+  })
   const form = useForm<Omit<MedicalDocumentUpload, 'file'>>({
-    resolver: zodResolver(medicalDocumentUploadSchema.omit({ file: true })),
+    resolver: zodResolver(baseMedicalDocumentUploadSchema),
     defaultValues: {
       document_type: 'medical_certificate',
       title: '',

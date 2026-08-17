@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import type { Player, PlayerPosition, PlayerListParams } from '../types'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import type { PlayerPosition } from '../types'
 
 export interface PlayerFilters {
   search?: string
@@ -160,7 +160,7 @@ export function useFilteredPlayers(filters: PlayerFilters, enabled = true) {
     },
     enabled: enabled && Object.values(filters).some((v) => v !== undefined),
     staleTime: 1000 * 60 * 5, // 5 minutes
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   })
 }
 

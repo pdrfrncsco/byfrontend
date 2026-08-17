@@ -10,7 +10,7 @@ import {
   CardTitle,
   FormField,
   Input,
-  Select,
+  NativeSelect,
 } from '@/components/ui'
 import { CompetitionCard } from '../components/CompetitionCard'
 import { CompetitionSkeleton } from '../components/CompetitionSkeleton'
@@ -112,7 +112,7 @@ export function CompetitionListPage() {
               </FormField>
 
               <FormField label="Estado" htmlFor="status">
-                <Select
+                <NativeSelect
                   id="status"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
@@ -121,11 +121,11 @@ export function CompetitionListPage() {
                   <option value="active">Em Curso</option>
                   <option value="draft">Rascunho</option>
                   <option value="completed">Concluída</option>
-                </Select>
+                </NativeSelect>
               </FormField>
 
               <FormField label="Tipo" htmlFor="type">
-                <Select
+                <NativeSelect
                   id="type"
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
@@ -134,7 +134,7 @@ export function CompetitionListPage() {
                   <option value="league">Campeonato</option>
                   <option value="tournament">Torneio</option>
                   <option value="cup">Taça</option>
-                </Select>
+                </NativeSelect>
               </FormField>
             </div>
 
@@ -152,13 +152,13 @@ export function CompetitionListPage() {
                 )}
                 <label className="flex items-center gap-sm text-sm text-on-surface-variant">
                   <span className="whitespace-nowrap">Por página</span>
-                  <Select value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
+                  <NativeSelect value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
                     {PAGE_SIZE_OPTIONS.map((option) => (
                       <option key={option} value={option}>
                         {option}
                       </option>
                     ))}
-                  </Select>
+                  </NativeSelect>
                 </label>
               </div>
             </div>

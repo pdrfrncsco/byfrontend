@@ -33,7 +33,7 @@ export function PlayerAgentSection({
   const { data, isLoading, error } = usePlayerAgents(playerId)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const relationships = useMemo(() => data?.results || [], [data])
+  const relationships = useMemo(() => Array.isArray(data) ? data : (data as { results?: PlayerAgentRelationship[] } | undefined)?.results ?? [], [data])
   const activeAgent = useMemo(() => getActiveAgentRelationship(relationships), [relationships])
 
   const handleDelete = async (relationshipId: string) => {
@@ -87,7 +87,7 @@ export function PlayerAgentSection({
                   Agente Ativo
                 </CardTitle>
                 <CardDescription>
-                  {activeAgent.agent.name} • {getAgencyTypeLabel(activeAgent.agent.agency_type)}
+                  {typeof activeAgent.agent === 'string' ? activeAgent.agent_name : activeAgent.agent.name} • {typeof activeAgent.agent === 'string' ? 'Agente' : getAgencyTypeLabel(activeAgent.agent.agency_type)}
                 </CardDescription>
               </div>
             </div>
@@ -121,7 +121,7 @@ export function PlayerAgentSection({
             <div className="space-y-sm border-t border-outline pt-md">
               <p className="text-xs font-medium text-on-surface-variant">Contacto</p>
               <div className="space-y-xs">
-                {activeAgent.agent.email && (
+                {typeof activeAgent.agent !== 'string' && activeAgent.agent.email && (
                   <div className="flex items-center gap-sm text-sm text-on-surface">
                     <Mail className="h-4 w-4 text-on-surface-variant" />
                     <a href={`mailto:${activeAgent.agent.email}`} className="hover:text-primary">
@@ -130,7 +130,7 @@ export function PlayerAgentSection({
                   </div>
                 )}
 
-                {activeAgent.agent.phone && (
+                {typeof activeAgent.agent !== 'string' && activeAgent.agent.phone && (
                   <div className="flex items-center gap-sm text-sm text-on-surface">
                     <Phone className="h-4 w-4 text-on-surface-variant" />
                     <a href={`tel:${activeAgent.agent.phone}`} className="hover:text-primary">
@@ -139,7 +139,7 @@ export function PlayerAgentSection({
                   </div>
                 )}
 
-                {activeAgent.agent.website && (
+                {typeof activeAgent.agent !== 'string' && activeAgent.agent.website && (
                   <div className="flex items-center gap-sm text-sm text-on-surface">
                     <Globe className="h-4 w-4 text-on-surface-variant" />
                     <a
@@ -156,7 +156,7 @@ export function PlayerAgentSection({
             </div>
 
             {/* Agent Credentials */}
-            {(activeAgent.agent.fifa_agent_id || activeAgent.agent.verified) && (
+            {typeof activeAgent.agent !== 'string' && (activeAgent.agent.fifa_agent_id || activeAgent.agent.verified) && (
               <div className="space-y-sm border-t border-outline pt-md">
                 <p className="text-xs font-medium text-on-surface-variant">Credenciais</p>
                 <div className="flex flex-wrap gap-sm">
@@ -214,10 +214,11 @@ export function PlayerAgentSection({
             </div>
           ) : (
             <div className="space-y-md">
-              {relationships.map((relationship) => {
+              {relationships.map((relationship: PlayerAgentRelationship) => {
                 const statusInfo = getAgentRelationshipStatusInfo(relationship.status)
                 const isActive = isRelationshipActive(relationship)
 
+                const relationshipAgent = typeof relationship.agent === 'string' ? null : relationship.agent
                 return (
                   <div
                     key={relationship.id}
@@ -226,21 +227,23 @@ export function PlayerAgentSection({
                     <div className="flex items-start justify-between gap-md">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-sm flex-wrap">
-                          <h4 className="font-semibold text-on-surface">{relationship.agent.name}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            {getAgencyTypeLabel(relationship.agent.agency_type)}
-                          </Badge>
+                          <h4 className="font-semibold text-on-surface">{relationshipAgent?.name ?? relationship.agent_name}</h4>
+                          {relationshipAgent && (
+                            <Badge variant="outline" className="text-xs">
+                              {getAgencyTypeLabel(relationshipAgent.agency_type)}
+                            </Badge>
+                          )}
                           <Badge className={`text-xs ${statusInfo.bgColor} ${statusInfo.color}`}>
                             {statusInfo.label}
                           </Badge>
                         </div>
 
                         <div className="mt-md space-y-xs text-xs text-on-surface-variant">
-                          {relationship.agent.agency_name && (
-                            <p>{relationship.agent.agency_name}</p>
+                          {relationshipAgent?.agency_name && (
+                            <p>{relationshipAgent.agency_name}</p>
                           )}
-                          {relationship.agent.country && (
-                            <p>{relationship.agent.country}</p>
+                          {relationshipAgent?.country && (
+                            <p>{relationshipAgent.country}</p>
                           )}
                         </div>
 

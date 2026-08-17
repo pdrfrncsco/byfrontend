@@ -17,7 +17,7 @@ import {
   EmptyState,
   FormField,
   Input,
-  Select,
+  NativeSelect,
   Skeleton,
   Textarea,
 } from '@/components/ui'
@@ -222,14 +222,14 @@ export default function ClubSponsorsPage() {
                 </FormField>
                 <div className="grid gap-md sm:grid-cols-2">
                   <FormField label="Tipo" htmlFor="sponsor_type" error={errors.sponsor_type?.message} required>
-                    <Select id="sponsor_type" {...register('sponsor_type')} state={errors.sponsor_type ? 'error' : 'default'}>
+                    <NativeSelect id="sponsor_type" {...register('sponsor_type')} state={errors.sponsor_type ? 'error' : 'default'}>
                       <option value="main">Principal</option>
                       <option value="official">Oficial</option>
                       <option value="partner">Parceiro</option>
                       <option value="technical">Técnico</option>
                       <option value="media">Media</option>
                       <option value="other">Outro</option>
-                    </Select>
+                    </NativeSelect>
                   </FormField>
                   <FormField label="Ordem" htmlFor="sort_order" error={errors.sort_order?.message}>
                     <Input id="sort_order" type="number" {...register('sort_order')} state={errors.sort_order ? 'error' : 'default'} />

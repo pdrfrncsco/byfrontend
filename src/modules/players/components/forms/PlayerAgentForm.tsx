@@ -33,7 +33,7 @@ export function PlayerAgentForm({
   const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(
-    initialData?.agent || null
+    typeof initialData?.agent === 'string' ? null : initialData?.agent ?? null
   )
   const { data: searchResults, isLoading: isSearching } = useAgentSearch(searchQuery)
 
@@ -45,7 +45,7 @@ export function PlayerAgentForm({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      agent: initialData?.agent?.id || '',
+      agent: typeof initialData?.agent === 'string' ? initialData.agent : initialData?.agent?.id || '',
       start_date: initialData?.start_date || '',
       end_date: initialData?.end_date || '',
       commission_rate: initialData?.commission_rate || undefined,
@@ -66,7 +66,7 @@ export function PlayerAgentForm({
     setValue('agent', '')
   }
 
-  const agents = searchResults?.results || []
+  const agents = Array.isArray(searchResults) ? searchResults : (searchResults as { results?: Agent[] } | undefined)?.results ?? []
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-lg">
@@ -123,7 +123,7 @@ export function PlayerAgentForm({
 
               {agents.length > 0 && (
                 <div className="space-y-sm max-h-64 overflow-y-auto">
-                  {agents.map((agent) => (
+                  {agents.map((agent: Agent) => (
                     <button
                       key={agent.id}
                       type="button"

@@ -15,7 +15,7 @@ import {
   CardTitle,
   FormField,
   Input,
-  Select,
+  NativeSelect,
   Skeleton,
   EmptyState,
 } from '@/components/ui'
@@ -311,7 +311,7 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
                       name="transfer_type"
                       control={control}
                       render={({ field }) => (
-                        <Select
+                        <NativeSelect
                           id="transfer_type"
                           {...field}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -319,7 +319,7 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
                           <option value="permanent">Permanente</option>
                           <option value="loan">Empréstimo</option>
                           <option value="free_agent">Livre</option>
-                        </Select>
+                        </NativeSelect>
                       )}
                     />
                   </FormField>

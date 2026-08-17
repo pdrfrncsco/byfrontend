@@ -1,6 +1,17 @@
 // Players module — Medical hooks (migrated to apiClient)
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type {
+  MedicalDocument,
+  PlayerMedicalProfile,
+  PlayerMedicalProfileUpdate,
+  MedicalDocumentCreate,
+  MedicalDocumentReject,
+} from '../types'
+
+export type { MedicalDocument, PlayerMedicalProfile, PlayerMedicalProfileUpdate, MedicalDocumentCreate, MedicalDocumentReject }
+export type MedicalProfile = PlayerMedicalProfile
+export type MedicalDocumentRecord = MedicalDocument
 import {
   getPlayerMedicalProfile,
   getPlayerMedicalHistory,
@@ -11,12 +22,6 @@ import {
   rejectMedicalDocument,
 } from '../services'
 import { playerKeys } from './usePlayerQueries'
-import type {
-  PlayerMedicalProfile,
-  PlayerMedicalProfileUpdate,
-  MedicalDocumentCreate,
-  MedicalDocumentReject,
-} from '../types'
 
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 

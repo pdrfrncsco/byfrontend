@@ -104,6 +104,7 @@ export interface PlayerDetail extends Player {
 // ─── Career Entry (legacy / serialized from PlayerRegistration) ───────────────
 
 export interface PlayerCareerEntry {
+  id?: string
   club: string
   club_slug: string
   joined: string
@@ -112,6 +113,7 @@ export interface PlayerCareerEntry {
   matches: number
   goals: number
   assists: number
+  competition?: string | null
 }
 
 // ─── Phase 2: Career & Statistics ─────────────────────────────────────────────
@@ -690,7 +692,7 @@ export interface PlayerContract {
   id: string
   player: string
   player_name: string
-  club: string
+  club: string | { id: string; name: string; slug?: string; code?: string | null }
   club_name: string
   contract_type: ContractType
   status: ContractStatus
@@ -774,7 +776,7 @@ export interface PlayerAgentRelationship {
   id: string
   player: string
   player_name: string
-  agent: string
+  agent: string | Agent
   agent_name: string
   start_date: string
   end_date: string | null

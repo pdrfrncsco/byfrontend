@@ -13,7 +13,7 @@ import {
   EmptyState,
   FormField,
   Input,
-  Select,
+  NativeSelect,
   Skeleton,
 } from '@/components/ui'
 import {
@@ -189,14 +189,14 @@ export function OrganizationMembersPage() {
                   />
                 </FormField>
                 <FormField label="Papel" htmlFor="invite-role" className="w-40">
-                  <Select
+                  <NativeSelect
                     id="invite-role"
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
                   >
                     <option value="member">Membro</option>
                     <option value="admin">Administrador</option>
-                  </Select>
+                  </NativeSelect>
                 </FormField>
                 <div className="flex gap-sm pb-0.5">
                   <Button

@@ -179,7 +179,7 @@ export function useAddMatchEvent(competitionId: string, matchId: string) {
           try {
             const comp = await competitionApi.get(competitionId)
             // Accept a few possible shapes for an override: comp.suspension_rules or comp.suspensionDefaults
-            const overrides: any = comp?.suspension_rules ?? comp?.suspensionDefaults ?? comp?.suspensionDefaultsByEvent
+            const overrides: any = (comp as any)?.suspension_rules ?? (comp as any)?.suspensionDefaults ?? (comp as any)?.suspensionDefaultsByEvent
             if (overrides && typeof overrides === 'object') {
               const overrideVal = overrides[et] ?? overrides[String(et).toLowerCase()]
               if (typeof overrideVal === 'number' || (typeof overrideVal === 'string' && !Number.isNaN(Number(overrideVal)))) {

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Building2, CheckCircle2, Send } from 'lucide-react'
 import { AuthLayout } from '@/app/layouts'
-import { Button, Input, Select, Textarea } from '@/components/ui'
+import { Button, Input, NativeSelect, Textarea } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { ROUTES } from '@/constants/routes'
 import { useSeo } from '@/hooks/useSeo'
@@ -98,7 +98,7 @@ export default function ClubOnboardingPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="rounded-xl border border-outline-variant bg-surface-container-low p-lg">
           <div className="grid gap-md md:grid-cols-2">
             <FormField label="Organização" htmlFor="organization_slug" error={errors.organization_slug?.message} required>
-              <Select
+              <NativeSelect
                 id="organization_slug"
                 {...register('organization_slug', { required: 'Escolha uma organização.' })}
                 disabled={isLoading}
@@ -109,7 +109,7 @@ export default function ClubOnboardingPage() {
                     {organization.name}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
             </FormField>
 
             <FormField label="Nome do clube" htmlFor="club_name" error={errors.name?.message} required>

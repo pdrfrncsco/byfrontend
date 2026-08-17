@@ -10,9 +10,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { DollarSign, Plus, Trash2 } from 'lucide-react'
 import {
   playerContractFormSchema,
-  getContractTypeLabel,
   type PlayerContractFormData,
 } from '../../schemas/contract.schema'
+import { getContractTypeLabel } from '../../hooks/usePlayerContracts'
 
 interface PlayerContractFormProps {
   playerId: string

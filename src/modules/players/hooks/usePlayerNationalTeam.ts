@@ -4,7 +4,13 @@
 //     data without making any API call. Re-enable when the endpoint is added.
 
 import { useQuery } from '@tanstack/react-query'
-import type { NationalTeamCallUp, NationalTeamCategory, NationalTeamCallUpStatus } from '../types'
+import type {
+  NationalTeamCallUp,
+  NationalTeamCategory,
+  NationalTeamCallUpStatus,
+} from '../types'
+
+export type { NationalTeamCallUp, NationalTeamCategory, NationalTeamCallUpStatus }
 
 // ─── Disabled Hooks (return empty data, no API call) ─────────────────────────
 

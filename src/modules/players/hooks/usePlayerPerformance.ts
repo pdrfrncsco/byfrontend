@@ -5,6 +5,9 @@ import apiClient from '@/lib/api-client'
 import type { PlayerPerformanceMetric, PlayerPerformanceSummary } from '../types'
 import { playerKeys } from './usePlayerQueries'
 
+export type { PlayerPerformanceMetric }
+export type PerformanceMetric = PlayerPerformanceMetric
+
 // ─── Query Keys ───────────────────────────────────────────────────────────────
 
 export const performanceKeys = {

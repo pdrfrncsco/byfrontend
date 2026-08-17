@@ -17,7 +17,7 @@ import {
   EmptyState,
   FormField,
   Input,
-  Select,
+  NativeSelect,
   Skeleton,
 } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
@@ -272,11 +272,11 @@ export default function ClubMembersPage() {
                 </FormField>
                 <div className="grid gap-md sm:grid-cols-2">
                   <FormField label="Função" htmlFor="role" error={errors.role?.message} required>
-                    <Select id="role" {...register('role')} state={errors.role ? 'error' : 'default'}>
+                    <NativeSelect id="role" {...register('role')} state={errors.role ? 'error' : 'default'}>
                       {roleOptions().map((option) => (
                         <option key={option.value} value={option.value}>{option.label}</option>
                       ))}
-                    </Select>
+                    </NativeSelect>
                   </FormField>
                   <FormField label="Número" htmlFor="jersey_number" error={errors.jersey_number?.message}>
                     <Input id="jersey_number" type="number" {...register('jersey_number')} state={errors.jersey_number ? 'error' : 'default'} />
@@ -330,12 +330,12 @@ export default function ClubMembersPage() {
                   </div>
                 </FormField>
                 <FormField label="Função" htmlFor="member-role">
-                  <Select id="member-role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+                  <NativeSelect id="member-role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
                     <option value="all">Todas</option>
                     {roleOptions().map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
                     ))}
-                  </Select>
+                  </NativeSelect>
                 </FormField>
               </div>
 

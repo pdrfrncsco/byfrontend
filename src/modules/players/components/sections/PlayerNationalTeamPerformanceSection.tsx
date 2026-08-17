@@ -45,7 +45,7 @@ export function PlayerNationalTeamPerformanceSection({
     error: performanceError,
   } = usePlayerPerformanceSummary(playerId)
 
-  const callUps = useMemo(() => ((callUpsData?.results || []) as NationalTeamCallUp[]) || [], [callUpsData])
+  const callUps = useMemo(() => (Array.isArray(callUpsData) ? callUpsData : ((callUpsData as { results?: NationalTeamCallUp[] } | undefined)?.results ?? [])) as NationalTeamCallUp[], [callUpsData])
   const activeCallUps = useMemo(() => callUps.filter(isCallUpActive), [callUps])
   const historicalCallUps = useMemo(
     () => callUps.filter((cu) => !isCallUpActive(cu)),

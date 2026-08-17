@@ -1,6 +1,9 @@
 // Players module — Contract hooks (using services layer)
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { PlayerContract } from '../types'
+
+export type { PlayerContract }
 import {
   listPlayerContracts,
   getContractDetail,

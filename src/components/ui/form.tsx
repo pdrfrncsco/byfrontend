@@ -1,10 +1,20 @@
 import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { Slot } from '@radix-ui/react-slot'
-import { Controller, FormProvider, useFormContext } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  type Control,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
+  type RegisterOptions,
+  useFormContext,
+} from 'react-hook-form'
 
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
+import { FormField as SimpleFormField, type FormFieldProps as SimpleFormFieldProps } from './form-field'
 
 const Form = FormProvider
 
@@ -19,16 +29,65 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+type FormFieldControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  control?: Control<TFieldValues>
+  name?: TName
+  rules?: RegisterOptions<TFieldValues, TName>
+  shouldUnregister?: boolean
+  defaultValue?: ControllerProps<TFieldValues, TName>['defaultValue']
+  render?: ControllerProps<TFieldValues, TName>['render']
+}
+
+type FormFieldProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Partial<SimpleFormFieldProps> & FormFieldControllerProps<TFieldValues, TName>
+
 const FormField = <
-  TFieldValues extends Record<string, unknown> = Record<string, unknown>,
-  TName extends keyof TFieldValues = keyof TFieldValues,
->({
-  ...props
-}: React.ComponentProps<typeof Controller<TFieldValues, TName>>) => {
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(props: FormFieldProps<TFieldValues, TName>) => {
+  const {
+    control,
+    name,
+    render,
+    children,
+    label,
+    htmlFor,
+    error,
+    hint,
+    required,
+    className,
+    ...rest
+  } = props
+
+  if (control && name && render) {
+    return (
+      <FormFieldContext.Provider value={{ name: name as any }}>
+        <Controller<TFieldValues, TName>
+          control={control}
+          name={name}
+          render={render}
+          {...rest}
+        />
+      </FormFieldContext.Provider>
+    )
+  }
+
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
-      <Controller {...props} />
-    </FormFieldContext.Provider>
+    <SimpleFormField
+      label={label || ''}
+      htmlFor={htmlFor}
+      error={error}
+      hint={hint}
+      required={required}
+      className={className}
+    >
+      {children}
+    </SimpleFormField>
   )
 }
 

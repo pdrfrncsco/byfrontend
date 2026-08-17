@@ -7,6 +7,8 @@ export interface User {
   full_name: string
   phone: string | null
   profile_type?: 'admin' | 'organization' | 'club' | 'player' | 'fan'
+  profileType?: 'admin' | 'organization' | 'club' | 'player' | 'fan'
+  roles?: string[]
   status: 'active' | 'suspended' | 'pending_verification' | 'deactivated'
   is_email_verified: boolean
   language: string

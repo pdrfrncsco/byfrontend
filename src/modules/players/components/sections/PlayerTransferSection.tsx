@@ -32,7 +32,7 @@ export function PlayerTransferSection({
   const { t } = useTranslation()
   const { data, isLoading, error } = usePlayerTransfers(playerId)
 
-  const transfers = useMemo(() => data?.results || [], [data])
+  const transfers = useMemo(() => (Array.isArray(data) ? data : (data as { results?: PlayerTransfer[] } | undefined)?.results ?? []), [data])
   const pendingTransfers = useMemo(
     () => transfers.filter((t) => ['requested', 'pending'].includes(t.status)),
     [transfers]

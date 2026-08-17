@@ -47,8 +47,7 @@ export function useLineups(matchId: string) {
     queryKey: lineupKeys.byMatch(matchId),
     queryFn: async () => {
       const resp = await competitionApi.getLineups(matchId);
-      // API returns { match_id, match_str, lineups }
-      return resp.lineups ?? [];
+      return Array.isArray(resp) ? resp : (resp as { lineups?: any[] } | undefined)?.lineups ?? [];
     },
     enabled: !!matchId,
   })

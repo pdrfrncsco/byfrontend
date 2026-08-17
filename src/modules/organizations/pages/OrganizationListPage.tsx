@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Building2, Filter, Search } from 'lucide-react'
-import { Button, Card, CardContent, Input, Select } from '@/components/ui'
+import { Button, Card, CardContent, Input, NativeSelect } from '@/components/ui'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import { usePublicOrganizations } from '../hooks'
 import {
@@ -78,8 +78,7 @@ export function OrganizationListPage() {
                   className="absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline"
                   aria-hidden="true"
                 />
-                <Select
-                  variant="filter"
+                <NativeSelect
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
                   aria-label="Filtrar por tipo"
@@ -91,7 +90,7 @@ export function OrganizationListPage() {
                   <option value="league">Liga</option>
                   <option value="organizer">Organizador</option>
                   <option value="academy">Academia</option>
-                </Select>
+                </NativeSelect>
               </div>
 
               {(search || typeFilter) && (

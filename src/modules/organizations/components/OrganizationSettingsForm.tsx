@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Globe, Settings, Palette, Eye } from 'lucide-react'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select, Textarea } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect, Textarea } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { organizationUpdateSchema, type OrganizationUpdateFormData } from '../schemas/organization.schema'
 import { BrandPreviewCard } from './BrandPreviewCard'
@@ -143,13 +143,13 @@ export function OrganizationSettingsForm({
 
             <div className="grid grid-cols-1 gap-md md:grid-cols-2">
               <FormField label="Tipo de Organização" htmlFor="type" error={errors.type?.message} required>
-                <Select id="type" {...register('type')} state={errors.type ? 'error' : 'default'}>
+                <NativeSelect id="type" {...register('type')} state={errors.type ? 'error' : 'default'}>
                   <option value="federation">Federação</option>
                   <option value="association">Associação</option>
                   <option value="league">Liga de Futebol</option>
                   <option value="organizer">Organizador Independente</option>
                   <option value="academy">Academia / Escola</option>
-                </Select>
+                </NativeSelect>
               </FormField>
 
               <FormField label="Estado de Ativação (Sistema)">
@@ -238,19 +238,19 @@ export function OrganizationSettingsForm({
           <CardContent className="space-y-md p-0">
             <div className="grid grid-cols-1 gap-md md:grid-cols-2">
               <FormField label="Idioma Principal" htmlFor="language">
-                <Select id="language" {...register('language')}>
+                <NativeSelect id="language" {...register('language')}>
                   <option value="pt">Português (PT)</option>
                   <option value="en">English (EN)</option>
                   <option value="fr">Français (FR)</option>
-                </Select>
+                </NativeSelect>
               </FormField>
               <FormField label="Fuso Horário" htmlFor="timezone">
-                <Select id="timezone" {...register('timezone')}>
+                <NativeSelect id="timezone" {...register('timezone')}>
                   <option value="Africa/Luanda">West Africa Time (Luanda)</option>
                   <option value="Africa/Johannesburg">South Africa Time (Johannesburg)</option>
                   <option value="Europe/Lisbon">Western European Time (Lisbon)</option>
                   <option value="UTC">Universal Time Coordinated (UTC)</option>
-                </Select>
+                </NativeSelect>
               </FormField>
             </div>
 

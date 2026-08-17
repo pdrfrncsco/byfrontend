@@ -6,7 +6,7 @@ import { ClubListSkeleton } from '@/modules/clubs/components/ClubSkeleton'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
+import { NativeSelect } from '@/components/ui/native-select'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/ui/empty-state'
@@ -104,13 +104,13 @@ export default function ClubListPage() {
 
             <label className="space-y-xs">
               <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Itens por página</span>
-              <Select value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
+              <NativeSelect value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
                 {PAGE_SIZE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
                 ))}
-              </Select>
+              </NativeSelect>
             </label>
 
             <Button

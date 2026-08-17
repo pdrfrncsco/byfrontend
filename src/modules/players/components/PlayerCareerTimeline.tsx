@@ -54,7 +54,7 @@ const STATUS_COLORS: Record<string, string> = {
   'inactive': 'bg-surface-container-high text-on-surface-variant',
 }
 
-function getCompetitionType(competition?: string): string {
+function getCompetitionType(competition?: string | null): string {
   if (!competition) return 'other'
   const comp = competition.toLowerCase()
   if (comp.includes('liga') || comp.includes('league') || comp.includes('championship')) return 'league'
@@ -85,6 +85,7 @@ function TimelineEntry({
     : Math.floor((Date.now() - joinedDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25))
 
   const statusColor = STATUS_COLORS[entry.status?.toLowerCase() || 'active'] || STATUS_COLORS['active']
+  const clubHref = entry.club_slug ? `/clubs/${entry.club_slug}` : undefined
 
   return (
     <div
@@ -118,12 +119,16 @@ function TimelineEntry({
         <div className="space-y-sm">
           {/* Club and Status */}
           <div className="flex flex-wrap items-center gap-sm">
-            <Link
-              to={`/clubs/${entry.club_slug}`}
-              className="font-semibold text-on-surface transition-colors hover:text-primary"
-            >
-              {entry.club}
-            </Link>
+            {clubHref ? (
+              <Link
+                to={clubHref}
+                className="font-semibold text-on-surface transition-colors hover:text-primary"
+              >
+                {entry.club}
+              </Link>
+            ) : (
+              <span className="font-semibold text-on-surface">{entry.club}</span>
+            )}
             <span className={`rounded-full px-sm py-0.5 text-xs font-medium ${statusColor}`}>
               {entry.status}
             </span>
@@ -236,7 +241,7 @@ export function PlayerCareerTimeline({ career, maxVisibleItems = 50 }: PlayerCar
 
           return (
             <TimelineEntry
-              key={`${entry.club_slug}-${entry.joined}-${index}`}
+              key={`${entry.club_slug ?? entry.club}-${entry.joined}-${index}`}
               entry={entry}
               index={index}
               total={visibleCareer.length}

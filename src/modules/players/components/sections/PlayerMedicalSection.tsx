@@ -48,7 +48,7 @@ export function PlayerMedicalSection({
 
   const profile = useMemo(() => (profileData as MedicalProfile | null) || null, [profileData])
   const documents = useMemo(
-    () => ((docsData?.results || []) as MedicalDocument[]) || [],
+    () => (Array.isArray(docsData) ? docsData : (docsData as { results?: MedicalDocument[] } | undefined)?.results || []) as MedicalDocument[],
     [docsData]
   )
 
@@ -273,8 +273,8 @@ export function PlayerMedicalSection({
                         setExpandedDoc(expandedDoc === doc.id ? null : doc.id)
                       }
                       onView={() => onViewDocument?.(doc)}
-                      onVerify={() => onVerifyDocument?.(doc.id)}
-                      onReject={() => onRejectDocument?.(doc.id)}
+                      onVerify={onVerifyDocument ? () => onVerifyDocument(doc.id) : undefined}
+                      onReject={onRejectDocument ? () => onRejectDocument(doc.id) : undefined}
                       isStaffOnly={isStaffOnly}
                       readOnly={readOnly}
                     />

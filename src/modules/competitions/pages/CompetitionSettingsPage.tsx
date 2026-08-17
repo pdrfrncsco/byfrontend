@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Settings, Loader2 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Select } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
@@ -109,11 +109,11 @@ export function CompetitionSettingsPage() {
             </FormField>
 
             <FormField label="Tipo" htmlFor="comp-edit-type" error={errors.competition_type?.message} required>
-              <Select id="comp-edit-type" {...register('competition_type')}>
+              <NativeSelect id="comp-edit-type" {...register('competition_type')}>
                 <option value="league">Campeonato (Liga)</option>
                 <option value="tournament">Torneio</option>
                 <option value="cup">Taça / Copa</option>
-              </Select>
+              </NativeSelect>
             </FormField>
 
             <FormField
@@ -132,11 +132,11 @@ export function CompetitionSettingsPage() {
             </FormField>
 
             <FormField label="Estado" htmlFor="comp-edit-status" error={errors.status?.message}>
-              <Select id="comp-edit-status" {...register('status')}>
+              <NativeSelect id="comp-edit-status" {...register('status')}>
                 <option value="draft">Rascunho</option>
                 <option value="active">Ativa</option>
                 <option value="completed">Concluída</option>
-              </Select>
+              </NativeSelect>
             </FormField>
 
             <div className="flex justify-end gap-sm pt-sm">
