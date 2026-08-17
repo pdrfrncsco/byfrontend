@@ -40,7 +40,7 @@ export function PublicListHero({
     <>
       <div
         className={cn(
-          'pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,rgba(66,153,225,0.20),transparent_40%),radial-gradient(circle_at_top_right,rgba(17,94,89,0.16),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]',
+          'pointer-events-none absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(233,195,73,0.12),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.78),rgba(255,255,255,0))]',
           backgroundClassName,
         )}
       />

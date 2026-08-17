@@ -136,17 +136,17 @@ export function PlayerComplianceSection({
 
               <div className="text-center">
                 <p className="text-xs text-on-surface-variant">Conforme</p>
-                <p className="text-lg font-semibold text-green-700">{summary.compliant}</p>
+                <p className="text-lg font-semibold text-primary">{summary.compliant}</p>
               </div>
 
               <div className="text-center">
                 <p className="text-xs text-on-surface-variant">Não Conforme</p>
-                <p className="text-lg font-semibold text-red-700">{summary.non_compliant}</p>
+                <p className="text-lg font-semibold text-error">{summary.non_compliant}</p>
               </div>
 
               <div className="text-center">
                 <p className="text-xs text-on-surface-variant">Atrasados</p>
-                <p className="text-lg font-semibold text-orange-700">{summary.overdue}</p>
+                <p className="text-lg font-semibold text-secondary">{summary.overdue}</p>
               </div>
             </div>
           )}
@@ -155,10 +155,10 @@ export function PlayerComplianceSection({
 
       {/* Critical Issues Alert */}
       {criticalRecords.length > 0 && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-md">
+        <div className="rounded-lg border border-error/40 bg-error-container/10 p-md">
           <div className="flex gap-md">
-            <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-700" />
-            <div className="text-sm text-red-800">
+            <AlertCircle className="h-5 w-5 flex-shrink-0 text-error" />
+            <div className="text-sm text-on-error-container">
               <p className="font-medium">🚨 Problemas Críticos</p>
               <p className="mt-sm">
                 Há {criticalRecords.length} problema{criticalRecords.length !== 1 ? 's' : ''} crítico{criticalRecords.length !== 1 ? 's' : ''} que requerem atenção imediata.
@@ -228,10 +228,10 @@ function ComplianceRecordCard({ record }: { record: ComplianceRecord }) {
             <h4 className="font-semibold text-on-surface">
               {getRuleTypeLabel(record.rule_type)}
             </h4>
-            <Badge className={`${priorityInfo.bgColor} ${priorityInfo.color}`}>
+            <Badge className={`${priorityInfo.bgColor} ${priorityInfo.color} border` }>
               {priorityInfo.label}
             </Badge>
-            <Badge className={`${statusInfo.bgColor} ${statusInfo.color}`}>
+            <Badge className={`${statusInfo.bgColor} ${statusInfo.color} border`}>
               {statusInfo.label}
             </Badge>
           </div>
@@ -256,11 +256,11 @@ function ComplianceRecordCard({ record }: { record: ComplianceRecord }) {
             <Calendar className="h-4 w-4 text-on-surface-variant" />
             <div>
               <p className="text-xs text-on-surface-variant">Prazo</p>
-              <p className={`text-on-surface ${isOverdue ? 'text-red-700 font-semibold' : ''}`}>
+              <p className={`text-on-surface ${isOverdue ? 'text-error font-semibold' : ''}`}>
                 {new Date(record.deadline).toLocaleDateString('pt-PT')}
               </p>
               {daysUntil !== null && (
-                <p className={`text-xs ${daysUntil < 0 ? 'text-red-700' : 'text-on-surface-variant'}`}>
+                <p className={`text-xs ${daysUntil < 0 ? 'text-error' : 'text-on-surface-variant'}`}>
                   {daysUntil < 0 ? `${Math.abs(daysUntil)} dias atrasado` : `${daysUntil} dias até prazo`}
                 </p>
               )}
@@ -276,16 +276,16 @@ function ComplianceRecordCard({ record }: { record: ComplianceRecord }) {
         )}
 
         {record.resolution_notes && (
-          <div className="p-sm bg-green-50 rounded">
-            <p className="text-xs text-green-700 font-medium">✓ Resolvido</p>
-            <p className="text-xs text-green-900">{record.resolution_notes}</p>
+          <div className="rounded bg-primary-container/15 p-sm">
+            <p className="text-xs font-medium text-primary">✓ Resolvido</p>
+            <p className="text-xs text-on-surface">{record.resolution_notes}</p>
           </div>
         )}
 
         {record.exemption_reason && (
-          <div className="p-sm bg-purple-50 rounded">
-            <p className="text-xs text-purple-700 font-medium">📄 Isenção Concedida</p>
-            <p className="text-xs text-purple-900">{record.exemption_reason}</p>
+          <div className="rounded bg-secondary-container/15 p-sm">
+            <p className="text-xs font-medium text-secondary">📄 Isenção Concedida</p>
+            <p className="text-xs text-on-surface">{record.exemption_reason}</p>
           </div>
         )}
       </div>

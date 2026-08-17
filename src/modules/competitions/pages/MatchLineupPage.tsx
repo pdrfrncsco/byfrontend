@@ -71,9 +71,9 @@ function FormationField({ starters }: FormationFieldProps) {
   return (
     <div className="relative mx-auto max-w-md">
       {/* Field background */}
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-green-600 to-green-700 p-lg shadow-lg">
+      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary/40 to-primary/80 p-lg shadow-lg shadow-primary/10">
         {/* Field markings */}
-        <div className="relative h-full rounded-xl border-2 border-white/30">
+        <div className="relative h-full rounded-xl border-2 border-white/30 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_60%)]">
           {/* Center circle */}
           <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30" />
           {/* Center line */}

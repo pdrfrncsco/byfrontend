@@ -14,44 +14,44 @@ interface PlayerCareerTimelineProps {
 // Competition type to color mapping
 const COMPETITION_COLORS: Record<string, { bg: string; border: string; dot: string; text: string }> = {
   'league': {
-    bg: 'bg-blue-50 dark:bg-blue-950',
-    border: 'border-blue-200 dark:border-blue-800',
-    dot: 'bg-blue-500',
-    text: 'text-blue-700 dark:text-blue-300',
+    bg: 'bg-primary-container/20',
+    border: 'border-primary/30',
+    dot: 'bg-primary',
+    text: 'text-primary',
   },
   'cup': {
-    bg: 'bg-amber-50 dark:bg-amber-950',
-    border: 'border-amber-200 dark:border-amber-800',
-    dot: 'bg-amber-500',
-    text: 'text-amber-700 dark:text-amber-300',
+    bg: 'bg-secondary-container/20',
+    border: 'border-secondary/30',
+    dot: 'bg-secondary',
+    text: 'text-secondary',
   },
   'european': {
-    bg: 'bg-purple-50 dark:bg-purple-950',
-    border: 'border-purple-200 dark:border-purple-800',
-    dot: 'bg-purple-500',
-    text: 'text-purple-700 dark:text-purple-300',
+    bg: 'bg-tertiary-container/20',
+    border: 'border-tertiary/30',
+    dot: 'bg-tertiary',
+    text: 'text-tertiary',
   },
   'international': {
-    bg: 'bg-green-50 dark:bg-green-950',
-    border: 'border-green-200 dark:border-green-800',
-    dot: 'bg-green-500',
-    text: 'text-green-700 dark:text-green-300',
+    bg: 'bg-primary-container/15',
+    border: 'border-primary/20',
+    dot: 'bg-primary',
+    text: 'text-primary',
   },
   'other': {
-    bg: 'bg-gray-50 dark:bg-gray-950',
-    border: 'border-gray-200 dark:border-gray-800',
-    dot: 'bg-gray-500',
-    text: 'text-gray-700 dark:text-gray-300',
+    bg: 'bg-surface-container',
+    border: 'border-outline-variant/40',
+    dot: 'bg-on-surface-variant',
+    text: 'text-on-surface-variant',
   },
 }
 
 // Status to badge color
 const STATUS_COLORS: Record<string, string> = {
-  'active': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  'loaned': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-  'transferred': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  'retired': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-  'inactive': 'bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200',
+  'active': 'bg-primary-container/20 text-on-primary-container',
+  'loaned': 'bg-secondary-container/20 text-on-secondary-container',
+  'transferred': 'bg-tertiary-container/20 text-on-tertiary-container',
+  'retired': 'bg-surface-container text-on-surface-variant',
+  'inactive': 'bg-surface-container-high text-on-surface-variant',
 }
 
 function getCompetitionType(competition?: string): string {

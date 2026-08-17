@@ -15,12 +15,8 @@ function getPreferredTheme(): Theme {
 function applyThemeToDocument(theme: Theme) {
   if (typeof document === 'undefined') return
   document.documentElement.classList.toggle('dark', theme === 'dark')
-<<<<<<< HEAD
   document.documentElement.setAttribute('data-theme', theme)
-=======
-  document.documentElement.dataset.theme = theme
   document.documentElement.style.colorScheme = theme
->>>>>>> 2197675a49046051568836d0c76f09234732fd1e
 }
 
 interface ThemeStoreState {

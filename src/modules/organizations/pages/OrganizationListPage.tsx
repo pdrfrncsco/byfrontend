@@ -52,7 +52,7 @@ export function OrganizationListPage() {
             { label: 'Resultados', value: isLoading ? '...' : (organizations?.length ?? 0) },
             { label: 'Filtros', value: [search, typeFilter].filter(Boolean).length },
           ]}
-          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(148,211,193,0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(66,153,225,0.16),transparent_38%),linear-gradient(180deg,rgba(7,16,29,0.94),rgba(7,16,29,0.08))]"
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.18),transparent_40%),radial-gradient(circle_at_top_right,rgba(233,195,73,0.12),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.75),rgba(255,255,255,0.06))]"
         />
 
         <Card variant="flat" padding="none">
