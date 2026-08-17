@@ -1,28 +1,33 @@
 import { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/app/providers'
-import { usePlayerOnboardingState } from '@/modules/players'
+import { usePlayerOnboardingState, STEP_ROUTE_MAP, STEP_ORDER } from '@/modules/players'
 import { ROUTES } from '@/constants/routes'
+import type { OnboardingStep } from '@/modules/players'
 
 interface PlayerOnboardingGuardProps {
   children: ReactNode
 }
 
 /**
- * Guards the player onboarding flow:
- * - Redirects unauthenticated users to login
- * - Redirects non-players to main dashboard
- * - On the /complete route: always renders (no redirect loop)
- * - On the /review route: only renders when steps 1+2 are done; does NOT redirect to complete
- * - Prevents skipping steps: redirects back to the correct incomplete step
+ * Guards the 9-step player onboarding flow.
+ *
+ * Rules:
+ * 1. Unauthenticated → /login
+ * 2. Non-player      → /dashboard
+ * 3. /complete       → always renders (no redirect loop)
+ * 4. Fully complete  → /dashboard/player (except on /complete)
+ * 5. /welcome        → renders; if complete goes to dashboard
+ * 6. Any other step  → if the user hasn't reached that step yet,
+ *                      redirect to the earliest incomplete step.
  */
 export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) {
   const location = useLocation()
   const { isAuthenticated, user, loading: authLoading } = useAuth()
   const isPlayer = Boolean(user?.roles.includes('player') || user?.profileType === 'player')
-  const { onboardingState, isLoading, data } = usePlayerOnboardingState(isAuthenticated && isPlayer)
+  const { onboardingState, isLoading } = usePlayerOnboardingState(isAuthenticated && isPlayer)
 
-  // ── Loading states ────────────────────────────────────────────────────────────
+  // ── Loading ───────────────────────────────────────────────────────────────────
   if (authLoading || (isAuthenticated && isPlayer && isLoading)) {
     return (
       <div className="min-h-screen bg-background text-on-surface flex flex-col items-center justify-center gap-md">
@@ -32,54 +37,40 @@ export function PlayerOnboardingGuard({ children }: PlayerOnboardingGuardProps) 
     )
   }
 
-  // ── Auth checks ───────────────────────────────────────────────────────────────
-  if (!isAuthenticated) {
-    return <Navigate to={ROUTES.LOGIN} replace />
-  }
-
-  if (!isPlayer) {
-    return <Navigate to={ROUTES.DASHBOARD} replace />
-  }
+  // ── Auth ──────────────────────────────────────────────────────────────────────
+  if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />
+  if (!isPlayer)        return <Navigate to={ROUTES.DASHBOARD} replace />
 
   const pathname = location.pathname
 
-  // ── /complete: always render — never redirect (prevents loop) ─────────────────
-  // The complete page manages its own navigation after showing success.
+  // ── /complete: always render — end-of-flow page handles its own navigation ───
   if (pathname === ROUTES.ONBOARDING_PLAYER_COMPLETE) {
     return <>{children}</>
   }
 
-  // ── /review: render if steps 1+2 done; redirect if not — but never to /complete
-  // The review page itself shows the "Entrar no portal" CTA when everything is done.
-  if (pathname === ROUTES.ONBOARDING_PLAYER_REVIEW) {
-    const hasBasicInfo = Boolean(data?.has_basic_info ?? data?.personal_complete)
-    const hasFootballInfo = Boolean(data?.has_football_info ?? data?.football_complete)
-    if (!hasBasicInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
-    if (!hasFootballInfo) return <Navigate to={ROUTES.ONBOARDING_PLAYER_FOOTBALL} replace />
-    // Both done → let /review render; user decides when to proceed
-    return <>{children}</>
-  }
-
-  // ── Welcome page: entry point ─────────────────────────────────────────────────
-  if (pathname === ROUTES.ONBOARDING_PLAYER) {
-    // Already fully complete → go to player dashboard, not to /complete
-    if (onboardingState?.isComplete) {
-      return <Navigate to={ROUTES.DASHBOARD_PLAYER} replace />
-    }
-    return <>{children}</>
-  }
-
-  // ── For profile + football: if fully complete, go to dashboard (not /complete) ─
+  // ── Fully complete: redirect to portal (skip /complete to avoid loop) ─────────
   if (onboardingState?.isComplete) {
     return <Navigate to={ROUTES.DASHBOARD_PLAYER} replace />
   }
 
-  // ── Step access control: prevent jumping ahead ─────────────────────────────────
-  const hasBasicInfo = Boolean(data?.has_basic_info ?? data?.personal_complete)
+  // ── Welcome/entry page: always allow; the user hasn't started yet ─────────────
+  if (pathname === ROUTES.ONBOARDING_PLAYER) {
+    return <>{children}</>
+  }
 
-  // Trying to access Football step without completing Profile
-  if (pathname === ROUTES.ONBOARDING_PLAYER_FOOTBALL && !hasBasicInfo) {
-    return <Navigate to={ROUTES.ONBOARDING_PLAYER_PROFILE} replace />
+  // ── Enforce step access: user can navigate to completed steps or the next pending step ──
+  const targetStep = (Object.entries(STEP_ROUTE_MAP) as [NonNullable<OnboardingStep>, string][])
+    .find(([, route]) => route === pathname)?.[0]
+
+  if (targetStep && onboardingState?.nextStep) {
+    const targetIndex = STEP_ORDER.indexOf(targetStep)
+    const allowedIndex = STEP_ORDER.indexOf(onboardingState.nextStep)
+
+    // Only block if trying to jump past the current incomplete step
+    if (targetIndex > allowedIndex) {
+      const redirectRoute = onboardingState.nextRoute ?? ROUTES.ONBOARDING_PLAYER
+      return <Navigate to={redirectRoute} replace />
+    }
   }
 
   return <>{children}</>

@@ -11,13 +11,15 @@ import {
   type ProfileUpdateFormData,
   type ChangePasswordFormData,
 } from '@/modules/auth/schemas'
-import { User, Save, Lock, Shield, ChevronRight } from 'lucide-react'
+import { User, Save, Lock, Shield, ChevronRight, Moon, Sun } from 'lucide-react'
+import { useTheme } from '@/app/providers'
 
 type Tab = 'profile' | 'security' | 'memberships'
 
 export function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout: authLogout, memberships, activeMembershipId, setActiveMembership } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
 
   const updateProfileMutation = useUpdateProfile()
@@ -74,7 +76,7 @@ export function ProfilePage() {
 
   /* ── Shared classes ── */
   const inputClass =
-    'w-full px-md py-sm bg-[#000f21] border border-[#26364a] rounded-lg text-[#d3e4fe] text-sm focus:outline-none focus:border-[#94d3c1] transition-colors'
+    'w-full px-md py-sm bg-[var(--profile-input)] border border-[var(--profile-border)] rounded-lg text-[var(--profile-text)] text-sm focus:outline-none focus:border-primary transition-colors'
   const labelClass =
     'block text-xs font-semibold text-on-surface-variant mb-sm uppercase tracking-wider'
 
@@ -88,7 +90,7 @@ export function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#031427] text-[#d3e4fe]">
+    <div className="min-h-screen bg-[var(--profile-bg)] text-[var(--profile-text)]">
       {/* Background */}
       <div className="glow-bg">
         <div className="glow-circle glow-1" />
@@ -96,7 +98,7 @@ export function ProfilePage() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-30 h-16 flex items-center px-lg bg-[#0b1c30]/80 border-b border-[#26364a]/40 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 h-16 flex items-center px-lg bg-[var(--profile-surface)] border-b border-[var(--profile-border)] backdrop-blur-xl">
         <button
           onClick={() => navigate('/dashboard')}
           className="flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors text-sm group"
@@ -104,23 +106,23 @@ export function ProfilePage() {
           <ChevronRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
           Dashboard
         </button>
-        <h1 className="ml-auto font-display-lg text-lg text-[#94d3c1] uppercase tracking-wider">
+        <h1 className="ml-auto font-display-lg text-lg text-primary uppercase tracking-wider">
           Perfil
         </h1>
       </header>
 
       <div className="max-w-3xl mx-auto p-lg space-y-lg">
         {/* User Avatar Card */}
-        <div className="glass-panel rounded-xl p-lg border border-[#26364a] flex items-center gap-lg">
-          <div className="w-16 h-16 rounded-full bg-[#1b2b3f] flex items-center justify-center border-2 border-[#94d3c1] shrink-0">
-            <span className="text-2xl font-bold text-[#94d3c1] uppercase">
+        <div className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] flex items-center gap-lg">
+          <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center border-2 border-primary shrink-0">
+            <span className="text-2xl font-bold text-primary uppercase">
               {user?.username?.charAt(0) || '?'}
             </span>
           </div>
           <div>
-            <p className="font-display-lg text-xl text-[#d3e4fe]">{user?.username || 'Utilizador'}</p>
+            <p className="font-display-lg text-xl text-[var(--profile-text)]">{user?.username || 'Utilizador'}</p>
             <p className="text-sm text-on-surface-variant">{user?.email}</p>
-            <span className="inline-block mt-1 text-xs bg-primary/20 text-[#94d3c1] border border-primary/30 px-sm py-0.5 rounded-full font-semibold uppercase tracking-wide">
+            <span className="inline-block mt-1 text-xs bg-primary/20 text-primary border border-primary/30 px-sm py-0.5 rounded-full font-semibold uppercase tracking-wide">
               {user?.role || 'Membro'}
             </span>
           </div>
@@ -134,15 +136,15 @@ export function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-sm border-b border-[#26364a]">
+        <div className="flex gap-sm border-b border-[var(--profile-border)]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-sm px-md py-sm text-sm font-semibold transition-all cursor-pointer border-b-2 -mb-px ${
                 activeTab === tab.id
-                  ? 'text-[#94d3c1] border-[#94d3c1]'
-                  : 'text-on-surface-variant border-transparent hover:text-[#d3e4fe]'
+                  ? 'text-primary border-primary'
+                  : 'text-[var(--profile-muted)] border-transparent hover:text-[var(--profile-text)]'
               }`}
             >
               {tab.icon}
@@ -153,11 +155,12 @@ export function ProfilePage() {
 
         {/* Profile Tab */}
         {activeTab === 'profile' && (
+          <div className="space-y-lg">
           <form
             onSubmit={profileForm.handleSubmit(onProfileUpdate)}
-            className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md"
+            className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] space-y-md"
           >
-            <h2 className="font-display-lg text-lg text-[#d3e4fe]">Informações Pessoais</h2>
+            <h2 className="font-display-lg text-lg text-[var(--profile-text)]">Informações Pessoais</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
               <div>
@@ -196,7 +199,7 @@ export function ProfilePage() {
                 type="email"
                 value={user?.email || ''}
                 readOnly
-                className="w-full px-md py-sm bg-[#000f21]/50 border border-[#26364a]/50 rounded-lg text-on-surface-variant text-sm cursor-not-allowed"
+                className="w-full px-md py-sm bg-[var(--profile-surface-muted)] border border-[var(--profile-border)] rounded-lg text-[var(--profile-muted)] text-sm cursor-not-allowed"
               />
               <p className="text-xs text-on-surface-variant opacity-50 mt-1">
                 O email não pode ser alterado diretamente.
@@ -239,15 +242,47 @@ export function ProfilePage() {
               </button>
             </div>
           </form>
+
+          <section className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] space-y-md" aria-labelledby="appearance-title">
+            <div>
+              <h2 id="appearance-title" className="font-display-lg text-lg text-[var(--profile-text)]">Aparência</h2>
+              <p className="mt-1 text-sm text-[var(--profile-muted)]">Escolha como o BOLA YETU deve ser apresentado neste dispositivo.</p>
+            </div>
+            <div className="grid gap-md sm:grid-cols-2">
+              {([
+                { value: 'light' as const, label: 'Modo claro', description: 'Superfícies claras e maior luminosidade.', icon: Sun },
+                { value: 'dark' as const, label: 'Modo escuro', description: 'Contraste escuro para ambientes de pouca luz.', icon: Moon },
+              ]).map(({ value, label, description, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTheme(value)}
+                  aria-pressed={theme === value}
+                  className={`flex items-start gap-md rounded-xl border p-md text-left transition-colors ${
+                    theme === value
+                      ? 'border-primary bg-primary-container/10'
+                      : 'border-[var(--profile-border)] bg-[var(--profile-surface-muted)] hover:border-primary/50'
+                  }`}
+                >
+                  <Icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  <span>
+                    <span className="block font-semibold text-[var(--profile-text)]">{label}</span>
+                    <span className="mt-1 block text-xs text-[var(--profile-muted)]">{description}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+          </div>
         )}
 
         {/* Security Tab */}
         {activeTab === 'security' && (
           <form
             onSubmit={passwordForm.handleSubmit(onPasswordChange)}
-            className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md"
+            className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] space-y-md"
           >
-            <h2 className="font-display-lg text-lg text-[#d3e4fe]">Alterar Palavra-passe</h2>
+            <h2 className="font-display-lg text-lg text-[var(--profile-text)]">Alterar Palavra-passe</h2>
 
             <div>
               <label className={labelClass}>Palavra-passe Atual</label>
@@ -294,14 +329,14 @@ export function ProfilePage() {
               )}
             </div>
 
-            <div className="bg-[#000f21]/60 border border-[#26364a]/50 rounded-lg p-md text-xs text-on-surface-variant space-y-1">
-              <p className="font-semibold text-[#d3e4fe] mb-sm">Requisitos da palavra-passe:</p>
+            <div className="bg-[var(--profile-surface-muted)] border border-[var(--profile-border)] rounded-lg p-md text-xs text-[var(--profile-muted)] space-y-1">
+              <p className="font-semibold text-[var(--profile-text)] mb-sm">Requisitos da palavra-passe:</p>
               {passwordRequirements.map(([label, met]) => (
                 <div key={label as string} className="flex items-center gap-sm">
                   <div
-                    className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-[#94d3c1]' : 'bg-[#26364a]'}`}
+                    className={`w-1.5 h-1.5 rounded-full ${met ? 'bg-primary' : 'bg-outline-variant'}`}
                   />
-                  <span className={met ? 'text-[#94d3c1]' : ''}>{label as string}</span>
+                  <span className={met ? 'text-primary' : ''}>{label as string}</span>
                 </div>
               ))}
             </div>
@@ -321,8 +356,8 @@ export function ProfilePage() {
 
         {/* Memberships Tab */}
         {activeTab === 'memberships' && (
-          <div className="glass-panel rounded-xl p-lg border border-[#26364a] space-y-md">
-            <h2 className="font-display-lg text-lg text-[#d3e4fe]">Organizações</h2>
+          <div className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] space-y-md">
+            <h2 className="font-display-lg text-lg text-[var(--profile-text)]">Organizações</h2>
             <p className="text-sm text-on-surface-variant">
               Organizações às quais a sua conta está associada e os respetivos cargos.
             </p>
@@ -344,15 +379,15 @@ export function ProfilePage() {
                     <div
                       key={membership.id}
                       className={`flex items-center justify-between gap-md rounded-lg border p-md transition-colors ${
-                        isActive ? 'border-[#94d3c1] bg-[#000f21]' : 'border-[#26364a]/50 bg-[#000f21]/60'
+                        isActive ? 'border-primary bg-[var(--profile-surface-muted)]' : 'border-[var(--profile-border)] bg-[var(--profile-surface-muted)]'
                       }`}
                     >
                       <div className="flex items-center gap-md">
-                        <div className="w-10 h-10 rounded-lg bg-[#1b2b3f] flex items-center justify-center border border-[#26364a]">
-                          <Shield className="w-5 h-5 text-[#94d3c1]" />
+                        <div className="w-10 h-10 rounded-lg bg-primary-container/20 flex items-center justify-center border border-[var(--profile-border)]">
+                          <Shield className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#d3e4fe]">{membership.tenant_name}</p>
+                          <p className="text-sm font-semibold text-[var(--profile-text)]">{membership.tenant_name}</p>
                           <p className="text-xs text-on-surface-variant">
                             {membership.tenant_slug} · {membership.role}
                           </p>
@@ -360,7 +395,7 @@ export function ProfilePage() {
                       </div>
                       <div className="flex items-center gap-sm">
                         {isActive && (
-                          <span className="text-xs bg-primary/20 text-[#94d3c1] border border-primary/30 px-sm py-0.5 rounded-full font-bold uppercase">
+                          <span className="text-xs bg-primary/20 text-primary border border-primary/30 px-sm py-0.5 rounded-full font-bold uppercase">
                             Atual
                           </span>
                         )}

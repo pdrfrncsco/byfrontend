@@ -136,7 +136,7 @@ export function useUpdatePlayerMe() {
     mutationFn: (data: PlayerUpdate) => updatePlayerMe(data),
     onSuccess: async (response) => {
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
-      await queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
+      await queryClient.refetchQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
     },
   })
@@ -159,8 +159,11 @@ export function useCompleteOnboardingStep() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (step: string) => completeOnboardingStep(step),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: playerKeys.onboardingStatus() })
+    onSuccess: async (data) => {
+      if (data) {
+        queryClient.setQueryData(playerKeys.onboardingStatus(), data)
+      }
+      await queryClient.refetchQueries({ queryKey: playerKeys.onboardingStatus() })
       queryClient.invalidateQueries({ queryKey: playerKeys.me() })
     },
   })

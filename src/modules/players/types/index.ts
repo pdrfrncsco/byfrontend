@@ -92,7 +92,7 @@ export interface Player {
 
 export interface PlayerDetail extends Player {
   /** @deprecated Use PlayerContact.mobile_phone instead. Removed September 2026. */
-  phone: string | null
+  phone?: string | null
   updated_at: string
   current_club: PlayerCurrentClub | null
   career_history: PlayerCareerEntry[]

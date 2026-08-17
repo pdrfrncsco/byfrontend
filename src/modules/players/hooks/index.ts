@@ -5,7 +5,10 @@ export * from './usePlayerMutations'
 export * from './usePlayerRegistrationRequests'
 export * from './useCurrentPlayer'
 export * from './usePlayerOnboardingState'
-export * from './usePlayerCareerStats'
+// Keep the legacy career hooks available without re-exporting its duplicate
+// usePlayerStatistics name. The canonical implementation lives in
+// usePlayerQueries and supports optional season filtering.
+export { usePlayerCareerStats, usePlayerRegistrations } from './usePlayerCareerStats'
 export * from './usePlayerFilters'
 export * from './usePlayerComparison'
 export * from './usePlayerContracts'

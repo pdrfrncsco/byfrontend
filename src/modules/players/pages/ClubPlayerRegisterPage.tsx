@@ -14,10 +14,10 @@ import {
   CardHeader,
   CardTitle,
   EmptyState,
-  FormField,
   Input,
   Skeleton,
 } from '@/components/ui'
+import { FormField } from '@/components/ui/form-field'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { usePlayers, useRegisterPlayer } from '../hooks'

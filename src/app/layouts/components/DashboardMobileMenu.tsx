@@ -45,11 +45,19 @@ export function DashboardMobileMenu({
   if (!isOpen) return null
 
   return (
+<<<<<<< HEAD
     <div className="dashboard-overlay fixed inset-0 z-50 flex justify-start backdrop-blur-sm md:hidden">
       <aside className="dashboard-sidebar-surface relative flex h-full w-64 flex-col border-r p-md animate-fade-in">
         <button 
           onClick={onClose}
           className="dashboard-muted absolute right-md top-md p-sm transition-colors hover:text-[var(--dashboard-strong)]"
+=======
+    <div className="fixed inset-0 bg-[var(--profile-surface-muted)]/80 backdrop-blur-sm z-50 md:hidden flex justify-start">
+      <aside className="w-64 border-r border-[var(--bg-card-border)] bg-[var(--bg-card)] flex flex-col p-md h-full relative animate-fade-in">
+        <button 
+          onClick={onClose}
+          className="absolute top-md right-md p-sm text-on-surface-variant hover:text-[var(--text-main)]"
+>>>>>>> 2197675a49046051568836d0c76f09234732fd1e
         >
           <X className="w-6 h-6" />
         </button>
@@ -61,8 +69,13 @@ export function DashboardMobileMenu({
               src={logo} 
             />
           )}
+<<<<<<< HEAD
           <h1 className="font-display-lg text-primary text-xl uppercase tracking-tighter">BOLA YETU</h1>
           <p className="dashboard-muted mt-1 text-[10px] font-semibold uppercase tracking-widest">
+=======
+          <h1 className="font-display-lg text-xl text-primary uppercase tracking-tighter">BOLA YETU</h1>
+          <p className="text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest mt-1">
+>>>>>>> 2197675a49046051568836d0c76f09234732fd1e
             {subLabel}
           </p>
         </div>
@@ -96,8 +109,13 @@ export function DashboardMobileMenu({
                         aria-current={activeHref === link.href ? 'page' : undefined}
                         className={`flex items-center gap-md p-md rounded-lg transition-all ${
                           link.active || activeHref === link.href
+<<<<<<< HEAD
                             ? 'dashboard-active text-primary font-bold border-r-4'
                             : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
+=======
+                            ? 'bg-primary-container/20 text-primary font-bold border-r-4 border-primary'
+                            : 'text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)]'
+>>>>>>> 2197675a49046051568836d0c76f09234732fd1e
                         }`}
                       >
                         {link.icon}
@@ -129,8 +147,13 @@ export function DashboardMobileMenu({
                   aria-current={activeHref === link.href ? 'page' : undefined}
                   className={`flex items-center gap-md p-md rounded-lg transition-all ${
                     link.active || activeHref === link.href
+<<<<<<< HEAD
                       ? 'dashboard-active text-primary font-bold border-r-4'
                       : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
+=======
+                      ? 'bg-primary-container/20 text-primary font-bold border-r-4 border-primary'
+                      : 'text-on-surface-variant hover:bg-primary/10 hover:text-[var(--text-main)]'
+>>>>>>> 2197675a49046051568836d0c76f09234732fd1e
                   }`}
                 >
                   {link.icon}
@@ -140,7 +163,11 @@ export function DashboardMobileMenu({
             ))
           )}
         </nav>
+<<<<<<< HEAD
         <div className="mt-auto space-y-1 border-t pt-lg" style={{ borderColor: 'var(--dashboard-border)' }}>
+=======
+        <div className="pt-lg border-t border-[var(--bg-card-border)] mt-auto space-y-1">
+>>>>>>> 2197675a49046051568836d0c76f09234732fd1e
           <button
             onClick={onLogout}
             className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"

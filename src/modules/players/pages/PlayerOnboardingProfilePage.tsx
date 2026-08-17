@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { AlertCircle, ArrowRight } from 'lucide-react'
 import { Button, Input, Label } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { usePlayerOnboardingStatus, useUpdatePlayerMe } from '../hooks'
+import { usePlayerOnboardingStatus, useUpdatePlayerMe, useCompleteOnboardingStep } from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 interface ProfileFormData {
@@ -18,6 +18,7 @@ export function PlayerOnboardingProfilePage() {
   const navigate = useNavigate()
   const { data, isLoading } = usePlayerOnboardingStatus()
   const updatePlayer = useUpdatePlayerMe()
+  const completeStep = useCompleteOnboardingStep()
   const form = useForm<ProfileFormData>({
     defaultValues: {
       first_name: '',
@@ -44,12 +45,13 @@ export function PlayerOnboardingProfilePage() {
       date_of_birth: values.date_of_birth,
       nationality: values.nationality.trim(),
     })
+    await completeStep.mutateAsync('personal')
     navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)
   }
 
   if (isLoading) {
     return (
-      <PlayerOnboardingLayout step={1} maxReachedStep={1}>
+      <PlayerOnboardingLayout step={3}>
         <div className="text-sm text-on-surface-variant">A carregar perfil...</div>
       </PlayerOnboardingLayout>
     )
@@ -57,7 +59,7 @@ export function PlayerOnboardingProfilePage() {
 
   if (data && !data.has_player_profile) {
     return (
-      <PlayerOnboardingLayout step={1} maxReachedStep={1}>
+      <PlayerOnboardingLayout step={3}>
         <div className="flex flex-col gap-md rounded-lg border border-error/30 bg-error-container/10 p-md text-sm">
           <div className="flex items-start gap-md">
             <AlertCircle className="mt-0.5 h-5 w-5 text-error" />
@@ -87,7 +89,7 @@ export function PlayerOnboardingProfilePage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={1} maxReachedStep={1}>
+    <PlayerOnboardingLayout step={3}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Dados pessoais</h2>

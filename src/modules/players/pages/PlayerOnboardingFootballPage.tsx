@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Button, Input, Label, NativeSelect, Textarea } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { ALL_POSITIONS } from '../constants'
-import { usePlayerOnboardingStatus, useUpdatePlayerMe } from '../hooks'
+import { usePlayerOnboardingStatus, useUpdatePlayerMe, useCompleteOnboardingStep } from '../hooks'
 import type { PlayerFoot, PlayerPosition } from '../types'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
@@ -25,6 +25,7 @@ export function PlayerOnboardingFootballPage() {
   const navigate = useNavigate()
   const { data } = usePlayerOnboardingStatus()
   const updatePlayer = useUpdatePlayerMe()
+  const completeStep = useCompleteOnboardingStep()
   const form = useForm<FootballFormData>({
     defaultValues: {
       primary_position: 'multiple',
@@ -54,11 +55,12 @@ export function PlayerOnboardingFootballPage() {
       weight_kg: optionalNumber(values.weight_kg),
       bio: values.bio.trim() || undefined,
     })
-    navigate(ROUTES.ONBOARDING_PLAYER_REVIEW)
+    await completeStep.mutateAsync('football')
+    navigate(ROUTES.ONBOARDING_PLAYER_CONTACT)
   }
 
   return (
-    <PlayerOnboardingLayout step={2} maxReachedStep={2}>
+    <PlayerOnboardingLayout step={4}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Perfil futebolístico</h2>

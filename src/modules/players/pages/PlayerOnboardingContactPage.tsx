@@ -41,7 +41,7 @@ export function PlayerOnboardingContactPage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={5} maxReachedStep={5}>
+    <PlayerOnboardingLayout step={5}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Contactos</h2>

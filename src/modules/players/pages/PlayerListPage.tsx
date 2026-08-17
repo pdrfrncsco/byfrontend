@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import { PlayerCard, PlayerEmptyState, PlayerListSkeleton } from '../components'
-import { usePlayers, usePlayerSearchQuery as usePlayerSearch } from '../hooks'
+import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
 import type { Player, PlayerPosition } from '../types'
 
@@ -28,28 +28,21 @@ export function PlayerListPage() {
     setPage(1)
   }, [debouncedSearch, selectedPosition, selectedNationality, showOnlyAvailable])
 
-  const searchResult = usePlayerSearch(debouncedSearch)
   const listResult = usePlayers({
     page,
+    page_size: 12,
+    search: isSearching ? debouncedSearch : undefined,
     position: selectedPosition || undefined,
     nationality: selectedNationality || undefined,
     without_club: showOnlyAvailable || undefined,
   })
 
-  const activeResult = isSearching ? searchResult : listResult
-  const isLoading = activeResult.isLoading
-  const isError = activeResult.isError
-
-  const players: Player[] = isSearching
-    ? (searchResult.data ?? [])
-    : (listResult.data?.results ?? [])
-
-  const totalCount = isSearching
-    ? players.length
-    : (listResult.data?.count ?? 0)
-
-  const hasNext = !isSearching && Boolean(listResult.data?.next)
-  const hasPrev = !isSearching && page > 1
+  const isLoading = listResult.isLoading
+  const isError = listResult.isError
+  const players: Player[] = listResult.data?.results ?? []
+  const totalCount = listResult.data?.count ?? 0
+  const hasNext = Boolean(listResult.data?.next)
+  const hasPrev = page > 1
 
   const activeFilters = useMemo(() => {
     return [selectedPosition, selectedNationality, showOnlyAvailable ? 'available' : ''].filter(Boolean).length
@@ -69,7 +62,7 @@ export function PlayerListPage() {
           <ErrorState
             title={t('players.list.loadErrorTitle')}
             message={t('players.list.loadErrorMessage')}
-            onRetry={() => activeResult.refetch()}
+            onRetry={() => listResult.refetch()}
           />
         </div>
       </div>
@@ -216,15 +209,23 @@ export function PlayerListPage() {
           </CardContent>
         </Card>
 
+        <div className="flex flex-wrap items-center justify-between gap-sm px-xs text-sm text-on-surface-variant" role="status" aria-live="polite">
+          <span>
+            {isLoading ? t('players.list.loading') : t('players.list.playersCount', { count: totalCount })}
+            {isSearching && ` · ${t('players.list.searchActive', { query: debouncedSearch })}`}
+          </span>
+          {activeFilters > 0 && (
+            <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+              {t('players.list.clearFilters')}
+            </Button>
+          )}
+        </div>
+
         {isLoading ? (
           <PlayerListSkeleton />
         ) : players.length === 0 ? (
           <PlayerEmptyState
-            message={
-              isSearching
-                ? `Sem resultados para "${debouncedSearch}"`
-                : 'Nenhum jogador encontrado com os filtros seleccionados.'
-            }
+            message={isSearching ? `Sem resultados para "${debouncedSearch}"` : 'Nenhum jogador encontrado com os filtros seleccionados.'}
             onReset={activeFilters > 0 ? handleClearFilters : undefined}
           />
         ) : (
@@ -235,7 +236,7 @@ export function PlayerListPage() {
           </div>
         )}
 
-        {!isSearching && (hasPrev || hasNext) && (
+        {(hasPrev || hasNext) && (
           <div className="flex items-center justify-center gap-md">
             <Button
               id="players-page-prev"

@@ -2,33 +2,37 @@ import { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Activity, CheckCircle2, UserRound, Lock, FileCheck2, Phone, Users, FolderOpen, Building2 } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
+import { usePlayerOnboardingState, STEP_ORDER } from '../hooks/usePlayerOnboardingState'
+import type { OnboardingStep } from '../types'
 
 interface PlayerOnboardingLayoutProps {
   children: ReactNode
-  /** Current step in the nine-step player onboarding flow. */
+  /** Current step (1–9) in the nine-step player onboarding flow. */
   step: number
-  /** Highest step the user has unlocked based on saved data */
-  maxReachedStep?: number
 }
 
 const steps = [
-  { number: 1, label: 'Conta', href: ROUTES.ONBOARDING_PLAYER_PROFILE, icon: UserRound },
-  { number: 2, label: 'Identidade', href: ROUTES.ONBOARDING_PLAYER_IDENTITY, icon: FileCheck2 },
-  { number: 3, label: 'Dados pessoais', href: ROUTES.ONBOARDING_PLAYER_PROFILE, icon: UserRound },
-  { number: 4, label: 'Futebol', href: ROUTES.ONBOARDING_PLAYER_FOOTBALL, icon: Activity },
-  { number: 5, label: 'Contacto', href: ROUTES.ONBOARDING_PLAYER_CONTACT, icon: Phone },
-  { number: 6, label: 'Responsável', href: ROUTES.ONBOARDING_PLAYER_GUARDIAN, icon: Users },
-  { number: 7, label: 'Documentos', href: ROUTES.ONBOARDING_PLAYER_DOCUMENTS, icon: FolderOpen },
-  { number: 8, label: 'Clube', href: ROUTES.ONBOARDING_PLAYER_CLUB, icon: Building2 },
-  { number: 9, label: 'Revisão', href: ROUTES.ONBOARDING_PLAYER_REVIEW, icon: CheckCircle2 },
+  { number: 1, label: 'Conta',          href: ROUTES.ONBOARDING_PLAYER,           icon: UserRound  },
+  { number: 2, label: 'Identidade',     href: ROUTES.ONBOARDING_PLAYER_IDENTITY,  icon: FileCheck2 },
+  { number: 3, label: 'Dados pessoais', href: ROUTES.ONBOARDING_PLAYER_PROFILE,   icon: UserRound  },
+  { number: 4, label: 'Futebol',        href: ROUTES.ONBOARDING_PLAYER_FOOTBALL,  icon: Activity   },
+  { number: 5, label: 'Contacto',       href: ROUTES.ONBOARDING_PLAYER_CONTACT,   icon: Phone      },
+  { number: 6, label: 'Responsável',    href: ROUTES.ONBOARDING_PLAYER_GUARDIAN,  icon: Users      },
+  { number: 7, label: 'Documentos',     href: ROUTES.ONBOARDING_PLAYER_DOCUMENTS, icon: FolderOpen },
+  { number: 8, label: 'Clube',          href: ROUTES.ONBOARDING_PLAYER_CLUB,      icon: Building2  },
+  { number: 9, label: 'Revisão',        href: ROUTES.ONBOARDING_PLAYER_REVIEW,    icon: CheckCircle2 },
 ]
 
-export function PlayerOnboardingLayout({
-  children,
-  step,
-  maxReachedStep = 1,
-}: PlayerOnboardingLayoutProps) {
+export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayoutProps) {
   const navigate = useNavigate()
+
+  // Derive how far the user has progressed directly from the backend status.
+  // next_step is the first *incomplete* step — everything before it is done.
+  const { data } = usePlayerOnboardingState()
+  const nextStepKey = (data?.next_step ?? 'account') as NonNullable<OnboardingStep>
+  const nextIdx     = STEP_ORDER.indexOf(nextStepKey) // 0-based
+  // maxReachedStep is 1-based; user can navigate up to and including nextIdx + 1
+  const maxReachedStep = nextIdx >= 0 ? nextIdx + 1 : 1
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -55,12 +59,12 @@ export function PlayerOnboardingLayout({
         <nav className="mb-lg grid gap-sm rounded-lg border border-outline-variant/40 bg-surface-container-low p-sm sm:grid-cols-3">
           {steps.map((item) => {
             const Icon = item.icon
-            const active = item.number === step
+            const active    = item.number === step
             const completed = item.number < step
-            const unlocked = item.number <= maxReachedStep
+            const unlocked  = item.number <= maxReachedStep
             const isClickable = unlocked && !active
 
-            const baseClass = 'flex items-center gap-sm rounded-lg px-md py-sm text-sm font-semibold transition-colors'
+            const baseClass  = 'flex items-center gap-sm rounded-lg px-md py-sm text-sm font-semibold transition-colors'
             const stateClass = active
               ? 'bg-primary text-on-primary-fixed cursor-default'
               : completed && unlocked
@@ -69,13 +73,9 @@ export function PlayerOnboardingLayout({
                   ? 'text-on-surface-variant hover:bg-surface-container cursor-pointer'
                   : 'text-on-surface-variant/40 cursor-not-allowed'
 
-            if (isClickable && unlocked) {
+            if (isClickable) {
               return (
-                <Link
-                  key={item.number}
-                  to={item.href}
-                  className={`${baseClass} ${stateClass}`}
-                >
+                <Link key={item.number} to={item.href} className={`${baseClass} ${stateClass}`}>
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Link>
@@ -83,7 +83,7 @@ export function PlayerOnboardingLayout({
             }
 
             return (
-            <div
+              <div
                 key={item.number}
                 className={`${baseClass} ${stateClass}`}
                 title={!unlocked ? 'Complete o passo anterior primeiro' : undefined}
