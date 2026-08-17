@@ -10,11 +10,11 @@
 
 :root {
   /* Brand Identity Default Tokens (aligned with Material 3 palette in tailwind.config.ts) */
-  --color-primary: #94d3c1;       /* Teal — M3 primary */
+  --color-primary: #94d3c1;
   --color-primary-rgb: 148, 211, 193;
-  --color-secondary: #e9c349;     /* Gold — M3 tertiary */
+  --color-secondary: #e9c349;
   --color-secondary-rgb: 233, 195, 73;
-  --color-accent: #E63946;        /* Red — Action/Alert */
+  --color-accent: #E63946;
   --color-accent-rgb: 230, 57, 70;
 
   /* Typography Design Tokens */
@@ -27,6 +27,19 @@
   --bg-card-border: rgba(148, 211, 193, 0.1);
   --text-main: #0F1117;
   --text-muted: #64748B;
+
+  --surface: #f8fafc;
+  --surface-container: #eef4f1;
+  --surface-container-low: #f3f7f5;
+  --surface-container-high: #e4efe9;
+  --surface-container-highest: #dfe9e4;
+  --surface-container-lowest: #ffffff;
+  --on-surface: #0f1117;
+  --on-surface-variant: #475569;
+  --outline: rgba(15, 61, 50, 0.18);
+  --outline-variant: rgba(15, 61, 50, 0.12);
+  --background: #f4f6f8;
+
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -48,7 +61,7 @@
   --dashboard-search: rgba(255, 255, 255, 0.88);
   --dashboard-search-border: rgba(15, 61, 50, 0.16);
   --dashboard-avatar: linear-gradient(135deg, rgba(148, 211, 193, 0.24), rgba(27, 77, 62, 0.14));
-  
+
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --glass-blur: blur(12px);
 
@@ -96,6 +109,19 @@
   --bg-card-border: rgba(255, 255, 255, 0.06);
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
+
+  --surface: #031427;
+  --surface-container: #102034;
+  --surface-container-low: #0b1c30;
+  --surface-container-high: #1b2b3f;
+  --surface-container-highest: #26364a;
+  --surface-container-lowest: #000f21;
+  --on-surface: #d3e4fe;
+  --on-surface-variant: #bfc9c4;
+  --outline: rgba(148, 211, 193, 0.22);
+  --outline-variant: rgba(148, 211, 193, 0.14);
+  --background: #031427;
+
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
@@ -142,7 +168,8 @@
 :root[data-theme="light"] .bg-surface-container,
 :root[data-theme="light"] .bg-surface-container-low,
 :root[data-theme="light"] .bg-surface-container-high,
-:root[data-theme="light"] .bg-surface-container-highest {
+:root[data-theme="light"] .bg-surface-container-highest,
+:root[data-theme="light"] .bg-surface-container-lowest {
   background-color: var(--bg-app) !important;
 }
 
@@ -159,6 +186,19 @@
 :root[data-theme="light"] .border-outline-variant {
   border-color: var(--profile-border) !important;
 }
+
+.bg-background { background-color: var(--background); }
+.bg-surface { background-color: var(--surface); }
+.bg-surface-container { background-color: var(--surface-container); }
+.bg-surface-container-low { background-color: var(--surface-container-low); }
+.bg-surface-container-high { background-color: var(--surface-container-high); }
+.bg-surface-container-highest { background-color: var(--surface-container-highest); }
+.bg-surface-container-lowest { background-color: var(--surface-container-lowest); }
+
+.text-on-surface { color: var(--on-surface); }
+.text-on-surface-variant { color: var(--on-surface-variant); }
+.border-outline { border-color: var(--outline); }
+.border-outline-variant { border-color: var(--outline-variant); }
 
 /* Base Styles */
 * {
