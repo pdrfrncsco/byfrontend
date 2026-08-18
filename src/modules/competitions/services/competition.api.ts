@@ -10,6 +10,8 @@ import type {
   Match,
   MatchEvent,
   MatchEventCreateData,
+  MatchListParams,
+  MatchStatus,
   PlayerStats,
   Standing,
   LineupSubmission,
@@ -32,6 +34,43 @@ type PaginatedEnvelope<T> =
   | PaginatedResponse<T>
   | { count?: number; next?: string | null; previous?: string | null; results?: T[] }
   | T[]
+
+function normalizeMatch(raw: Partial<Match> & Record<string, any>): Match {
+  const status = (raw.status ?? raw.status_label ?? 'scheduled') as MatchStatus
+
+  return {
+    ...raw,
+    id: raw.id ?? raw.match_id ?? '',
+    competitionId: raw.competitionId ?? raw.competition ?? '',
+    competition: raw.competition ?? raw.competitionId ?? '',
+    roundNumber: raw.roundNumber ?? raw.round_number ?? 0,
+    round_number: raw.round_number ?? raw.roundNumber ?? 0,
+    roundLabel: raw.roundLabel ?? raw.round_name ?? undefined,
+    round_name: raw.round_name ?? raw.roundLabel ?? undefined,
+    homeTeamId: raw.homeTeamId ?? raw.home_club ?? '',
+    home_club: raw.home_club ?? raw.homeTeamId ?? '',
+    homeTeamName: raw.homeTeamName ?? raw.home_club_name ?? '',
+    home_club_name: raw.home_club_name ?? raw.homeTeamName ?? '',
+    homeTeamLogo: raw.homeTeamLogo ?? raw.home_club_logo ?? null,
+    home_club_logo: raw.home_club_logo ?? raw.homeTeamLogo ?? null,
+    awayTeamId: raw.awayTeamId ?? raw.away_club ?? '',
+    away_club: raw.away_club ?? raw.awayTeamId ?? '',
+    awayTeamName: raw.awayTeamName ?? raw.away_club_name ?? '',
+    away_club_name: raw.away_club_name ?? raw.awayTeamName ?? '',
+    awayTeamLogo: raw.awayTeamLogo ?? raw.away_club_logo ?? null,
+    away_club_logo: raw.away_club_logo ?? raw.awayTeamLogo ?? null,
+    scheduledAt: raw.scheduledAt ?? raw.match_date ?? new Date().toISOString(),
+    match_date: raw.match_date ?? raw.scheduledAt ?? new Date().toISOString(),
+    status,
+    status_label: raw.status_label ?? status,
+    home_score: raw.home_score ?? raw.score?.home ?? raw.homeScore ?? null,
+    away_score: raw.away_score ?? raw.score?.away ?? raw.awayScore ?? null,
+    score: raw.score ?? {
+      home: raw.home_score ?? raw.homeScore ?? 0,
+      away: raw.away_score ?? raw.awayScore ?? 0,
+    },
+  } as Match
+}
 
 function unwrapPaginated<T>(payload: PaginatedEnvelope<T>): PaginatedResponse<T> {
   const data = 'data' in payload && 'success' in payload ? payload.data : payload
@@ -148,13 +187,52 @@ export const competitionApi = {
 
   async listMatches(
     competitionId: string,
-    params?: { groupId?: string; group_id?: string; phase?: string; round_number?: number }
+    params?: MatchListParams | Record<string, any>
   ): Promise<Match[]> {
-    const response = await client.get<ApiResponse<Match[]>>(
+    const normalizedParams: Record<string, any> = {
+      ...(params ?? {}),
+      competition_id: params?.competition_id ?? params?.competitionId ?? competitionId,
+      competitionId: params?.competitionId ?? competitionId,
+    }
+
+    if (Array.isArray(normalizedParams.status)) {
+      normalizedParams.status = normalizedParams.status.join(',')
+    }
+
+    if (normalizedParams.roundNumber !== undefined && normalizedParams.round_number === undefined) {
+      normalizedParams.round_number = normalizedParams.roundNumber
+    }
+
+    if (normalizedParams.teamId !== undefined && normalizedParams.team_id === undefined) {
+      normalizedParams.team_id = normalizedParams.teamId
+    }
+
+    if (normalizedParams.groupId !== undefined && normalizedParams.group_id === undefined) {
+      normalizedParams.group_id = normalizedParams.groupId
+    }
+
+    const response = await client.get<
+      ApiResponse<Match[]> | { data?: Match[]; results?: Match[] } | Match[]
+    >(
       API_ROUTES.COMPETITIONS.MATCHES(competitionId),
-      { params }
+      { params: normalizedParams }
     )
-    return response.data.data
+
+    const rawPayload = response.data as
+      | ApiResponse<Match[]>
+      | { data?: Match[]; results?: Match[] }
+      | Match[]
+      | undefined
+
+    const list = Array.isArray((rawPayload as { data?: Match[] })?.data)
+      ? (rawPayload as { data: Match[] }).data
+      : Array.isArray((rawPayload as { results?: Match[] })?.results)
+        ? (rawPayload as { results: Match[] }).results
+        : Array.isArray(rawPayload)
+          ? rawPayload
+          : []
+
+    return list.map((item: Partial<Match> & Record<string, any>) => normalizeMatch(item))
   },
   
   async listAllMatches(params?: Record<string, any>): Promise<PaginatedResponse<Match>> {

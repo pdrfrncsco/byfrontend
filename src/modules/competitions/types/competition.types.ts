@@ -305,7 +305,14 @@ export interface CompetitionListParams {
 }
 
 export interface MatchListParams {
-  competition_id: string
-  status?: MatchStatus
+  competition_id?: string
+  competitionId?: string
+  status?: MatchStatus | MatchStatus[] | string
   round_number?: number
+  roundNumber?: number
+  team_id?: string
+  teamId?: string
+  group_id?: string
+  groupId?: string
+  phase?: string
 }
