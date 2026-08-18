@@ -83,10 +83,12 @@ export const ROUTES = {
   COMPETITION_ADMIN_SUSPENSIONS: (id: string) => `/dashboard/competitions/${id}/suspensions`,
   COMPETITION_ADMIN_REGULATIONS: (id: string) => `/dashboard/competitions/${id}/regulations`,
   // Match center
+  MATCH_CENTER_HUB: (compId: string) => `/competitions/${compId}/match-center`,
   MATCH_CENTER: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}`,
   MATCH_LINEUP: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/lineup`,
   MATCH_REPORT: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/report`,
   // Dashboard match center
+  DASHBOARD_MATCH_CENTER_HUB: (compId: string) => `/dashboard/competitions/${compId}/match-center`,
   DASHBOARD_MATCH_CENTER: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}`,
   DASHBOARD_MATCH_LINEUP: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}/lineup`,
   DASHBOARD_MATCH_REPORT: (compId: string, matchId: string) => `/dashboard/competitions/${compId}/matches/${matchId}/report`,

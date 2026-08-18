@@ -43,6 +43,7 @@ const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/Org
 const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
 const CompetitionAdminListPage = lazy(() => import('@/modules/competitions/pages/CompetitionAdminListPage').then(m => ({ default: m.CompetitionAdminListPage })))
 const CompetitionMatchesPage = lazy(() => import('@/modules/competitions/pages/CompetitionMatchesPage').then(m => ({ default: m.CompetitionMatchesPage })))
+const MatchCenterPage = lazy(() => import('@/modules/competitions/pages/MatchCenterPage').then(m => ({ default: m.MatchCenterPage })))
 const MatchDetailPage = lazy(() => import('@/modules/competitions/pages/MatchDetailPage').then(m => ({ default: m.MatchDetailPage })))
 const MatchLineupPage = lazy(() => import('@/modules/competitions/pages/MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
 const MatchReportPage = lazy(() => import('@/modules/competitions/pages/MatchReportPage').then(m => ({ default: m.MatchReportPage })))
@@ -248,7 +249,15 @@ export function dashboardRouteElements() {
           </ProtectedRoute>
         }
       />
-      {/* Competition admin match center */}
+      {/* Competition admin match center hub + detail */}
+      <Route
+        path={ROUTES.DASHBOARD_MATCH_CENTER_HUB(':compId')}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
+            <Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path={ROUTES.DASHBOARD_MATCH_CENTER(':compId', ':matchId')}
         element={
