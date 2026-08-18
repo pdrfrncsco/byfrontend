@@ -69,6 +69,8 @@ export function useMatchReport({
     staleTime: 30_000,
   })
 
+  const competitionId = match?.competitionId ?? (match as any)?.competition ?? ''
+
   const submitMutation = useMutation({
     mutationFn: (data: MatchCenterReportFormData) =>
       matchApi.submitReport(matchId, {
@@ -78,6 +80,10 @@ export function useMatchReport({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      if (competitionId) {
+        queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
+      }
       toast.success('Relatório submetido com sucesso!')
     },
     onError: (error: any) => {
@@ -89,6 +95,10 @@ export function useMatchReport({
     mutationFn: (file: File) => matchApi.uploadRefereeDocument(matchId, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      if (competitionId) {
+        queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
+      }
       toast.success('Documento do árbitro carregado!')
     },
     onError: (error: any) => {
@@ -100,6 +110,10 @@ export function useMatchReport({
     mutationFn: () => matchApi.approveReport(matchId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      if (competitionId) {
+        queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
+      }
       toast.success('Relatório aprovado!')
     },
     onError: (error: any) => {

@@ -112,6 +112,7 @@ export function useMatchEvents({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.events(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       toast.success('Evento registado com sucesso!')
     },
@@ -139,6 +140,7 @@ export function useMatchEvents({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.events(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       toast.success('Evento removido!')
     },
