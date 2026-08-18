@@ -34,6 +34,8 @@ export function MatchCenterPage() {
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
+  const [statusFilter, setStatusFilter] = useState<MatchStatus[] | null>(null)
+
   const {
     matches,
     rounds,
@@ -43,9 +45,7 @@ export function MatchCenterPage() {
     upcomingMatches,
     finishedMatches,
     isLoading: loadingMatches,
-  } = useMatchCenter({ competitionId })
-
-  const [statusFilter, setStatusFilter] = useState<MatchStatus[] | null>(null)
+  } = useMatchCenter({ competitionId, status: statusFilter ?? undefined })
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
