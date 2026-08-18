@@ -71,7 +71,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
           {(match.status === 'scheduled' || match.status === 'pre_match') && (
             <MatchCountdown scheduledAt={scheduledAt} />
           )}
-          <MatchStatusBadge status={match.status} currentMinute={currentMinute} />
+          <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={match.events?.[match.events.length - 1]?.period} />
         </div>
       </div>
 

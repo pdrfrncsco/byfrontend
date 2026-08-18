@@ -1,0 +1,157 @@
+import type { Match, MatchEvent, MatchStatus } from '../types'
+
+export type MatchClockPeriod = 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime' | 'finished'
+
+export interface MatchClockInfo {
+  period: MatchClockPeriod
+  minute: number
+  minuteExtra: number
+  display: string
+  shortLabel: string
+  fullLabel: string
+}
+
+const PERIOD_ORDER: Record<MatchClockPeriod, number> = {
+  first_half: 1,
+  second_half: 2,
+  extra_time: 3,
+  penalties: 4,
+  halftime: 2,
+  finished: 5,
+}
+
+function normalizePeriod(value?: string): MatchClockPeriod {
+  switch (value) {
+    case 'first_half':
+      return 'first_half'
+    case 'second_half':
+      return 'second_half'
+    case 'extra_time':
+      return 'extra_time'
+    case 'penalties':
+      return 'penalties'
+    default:
+      return 'first_half'
+  }
+}
+
+function formatMinuteValue(minute: number, minuteExtra: number): string {
+  if (minuteExtra > 0 && [45, 90, 105, 120].includes(minute)) {
+    return `${minute}+${minuteExtra}'`
+  }
+
+  if (minute <= 0) return '0\''
+  return `${minute}'`
+}
+
+function formatPeriodLabel(period: MatchClockPeriod): string {
+  switch (period) {
+    case 'first_half':
+      return '1T'
+    case 'second_half':
+      return '2T'
+    case 'extra_time':
+      return 'ET'
+    case 'penalties':
+      return 'PEN'
+    case 'halftime':
+      return 'INT'
+    case 'finished':
+      return 'FT'
+    default:
+      return '1T'
+  }
+}
+
+function getClockMinuteForPeriod(period: MatchClockPeriod, minute: number): number {
+  if (period === 'first_half') return Math.max(0, Math.min(minute, 45))
+  if (period === 'second_half') return Math.max(45, Math.min(minute, 90))
+  if (period === 'extra_time') return Math.max(90, Math.min(minute, 120))
+  if (period === 'penalties') return Math.max(120, Math.min(minute, 130))
+  return Math.max(0, Math.min(minute, 90))
+}
+
+export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now()): MatchClockInfo {
+  const status = match?.status ?? 'scheduled'
+  const events: MatchEvent[] = Array.isArray(match?.events) ? [...match.events] : []
+
+  if (status === 'halftime') {
+    return {
+      period: 'halftime',
+      minute: 45,
+      minuteExtra: 0,
+      display: 'Intervalo',
+      shortLabel: 'INT',
+      fullLabel: 'Intervalo',
+    }
+  }
+
+  if (status === 'finished' || status === 'cancelled' || status === 'walkover' || status === 'postponed') {
+    return {
+      period: 'finished',
+      minute: 90,
+      minuteExtra: 0,
+      display: 'FT',
+      shortLabel: 'FT',
+      fullLabel: 'Fim de partida',
+    }
+  }
+
+  let latestEvent: MatchEvent | undefined
+
+  if (events.length > 0) {
+    latestEvent = [...events].sort((a, b) => {
+      const aPeriod = normalizePeriod(a.period)
+      const bPeriod = normalizePeriod(b.period)
+
+      return (
+        PERIOD_ORDER[bPeriod] - PERIOD_ORDER[aPeriod] ||
+        b.minute - a.minute ||
+        (b.minuteExtra ?? 0) - (a.minuteExtra ?? 0)
+      )
+    })[0]
+  }
+
+  const period = latestEvent ? normalizePeriod(latestEvent.period) : 'first_half'
+
+  let minute = latestEvent ? getClockMinuteForPeriod(period, latestEvent.minute) : 0
+  let minuteExtra = latestEvent?.minuteExtra ?? 0
+
+  if (status === 'live' && latestEvent) {
+    const eventTime = latestEvent.created_at || latestEvent.createdAt
+    if (eventTime) {
+      const elapsedMinutes = Math.max(0, Math.floor((now - new Date(eventTime).getTime()) / 60_000))
+      minute = getClockMinuteForPeriod(period, latestEvent.minute + elapsedMinutes)
+      if (period === 'first_half' && minute > 45) minute = 45
+      if (period === 'second_half' && minute > 90) minute = 90
+      if (period === 'extra_time' && minute > 120) minute = 120
+    }
+  }
+
+  const shortLabel = formatPeriodLabel(period)
+  const display = formatMinuteValue(minute, minuteExtra)
+
+  return {
+    period,
+    minute,
+    minuteExtra,
+    display,
+    shortLabel,
+    fullLabel: `${shortLabel} ${display}`,
+  }
+}
+
+export function formatMatchClock(match?: Partial<Match> | null, now = Date.now()): string {
+  const info = getMatchClockInfo(match, now)
+
+  if (match?.status === 'halftime') return 'Intervalo'
+  if (match?.status === 'finished' || match?.status === 'cancelled' || match?.status === 'walkover' || match?.status === 'postponed') {
+    return 'FT'
+  }
+
+  return info.fullLabel
+}
+
+export function isClockVisible(status: MatchStatus | undefined) {
+  return status === 'live' || status === 'halftime' || status === 'finished'
+}

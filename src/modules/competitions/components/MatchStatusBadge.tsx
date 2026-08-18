@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Activity, CheckCircle2, Clock, Pause, XCircle } from 'lucide-react'
 import type { MatchStatus } from '../types'
+import { getMatchClockInfo } from '../utils/match-clock'
 
 const STATUS_CONFIG: Record<MatchStatus, { label: string; className: string; icon: typeof Clock }> = {
   scheduled: { label: 'Agendado', className: 'border-outline-variant/40 bg-surface-container-high text-on-surface-variant', icon: Clock },
@@ -16,20 +18,34 @@ export interface MatchStatusBadgeProps {
   status: MatchStatus
   currentMinute?: number | null
   className?: string
+  period?: 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime'
 }
 
-export function MatchStatusBadge({ status, currentMinute, className = '' }: MatchStatusBadgeProps) {
+export function MatchStatusBadge({ status, currentMinute, className = '', period }: MatchStatusBadgeProps) {
   const config = STATUS_CONFIG[status]
   const Icon = config.icon
   const isLive = status === 'live' || status === 'halftime'
+  const [now, setNow] = useState(Date.now())
+
+  useEffect(() => {
+    if (!isLive) return
+    const timer = window.setInterval(() => setNow(Date.now()), 1_000)
+    return () => window.clearInterval(timer)
+  }, [isLive])
+
+  const clockInfo = getMatchClockInfo({ status, events: [] }, now)
+  const value = currentMinute ?? clockInfo.minute
+  const periodLabel = period
+    ? getMatchClockInfo({ status, events: [{ period, minute: value, created_at: new Date(now).toISOString() } as any] }, now).shortLabel
+    : clockInfo.shortLabel
 
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${config.className} ${className}`}>
       {status === 'live' && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />}
       {status !== 'live' && <Icon className="h-3.5 w-3.5" aria-hidden="true" />}
       <span>{config.label}</span>
-      {isLive && currentMinute !== null && currentMinute !== undefined && (
-        <span className="font-mono tabular-nums">{currentMinute}&apos;</span>
+      {isLive && value !== null && value !== undefined && (
+        <span className="font-mono tabular-nums">{periodLabel} {value}&apos;</span>
       )}
     </span>
   )
