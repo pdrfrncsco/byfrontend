@@ -51,6 +51,31 @@ export function useMatchLive({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const isMountedRef = useRef(true)
 
+  const syncCompetitionMatchCache = useCallback((nextMatch: Match) => {
+    queryClient.setQueriesData(
+      { queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId), exact: false },
+      (old: Match[] | undefined) => {
+        if (!Array.isArray(old)) return old
+
+        const next = [...old]
+        const existingIndex = next.findIndex((m) =>
+          m?.id === nextMatch.id ||
+          String((m as any)?.match_id ?? '') === String(nextMatch.id) ||
+          String((m as any)?.id ?? '') === String(nextMatch.id)
+        )
+
+        if (existingIndex >= 0) {
+          next[existingIndex] = nextMatch
+          return next
+        }
+
+        return [...next, nextMatch]
+      }
+    )
+
+    queryClient.setQueryData(MATCH_QUERY_KEYS.detail(matchId), nextMatch)
+  }, [competitionId, matchId, queryClient])
+
   // ─── Fetch match + events ──────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     if (!competitionId || !matchId) return
@@ -69,26 +94,7 @@ export function useMatchLive({
 
       // Keep React Query cache up to date across hub and detail views.
       if (matchData) {
-        queryClient.setQueryData(
-          MATCH_QUERY_KEYS.byCompetition(competitionId),
-          (old: Match[] | undefined) => {
-            const next = old ? [...old] : []
-            const existingIndex = next.findIndex((m) => m.id === matchId)
-
-            if (existingIndex >= 0) {
-              next[existingIndex] = matchData
-            } else {
-              next.push(matchData)
-            }
-
-            return next
-          }
-        )
-
-        queryClient.setQueryData(
-          MATCH_QUERY_KEYS.detail(matchId),
-          matchData,
-        )
+        syncCompetitionMatchCache(matchData)
       }
     } catch (err) {
       if (!isMountedRef.current) return
@@ -210,23 +216,8 @@ export function useMatchLive({
               status: hasStatus ? payload.status : prev.status,
             }
 
-            // update competition-level list cache and detail cache so both hub and detail reflect the same live state
-            queryClient.setQueryData(
-              MATCH_QUERY_KEYS.byCompetition(competitionId),
-              (old: Match[] | undefined) => {
-                const next = old ? [...old] : []
-                const existingIndex = next.findIndex((m) => m.id === matchId)
-
-                if (existingIndex >= 0) {
-                  next[existingIndex] = nextMatch
-                } else {
-                  next.push(nextMatch)
-                }
-
-                return next
-              }
-            )
-            queryClient.setQueryData(MATCH_QUERY_KEYS.detail(matchId), nextMatch)
+            // update all competition-scoped caches, including filtered MatchCenter lists and the detail view
+            syncCompetitionMatchCache(nextMatch)
 
             return nextMatch
           })

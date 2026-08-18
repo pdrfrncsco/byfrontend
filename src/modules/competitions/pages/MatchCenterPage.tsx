@@ -90,21 +90,31 @@ export function MatchCenterPage() {
   // ─── No Matches State ───────────────────────────────────────────────────
 
   if (matches.length === 0) {
+    const hasActiveFilter = statusFilter !== null
+
     const NoMatchesComponent = () => (
       <Card variant="flat" padding="lg">
         <div className="flex flex-col items-center gap-md py-xl text-center">
           <Calendar className="h-12 w-12 text-on-surface-variant/30" />
-          <h3 className="text-lg font-semibold text-on-surface">Sem partidas registadas</h3>
+          <h3 className="text-lg font-semibold text-on-surface">
+            {hasActiveFilter ? 'Nenhuma partida encontrada para este filtro' : 'Sem partidas registadas'}
+          </h3>
           <p className="max-w-xs text-sm text-on-surface-variant">
-            As partidas da competição serão apresentadas aqui assim que forem criadas.
+            {hasActiveFilter
+              ? 'Não existem partidas neste estado para a competição atual. Tente outro filtro ou limpe a seleção.'
+              : 'As partidas da competição serão apresentadas aqui assim que forem criadas.'}
           </p>
-          {isAdmin && (
+          {hasActiveFilter ? (
+            <Button variant="secondary" size="sm" className="mt-md" onClick={() => setStatusFilter(null)}>
+              Limpar filtro
+            </Button>
+          ) : isAdmin ? (
             <Link to={competitionRoutes.schedule(competitionId)}>
               <Button variant="primary" size="sm" className="mt-md">
                 Criar Jornada
               </Button>
             </Link>
-          )}
+          ) : null}
         </div>
       </Card>
     )

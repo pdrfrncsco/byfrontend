@@ -88,4 +88,57 @@ describe('useMatchLive cache sync', () => {
       expect(queryClient.getQueryData(MATCH_QUERY_KEYS.detail('match-1'))).toMatchObject({ id: 'match-1' })
     })
   })
+
+  it('updates all competition caches for the same match, including filtered MatchCenter queries', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    })
+
+    const filteredKey = [...MATCH_QUERY_KEYS.byCompetition('comp-1'), '{"status":"live,halftime"}'] as const
+    const baseKey = MATCH_QUERY_KEYS.byCompetition('comp-1')
+
+    queryClient.setQueryData(baseKey, [
+      { id: 'match-1', competitionId: 'comp-1', status: 'scheduled', home_score: 0, away_score: 0 },
+    ])
+    queryClient.setQueryData(filteredKey, [
+      { id: 'match-1', competitionId: 'comp-1', status: 'scheduled', home_score: 0, away_score: 0 },
+    ])
+
+    const freshMatch = {
+      id: 'match-1',
+      competitionId: 'comp-1',
+      homeTeamName: 'Home FC',
+      awayTeamName: 'Away FC',
+      home_club_name: 'Home FC',
+      away_club_name: 'Away FC',
+      competition: 'comp-1',
+      home_club: 'club-1',
+      away_club: 'club-2',
+      match_date: '2026-08-18T20:00:00Z',
+      scheduledAt: '2026-08-18T20:00:00Z',
+      status: 'live',
+      status_label: 'Ao vivo',
+      home_score: 2,
+      away_score: 1,
+    }
+
+    vi.mocked(matchApi.get).mockResolvedValue(freshMatch as any)
+    vi.mocked(matchApi.listEvents).mockResolvedValue([])
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+
+    renderHook(() => useMatchLive({ competitionId: 'comp-1', matchId: 'match-1', initialMatch: undefined }), { wrapper })
+
+    await waitFor(() => {
+      const baseCache = queryClient.getQueryData(baseKey) as any[]
+      const filteredCache = queryClient.getQueryData(filteredKey) as any[]
+
+      expect(baseCache[0]).toMatchObject({ id: 'match-1', status: 'live', home_score: 2, away_score: 1 })
+      expect(filteredCache[0]).toMatchObject({ id: 'match-1', status: 'live', home_score: 2, away_score: 1 })
+    })
+  })
 })
