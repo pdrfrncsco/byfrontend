@@ -35,7 +35,7 @@ type PaginatedEnvelope<T> =
   | { count?: number; next?: string | null; previous?: string | null; results?: T[] }
   | T[]
 
-function normalizeMatch(raw: Partial<Match> & Record<string, any>): Match {
+export function normalizeMatch(raw: Partial<Match> & Record<string, any>): Match {
   const status = (raw.status ?? raw.status_label ?? 'scheduled') as MatchStatus
 
   return {
