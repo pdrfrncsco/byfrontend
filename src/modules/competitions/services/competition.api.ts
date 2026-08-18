@@ -63,6 +63,8 @@ export function normalizeMatch(raw: Partial<Match> & Record<string, any>): Match
     match_date: raw.match_date ?? raw.scheduledAt ?? new Date().toISOString(),
     status,
     status_label: raw.status_label ?? status,
+    current_period: raw.current_period ?? raw.currentPeriod ?? null,
+    current_minute: raw.current_minute ?? raw.currentMinute ?? null,
     home_score: raw.home_score ?? raw.score?.home ?? raw.homeScore ?? null,
     away_score: raw.away_score ?? raw.score?.away ?? raw.awayScore ?? null,
     score: raw.score ?? {

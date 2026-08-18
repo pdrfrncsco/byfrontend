@@ -75,6 +75,9 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
   const status = match?.status ?? 'scheduled'
   const events: MatchEvent[] = Array.isArray(match?.events) ? [...match.events] : []
 
+  const explicitPeriod = normalizePeriod((match as any)?.current_period ?? (match as any)?.period ?? undefined)
+  const explicitMinute = typeof (match as any)?.current_minute === 'number' ? (match as any).current_minute : undefined
+
   if (status === 'halftime') {
     return {
       period: 'halftime',
@@ -112,12 +115,13 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
     })[0]
   }
 
-  const period = latestEvent ? normalizePeriod(latestEvent.period) : 'first_half'
+  const period = explicitPeriod !== 'first_half' || !latestEvent ? explicitPeriod : normalizePeriod(latestEvent.period)
+  const currentMinuteValue = explicitMinute ?? (latestEvent ? getClockMinuteForPeriod(period, latestEvent.minute) : 0)
 
-  let minute = latestEvent ? getClockMinuteForPeriod(period, latestEvent.minute) : 0
+  let minute = typeof explicitMinute === 'number' ? explicitMinute : currentMinuteValue
   let minuteExtra = latestEvent?.minuteExtra ?? 0
 
-  if (status === 'live' && latestEvent) {
+  if (status === 'live' && latestEvent && explicitMinute === undefined) {
     const eventTime = latestEvent.created_at || latestEvent.createdAt
     if (eventTime) {
       const elapsedMinutes = Math.max(0, Math.floor((now - new Date(eventTime).getTime()) / 60_000))

@@ -133,6 +133,8 @@ export interface Match {
   scheduledAt: string;
   venue?: string;
   status: MatchStatus;
+  current_period?: 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime' | 'fulltime' | null;
+  current_minute?: number | null;
   score?: MatchScore;
   events?: MatchEvent[];
   homeLineup?: MatchLineup;

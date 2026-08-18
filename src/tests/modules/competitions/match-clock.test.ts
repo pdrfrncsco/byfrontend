@@ -18,6 +18,18 @@ describe('match clock', () => {
     expect(getMatchClockInfo({ status: 'live', events: [{ minute: 119, period: 'penalties' } as any] }).shortLabel).toBe('PEN')
   })
 
+  it('prefers explicit backend phase and minute when present', () => {
+    const match = {
+      status: 'live',
+      current_period: 'second_half',
+      current_minute: 52,
+      events: [{ minute: 23, period: 'first_half' } as any],
+    }
+
+    expect(getMatchClockInfo(match).display).toBe("52'")
+    expect(formatMatchClock(match)).toBe('2T 52\'')
+  })
+
   it('advances the live clock as time passes', () => {
     const now = new Date('2026-08-18T20:42:00Z').getTime()
     const match = {

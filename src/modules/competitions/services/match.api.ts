@@ -43,6 +43,8 @@ export function mapMatchFromBackend(data: any): Match {
     scheduledAt: data.match_date,
     venue: data.venue || undefined,
     status: data.status,
+    current_period: data.current_period ?? data.currentPeriod ?? null,
+    current_minute: data.current_minute ?? data.currentMinute ?? null,
     score,
     
     // Legacy properties for backward compatibility
