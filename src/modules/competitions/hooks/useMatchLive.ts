@@ -67,12 +67,17 @@ export function useMatchLive({
       setLastUpdated(new Date())
       setError(null)
 
-      // Keep React Query cache up to date
+      // Keep React Query cache up to date across hub and detail views.
       if (matchData) {
         queryClient.setQueryData(
           MATCH_QUERY_KEYS.byCompetition(competitionId),
           (old: Match[] | undefined) =>
             old ? old.map((m) => (m.id === matchId ? matchData : m)) : [matchData]
+        )
+
+        queryClient.setQueryData(
+          MATCH_QUERY_KEYS.detail(matchId),
+          matchData,
         )
       }
     } catch (err) {
@@ -195,11 +200,12 @@ export function useMatchLive({
               status: hasStatus ? payload.status : prev.status,
             }
 
-            // update competition-level list cache so other components (scoreboard) reflect change
+            // update competition-level list cache and detail cache so both hub and detail reflect the same live state
             queryClient.setQueryData(
               MATCH_QUERY_KEYS.byCompetition(competitionId),
               (old: Match[] | undefined) => (old ? old.map((m) => (m.id === matchId ? nextMatch : m)) : [nextMatch])
             )
+            queryClient.setQueryData(MATCH_QUERY_KEYS.detail(matchId), nextMatch)
 
             return nextMatch
           })

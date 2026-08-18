@@ -5,7 +5,7 @@ import { MATCH_QUERY_KEYS } from './useMatchCenter'
 
 export function useMatchDetail(competitionId: string, matchId: string) {
   return useQuery<Match | undefined>({
-    queryKey: [...MATCH_QUERY_KEYS.byCompetition(competitionId), 'detail', matchId],
+    queryKey: MATCH_QUERY_KEYS.detail(matchId),
     queryFn: async () => {
       const matches = await competitionApi.listMatches(competitionId)
       const match = matches.find((item) => {

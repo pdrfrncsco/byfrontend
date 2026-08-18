@@ -11,7 +11,7 @@ export const MATCH_QUERY_KEYS = {
   byCompetition: (competitionId: string) =>
     ['matches', 'competition', competitionId] as const,
   detail: (matchId: string) =>
-    ['matches', matchId] as const,
+    ['matches', 'detail', matchId] as const,
   events: (matchId: string) =>
     ['matches', matchId, 'events'] as const,
   eventsByComp: (compId: string, matchId: string) =>
