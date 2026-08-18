@@ -15,7 +15,7 @@ import { useAuth } from '@/app/providers'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
-import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
+import { useMatchDetail } from '../hooks/useMatchDetail'
 import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
@@ -102,10 +102,7 @@ export function MatchDetailPage() {
 
   // Data fetching (hooks must be called unconditionally to preserve hook order)
   const { isLoading: loadingComp } = useCompetition(competitionId)
-  const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
-
-  // Find the specific match
-  const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const { data: match, isLoading: loadingMatch } = useMatchDetail(competitionId, matchIdValue)
 
   // Live state for scoreboard
   const liveState = useMatchLive({
@@ -144,7 +141,7 @@ export function MatchDetailPage() {
 
   // ─── Loading State ──────────────────────────────────────────────────────
 
-  if (loadingComp || loadingMatches) {
+  if (loadingComp || loadingMatch) {
     const LoadingComponent = () => (
       <div className="flex min-h-[40vh] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
