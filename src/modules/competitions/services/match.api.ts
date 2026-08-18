@@ -11,7 +11,40 @@ import type {
   MatchStats,
   TeamMatchStats,
   MatchEventFormData,
+  MatchEventCreateData,
 } from '../types'
+
+export function normalizeMatchEventPayload(
+  data: Partial<MatchEventFormData> & Partial<MatchEventCreateData> & Record<string, any>
+): MatchEventCreateData {
+  const eventTypeMap: Record<string, string> = {
+    goal: 'goal',
+    own_goal: 'own_goal',
+    penalty_goal: 'penalty_scored',
+    penalty_scored: 'penalty_scored',
+    penalty_missed: 'penalty_missed',
+    yellow_card: 'yellow_card',
+    red_card: 'red_card',
+    yellow_red_card: 'yellow_red',
+    yellow_red: 'yellow_red',
+    substitution: 'substitution_in',
+    substitution_in: 'substitution_in',
+    substitution_out: 'substitution_out',
+  }
+
+  const rawEventType = data.event_type ?? data.type
+  const normalizedType = eventTypeMap[String(rawEventType ?? '').toLowerCase()] ?? rawEventType ?? 'goal'
+
+  return {
+    event_type: normalizedType as MatchEventCreateData['event_type'],
+    minute: Number(data.minute ?? 0),
+    extra_time: Boolean(data.extra_time ?? (data.period === 'extra_time' || !!data.minuteExtra)),
+    club: data.club ?? data.teamId ?? '',
+    player: data.player ?? data.playerId ?? null,
+    player_off: data.player_off ?? data.substitutedPlayerId ?? null,
+    notes: data.notes ?? data.description ?? '',
+  }
+}
 
 // Helper function to map Match score from backend
 export function mapMatchFromBackend(data: any): Match {
@@ -263,28 +296,9 @@ export const matchApi = {
   async createEvent(
     competitionId: string,
     matchId: string,
-    data: MatchEventFormData
+    data: MatchEventFormData | MatchEventCreateData
   ): Promise<MatchEvent> {
-    const eventTypeMap: Record<string, string> = {
-      'goal': 'goal',
-      'own_goal': 'own_goal',
-      'penalty_goal': 'penalty_scored',
-      'penalty_missed': 'penalty_missed',
-      'yellow_card': 'yellow_card',
-      'red_card': 'red_card',
-      'yellow_red_card': 'yellow_red',
-      'substitution': 'substitution_in',
-    }
-
-    const payload = {
-      event_type: eventTypeMap[data.type] || data.type,
-      minute: data.minute,
-      extra_time: data.period === 'extra_time' || !!data.minuteExtra,
-      club: data.teamId,
-      player: data.playerId || null,
-      player_off: data.substitutedPlayerId || null,
-      notes: data.description || '',
-    }
+    const payload = normalizeMatchEventPayload(data as any)
 
     const response = await client.post<ApiResponse<any>>(
       `/competitions/${competitionId}/matches/${matchId}/events/`,
