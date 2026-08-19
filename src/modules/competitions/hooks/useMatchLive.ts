@@ -73,7 +73,7 @@ export function useMatchLive({
       }
     )
 
-    queryClient.setQueryData(MATCH_QUERY_KEYS.detail(matchId), nextMatch)
+    queryClient.setQueryData(MATCH_QUERY_KEYS.detail(competitionId, matchId), nextMatch)
   }, [competitionId, matchId, queryClient])
 
   // ─── Fetch match + events ──────────────────────────────────────────────

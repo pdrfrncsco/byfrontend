@@ -10,8 +10,8 @@ export const MATCH_QUERY_KEYS = {
   all: ['matches'] as const,
   byCompetition: (competitionId: string) =>
     ['matches', 'competition', competitionId] as const,
-  detail: (matchId: string) =>
-    ['matches', 'detail', matchId] as const,
+  detail: (competitionId: string, matchId: string) =>
+    ['matches', 'detail', competitionId, matchId] as const,
   events: (matchId: string) =>
     ['matches', matchId, 'events'] as const,
   eventsByComp: (compId: string, matchId: string) =>
@@ -153,6 +153,7 @@ export function useAddMatchEvent(competitionId: string, matchId: string) {
     onSuccess: async (createdEvent) => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.eventsByComp(competitionId, matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.events(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(competitionId, matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       toast.success('Evento adicionado com sucesso!')
 
@@ -231,6 +232,7 @@ export function useDeleteMatchEvent(competitionId: string, matchId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.eventsByComp(competitionId, matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.events(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(competitionId, matchId) })
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       toast.success('Evento removido com sucesso!')
     },

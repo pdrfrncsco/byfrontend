@@ -85,8 +85,12 @@ describe('useMatchLive cache sync', () => {
       expect(cached).toHaveLength(2)
       expect(cached.some((m) => m.id === 'match-1')).toBe(true)
       expect(cached.some((m) => m.id === 'match-2')).toBe(true)
-      expect(queryClient.getQueryData(MATCH_QUERY_KEYS.detail('match-1'))).toMatchObject({ id: 'match-1' })
+      expect(queryClient.getQueryData(MATCH_QUERY_KEYS.detail('comp-1', 'match-1'))).toMatchObject({ id: 'match-1' })
     })
+  })
+
+  it('scopes detail cache by competition to avoid cross-competition leakage', () => {
+    expect(MATCH_QUERY_KEYS.detail('comp-1', 'match-1')).toEqual(['matches', 'detail', 'comp-1', 'match-1'])
   })
 
   it('updates all competition caches for the same match, including filtered MatchCenter queries', async () => {

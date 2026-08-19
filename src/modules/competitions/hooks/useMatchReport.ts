@@ -80,7 +80,7 @@ export function useMatchReport({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
-      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(competitionId, matchId) })
       if (competitionId) {
         queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       }
@@ -95,7 +95,7 @@ export function useMatchReport({
     mutationFn: (file: File) => matchApi.uploadRefereeDocument(matchId, file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
-      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(competitionId, matchId) })
       if (competitionId) {
         queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       }
@@ -110,7 +110,7 @@ export function useMatchReport({
     mutationFn: () => matchApi.approveReport(matchId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.report(matchId) })
-      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(matchId) })
+      queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.detail(competitionId, matchId) })
       if (competitionId) {
         queryClient.invalidateQueries({ queryKey: MATCH_QUERY_KEYS.byCompetition(competitionId) })
       }
