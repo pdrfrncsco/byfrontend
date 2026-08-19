@@ -384,7 +384,7 @@ export function MatchReportPage() {
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="text-lg font-medium text-on-surface">Jogo não encontrado</p>
-        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+        <Link to={isDashboard ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue) : competitionRoutes.matchDetail(competitionId, matchIdValue)}>
           <Button variant="secondary" size="sm">
             Voltar ao jogo
           </Button>
@@ -418,7 +418,7 @@ export function MatchReportPage() {
         <p className="text-sm text-on-surface-variant text-center max-w-md">
           O relatório de árbitro é exclusivo para árbitros designados, delegados e administradores da competição.
         </p>
-        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+        <Link to={isDashboard ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue) : competitionRoutes.matchDetail(competitionId, matchIdValue)}>
           <Button variant="secondary" size="sm">
             Voltar ao jogo
           </Button>
@@ -453,7 +453,7 @@ export function MatchReportPage() {
         <p className="text-sm text-on-surface-variant text-center max-w-md">
           O relatório só pode ser acedido após o jogo ter iniciado ou terminado.
         </p>
-        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+        <Link to={isDashboard ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue) : competitionRoutes.matchDetail(competitionId, matchIdValue)}>
           <Button variant="secondary" size="sm">
             Voltar ao jogo
           </Button>
@@ -488,7 +488,7 @@ export function MatchReportPage() {
         <div className="mx-auto max-w-4xl px-lg py-lg">
           {/* Breadcrumb */}
           <Link
-            to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}
+            to={isDashboard ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue) : competitionRoutes.matchDetail(competitionId, matchIdValue)}
             className="mb-md inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
           >
             <ArrowLeft className="h-4 w-4" />

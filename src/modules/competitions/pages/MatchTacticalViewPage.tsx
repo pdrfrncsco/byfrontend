@@ -150,8 +150,8 @@ export default function MatchTacticalViewPage() {
         <Link
           to={
             isDashboard
-              ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue)
-              : competitionRoutes.matchCenter(competitionId, matchIdValue)
+              ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
+              : competitionRoutes.matchDetail(competitionId, matchIdValue)
           }
         >
           <Button variant="secondary" size="sm">
@@ -188,8 +188,8 @@ export default function MatchTacticalViewPage() {
           <Link
             to={
               isDashboard
-                ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue)
-                : competitionRoutes.matchCenter(competitionId, matchIdValue)
+                ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
+                : competitionRoutes.matchDetail(competitionId, matchIdValue)
             }
             className="mb-xs inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
           >

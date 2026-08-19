@@ -186,7 +186,7 @@ export function CompetitionMatchesPage() {
         id: 'actions',
         header: 'Ações',
         cell: ({ row }) => (
-          <Link to={competitionRoutes.adminMatchCenter(row.original.competition, row.original.id)}>
+          <Link to={competitionRoutes.adminMatchDetail(row.original.competition, row.original.id)}>
             <button className="text-xs text-primary hover:underline">Ver Detalhes</button>
           </Link>
         ),

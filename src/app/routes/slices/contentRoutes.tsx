@@ -125,7 +125,7 @@ export function contentRouteElements() {
         element={<Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>}
       />
       <Route
-        path={competitionRoutes.matchCenter(':compId', ':matchId')}
+        path={competitionRoutes.matchDetail(':compId', ':matchId')}
         element={<Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>}
       />
       <Route

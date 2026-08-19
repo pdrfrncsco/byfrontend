@@ -7,8 +7,8 @@ describe('competitionRoutes', () => {
     expect(competitionRoutes.adminMatchCenterHub('comp-1')).toBe('/dashboard/competitions/comp-1/match-center')
   })
 
-  it('keeps legacy match detail route compatibility', () => {
-    expect(competitionRoutes.matchCenter('comp-1', 'match-1')).toBe('/competitions/comp-1/matches/match-1')
-    expect(competitionRoutes.adminMatchCenter('comp-1', 'match-1')).toBe('/dashboard/competitions/comp-1/matches/match-1')
+  it('provides canonical match detail routes', () => {
+    expect(competitionRoutes.matchDetail('comp-1', 'match-1')).toBe('/competitions/comp-1/matches/match-1')
+    expect(competitionRoutes.adminMatchDetail('comp-1', 'match-1')).toBe('/dashboard/competitions/comp-1/matches/match-1')
   })
 })

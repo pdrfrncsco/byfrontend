@@ -447,7 +447,7 @@ export function MatchLineupPage() {
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="text-lg font-medium text-on-surface">Jogo não encontrado</p>
-        <Link to={isDashboard ? competitionRoutes.adminMatchCenter(competitionId, matchIdValue) : competitionRoutes.matchCenter(competitionId, matchIdValue)}>
+        <Link to={isDashboard ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue) : competitionRoutes.matchDetail(competitionId, matchIdValue)}>
           <Button variant="secondary" size="sm">
             Voltar ao jogo
           </Button>
