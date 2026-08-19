@@ -10,6 +10,7 @@ export * from './useCupBracket'
 // Match Center — Fase 2
 export * from './useMatchCenter'
 export * from './useMatchLive'
+export * from './useMatchStream'
 export * from './useMatchEvents'
 export * from './useMatchLineup'
 export * from './useMatchReport'

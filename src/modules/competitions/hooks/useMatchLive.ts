@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { matchApi, mapMatchEventFromBackend } from '../services/match.api'
 import { MATCH_QUERY_KEYS } from './useMatchCenter'
 import { useNotificationStream } from '@/modules/notifications/hooks'
+import { useMatchStream } from './useMatchStream'
 import type { Match, MatchEvent } from '../types'
 
 // ─── Polling Intervals (ms) ─────────────────────────────────────────────────
@@ -75,6 +76,25 @@ export function useMatchLive({
 
     queryClient.setQueryData(MATCH_QUERY_KEYS.detail(competitionId, matchId), nextMatch)
   }, [competitionId, matchId, queryClient])
+
+  useMatchStream({
+    competitionId,
+    matchId,
+    enabled: Boolean(matchId),
+    onMatch: (nextMatch) => {
+      setMatch(nextMatch)
+      setLastUpdated(new Date())
+      syncCompetitionMatchCache(nextMatch)
+    },
+    onEvent: (nextEvent) => {
+      setEvents((previous) => {
+        if (previous.some((event) => event.id === nextEvent.id)) return previous
+        const next = [...previous, nextEvent].sort((a, b) => a.minute - b.minute)
+        queryClient.setQueryData(MATCH_QUERY_KEYS.events(matchId), next)
+        return next
+      })
+    },
+  })
 
   // ─── Fetch match + events ──────────────────────────────────────────────
   const fetchData = useCallback(async () => {
