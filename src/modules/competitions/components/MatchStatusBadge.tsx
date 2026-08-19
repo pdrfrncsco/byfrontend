@@ -33,11 +33,14 @@ export function MatchStatusBadge({ status, currentMinute, className = '', period
     return () => window.clearInterval(timer)
   }, [isLive])
 
-  const clockInfo = getMatchClockInfo({ status, events: [] }, now)
-  const value = currentMinute ?? clockInfo.minute
-  const periodLabel = period
-    ? getMatchClockInfo({ status, events: [{ period, minute: value, created_at: new Date(now).toISOString() } as any] }, now).shortLabel
-    : clockInfo.shortLabel
+  const clockInfo = getMatchClockInfo({
+    status,
+    current_period: period ?? undefined,
+    current_minute: currentMinute ?? undefined,
+    events: [],
+  } as any, now)
+  const value = clockInfo.minute
+  const periodLabel = clockInfo.shortLabel
 
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${config.className} ${className}`}>

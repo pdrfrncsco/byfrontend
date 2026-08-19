@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Activity } from 'lucide-react'
 import type { Match } from '../types'
 import { MatchStatusBadge } from './MatchStatusBadge'
-import { formatMatchClock } from '../utils/match-clock'
+import { formatMatchClock, getMatchClockInfo } from '../utils/match-clock'
 
 export interface MatchScoreboardProps {
   match: Match
@@ -53,7 +53,9 @@ export function MatchScoreboard({ match, compact = false, className = '' }: Matc
   const homeScore = match.score?.home ?? match.home_score
   const awayScore = match.score?.away ?? match.away_score
   const hasScore = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined
-  const currentMinute = match.events?.length ? Math.max(...match.events.map(event => event.minute)) : null
+  const clockInfo = getMatchClockInfo(match, now)
+  const currentMinute = clockInfo.minute
+  const currentPeriod = clockInfo.period
   const clockText = formatMatchClock(match, now)
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function MatchScoreboard({ match, compact = false, className = '' }: Matc
 
   return <div className={`rounded-2xl border border-outline-variant/20 bg-surface-container p-lg sm:p-xl ${className}`}>
     <div className="mb-lg flex flex-col items-center justify-center gap-sm">
-      <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={match.events?.[match.events.length - 1]?.period} />
+      <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={currentPeriod} />
       {(match.status === 'live' || match.status === 'halftime' || match.status === 'finished') && (
         <div className="rounded-xl border border-outline-variant/20 bg-surface-container-high px-4 py-2 shadow-inner">
           <div className="font-mono text-2xl font-black tracking-tight text-on-surface tabular-nums sm:text-4xl">{clockText}</div>

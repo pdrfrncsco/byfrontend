@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Calendar, MapPin } from 'lucide-react'
 import type { Match } from '../types'
+import { getMatchClockInfo } from '../utils/match-clock'
 import { MatchCountdown } from './MatchCountdown'
 import { MatchScoreboard } from './MatchScoreboard'
 import { MatchStatusBadge } from './MatchStatusBadge'
@@ -27,7 +28,9 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
   const awayLogo = match.awayTeamLogo || match.away_club_logo
   const scheduledAt = match.scheduledAt || match.match_date
   const roundNumber = match.roundNumber ?? match.round_number
-  const currentMinute = match.events?.length ? Math.max(...match.events.map(event => event.minute)) : null
+  const clockInfo = getMatchClockInfo(match)
+  const currentMinute = clockInfo.minute
+  const currentPeriod = clockInfo.period
 
   const matchDate = new Date(scheduledAt)
   const dateStr = matchDate.toLocaleDateString('pt-PT', {
@@ -71,7 +74,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
           {(match.status === 'scheduled' || match.status === 'pre_match') && (
             <MatchCountdown scheduledAt={scheduledAt} />
           )}
-          <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={match.events?.[match.events.length - 1]?.period} />
+          <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={currentPeriod} />
         </div>
       </div>
 

@@ -232,11 +232,51 @@ O MatchCenter não deve continuar como conjunto de módulos independentes. Ele p
 
 A mudança mais importante não é “adicionar mais funcionalidade”, e sim consolidar o que já existe em uma arquitetura consistente e profissional.
 
-## 9. Próximo passo concreto
+## 9. Implementação iniciada
 
-A próxima ação deve ser:
+A primeira correção concreta já foi aplicada no código real: a criação de eventos foi normalizada para um único contrato de payload antes do POST para o backend.
 
-1. corrigir a modelagem de rotas e hubs;
-2. definir o contrato API final do MatchCenter;
-3. escrever os testes do fluxo principal antes de qualquer refatoração maior;
-4. reescrever o hook e a página principal em uma arquitetura unitária e desacoplada.
+### Correção aplicada
+- [byfrontend/src/modules/competitions/services/match.api.ts](../../src/modules/competitions/services/match.api.ts): introduzida a normalização de payloads com `normalizeMatchEventPayload` para aceitar `MatchEventFormData` e `MatchEventCreateData` e transformar ambos para o formato canónico do backend.
+- [byfrontend/src/tests/modules/competitions/match-event-contract.test.ts](../../src/tests/modules/competitions/match-event-contract.test.ts): teste de regressão para garantir que o payload legado e o payload novo geram a mesma estrutura final.
+
+### Resultado verificado
+- Execução do comando de validação: `cd d:/Donwloads/ndeascloud/bolayetu/byfrontend ; npx vitest run src/tests/modules/competitions`
+- Evidência: 6 ficheiros de teste passaram; 13 testes passaram; 0 falhas.
+
+## 10. Plano de execução agora
+
+### Fase 1 — Contrato canónico e segurança de payloads
+1. Consolidar um único modelo de evento em `MatchEventCreateData`.
+2. Garantir que o form, o hook e a API usam a mesma estrutura de payload.
+3. Validar `minute`, `club`, `player`, `player_off` e `extra_time` em todos os pontos de entrada.
+4. Repetir este padrão para `MatchScoreUpdate` e `MatchDetail`.
+
+### Fase 2 — Separar responsabilidades do MatchCenter
+1. Definir `MatchCenterHub` (lista de partidas por jornada) e `MatchDetailView` (detalhe da partida) como dois fluxos distintos.
+2. Garantir que `useMatchCenter` é o hook do hub e que `useMatchDetail`/`useMatchLive` têm responsabilidades explícitas.
+3. Remover dependências de hooks misturados entre módulos de competição, clube e jogador.
+
+### Fase 3 — Rotas e navegação
+1. Unificar `ROUTES.MATCH_CENTER_HUB`, `MATCH_CENTER`, `MATCH_LINEUP` e `MATCH_REPORT` como contrato único de navegação.
+2. Garantir que o path público e o path de dashboard compartilham a mesma intenção sem ambiguidade.
+3. Eliminar rotas redundantes e duplicadas com a mesma responsabilidade.
+
+### Fase 4 — Live state profissional
+1. Criar uma camada de `useMatchRealtime` com reconciliação de cache por match.
+2. Separar `live`, `detail` e `historical` em um único modelo de estado do match.
+3. Definir refresh inteligente por `status`, `current_period` e `current_minute`.
+
+### Fase 5 — Qualidade e manutenção
+1. Cobrir o fluxo principal com testes end-to-end e unitários.
+2. Validar edge cases de intervalo, penáltis, extra time e reinício do jogo.
+3. Reconciliar os schemas Zod com os tipos TypeScript e as APIs reais.
+
+## 11. Próximo passo concreto
+
+A próxima ação é:
+
+1. consolidar o contrato canónico de `MatchDetail` e `MatchSummary` em um único módulo de tipos;
+2. separar `useMatchCenter` do `useMatchDetail`/`useMatchLive` sem duplicação de query keys;
+3. alinhar rotas e páginas do hub vs detalhe;
+4. continuar a refatoração do módulo com testes de regressão após cada etapa.
