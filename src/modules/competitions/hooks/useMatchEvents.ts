@@ -63,6 +63,14 @@ export function useMatchEvents({
   // ─── Add event mutation ───────────────────────────────────────────────
   const addMutation = useMutation({
     mutationFn: async (data: MatchEventFormData): Promise<void> => {
+      const requestData = {
+        ...data,
+        idempotencyKey: data.idempotencyKey ?? (
+          typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `match-event-${Date.now()}`
+        ),
+      }
       // Optimistic update
       const optimisticEvent: MatchEvent = {
         id: `optimistic-${Date.now()}`,
@@ -99,7 +107,7 @@ export function useMatchEvents({
       )
 
       try {
-        await matchApi.createEvent(competitionId, matchId, data)
+        await matchApi.createEvent(competitionId, matchId, requestData)
       } catch (err) {
         // Rollback optimistic update
         queryClient.setQueryData(

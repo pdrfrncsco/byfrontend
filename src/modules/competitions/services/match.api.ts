@@ -43,6 +43,7 @@ export function normalizeMatchEventPayload(
     player: data.player ?? data.playerId ?? null,
     player_off: data.player_off ?? data.substitutedPlayerId ?? null,
     notes: data.notes ?? data.description ?? '',
+    idempotency_key: data.idempotency_key ?? data.idempotencyKey,
   }
 }
 

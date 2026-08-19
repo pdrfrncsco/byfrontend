@@ -12,6 +12,7 @@ export interface MatchEventFormData {
   assistPlayerId?: string;        // Para golos
   substitutedPlayerId?: string;   // Para substituições
   description?: string;
+  idempotencyKey?: string;
 }
 
 // Type Guards for narrowing match event types
