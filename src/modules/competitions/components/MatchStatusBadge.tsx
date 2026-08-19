@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Activity, CheckCircle2, Clock, Pause, XCircle } from 'lucide-react'
 import type { MatchStatus } from '../types'
-import { getMatchClockInfo } from '../utils/match-clock'
+import { getMatchClockInfo, type MatchClockPeriod } from '../utils/match-clock'
 
 const STATUS_CONFIG: Record<MatchStatus, { label: string; className: string; icon: typeof Clock }> = {
   scheduled: { label: 'Agendado', className: 'border-outline-variant/40 bg-surface-container-high text-on-surface-variant', icon: Clock },
@@ -18,7 +18,7 @@ export interface MatchStatusBadgeProps {
   status: MatchStatus
   currentMinute?: number | null
   className?: string
-  period?: 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime'
+  period?: MatchClockPeriod
 }
 
 export function MatchStatusBadge({ status, currentMinute, className = '', period }: MatchStatusBadgeProps) {

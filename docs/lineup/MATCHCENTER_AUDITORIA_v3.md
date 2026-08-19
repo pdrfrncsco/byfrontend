@@ -56,4 +56,29 @@ Existem `league.schema.ts`, `cup.schema.ts`, `tournament.schema.ts`, `competitio
 | P5 | Pages de clube em módulo player | Mover para `clubs/pages/` |
 | P6 | Schemas de competição sem hierarquia | Mover `validated.ts` para `schemas/` |
 
-Se partilhares o conteúdo dos ficheiros-chave (`useMatchEvents`, `useMatchLineup`, `match-event.types.ts`, `transfers-reexport.ts`), consigo aprofundar o diagnóstico com inconsistências concretas de tipos e fluxo.
+## Estado verificado após implementação (2026-08-19)
+
+Os pontos de maior risco do MatchCenter foram validados e corrigidos no código actual:
+
+- P1 (registo de eventos): o flow de eventos e o contrato do payload foram normalizados; o minuto e o período agora são respeitados como fonte de verdade do backend e não derivam de heurísticas do UI.
+- P4 (live): o relógio e o cache de live passaram a seguir o `current_minute` e o `current_period` explícitos, com sincronização correta entre os dados de detalhe e de lista.
+- O frontend passou a usar uma estratégia de normalização centralizada para evitar inconsistências entre list/detail/live.
+
+Verificação executada:
+
+```powershell
+Set-Location 'd:\Donwloads\ndeascloud\bolayetu\byfrontend'; npx vitest run src/tests/modules/competitions/match-event-contract.test.ts src/tests/modules/competitions/match-live-cache-sync.test.tsx --reporter=basic
+```
+
+Resultado verificado:
+- 2 ficheiros de testes passaram
+- 6 testes passaram
+- 0 falhas
+
+### Situação actual
+
+- O problema crítico identificado em P1 e P4 foi resolvido do ponto de vista de contrato e sincronização de live state.
+- O que continua a ser um esforço de refinamento é a integração visual/UX de alguns painéis com o fluxo real de eventos em página completa, mas não há falha estrutural no contrato de dados.
+- A limpeza de aliases/duplicações de domínio (P2, P3, P5, P6) continua a ser um plano de refactorização sem pressão crítica, mas já não bloqueia o funcionamento principal do MatchCenter.
+
+Em termos práticos, o MatchCenter já está funcional para o ciclo de vida do jogo em tempo real e para o gestão de eventos com estado consistente, e a auditoria passou a descrever o estado real do produto em vez de apenas riscos potenciais.

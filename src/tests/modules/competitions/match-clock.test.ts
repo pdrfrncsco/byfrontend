@@ -21,7 +21,7 @@ describe('match clock', () => {
   })
 
   it('prefers explicit backend phase and minute when present', () => {
-    const match = {
+    const match: any = {
       status: 'live',
       current_period: 'second_half',
       current_minute: 52,
@@ -34,7 +34,7 @@ describe('match clock', () => {
 
   it('advances the live clock as time passes', () => {
     const now = new Date('2026-08-18T20:42:00Z').getTime()
-    const match = {
+    const match: any = {
       status: 'live',
       events: [{
         minute: 23,
