@@ -6,6 +6,7 @@ export type MatchStatus =
   | 'live'         // Ao vivo
   | 'halftime'     // Intervalo
   | 'finished'     // Terminado
+  | 'archived'     // Arquivado
   | 'postponed'    // Adiado
   | 'cancelled'    // Cancelado
   | 'walkover';    // Walkover/WO

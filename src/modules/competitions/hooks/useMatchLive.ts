@@ -89,6 +89,8 @@ export function useMatchLive({
 
       setMatch(matchData)
       setEvents(eventsData)
+      queryClient.setQueryData(MATCH_QUERY_KEYS.detail(competitionId, matchId), matchData)
+      queryClient.setQueryData(MATCH_QUERY_KEYS.events(matchId), eventsData)
       setLastUpdated(new Date())
       setError(null)
 
@@ -189,7 +191,7 @@ export function useMatchLive({
             const next = [mapped, ...prev]
             // keep react-query events cache synced
             queryClient.setQueryData(MATCH_QUERY_KEYS.events(matchId), (old: MatchEvent[] | undefined) =>
-              old ? [mapped, ...old] : [mapped]
+              old?.some((event) => event.id === mapped.id) ? old : old ? [mapped, ...old] : [mapped]
             )
             return next
           })

@@ -236,12 +236,11 @@ export const matchApi = {
 
   // GET /competitions/:id/matches/:matchId → detalhe completo
   async get(competitionId: string, matchId: string): Promise<Match> {
-    const matches = await this.list(competitionId)
-    const match = matches.find(m => m.id === matchId)
-    if (!match) {
-      throw new Error('Match not found')
-    }
-    return match
+    const response = await client.get<ApiResponse<any>>(
+      `/competitions/${competitionId}/matches/${matchId}/`
+    )
+    const data = response.data.data || response.data
+    return mapMatchFromBackend(data)
   },
 
   // POST /competitions/:id/matches → criar partida
@@ -281,6 +280,22 @@ export const matchApi = {
       }
     )
     return mapMatchFromBackend(response.data.data)
+  },
+
+  async transition(
+    matchId: string,
+    status: MatchStatus,
+    options?: { currentPeriod?: string; currentMinute?: number },
+  ): Promise<Match> {
+    const response = await client.patch<ApiResponse<any>>(
+      `/competitions/matches/${matchId}/transition/`,
+      {
+        status,
+        current_period: options?.currentPeriod,
+        current_minute: options?.currentMinute,
+      },
+    )
+    return mapMatchFromBackend(response.data.data || response.data)
   },
 
   // GET /matches/:id/events → eventos da partida

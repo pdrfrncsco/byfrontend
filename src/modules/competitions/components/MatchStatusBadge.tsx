@@ -9,6 +9,7 @@ const STATUS_CONFIG: Record<MatchStatus, { label: string; className: string; ico
   live: { label: 'AO VIVO', className: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700', icon: Activity },
   halftime: { label: 'Intervalo', className: 'border-amber-500/30 bg-amber-500/10 text-amber-700', icon: Pause },
   finished: { label: 'Terminado', className: 'border-outline-variant/40 bg-surface-container-high text-on-surface-variant', icon: CheckCircle2 },
+  archived: { label: 'Arquivado', className: 'border-violet-500/30 bg-violet-500/10 text-violet-700', icon: CheckCircle2 },
   postponed: { label: 'Adiado', className: 'border-red-500/30 bg-red-500/10 text-red-700', icon: XCircle },
   cancelled: { label: 'Cancelado', className: 'border-red-500/30 bg-red-500/10 text-red-700', icon: XCircle },
   walkover: { label: 'Walkover', className: 'border-red-500/30 bg-red-500/10 text-red-700', icon: XCircle },

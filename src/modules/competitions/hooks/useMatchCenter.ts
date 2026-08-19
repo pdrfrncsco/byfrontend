@@ -7,21 +7,21 @@ import { toast } from 'sonner'
 // ─── Query Keys ────────────────────────────────────────────────────────────────
 
 export const MATCH_QUERY_KEYS = {
-  all: ['matches'] as const,
+  all: ['match-center'] as const,
   byCompetition: (competitionId: string) =>
-    ['matches', 'competition', competitionId] as const,
+    ['match-center', 'competition', competitionId, 'matches'] as const,
   detail: (competitionId: string, matchId: string) =>
-    ['matches', 'detail', competitionId, matchId] as const,
+    ['match-center', 'competition', competitionId, 'match', matchId, 'state'] as const,
   events: (matchId: string) =>
-    ['matches', matchId, 'events'] as const,
+    ['match-center', 'match', matchId, 'events'] as const,
   eventsByComp: (compId: string, matchId: string) =>
-    ['matches', compId, matchId, 'events'] as const,
+    ['match-center', 'competition', compId, 'match', matchId, 'events'] as const,
   lineup: (matchId: string, teamId: string) =>
-    ['matches', matchId, 'lineup', teamId] as const,
+    ['match-center', 'match', matchId, 'lineup', teamId] as const,
   stats: (matchId: string) =>
-    ['matches', matchId, 'stats'] as const,
+    ['match-center', 'match', matchId, 'stats'] as const,
   report: (matchId: string) =>
-    ['matches', matchId, 'report'] as const,
+    ['match-center', 'match', matchId, 'report'] as const,
   live: ['matches', 'live'] as const,
 }
 

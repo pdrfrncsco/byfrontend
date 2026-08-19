@@ -18,7 +18,6 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchDetail } from '../hooks/useMatchDetail'
 import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
-import { useMatchEvents } from '../hooks/useMatchEvents'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
@@ -53,15 +52,22 @@ function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean 
 }
 
 // Small start-match button component (keeps page code focused)
-function StartMatchButton({ competitionId, matchId, onStarted }: { competitionId: string; matchId: string; onStarted?: () => void }) {
+function StartMatchButton({ competitionId, matchId, currentStatus, onStarted }: { competitionId: string; matchId: string; currentStatus: 'scheduled' | 'pre_match'; onStarted?: () => void }) {
   const [isStarting, setIsStarting] = useState(false)
   const handleStart = async () => {
-    const ok = window.confirm('Confirma iniciar a partida? Esta ação mudará o estado para "live" e liberará o registo de eventos.')
+    const nextStatus = currentStatus === 'scheduled' ? 'pre_match' : 'live'
+    const ok = window.confirm(
+      currentStatus === 'scheduled'
+        ? 'Abrir o pré-jogo e liberar a preparação das escalações?'
+        : 'Confirma iniciar a partida? Esta ação mudará o estado para "live" e liberará o registo de eventos.',
+    )
     if (!ok) return
     try {
       setIsStarting(true)
-      await matchApi.updateStatus(competitionId, matchId, 'live')
-      toast.success('Partida iniciada. Eventos ao vivo podem agora ser registados.')
+      await matchApi.transition(matchId, nextStatus, nextStatus === 'live'
+        ? { currentPeriod: 'first_half', currentMinute: 0 }
+        : undefined)
+      toast.success(nextStatus === 'live' ? 'Partida iniciada. Eventos ao vivo podem agora ser registados.' : 'Pré-jogo aberto para submissão das escalações.')
       onStarted?.()
     } catch (err: any) {
       console.error(err)
@@ -73,7 +79,7 @@ function StartMatchButton({ competitionId, matchId, onStarted }: { competitionId
 
   return (
     <Button variant="primary" size="sm" onClick={handleStart} disabled={isStarting}>
-      {isStarting ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : 'Iniciar Partida'}
+      {isStarting ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : currentStatus === 'scheduled' ? 'Abrir pré-jogo' : 'Iniciar partida'}
     </Button>
   )
 }
@@ -109,14 +115,6 @@ export function MatchDetailPage() {
     competitionId,
     matchId: matchIdValue,
     initialMatch: match,
-  })
-
-  // Events for timeline
-  const { events, isLoading: loadingEvents } = useMatchEvents({
-    competitionId,
-    matchId: matchIdValue,
-    homeTeamId: match?.home_club ?? '',
-    awayTeamId: match?.away_club ?? '',
   })
 
   // Stats
@@ -236,9 +234,9 @@ export function MatchDetailPage() {
               )}
             </div>
             <MatchTimeline
-              events={liveState.events.length > 0 ? liveState.events : events}
+              events={liveState.events}
               match={liveState.match ?? match}
-              isLoading={loadingEvents}
+              isLoading={liveState.isLoading}
             />
           </div>
         )
@@ -307,11 +305,12 @@ export function MatchDetailPage() {
           )}
 
           {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
-          {match && match.status === 'scheduled' && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (
+          {match && (match.status === 'scheduled' || match.status === 'pre_match') && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (
             <div className="mt-sm flex justify-center">
               <StartMatchButton
                 competitionId={competitionId}
                 matchId={matchIdValue}
+                currentStatus={match.status}
                 onStarted={() => liveState.refetch()}
               />
             </div>
