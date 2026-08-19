@@ -97,6 +97,47 @@ describe('useMatchLive cache sync', () => {
     })
   })
 
+  it('prefers the backend current_minute over event-derived minute values for live state', async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+
+    vi.mocked(matchApi.get).mockResolvedValue({
+      id: 'match-1',
+      competitionId: 'comp-1',
+      roundNumber: 1,
+      round_number: 1,
+      homeTeamName: 'Home FC',
+      awayTeamName: 'Away FC',
+      home_club_name: 'Home FC',
+      away_club_name: 'Away FC',
+      home_club: 'club-1',
+      away_club: 'club-2',
+      competition: 'comp-1',
+      scheduledAt: '2026-08-18T20:00:00Z',
+      match_date: '2026-08-18T20:00:00Z',
+      status: 'live',
+      status_label: 'Ao vivo',
+      current_period: 'second_half',
+      current_minute: 52,
+      home_score: 1,
+      away_score: 0,
+    } as any)
+
+    vi.mocked(matchApi.listEvents).mockResolvedValue([
+      { id: 'event-1', minute: 23, period: 'first_half', teamId: 'club-1', type: 'goal', event_type: 'goal' },
+    ] as any)
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+
+    const { result } = renderHook(() => useMatchLive({ competitionId: 'comp-1', matchId: 'match-1', initialMatch: undefined }), { wrapper })
+
+    await waitFor(() => {
+      expect(result.current.currentMinute).toBe(52)
+      expect(result.current.match?.current_minute).toBe(52)
+    })
+  })
+
   it('scopes detail cache by competition to avoid cross-competition leakage', () => {
     expect(MATCH_QUERY_KEYS.detail('comp-1', 'match-1')).toEqual(['matches', 'detail', 'comp-1', 'match-1'])
   })

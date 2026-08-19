@@ -198,7 +198,9 @@ export function useMatchLive({
         // If notification updates the match score or status, update match state and competition list cache
         const hasScore = payload.home_score !== undefined || payload.away_score !== undefined
         const hasStatus = payload.status !== undefined
-        if (hasScore || hasStatus) {
+        const hasCurrentPeriod = payload.current_period !== undefined || payload.period !== undefined
+        const hasCurrentMinute = payload.current_minute !== undefined || payload.currentMinute !== undefined
+        if (hasScore || hasStatus || hasCurrentPeriod || hasCurrentMinute) {
           setMatch((prev) => {
             if (!prev) return prev
             const nextMatch = {
@@ -214,6 +216,12 @@ export function useMatchLive({
                   }
                 : prev.score,
               status: hasStatus ? payload.status : prev.status,
+              current_period: hasCurrentPeriod
+                ? (payload.current_period ?? payload.period ?? prev.current_period ?? null)
+                : prev.current_period,
+              current_minute: hasCurrentMinute
+                ? (payload.current_minute ?? payload.currentMinute ?? prev.current_minute ?? null)
+                : prev.current_minute,
             }
 
             // update all competition-scoped caches, including filtered MatchCenter lists and the detail view
@@ -230,13 +238,18 @@ export function useMatchLive({
     },
   })
 
-  // ─── Compute current minute from events ───────────────────────────────
-  const currentMinute: number | null =
+  // ─── Compute current minute using the server contract as the source of truth.
+  // Event-derived values are used only as a fallback when the backend does not
+  // provide an explicit current minute for the active period.
+  const explicitCurrentMinute = typeof match?.current_minute === 'number' ? match.current_minute : null
+  const eventMinuteFallback =
     match?.status === 'live' || match?.status === 'halftime'
       ? (match.events?.length || events.length
           ? Math.max(...[...(match.events ?? []), ...events].map((e) => e.minute ?? 0))
           : 0)
       : null
+
+  const currentMinute: number | null = explicitCurrentMinute ?? eventMinuteFallback
 
   return {
     match,

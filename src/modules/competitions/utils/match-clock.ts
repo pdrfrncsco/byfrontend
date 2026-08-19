@@ -30,6 +30,10 @@ function normalizePeriod(value?: string): MatchClockPeriod {
       return 'extra_time'
     case 'penalties':
       return 'penalties'
+    case 'halftime':
+      return 'halftime'
+    case 'fulltime':
+      return 'finished'
     default:
       return 'first_half'
   }
@@ -68,6 +72,8 @@ function getClockMinuteForPeriod(period: MatchClockPeriod, minute: number): numb
   if (period === 'second_half') return Math.max(45, Math.min(minute, 90))
   if (period === 'extra_time') return Math.max(90, Math.min(minute, 120))
   if (period === 'penalties') return Math.max(120, Math.min(minute, 130))
+  if (period === 'halftime') return 45
+  if (period === 'finished') return 90
   return Math.max(0, Math.min(minute, 90))
 }
 
@@ -115,7 +121,10 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
     })[0]
   }
 
-  const period = explicitPeriod !== 'first_half' || !latestEvent ? explicitPeriod : normalizePeriod(latestEvent.period)
+  const period = explicitPeriod === 'first_half' && latestEvent
+    ? normalizePeriod(latestEvent.period)
+    : explicitPeriod
+
   const currentMinuteValue = explicitMinute ?? (latestEvent ? getClockMinuteForPeriod(period, latestEvent.minute) : 0)
 
   let minute = typeof explicitMinute === 'number' ? explicitMinute : currentMinuteValue

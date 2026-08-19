@@ -13,9 +13,11 @@ describe('match clock', () => {
     expect(getMatchClockInfo({ status: 'live', events: [{ minute: 50, period: 'second_half' } as any] }).shortLabel).toBe('2T')
   })
 
-  it('supports extra time and penalties periods', () => {
+  it('supports extra time, penalties and fulltime periods', () => {
     expect(getMatchClockInfo({ status: 'live', events: [{ minute: 96, period: 'extra_time' } as any] }).shortLabel).toBe('ET')
     expect(getMatchClockInfo({ status: 'live', events: [{ minute: 119, period: 'penalties' } as any] }).shortLabel).toBe('PEN')
+    expect(getMatchClockInfo({ status: 'finished', current_period: 'fulltime', current_minute: 90 }).shortLabel).toBe('FT')
+    expect(getMatchClockInfo({ status: 'live', current_period: 'halftime', current_minute: 45 }).shortLabel).toBe('INT')
   })
 
   it('prefers explicit backend phase and minute when present', () => {
