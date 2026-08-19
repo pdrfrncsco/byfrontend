@@ -18,7 +18,7 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchDetail } from '../hooks/useMatchDetail'
 import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
-import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
+import { useMatchEvents } from '../hooks/useMatchEvents'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
@@ -112,7 +112,12 @@ export function MatchDetailPage() {
   })
 
   // Events for timeline
-  const { data: events = [], isLoading: loadingEvents } = useCompetitionMatchEvents(competitionId, matchIdValue)
+  const { events, isLoading: loadingEvents } = useMatchEvents({
+    competitionId,
+    matchId: matchIdValue,
+    homeTeamId: match?.home_club ?? '',
+    awayTeamId: match?.away_club ?? '',
+  })
 
   // Stats
   const { stats, isLoading: loadingStats } = useMatchStats({
