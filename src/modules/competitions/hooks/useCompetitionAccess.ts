@@ -16,8 +16,10 @@ export function canManageCompetition(user: UserProfile | null): boolean {
 
 export function useCompetitionAccess() {
   const { user } = useAuth()
+  const roles = new Set([...(user?.roles ?? []), user?.role ?? ''].filter(Boolean))
 
   return {
     isAdmin: canManageCompetition(user),
+    isMatchOperator: [...roles].some((role) => ['owner', 'admin', 'competition_organizer', 'manager', 'referee', 'match_referee', 'delegate'].includes(role)),
   }
 }

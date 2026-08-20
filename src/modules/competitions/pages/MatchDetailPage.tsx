@@ -15,13 +15,14 @@ import { useAuth } from '@/app/providers'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { useMatchDetail } from '../hooks/useMatchDetail'
 import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown } from '../components'
+import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown, MatchLifecycleStepper, MatchEventsPanel } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -91,6 +92,7 @@ export function MatchDetailPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
   const { user } = useAuth()
+  const { isMatchOperator } = useCompetitionAccess()
   const userRoles = [...(user?.roles ?? []), user?.role ?? ''].filter(Boolean) as string[]
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
@@ -238,6 +240,11 @@ export function MatchDetailPage() {
               match={liveState.match ?? match}
               isLoading={liveState.isLoading}
             />
+            <MatchEventsPanel
+              competitionId={competitionId}
+              match={liveState.match ?? match}
+              isAdmin={isMatchOperator}
+            />
           </div>
         )
 
@@ -288,6 +295,10 @@ export function MatchDetailPage() {
           {/* Scoreboard */}
           <MatchScoreboard match={liveState.match ?? match} />
 
+          <div className="mt-lg">
+            <MatchLifecycleStepper match={liveState.match ?? match} />
+          </div>
+
           <div className="mt-sm flex justify-center gap-sm">
             <Link to={competitionRoutes.tacticalView(competitionId, matchIdValue)}>
               <Button variant="secondary" size="sm">Vista Táctica</Button>
@@ -305,7 +316,7 @@ export function MatchDetailPage() {
           )}
 
           {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
-          {match && (match.status === 'scheduled' || match.status === 'pre_match') && hasRequiredRole(userRoles, ['referee', 'org_admin', 'delegate', 'owner', 'admin']) && (
+          {match && (match.status === 'scheduled' || match.status === 'pre_match') && isMatchOperator && (
             <div className="mt-sm flex justify-center">
               <StartMatchButton
                 competitionId={competitionId}

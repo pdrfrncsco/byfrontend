@@ -377,12 +377,12 @@ export function MatchLineupPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
-  const { isAdmin } = useCompetitionAccess()
+  const { isAdmin, isMatchOperator } = useCompetitionAccess()
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   // Only allow editing when on dashboard routes (club/org admin flows happen in dashboard)
-  const allowEditing = isAdmin && isDashboard
+  const allowEditing = isMatchOperator && isDashboard
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)

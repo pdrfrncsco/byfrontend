@@ -75,6 +75,7 @@ export interface MatchEventCreateData {
   player?: string | null
   player_off?: string | null
   notes?: string
+  idempotency_key?: string
 }
 
 export interface PlayerStats {

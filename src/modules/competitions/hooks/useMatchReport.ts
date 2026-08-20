@@ -47,6 +47,7 @@ export function useMatchReport({
   const { user } = useAuth()
   const roles = new Set([...(user?.roles ?? []), user?.role ?? ''])
   const isReferee = roles.has('referee') || roles.has('match_referee')
+  const isMatchOperator = isAdmin || roles.has('manager') || roles.has('delegate')
   const canApprove = isAdmin || roles.has('federation')
 
   // Granular check: user must be the designated referee for THIS specific match,
@@ -128,7 +129,7 @@ export function useMatchReport({
     isSubmitting: submitMutation.isPending,
     isApproving: approveMutation.isPending,
     uploadRefereeDocument: (file: File) => uploadMutation.mutateAsync(file),
-    canSubmit: isDesignatedReferee || isAdmin,
+    canSubmit: isDesignatedReferee || isMatchOperator,
     canApprove,
     isLoading: query.isLoading,
     error: query.error as Error | null,

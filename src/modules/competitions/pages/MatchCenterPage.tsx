@@ -20,7 +20,7 @@ const STATUS_FILTERS: Array<{
 }> = [
   { id: ['live', 'halftime'], label: 'Ao vivo', icon: Activity },
   { id: ['scheduled', 'pre_match'], label: 'A seguir', icon: Calendar },
-  { id: ['finished', 'walkover', 'cancelled', 'postponed'], label: 'Finalizados', icon: Calendar },
+  { id: ['finished', 'archived', 'walkover', 'cancelled', 'postponed'], label: 'Finalizados', icon: Calendar },
   { id: null, label: 'Todos', icon: Filter },
 ]
 
