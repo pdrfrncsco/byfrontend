@@ -130,6 +130,20 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
   let minute = typeof explicitMinute === 'number' ? explicitMinute : currentMinuteValue
   let minuteExtra = latestEvent?.minuteExtra ?? 0
 
+  const clockRunning = Boolean((match as any)?.clock_running)
+  const clockStartedAt = (match as any)?.clock_started_at
+  const elapsedSeconds = Number((match as any)?.clock_elapsed_seconds ?? 0)
+  if (status === 'live' && clockRunning && clockStartedAt) {
+    const elapsedMinutes = Math.max(0, Math.floor((now - new Date(clockStartedAt).getTime()) / 60_000) + Math.floor(elapsedSeconds / 60))
+    const periodBase = period === 'second_half' ? 45 : period === 'extra_time' ? 90 : 0
+    minute = periodBase + elapsedMinutes
+    const regulationEnd = period === 'first_half' ? 45 : period === 'second_half' ? 90 : period === 'extra_time' ? 120 : minute
+    if (minute > regulationEnd) {
+      minuteExtra = minute - regulationEnd
+      minute = regulationEnd
+    }
+  }
+
   if (status === 'live' && latestEvent && explicitMinute === undefined) {
     const eventTime = latestEvent.created_at || latestEvent.createdAt
     if (eventTime) {

@@ -11,6 +11,14 @@ export type MatchStatus =
   | 'cancelled'    // Cancelado
   | 'walkover';    // Walkover/WO
 
+export type MatchClockAction =
+  | 'start_first_half'
+  | 'end_first_half'
+  | 'start_second_half'
+  | 'resume_clock'
+  | 'finish_match'
+  | 'set_stoppage_time'
+
 export type MatchEventType =
   | 'goal'
   | 'own_goal'
@@ -136,6 +144,11 @@ export interface Match {
   status: MatchStatus;
   current_period?: 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime' | 'fulltime' | null;
   current_minute?: number | null;
+  clock_running?: boolean;
+  clock_started_at?: string | null;
+  clock_elapsed_seconds?: number;
+  stoppage_time_minutes?: number;
+  clock_version?: number;
   score?: MatchScore;
   events?: MatchEvent[];
   homeLineup?: MatchLineup;

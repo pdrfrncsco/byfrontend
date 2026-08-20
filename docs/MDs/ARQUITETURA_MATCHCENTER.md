@@ -418,3 +418,334 @@
 
   O foco deve ser transformar o MatchCenter de um conjunto de páginas e hooks funcionais num fluxo transacional orientado por
   estado, eventos de domínio e permissões por ator.
+
+
+
+
+  # AUDITORIA 2
+  ## Diagnóstico actual
+
+  O problema principal está no contrato do relógio:
+
+  - O backend guarda current_period e current_minute, mas não guarda o momento em que o
+    relógio começou.
+
+  - O current_minute tem valor padrão 0. Portanto, o Frontend recebe sempre um minuto
+    explícito e não consegue calcular a passagem do tempo.
+
+  - O Frontend só tenta inferir o minuto através do último evento registado, o que não
+    é suficiente.
+
+  - A API actual permite apenas transições genéricas:
+
+    scheduled → pre_match → live → halftime → live → finished
+
+  - Não existem comandos explícitos para:
+      - iniciar primeiro tempo;
+      - terminar primeiro tempo;
+      - iniciar segundo tempo;
+      - terminar segundo tempo;
+      - iniciar prolongamento;
+      - terminar primeiro período do prolongamento;
+      - iniciar segundo período do prolongamento;
+      - iniciar penáltis;
+      - finalizar a partida.
+
+  - O modelo actual tem apenas extra_time, sem distinguir os dois períodos do
+    prolongamento.
+
+  - Não existe controlo de concorrência para impedir que dois operadores alterem o
+    relógio simultaneamente.
+
+  ## Fluxo funcional proposto
+
+  Pré-jogo
+     ↓
+  Iniciar 1.º tempo
+     ↓
+  1.º tempo ao vivo
+     ↓
+  Terminar 1.º tempo
+     ↓
+  Intervalo
+     ↓
+  Iniciar 2.º tempo
+     ↓
+  2.º tempo ao vivo
+     ↓
+  Terminar partida
+     ├── Resultado decidido → Finalizar
+     ├── Empate com prolongamento → Iniciar prolongamento
+     └── Empate com penáltis → Iniciar penáltis
+                           ↓
+                      Finalizar
+
+  Para competições com prolongamento:
+
+  Prolongamento 1.º período
+     ↓
+  Intervalo do prolongamento
+     ↓
+  Prolongamento 2.º período
+     ↓
+  Finalizar ou penáltis
+
+  ## Plano de implementação
+
+  ### 1. Backend: relógio autoritativo
+
+  Adicionar ao modelo Match:
+
+  - clock_running
+  - clock_started_at
+  - clock_stopped_at
+  - clock_elapsed_seconds
+  - stoppage_time_minutes
+  - clock_version ou updated_at para controlo de concorrência
+  - período mais detalhado:
+
+  first_half
+  halftime
+  second_half
+  extra_first_half
+  extra_halftime
+  extra_second_half
+  penalties
+  finished
+
+  O minuto visível deverá ser calculado no servidor:
+
+  minuto_actual =
+  clock_elapsed_seconds
+  + (agora - clock_started_at)
+
+  Assim, o relógio não depende da criação de eventos e continua correcto mesmo que
+  nenhum evento tenha sido registado.
+
+  ### 2. API de comandos do relógio
+
+  Manter o endpoint de transição para alterações administrativas, mas criar uma API
+  específica para comandos do jogo:
+
+  POST /competitions/matches/{id}/clock/action/
+
+  Payload:
+
+  {
+    "action": "start_first_half",
+    "stoppage_time_minutes": 0,
+    "expected_version": 12
+  }
+
+  Acções previstas:
+
+  start_first_half
+  end_first_half
+  start_second_half
+  end_second_half
+  start_extra_time
+  end_extra_first_half
+  start_extra_second_half
+  end_extra_time
+  start_penalties
+  finish_match
+  set_stoppage_time
+  pause_clock
+  resume_clock
+
+  Cada acção deverá:
+
+  - validar o estado actual;
+  - validar a configuração da competição;
+  - verificar permissões do árbitro/delegado/operador;
+  - actualizar o relógio;
+  - criar um registo de auditoria;
+  - publicar evento realtime;
+  - rejeitar versões antigas do estado.
+
+  ### 3. Regras de competição
+
+  O backend deve usar a configuração da competição para decidir se permite:
+
+  - prolongamento;
+  - penáltis;
+  - duração dos tempos;
+  - duração do prolongamento;
+  - tempo máximo de acréscimo;
+  - finalizar directamente num empate;
+  - competição por grupos ou eliminatória.
+
+  Exemplo:
+
+  {
+    "half_duration": 45,
+    "extra_time_enabled": true,
+    "extra_half_duration": 15,
+    "penalties_enabled": true
+  }
+
+  Estas regras não devem ficar codificadas apenas no Frontend.
+
+  ### 4. Registo de auditoria
+
+  Criar MatchClockAction ou integrar no sistema de auditoria existente:
+
+  - partida;
+  - utilizador;
+  - acção;
+  - período anterior;
+  - período novo;
+  - minuto anterior;
+  - minuto novo;
+  - acréscimo;
+  - data/hora;
+  - resultado;
+  - motivo de erro, quando aplicável.
+
+  Isto permitirá corrigir erros do árbitro sem perder o histórico.
+
+  ### 5. UX/UI do painel de controlo
+
+  Adicionar ao detalhe da partida um painel visível apenas para utilizadores
+  autorizados:
+
+  ┌────────────────────────────────────┐
+  │  AO VIVO                           │
+  │  1T 34'                            │
+  │                                    │
+  │  [Adicionar acréscimo]             │
+  │  [Terminar 1.º tempo]              │
+  └────────────────────────────────────┘
+
+  As acções devem mudar conforme o estado:
+
+   Estado                Acções principais
+  ━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   pre_match             Iniciar 1.º tempo
+  ────────────────────  ──────────────────────────────────────
+   live + first_half     Acréscimo, terminar 1.º tempo
+  ────────────────────  ──────────────────────────────────────
+   halftime              Iniciar 2.º tempo
+  ────────────────────  ──────────────────────────────────────
+   live + second_half    Acréscimo, terminar partida
+  ────────────────────  ──────────────────────────────────────
+   Empate no fim         Finalizar, prolongamento ou penáltis
+  ────────────────────  ──────────────────────────────────────
+   extra_first_half      Acréscimo, terminar período
+  ────────────────────  ──────────────────────────────────────
+   extra_halftime        Iniciar segundo prolongamento
+  ────────────────────  ──────────────────────────────────────
+   extra_second_half     Finalizar ou iniciar penáltis
+  ────────────────────  ──────────────────────────────────────
+   penalties             Registar cobrança, finalizar
+  ────────────────────  ──────────────────────────────────────
+   finished              Relatório, arquivar
+
+  O botão destrutivo ou irreversível deve exigir confirmação contextual.
+
+  ### 6. Relógio no Frontend
+
+  Criar um hook dedicado:
+
+  useMatchClock(match)
+
+  Responsabilidades:
+
+  - calcular o minuto localmente com base em clock_started_at;
+  - sincronizar com o servidor;
+  - corrigir drift;
+  - congelar durante intervalo;
+  - mostrar acréscimos;
+  - indicar “sincronizado”, “a sincronizar” ou “offline”;
+  - actualizar quando receber SSE/WebSocket;
+  - fazer fallback para polling.
+
+  O MatchScoreboard e MatchStatusBadge devem consumir o mesmo hook para evitar relógios
+  diferentes no ecrã.
+
+  ### 7. Eventos de jogo
+
+  Cada evento deverá guardar:
+
+  - período;
+  - minuto oficial;
+  - minuto de acréscimo;
+  - timestamp do servidor;
+  - autor;
+  - idempotency key.
+
+  Exemplos:
+
+  Golo aos 45+2'
+  Cartão aos 78'
+  Substituição aos 90+4'
+  Golo no prolongamento aos ET 7'
+  Cobrança de penálti durante PEN
+
+  Os eventos de penáltis devem ser distinguidos dos penáltis marcados durante o jogo.
+
+  ### 8. Actualização realtime
+
+  Publicar snapshots com:
+
+  {
+    "match_id": "...",
+    "status": "live",
+    "period": "first_half",
+    "clock_running": true,
+    "clock_started_at": "...",
+    "elapsed_seconds": 2040,
+    "current_minute": 34,
+    "stoppage_time_minutes": 2,
+    "version": 13
+  }
+
+  O Frontend deve:
+
+  - actualizar o relógio sem recarregar a página;
+  - rejeitar snapshots antigos;
+  - mostrar fallback de polling;
+  - indicar perda de ligação;
+  - sincronizar após reconexão.
+
+  ### 9. Testes obrigatórios
+
+  Backend:
+
+  - transições válidas e inválidas;
+  - relógio inicia e para correctamente;
+  - intervalo congela o relógio;
+  - acréscimos;
+  - prolongamento;
+  - penáltis;
+  - concorrência entre dois operadores;
+  - permissões;
+  - idempotência;
+  - eventos realtime;
+  - relatório final e standings.
+
+  Frontend:
+
+  - contagem de minutos sem eventos;
+  - sincronização depois de refresh;
+  - recuperação após offline;
+  - mudança de período;
+  - confirmação de acções irreversíveis;
+  - ocultação de botões por papel;
+  - modo arquivado;
+  - relógio em dispositivos com hora local incorrecta.
+
+  ## Ordem recomendada
+
+  1. Corrigir o modelo e serviço de relógio no backend.
+  2. Criar endpoint de comandos e auditoria.
+  3. Implementar SSE/WebSocket com snapshot autoritativo.
+  4. Criar useMatchClock.
+  5. Substituir a lógica actual do MatchScoreboard.
+  6. Criar painel contextual de comandos.
+  7. Integrar acréscimos, prolongamento e penáltis.
+  8. Validar permissões, concorrência e testes end-to-end.
+
+  O primeiro bloqueio funcional a resolver é o relógio autoritativo no backend. Sem
+  clock_started_at ou equivalente, qualquer contador no Frontend será apenas uma
+  estimativa e poderá ficar divergente do estado oficial da partida.

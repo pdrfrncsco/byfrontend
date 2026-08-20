@@ -22,7 +22,7 @@ import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown, MatchLifecycleStepper, MatchEventsPanel } from '../components'
+import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown, MatchLifecycleStepper, MatchEventsPanel, MatchClockControls } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -354,7 +354,7 @@ export function MatchDetailPage() {
           )}
 
           <div className="mt-sm flex flex-wrap justify-center gap-sm" aria-label="Ações da fase da partida">
-            {(match.status === 'scheduled' || match.status === 'pre_match') && isMatchOperator && (
+            {match.status === 'scheduled' && isMatchOperator && (
               <StartMatchButton
                 competitionId={competitionId}
                 matchId={matchIdValue}
@@ -362,6 +362,11 @@ export function MatchDetailPage() {
                 onStarted={() => liveState.refetch()}
               />
             )}
+            <MatchClockControls
+              match={liveState.match ?? match}
+              canControl={isMatchOperator}
+              onUpdated={() => liveState.refetch()}
+            />
             {match.status === 'pre_match' && (
               <Button variant="secondary" size="sm" onClick={() => setActiveTab('lineup')}>
                 <Users className="mr-xs h-4 w-4" /> Gerir escalações

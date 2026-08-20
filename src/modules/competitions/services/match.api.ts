@@ -12,6 +12,7 @@ import type {
   TeamMatchStats,
   MatchEventFormData,
   MatchEventCreateData,
+  MatchClockAction,
 } from '../types'
 
 export function normalizeMatchEventPayload(
@@ -294,6 +295,22 @@ export const matchApi = {
         status,
         current_period: options?.currentPeriod,
         current_minute: options?.currentMinute,
+      },
+    )
+    return mapMatchFromBackend(response.data.data || response.data)
+  },
+
+  async clockAction(
+    matchId: string,
+    action: MatchClockAction,
+    options?: { expectedVersion?: number; stoppageTimeMinutes?: number },
+  ): Promise<Match> {
+    const response = await client.post<ApiResponse<any>>(
+      `/competitions/matches/${matchId}/clock/action/`,
+      {
+        action,
+        expected_version: options?.expectedVersion,
+        stoppage_time_minutes: options?.stoppageTimeMinutes,
       },
     )
     return mapMatchFromBackend(response.data.data || response.data)
