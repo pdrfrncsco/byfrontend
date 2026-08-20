@@ -99,7 +99,7 @@ export function MatchEventCenter({ competitionId, match, events, canOperate, can
         )}
       </section>
 
-      <Card variant="flat" padding="lg">
+      {canOperate && <Card variant="flat" padding="lg">
         <form onSubmit={submit} className="space-y-md">
           <div><h3 className="font-semibold text-on-surface">Registar evento</h3><p className="mt-xs text-xs text-on-surface-variant">Seleccione a equipa e o jogador envolvidos.</p></div>
           <select value={eventType} onChange={event => { setEventType(event.target.value as EventType); setPlayerId(''); setPlayerOffId('') }} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface">
@@ -118,7 +118,7 @@ export function MatchEventCenter({ competitionId, match, events, canOperate, can
           <Button type="submit" variant="primary" className="w-full" disabled={!canAdd || addEvent.isPending || !playerId}>{addEvent.isPending ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : 'Guardar evento'}</Button>
           {!canAdd && <p className="text-xs text-on-surface-variant">O registo só está disponível durante a partida ao vivo.</p>}
         </form>
-      </Card>
+      </Card>}
     </div>
   )
 }

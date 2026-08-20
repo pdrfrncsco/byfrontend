@@ -393,6 +393,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
 
   // Find the specific match
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const canReviewLineups = isAdmin && match?.status === 'pre_match'
 
     // Find home and away lineups — only show submissions that were approved by the organization
     const VISIBLE_STATUSES = new Set(['confirmed', 'locked'])
@@ -493,7 +494,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
+                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined} onConfirmPending={confirmLineup.isPending} />
               ) : homeLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -519,7 +520,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                   match={match}
               editable={allowEditing && match.status === 'pre_match'}
                   onSave={saveLineup}
-                  onConfirm={(clubId) => confirmLineup.mutate(clubId)}
+                  onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined}
                   onConfirmPending={confirmLineup.isPending}
                 />
               )}
@@ -528,7 +529,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined} onConfirmPending={confirmLineup.isPending} />
               ) : awayLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -554,7 +555,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                   match={match}
                   editable={allowEditing && match.status === 'pre_match'}
                   onSave={saveLineup}
-                  onConfirm={(clubId) => confirmLineup.mutate(clubId)}
+                  onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined}
                   onConfirmPending={confirmLineup.isPending}
                 />
               )}

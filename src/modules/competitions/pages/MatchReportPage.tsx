@@ -327,6 +327,7 @@ export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
   // Find the specific match (safe to call before hooks that depend on it;
   // hooks are still always called unconditionally below)
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
+  const canManageGoals = isAdmin && match?.status !== 'archived' && match?.status !== 'cancelled'
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   const {
@@ -590,7 +591,7 @@ export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
                   <Zap className="h-5 w-5" />
                   Golos
                 </h2>
-                {isAdmin && !showAddGoal && (
+                {canManageGoals && !showAddGoal && (
                   <Button variant="primary" size="sm" onClick={() => setShowAddGoal(true)}>
                     <Zap className="mr-xs h-4 w-4" />
                     Adicionar Golo
@@ -598,7 +599,7 @@ export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
                 )}
               </div>
 
-              {showAddGoal && isAdmin && (
+              {showAddGoal && canManageGoals && (
                 <AddGoalForm
                   matchId={matchIdValue}
                   homeClubId={match.home_club}

@@ -350,12 +350,12 @@ export function MatchDetailPage() {
               penaltiesAllowed={penaltiesAllowed}
               onUpdated={() => liveState.refetch()}
             />
-            {match.status === 'pre_match' && (
+            {match.status === 'pre_match' && isMatchOperator && (
               <Button variant="secondary" size="sm" onClick={() => setActiveTab('lineup')}>
                 <Users className="mr-xs h-4 w-4" /> Gerir escalações
               </Button>
             )}
-            {(match.status === 'live' || match.status === 'halftime') && (
+            {(match.status === 'live' || match.status === 'halftime') && isMatchOperator && (
               <Button variant="secondary" size="sm" onClick={() => setActiveTab('events')}>
                 <Activity className="mr-xs h-4 w-4" /> Registar evento
               </Button>
