@@ -19,10 +19,12 @@ export function MatchEventsPanel({
   competitionId,
   match,
   isAdmin,
+  isOperator = isAdmin,
 }: {
   competitionId: string
   match: Match
   isAdmin: boolean
+  isOperator?: boolean
 }) {
   const { data: events = [], isLoading } = useCompetitionMatchEvents(competitionId, match.id)
   const addEvent = useAddMatchEvent(competitionId, match.id)
@@ -73,7 +75,7 @@ export function MatchEventsPanel({
             </span>
           )}
         </div>
-        {isAdmin && !isAdding && (
+        {isOperator && !isAdding && (
           <button 
             className="flex items-center gap-xs rounded-lg border border-outline-variant px-sm py-xs text-xs font-medium text-on-surface transition-colors hover:bg-surface-container-high"
             onClick={() => setIsAdding(true)}
@@ -83,7 +85,7 @@ export function MatchEventsPanel({
         )}
       </div>
 
-      {isAdding && isAdmin && (
+      {isAdding && isOperator && (
         <form onSubmit={handleAdd} className="mb-md flex flex-wrap items-center gap-sm">
           <select 
             className="rounded-lg border border-outline-variant bg-surface px-sm py-xs text-sm text-on-surface focus:border-primary focus:outline-none" 

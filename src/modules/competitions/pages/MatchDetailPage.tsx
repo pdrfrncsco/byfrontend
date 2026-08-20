@@ -43,13 +43,38 @@ const TABS: TabConfig[] = [
   { id: 'lineup', label: 'Escalação', icon: Users, roles: ['*'] },
   { id: 'events', label: 'Eventos', icon: Activity, roles: ['*'] },
   { id: 'stats', label: 'Estatísticas', icon: BarChart3, roles: ['*'] },
-  { id: 'report', label: 'Relatório', icon: FileText, roles: ['referee', 'org_admin', 'delegate', 'owner', 'admin'] },
+  { id: 'report', label: 'Relatório', icon: FileText, roles: ['referee', 'match_referee', 'manager', 'org_admin', 'delegate', 'owner', 'admin'] },
 ]
 
 // Helper to check if user has required role
 function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean {
   if (requiredRoles.includes('*')) return true
   return userRoles.some(role => requiredRoles.includes(role))
+}
+
+function ArchiveMatchButton({ matchId, onArchived }: { matchId: string; onArchived?: () => void }) {
+  const [isArchiving, setIsArchiving] = useState(false)
+
+  const handleArchive = async () => {
+    if (!window.confirm('Arquivar esta partida? O resultado ficará disponível apenas como histórico imutável.')) return
+    try {
+      setIsArchiving(true)
+      await matchApi.transition(matchId, 'archived')
+      toast.success('Partida arquivada.')
+      onArchived?.()
+    } catch (err: any) {
+      toast.error('Não foi possível arquivar a partida: ' + (err?.message || String(err)))
+    } finally {
+      setIsArchiving(false)
+    }
+  }
+
+  return (
+    <Button variant="secondary" size="sm" onClick={handleArchive} disabled={isArchiving}>
+      {isArchiving ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : null}
+      Arquivar partida
+    </Button>
+  )
 }
 
 // Small start-match button component (keeps page code focused)
@@ -92,7 +117,7 @@ export function MatchDetailPage() {
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
   const { user } = useAuth()
-  const { isMatchOperator } = useCompetitionAccess()
+  const { isAdmin, isMatchOperator } = useCompetitionAccess()
   const userRoles = [...(user?.roles ?? []), user?.role ?? ''].filter(Boolean) as string[]
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
@@ -243,7 +268,8 @@ export function MatchDetailPage() {
             <MatchEventsPanel
               competitionId={competitionId}
               match={liveState.match ?? match}
-              isAdmin={isMatchOperator}
+              isAdmin={isAdmin}
+              isOperator={isMatchOperator}
             />
           </div>
         )
@@ -299,6 +325,40 @@ export function MatchDetailPage() {
             <MatchLifecycleStepper match={liveState.match ?? match} />
           </div>
 
+          <div className="mt-sm flex flex-wrap justify-center gap-sm" aria-label="Ações da fase da partida">
+            {(match.status === 'scheduled' || match.status === 'pre_match') && isMatchOperator && (
+              <StartMatchButton
+                competitionId={competitionId}
+                matchId={matchIdValue}
+                currentStatus={match.status}
+                onStarted={() => liveState.refetch()}
+              />
+            )}
+            {match.status === 'pre_match' && (
+              <Button variant="secondary" size="sm" onClick={() => setActiveTab('lineup')}>
+                <Users className="mr-xs h-4 w-4" /> Gerir escalações
+              </Button>
+            )}
+            {(match.status === 'live' || match.status === 'halftime') && (
+              <Button variant="secondary" size="sm" onClick={() => setActiveTab('events')}>
+                <Activity className="mr-xs h-4 w-4" /> Registar evento
+              </Button>
+            )}
+            {match.status === 'finished' && hasRequiredRole(userRoles, ['referee', 'match_referee', 'manager', 'org_admin', 'delegate', 'owner', 'admin']) && (
+              <Button variant="secondary" size="sm" onClick={() => setActiveTab('report')}>
+                <FileText className="mr-xs h-4 w-4" /> Submeter relatório
+              </Button>
+            )}
+            {match.status === 'finished' && isAdmin && (
+              <ArchiveMatchButton matchId={matchIdValue} onArchived={() => liveState.refetch()} />
+            )}
+            {match.status === 'archived' && (
+              <span className="rounded-lg bg-surface-container-high px-sm py-xs text-xs text-on-surface-variant">
+                Partida arquivada: edição desativada.
+              </span>
+            )}
+          </div>
+
           <div className="mt-sm flex justify-center gap-sm">
             <Link to={competitionRoutes.tacticalView(competitionId, matchIdValue)}>
               <Button variant="secondary" size="sm">Vista Táctica</Button>
@@ -311,18 +371,6 @@ export function MatchDetailPage() {
               <MatchCountdown
                 scheduledAt={(liveState.match ?? match).scheduledAt ?? (liveState.match ?? match).match_date!}
                 onExpire={() => liveState.refetch()}
-              />
-            </div>
-          )}
-
-          {/* Admin: Iniciar Partida (aparece apenas para roles autorizadas quando agendada) */}
-          {match && (match.status === 'scheduled' || match.status === 'pre_match') && isMatchOperator && (
-            <div className="mt-sm flex justify-center">
-              <StartMatchButton
-                competitionId={competitionId}
-                matchId={matchIdValue}
-                currentStatus={match.status}
-                onStarted={() => liveState.refetch()}
               />
             </div>
           )}
