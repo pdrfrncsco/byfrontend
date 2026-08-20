@@ -129,7 +129,7 @@ export function useMatchReport({
     isSubmitting: submitMutation.isPending,
     isApproving: approveMutation.isPending,
     uploadRefereeDocument: (file: File) => uploadMutation.mutateAsync(file),
-    canSubmit: isDesignatedReferee || isMatchOperator,
+    canSubmit: (isDesignatedReferee || isMatchOperator) && match?.status !== 'archived',
     canApprove,
     isLoading: query.isLoading,
     error: query.error as Error | null,

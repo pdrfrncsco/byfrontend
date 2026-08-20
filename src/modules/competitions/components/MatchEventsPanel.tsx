@@ -29,6 +29,7 @@ export function MatchEventsPanel({
   const { data: events = [], isLoading } = useCompetitionMatchEvents(competitionId, match.id)
   const addEvent = useAddMatchEvent(competitionId, match.id)
   const deleteEvent = useDeleteMatchEvent(competitionId, match.id)
+  const canAddEvent = isOperator && (match.status === 'live' || match.status === 'halftime')
 
   const [isAdding, setIsAdding] = useState(false)
   const [eventType, setEventType] = useState<EventType>('goal')
@@ -75,7 +76,7 @@ export function MatchEventsPanel({
             </span>
           )}
         </div>
-        {isOperator && !isAdding && (
+        {canAddEvent && !isAdding && (
           <button 
             className="flex items-center gap-xs rounded-lg border border-outline-variant px-sm py-xs text-xs font-medium text-on-surface transition-colors hover:bg-surface-container-high"
             onClick={() => setIsAdding(true)}
@@ -85,7 +86,7 @@ export function MatchEventsPanel({
         )}
       </div>
 
-      {isAdding && isOperator && (
+      {isAdding && canAddEvent && (
         <form onSubmit={handleAdd} className="mb-md flex flex-wrap items-center gap-sm">
           <select 
             className="rounded-lg border border-outline-variant bg-surface px-sm py-xs text-sm text-on-surface focus:border-primary focus:outline-none" 
@@ -141,6 +142,12 @@ export function MatchEventsPanel({
             Cancelar
           </button>
         </form>
+      )}
+
+      {isOperator && !canAddEvent && match.status !== 'archived' && (
+        <p className="mb-md rounded-lg bg-surface px-sm py-xs text-xs text-on-surface-variant">
+          O registo de eventos fica disponível quando a partida estiver ao vivo.
+        </p>
       )}
 
       {events.length === 0 ? (

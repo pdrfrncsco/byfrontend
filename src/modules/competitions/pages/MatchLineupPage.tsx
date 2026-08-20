@@ -479,6 +479,11 @@ export function MatchLineupPage() {
 
       {/* Main Content */}
       <div className="mx-auto max-w-4xl px-lg py-xl">
+        {match.status === 'archived' && (
+          <div className="mb-lg rounded-lg border border-outline-variant/20 bg-surface-container px-md py-sm text-sm text-on-surface-variant">
+            Esta partida está arquivada. As escalações são exibidas apenas como histórico.
+          </div>
+        )}
         {loadingLineups ? (
           <div className="flex items-center justify-center py-xl">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -488,7 +493,7 @@ export function MatchLineupPage() {
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
+                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
               ) : homeLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -512,7 +517,7 @@ export function MatchLineupPage() {
                   } as unknown as LineupSubmission}
                   isHome
                   match={match}
-              editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
+              editable={allowEditing && match.status === 'pre_match'}
                   onSave={saveLineup}
                   onConfirm={(clubId) => confirmLineup.mutate(clubId)}
                   onConfirmPending={confirmLineup.isPending}
@@ -523,7 +528,7 @@ export function MatchLineupPage() {
             {/* Away Team Lineup */}
             <Card variant="flat" padding="lg">
               {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status !== 'live' && match.status !== 'finished'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
+                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={(clubId) => confirmLineup.mutate(clubId)} onConfirmPending={confirmLineup.isPending} />
               ) : awayLineupSubmitted && !allowEditing ? (
                 <Card variant="flat" padding="lg">
                   <div className="flex flex-col items-center gap-sm py-lg text-center">
@@ -547,7 +552,7 @@ export function MatchLineupPage() {
                   } as unknown as LineupSubmission}
                   isHome={false}
                   match={match}
-                  editable={allowEditing && match.status !== 'live' && match.status !== 'finished'}
+                  editable={allowEditing && match.status === 'pre_match'}
                   onSave={saveLineup}
                   onConfirm={(clubId) => confirmLineup.mutate(clubId)}
                   onConfirmPending={confirmLineup.isPending}
@@ -556,7 +561,7 @@ export function MatchLineupPage() {
             </Card>
 
             {/* Admin Actions */}
-            {isAdmin && lineups.length > 0 && (
+            {isAdmin && match.status === 'pre_match' && lineups.length > 0 && (
               <div className="flex justify-center gap-md">
                 <Button
                   variant="secondary"

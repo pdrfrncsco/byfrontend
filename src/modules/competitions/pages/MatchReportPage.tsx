@@ -350,6 +350,9 @@ export function MatchReportPage() {
     userRoles.has('referee') ||
     userRoles.has('match_referee') ||
     userRoles.has('delegate') ||
+    userRoles.has('manager') ||
+    userRoles.has('owner') ||
+    userRoles.has('admin') ||
     userRoles.has('federation')
 
   // Loading state
@@ -444,7 +447,7 @@ export function MatchReportPage() {
   }
 
   // Pre-condition: Match must be in progress or finished to access report
-  const canAccessReport = match.status === 'live' || match.status === 'halftime' || match.status === 'finished'
+  const canAccessReport = match.status === 'live' || match.status === 'halftime' || match.status === 'finished' || match.status === 'archived'
   if (!canAccessReport) {
     const NotAccessibleComponent = () => (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">
