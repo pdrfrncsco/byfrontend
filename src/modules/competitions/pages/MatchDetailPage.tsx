@@ -22,7 +22,7 @@ import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchStatsPanel, MatchCountdown, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel, MatchEventCenter } from '../components'
+import { MatchStatsPanel, MatchCountdown, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel, MatchEventCenter, MatchStatsWorkspace } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -158,7 +158,7 @@ export function MatchDetailPage() {
   })
 
   // Stats
-  const { stats, isLoading: loadingStats } = useMatchStats({
+  const { stats, isLoading: loadingStats, isUpdating: updatingStats, updateStats } = useMatchStats({
     matchId: matchIdValue,
     homeTeamId: match?.home_club ?? '',
     awayTeamId: match?.away_club ?? '',
@@ -286,11 +286,16 @@ export function MatchDetailPage() {
 
       case 'stats':
         return (
-          <MatchStatsPanel
+          <MatchStatsWorkspace
             stats={stats}
             homeName={match.home_club_name}
             awayName={match.away_club_name}
+            homeTeamId={match.home_club}
+            awayTeamId={match.away_club}
+            canEdit={isMatchOperator && match.status !== 'archived' && match.status !== 'cancelled'}
             isLoading={loadingStats}
+            isUpdating={updatingStats}
+            updateStats={updateStats}
           />
         )
 
