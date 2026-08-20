@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -121,6 +121,18 @@ export function MatchDetailPage() {
   const userRoles = [...(user?.roles ?? []), user?.role ?? ''].filter(Boolean) as string[]
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
+  const [isOnline, setIsOnline] = useState(() => typeof navigator === 'undefined' ? true : navigator.onLine)
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
 
   // Determine initial tab from URL or state
   const getInitialTab = (): TabId => {
@@ -324,6 +336,22 @@ export function MatchDetailPage() {
           <div className="mt-lg">
             <MatchLifecycleStepper match={liveState.match ?? match} />
           </div>
+
+          {(!isOnline || liveState.error) && (
+            <div className="mt-sm flex flex-wrap items-center justify-between gap-sm rounded-lg border border-warning/30 bg-warning/10 px-md py-sm text-sm text-on-surface" role="alert">
+              <span>{!isOnline ? 'Sem ligação à internet. Os dados apresentados podem estar desactualizados.' : 'Não foi possível actualizar os dados desta partida.'}</span>
+              <Button variant="secondary" size="sm" onClick={() => liveState.refetch()}>
+                Tentar novamente
+              </Button>
+            </div>
+          )}
+
+          {isOnline && !liveState.error && (match.status === 'live' || match.status === 'halftime') && !liveState.isRealtimeConnected && (
+            <div className="mt-sm flex items-center gap-xs rounded-lg border border-outline-variant/20 bg-surface-container px-md py-sm text-xs text-on-surface-variant" role="status">
+              <span className="h-2 w-2 rounded-full bg-warning" />
+              Ligação em tempo real indisponível; a actualização automática continua activa.
+            </div>
+          )}
 
           <div className="mt-sm flex flex-wrap justify-center gap-sm" aria-label="Ações da fase da partida">
             {(match.status === 'scheduled' || match.status === 'pre_match') && isMatchOperator && (

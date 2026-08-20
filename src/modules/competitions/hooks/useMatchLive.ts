@@ -33,6 +33,7 @@ export interface UseMatchLiveReturn {
   lastUpdated: Date | null
   isLoading: boolean
   error: Error | null
+  isRealtimeConnected: boolean
   refetch: () => void
 }
 
@@ -77,7 +78,7 @@ export function useMatchLive({
     queryClient.setQueryData(MATCH_QUERY_KEYS.detail(competitionId, matchId), nextMatch)
   }, [competitionId, matchId, queryClient])
 
-  useMatchStream({
+  const { connected: isRealtimeConnected } = useMatchStream({
     competitionId,
     matchId,
     enabled: Boolean(matchId),
@@ -282,6 +283,7 @@ export function useMatchLive({
     lastUpdated,
     isLoading,
     error,
+    isRealtimeConnected,
     refetch: fetchData,
   }
 }
