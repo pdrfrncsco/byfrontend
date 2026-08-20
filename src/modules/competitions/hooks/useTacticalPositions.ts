@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { competitionApi } from '../services/competition.api'
+import { lineupApi } from '../services/lineup.api'
 import type { TacticalPlayer } from '../components/tactical/TacticalField'
 import { toast } from 'sonner'
 
@@ -32,7 +33,7 @@ export function useTacticalPositions(matchId: string, clubId?: string) {
 
     // Fallback: Try to fetch submitted lineups for this match and look for a formation payload
     try {
-      const lineups = await competitionApi.getLineups(matchId)
+      const lineups = await lineupApi.list(matchId)
       if (Array.isArray(lineups) && lineups.length > 0) {
         // Prefer lineup for clubId if provided
         const candidate = (clubId ? lineups.find(l => l.club === clubId) : lineups[0]) ?? lineups[0]

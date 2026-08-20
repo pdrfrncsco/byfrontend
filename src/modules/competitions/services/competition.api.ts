@@ -14,8 +14,6 @@ import type {
   MatchStatus,
   PlayerStats,
   Standing,
-  LineupSubmission,
-  LineupSubmissionData,
   MatchReport,
   MatchReportCreateData,
   Goal,
@@ -320,51 +318,6 @@ export const competitionApi = {
   async getPlayerStats(compId: string): Promise<PlayerStats[]> {
     const response = await client.get<ApiResponse<PlayerStats[]>>(
       API_ROUTES.COMPETITIONS.PLAYER_STATS(compId)
-    )
-    return response.data.data
-  },
-
-  // ─── Lineups ─────────────────────────────────────────────────────────────
-
-  async getLineups(matchId: string): Promise<LineupSubmission[]> {
-    const response = await client.get<any>(
-      `/competitions/matches/${matchId}/lineups/`
-    )
-    const raw = response.data?.data ?? response.data
-    if (Array.isArray(raw)) return raw
-    if (raw && Array.isArray(raw.lineups)) return raw.lineups
-    return []
-  },
-
-  async getLineup(matchId: string, lineupId: string): Promise<LineupSubmission> {
-    const response = await client.get<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/${lineupId}/`
-    )
-    return response.data.data
-  },
-
-  async submitLineup(matchId: string, data: LineupSubmissionData): Promise<LineupSubmission> {
-    const response = await client.post<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/`,
-      data
-    )
-    return response.data.data
-  },
-
-  async confirmLineup(matchId: string, clubId: string): Promise<LineupSubmission> {
-    const response = await client.post<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/confirm/`,
-      { club_id: clubId }          // backend exige club_id no payload
-    )
-    return response.data.data
-  },
-
-  async lockLineup(matchId: string, clubId?: string): Promise<LineupSubmission> {
-    const payload: Record<string, any> = {}
-    if (clubId) payload.club_id = clubId
-    const response = await client.post<ApiResponse<LineupSubmission>>(
-      `/competitions/matches/${matchId}/lineups/lock/`,
-      Object.keys(payload).length ? payload : undefined
     )
     return response.data.data
   },

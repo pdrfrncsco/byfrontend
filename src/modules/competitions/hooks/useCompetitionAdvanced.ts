@@ -3,7 +3,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { competitionApi } from '../services/competition.api'
 import type {
-  LineupSubmissionData,
   MatchReportCreateData,
   GoalCreateData,
   CompetitionRegulationCreateData,
@@ -11,12 +10,6 @@ import type {
 import { toast } from 'sonner'
 
 // ─── Query Keys ────────────────────────────────────────────────────────────
-
-export const lineupKeys = {
-  all: ['lineups'] as const,
-  byMatch: (matchId: string) => ['lineups', 'match', matchId] as const,
-  detail: (matchId: string, lineupId: string) => ['lineups', 'match', matchId, lineupId] as const,
-}
 
 export const reportKeys = {
   all: ['reports'] as const,
@@ -41,70 +34,6 @@ export const rankingKeys = {
 }
 
 // ─── Lineup Hooks ──────────────────────────────────────────────────────────
-
-export function useLineups(matchId: string) {
-  return useQuery({
-    queryKey: lineupKeys.byMatch(matchId),
-    queryFn: async () => {
-      const resp = await competitionApi.getLineups(matchId);
-      return Array.isArray(resp) ? resp : (resp as { lineups?: any[] } | undefined)?.lineups ?? [];
-    },
-    enabled: !!matchId,
-  })
-}
-
-export function useLineup(matchId: string, lineupId: string) {
-  return useQuery({
-    queryKey: lineupKeys.detail(matchId, lineupId),
-    queryFn: () => competitionApi.getLineup(matchId, lineupId),
-    enabled: !!matchId && !!lineupId,
-  })
-}
-
-export function useSubmitLineup(matchId: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (data: LineupSubmissionData) => competitionApi.submitLineup(matchId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: lineupKeys.byMatch(matchId) })
-      toast.success('Escalação submetida com sucesso!')
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Erro ao submeter escalação.')
-    },
-  })
-}
-
-export function useConfirmLineup(matchId: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (clubId: string) => competitionApi.confirmLineup(matchId, clubId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: lineupKeys.byMatch(matchId) })
-      toast.success('Escalação confirmada!')
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Erro ao confirmar escalação.')
-    },
-  })
-}
-
-export function useLockLineup(matchId: string) {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: () => competitionApi.lockLineup(matchId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: lineupKeys.byMatch(matchId) })
-      toast.success('Escalação bloqueada!')
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Erro ao bloquear escalação.')
-    },
-  })
-}
 
 // ─── Match Report Hooks ────────────────────────────────────────────────────
 

@@ -3,6 +3,7 @@
 
 import { z } from 'zod'
 import { competitionApi } from './competition.api'
+import { lineupApi } from './lineup.api'
 import { ApiError } from './error'
 import {
   CompetitionCreateSchema,
@@ -200,14 +201,14 @@ export const competitionApiValidated = {
     if (!matchId) {
       throw new ApiError(400, 'Match ID is required', 'MISSING_FIELD')
     }
-    return handleApiCall(() => competitionApi.getLineups(matchId))
+    return handleApiCall(() => lineupApi.list(matchId))
   },
 
   async getLineup(matchId: string, lineupId: string): Promise<LineupSubmission> {
     if (!matchId || !lineupId) {
       throw new ApiError(400, 'Match ID and Lineup ID are required', 'MISSING_FIELDS')
     }
-    return handleApiCall(() => competitionApi.getLineup(matchId, lineupId))
+    return handleApiCall(() => lineupApi.get(matchId, lineupId))
   },
 
   async submitLineup(matchId: string, data: LineupSubmissionData): Promise<LineupSubmission> {
@@ -215,21 +216,21 @@ export const competitionApiValidated = {
       throw new ApiError(400, 'Match ID is required', 'MISSING_FIELD')
     }
     const validated = validateData<LineupSubmissionData>(LineupSubmissionDataSchema, data)
-    return handleApiCall(() => competitionApi.submitLineup(matchId, validated))
+    return handleApiCall(() => lineupApi.submit(matchId, validated))
   },
 
   async confirmLineup(matchId: string, clubId: string): Promise<LineupSubmission> {
     if (!matchId || !clubId) {
       throw new ApiError(400, 'Match ID and Club ID are required', 'MISSING_FIELDS')
     }
-    return handleApiCall(() => competitionApi.confirmLineup(matchId, clubId))
+    return handleApiCall(() => lineupApi.confirm(matchId, clubId))
   },
 
   async lockLineup(matchId: string, clubId?: string): Promise<LineupSubmission> {
     if (!matchId) {
       throw new ApiError(400, 'Match ID is required', 'MISSING_FIELD')
     }
-    return handleApiCall(() => competitionApi.lockLineup(matchId, clubId))
+    return handleApiCall(() => lineupApi.lock(matchId, clubId))
   },
 
   // ─── Match Reports ───────────────────────────────────────────────────────

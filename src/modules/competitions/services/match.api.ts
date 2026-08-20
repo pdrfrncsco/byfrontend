@@ -1,6 +1,7 @@
 // src/modules/competitions/services/match.api.ts
 
 import client from '@/lib/api-client'
+import { lineupApi } from './lineup.api'
 import type { ApiResponse } from '@/types'
 import type {
   Match,
@@ -352,10 +353,8 @@ export const matchApi = {
   // GET /matches/:id/lineup/:teamId → escalação
   async getLineup(matchId: string, teamId: string): Promise<MatchLineup | null> {
     try {
-      const response = await client.get<ApiResponse<any>>(
-        `/competitions/matches/${matchId}/lineups/${teamId}/`
-      )
-      return mapLineupFromBackend(response.data.data || response.data)
+      const lineup = await lineupApi.get(matchId, teamId)
+      return mapLineupFromBackend(lineup)
     } catch (error: any) {
       if (error.response?.status === 404) {
         return null
@@ -381,23 +380,17 @@ export const matchApi = {
       }[]
     }
   ): Promise<MatchLineup> {
-    const response = await client.post<ApiResponse<any>>(
-      `/competitions/matches/${matchId}/lineups/`,
-      {
-        club_id: teamId,
-        formation: data.formation,
-        players: data.players,
-      }
-    )
-    return mapLineupFromBackend(response.data.data || response.data)
+    const lineup = await lineupApi.submit(matchId, {
+      club_id: teamId,
+      formation: data.formation,
+      players: data.players,
+    })
+    return mapLineupFromBackend(lineup)
   },
 
   // PATCH /matches/:id/lineup/:teamId/lock → bloquear escalação
   async lockLineup(matchId: string, teamId: string): Promise<void> {
-    await client.post(
-      `/competitions/matches/${matchId}/lineups/lock/`,
-      { club_id: teamId }
-    )
+    await lineupApi.lock(matchId, teamId)
   },
 
   // GET /matches/:id/stats → estatísticas

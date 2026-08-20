@@ -20,7 +20,7 @@ import {
   useLineups,
   useConfirmLineup,
   useLockLineup,
-} from '../hooks/useCompetitionAdvanced'
+} from '../hooks/useLineups'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { matchApi } from '../services/match.api'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
@@ -583,7 +583,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => lockLineup.mutate()}
+                  onClick={() => lockLineup.mutate(undefined)}
                   disabled={lockLineup.isPending}
                 >
                   {lockLineup.isPending ? (
