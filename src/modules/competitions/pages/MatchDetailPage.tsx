@@ -22,7 +22,7 @@ import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchTimeline, MatchStatsPanel, MatchCountdown, MatchEventsPanel, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel } from '../components'
+import { MatchStatsPanel, MatchCountdown, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel, MatchEventCenter } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -274,31 +274,14 @@ export function MatchDetailPage() {
 
       case 'events':
         return (
-          <div className="space-y-lg">
-            <div className="flex items-center justify-between">
-              <h2 className="flex items-center gap-sm text-lg font-semibold text-on-surface">
-                <Activity className="h-5 w-5" />
-                Cronologia de Eventos
-              </h2>
-              {(liveState.isLive || liveState.isHalftime) && (
-                <span className="inline-flex items-center gap-xs text-xs font-medium text-emerald-600" aria-live="polite">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                  {liveState.isHalftime ? 'Intervalo' : 'A actualizar'}
-                </span>
-              )}
-            </div>
-            <MatchTimeline
-              events={liveState.events}
-              match={liveState.match ?? match}
-              isLoading={liveState.isLoading}
-            />
-            <MatchEventsPanel
-              competitionId={competitionId}
-              match={liveState.match ?? match}
-              isAdmin={isAdmin}
-              isOperator={isMatchOperator}
-            />
-          </div>
+          <MatchEventCenter
+            competitionId={competitionId}
+            match={liveState.match ?? match}
+            events={liveState.events}
+            canOperate={isMatchOperator}
+            canDelete={isAdmin}
+            onChanged={() => liveState.refetch()}
+          />
         )
 
       case 'stats':
