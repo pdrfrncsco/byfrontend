@@ -268,7 +268,7 @@ export function MatchDetailPage() {
               </div>
             }
           >
-            <MatchLineupPage />
+            <MatchLineupPage embedded />
           </Suspense>
         )
 
@@ -320,7 +320,7 @@ export function MatchDetailPage() {
               </div>
             }
           >
-            <MatchReportPage />
+            <MatchReportPage embedded />
           </Suspense>
         )
 

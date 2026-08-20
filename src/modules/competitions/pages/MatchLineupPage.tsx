@@ -373,7 +373,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
 
 // ─── MatchLineupPage ──────────────────────────────────────────────────────────
 
-export function MatchLineupPage() {
+export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
@@ -382,7 +382,7 @@ export function MatchLineupPage() {
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   // Only allow editing when on dashboard routes (club/org admin flows happen in dashboard)
-  const allowEditing = isMatchOperator && isDashboard
+  const allowEditing = isMatchOperator && (isDashboard || embedded)
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
@@ -423,7 +423,7 @@ export function MatchLineupPage() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Escalações"
@@ -454,7 +454,7 @@ export function MatchLineupPage() {
         </Link>
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Jogo não encontrado"
@@ -603,7 +603,7 @@ export function MatchLineupPage() {
     </>
   )
 
-  if (isDashboard) {
+  if (isDashboard && !embedded) {
     return (
       <DashboardLayout
         title="Escalações"

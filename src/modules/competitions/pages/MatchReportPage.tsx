@@ -312,7 +312,7 @@ function AddGoalForm({ matchId, homeClubId, awayClubId, onSuccess, onCancel }: A
 
 // ─── MatchReportPage ─────────────────────────────────────────────────────────
 
-export function MatchReportPage() {
+export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
@@ -362,7 +362,7 @@ export function MatchReportPage() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Relatório do Jogo"
@@ -394,7 +394,7 @@ export function MatchReportPage() {
         </Link>
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Jogo não encontrado"
@@ -428,7 +428,7 @@ export function MatchReportPage() {
         </Link>
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Acesso não autorizado"
@@ -463,7 +463,7 @@ export function MatchReportPage() {
         </Link>
       </div>
     )
-    if (isDashboard) {
+    if (isDashboard && !embedded) {
       return (
         <DashboardLayout
           title="Relatório não disponível"
@@ -663,7 +663,7 @@ export function MatchReportPage() {
     </>
   )
 
-  if (isDashboard) {
+  if (isDashboard && !embedded) {
     return (
       <DashboardLayout
         title="Relatório do Jogo"
