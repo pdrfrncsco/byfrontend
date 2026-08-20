@@ -1,11 +1,11 @@
 import { useState, useEffect, Suspense, lazy } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
-  ArrowLeft,
   Users,
   Activity,
   BarChart3,
   FileText,
+  LayoutDashboard,
   Loader2,
   AlertCircle,
 } from 'lucide-react'
@@ -22,7 +22,7 @@ import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
-import { MatchScoreboard, MatchTimeline, MatchStatsPanel, MatchCountdown, MatchLifecycleStepper, MatchEventsPanel, MatchClockControls } from '../components'
+import { MatchTimeline, MatchStatsPanel, MatchCountdown, MatchEventsPanel, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel } from '../components'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -30,7 +30,7 @@ const MatchReportPage = lazy(() => import('./MatchReportPage').then(m => ({ defa
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
 
-type TabId = 'lineup' | 'events' | 'stats' | 'report'
+type TabId = 'overview' | 'lineup' | 'events' | 'stats' | 'report'
 
 interface TabConfig {
   id: TabId
@@ -40,6 +40,7 @@ interface TabConfig {
 }
 
 const TABS: TabConfig[] = [
+  { id: 'overview', label: 'Resumo', icon: LayoutDashboard, roles: ['*'] },
   { id: 'lineup', label: 'Escalação', icon: Users, roles: ['*'] },
   { id: 'events', label: 'Eventos', icon: Activity, roles: ['*'] },
   { id: 'stats', label: 'Estatísticas', icon: BarChart3, roles: ['*'] },
@@ -140,7 +141,7 @@ export function MatchDetailPage() {
     if (location.pathname.includes('/events')) return 'events'
     if (location.pathname.includes('/stats')) return 'stats'
     if (location.pathname.includes('/report')) return 'report'
-    return 'lineup'
+    return 'overview'
   }
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
@@ -247,6 +248,17 @@ export function MatchDetailPage() {
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'overview':
+        return (
+          <MatchOverviewPanel
+            match={liveState.match ?? match}
+            events={liveState.events}
+            stats={stats}
+            loadingEvents={liveState.isLoading}
+            loadingStats={loadingStats}
+          />
+        )
+
       case 'lineup':
         return (
           <Suspense
@@ -321,42 +333,20 @@ export function MatchDetailPage() {
 
   const pageContent = (
     <>
-      {/* Header with Scoreboard */}
-      <div className="bg-surface-container rounded-xl mb-lg">
-        <div className="mx-auto max-w-4xl px-lg py-lg">
-          {/* Breadcrumb */}
-          <Link
-            to={isDashboard ? competitionRoutes.adminDashboard(competitionId) : competitionRoutes.detail(competitionId)}
-            className="mb-md inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar à competição
-          </Link>
+      <MatchDetailHeader
+        match={liveState.match ?? match}
+        backTo={isDashboard ? competitionRoutes.adminDashboard(competitionId) : competitionRoutes.detail(competitionId)}
+      >
+        <MatchSummaryStrip
+          match={liveState.match ?? match}
+          isOnline={isOnline}
+          realtimeConnected={liveState.isRealtimeConnected}
+          hasError={Boolean(liveState.error)}
+          lastUpdated={liveState.lastUpdated}
+          onRetry={() => liveState.refetch()}
+        />
 
-          {/* Scoreboard */}
-          <MatchScoreboard match={liveState.match ?? match} />
-
-          <div className="mt-lg">
-            <MatchLifecycleStepper match={liveState.match ?? match} />
-          </div>
-
-          {(!isOnline || liveState.error) && (
-            <div className="mt-sm flex flex-wrap items-center justify-between gap-sm rounded-lg border border-warning/30 bg-warning/10 px-md py-sm text-sm text-on-surface" role="alert">
-              <span>{!isOnline ? 'Sem ligação à internet. Os dados apresentados podem estar desactualizados.' : 'Não foi possível actualizar os dados desta partida.'}</span>
-              <Button variant="secondary" size="sm" onClick={() => liveState.refetch()}>
-                Tentar novamente
-              </Button>
-            </div>
-          )}
-
-          {isOnline && !liveState.error && (match.status === 'live' || match.status === 'halftime') && !liveState.isRealtimeConnected && (
-            <div className="mt-sm flex items-center gap-xs rounded-lg border border-outline-variant/20 bg-surface-container px-md py-sm text-xs text-on-surface-variant" role="status">
-              <span className="h-2 w-2 rounded-full bg-warning" />
-              Ligação em tempo real indisponível; a actualização automática continua activa.
-            </div>
-          )}
-
-          <div className="mt-sm flex flex-wrap justify-center gap-sm" aria-label="Ações da fase da partida">
+        <div className="flex flex-wrap justify-center gap-sm" aria-label="Ações da fase da partida">
             {match.status === 'scheduled' && isMatchOperator && (
               <StartMatchButton
                 competitionId={competitionId}
@@ -395,34 +385,33 @@ export function MatchDetailPage() {
                 Partida arquivada: edição desativada.
               </span>
             )}
-          </div>
+        </div>
 
-          <div className="mt-sm flex justify-center gap-sm">
+        <div className="mt-sm flex justify-center gap-sm">
             <Link to={competitionRoutes.tacticalView(competitionId, matchIdValue)}>
               <Button variant="secondary" size="sm">Vista Táctica</Button>
             </Link>
-          </div>
+        </div>
 
           {/* Countdown — shown when scheduled, auto-refetches on expiry */}
-          {(liveState.match ?? match).status === 'scheduled' && ((liveState.match ?? match).scheduledAt || (liveState.match ?? match).match_date) && (
-            <div className="mt-sm flex justify-center">
+        {(liveState.match ?? match).status === 'scheduled' && ((liveState.match ?? match).scheduledAt || (liveState.match ?? match).match_date) && (
+          <div className="mt-sm flex justify-center">
               <MatchCountdown
                 scheduledAt={(liveState.match ?? match).scheduledAt ?? (liveState.match ?? match).match_date!}
                 onExpire={() => liveState.refetch()}
               />
-            </div>
-          )}
+          </div>
+        )}
 
           {/* Live indicator */}
-          {liveState.lastUpdated && (liveState.isLive || liveState.isHalftime) && (
-            <div className="mt-sm flex justify-center">
+        {liveState.lastUpdated && (liveState.isLive || liveState.isHalftime) && (
+          <div className="mt-sm flex justify-center">
               <span className="text-xs text-on-surface-variant" title={liveState.lastUpdated.toLocaleString('pt-PT')}>
                 Última actualização: {liveState.lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
               </span>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </MatchDetailHeader>
 
       {/* Tabs Navigation */}
       <div className="mx-auto max-w-4xl px-lg">

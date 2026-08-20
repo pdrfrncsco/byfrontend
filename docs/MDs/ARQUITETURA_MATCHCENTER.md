@@ -749,3 +749,451 @@
   O primeiro bloqueio funcional a resolver é o relógio autoritativo no backend. Sem
   clock_started_at ou equivalente, qualquer contador no Frontend será apenas uma
   estimativa e poderá ficar divergente do estado oficial da partida.
+
+
+
+
+  #AUDITORIA 3
+   # Plano de refatoração visual do MatchCenter
+
+  ## Diagnóstico actual
+
+  O MatchDetailPage funciona como hub, mas ainda mistura demasiadas responsabilidades:
+
+  - O cabeçalho contém scoreboard, lifecycle, relógio, countdown, tactical view e
+    acções.
+
+  - A tab Eventos renderiza simultaneamente:
+      - MatchTimeline;
+      - MatchEventsPanel;
+      - dois fluxos diferentes de registo.
+
+  - MatchEventsPanel tem um formulário simplificado, enquanto MatchEventForm possui
+    outro formulário mais completo, mas não está integrado.
+
+  - Escalações e Relatório são páginas completas carregadas dentro de uma tab, podendo
+    duplicar layout, breadcrumbs e estruturas visuais.
+
+  - A tab Relatório contém lógica administrativa, golos e estatísticas, duplicando
+    informação das tabs Eventos e Estatísticas.
+
+  - As estatísticas actuais são essencialmente leitura de métricas agregadas e não
+    oferecem uma experiência operacional de registo.
+
+  - O evento mostra player_name apenas quando o backend o fornece; não existe uma
+    experiência consistente de selecção de jogadores por equipa e por tipo de evento.
+
+  ## Nova arquitectura visual
+
+  O detalhe da partida deverá ser dividido em três níveis:
+
+  MatchDetailShell
+  ├── MatchHeader
+  │   ├── Breadcrumb
+  │   ├── Scoreboard
+  │   ├── Clock
+  │   ├── Lifecycle
+  │   └── MatchClockControls
+  ├── MatchSummaryStrip
+  │   ├── Estado actual
+  │   ├── Última actualização
+  │   ├── Resultado
+  │   └── Indicador realtime/offline
+  └── MatchWorkspace
+      ├── Resumo
+      ├── Escalações
+      ├── Eventos
+      ├── Estatísticas
+      └── Relatório
+
+  O DashboardLayout e o breadcrumb devem existir apenas no shell. As páginas internas
+  deixam de renderizar layouts completos quando abertas dentro do MatchCenter.
+
+  ## Tabs propostas
+
+  ### 1. Resumo
+
+  Nova tab inicial com:
+
+  - resultado;
+  - relógio;
+  - estado da partida;
+  - últimos 5 eventos;
+  - resumo de estatísticas;
+  - estado das escalações;
+  - acções disponíveis para a fase actual;
+  - alerta de ligação realtime;
+  - acesso rápido às áreas operacionais.
+
+  Esta tab substitui a necessidade de mostrar informação repetida nas restantes áreas.
+
+  ### 2. Escalações
+
+  A tab deve mostrar apenas o contexto da partida:
+
+  - Casa e Fora em duas colunas;
+  - titulares;
+  - suplentes;
+  - formação;
+  - capitão;
+  - guarda-redes;
+  - estado da escalação:
+      - rascunho;
+      - submetida;
+      - confirmada;
+      - bloqueada.
+
+  - acções apenas para roles autorizadas;
+  - edição apenas em pre_match.
+
+  Remover:
+
+  - breadcrumb interno;
+  - DashboardLayout duplicado;
+  - cabeçalho de página independente;
+  - mensagens repetidas sobre a partida.
+
+  ### 3. Eventos
+
+  A tab Eventos deve ser redesenhada como uma central operacional única.
+
+  Estrutura:
+
+  Eventos da partida
+  ├── Filtros por período
+  ├── Filtros por equipa
+  ├── Filtros por tipo
+  ├── Timeline central
+  └── Registar evento
+
+  #### Timeline
+
+  Cada evento deve mostrar:
+
+  - minuto oficial;
+  - acréscimo;
+  - período;
+  - ícone;
+  - tipo;
+  - jogador;
+  - número da camisola;
+  - equipa;
+  - avatar, quando disponível;
+  - jogador substituído, em substituições;
+  - assistente, em golos;
+  - observação;
+  - autor do registo;
+  - estado de sincronização.
+
+  Exemplos:
+
+  45+2'  ⚽  João Manuel #9
+         Golo · Sport Luanda
+         Assistência: Pedro Silva #10
+
+  67'    🟨  Carlos José #5
+         Cartão amarelo · Petro Luanda
+
+  72'    ⇄   Entrou: Miguel #18
+             Saiu: António #7
+
+  #### Novo formulário de evento
+
+  Substituir os dois formulários actuais por um único MatchEventComposer.
+
+  Fluxo:
+
+  1. Seleccionar tipo de evento.
+  2. Seleccionar equipa.
+  3. Seleccionar jogador filtrado pela equipa e pela escalação.
+  4. Seleccionar minuto sugerido pelo relógio actual.
+  5. Seleccionar acréscimo, quando aplicável.
+  6. Mostrar campos adicionais conforme o tipo.
+
+  Campos específicos:
+
+   Evento             Campos
+  ━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Golo               marcador, assistente, equipa
+  ─────────────────  ────────────────────────────────────
+   Auto-golo          jogador, equipa
+  ─────────────────  ────────────────────────────────────
+   Cartão             jogador, tipo de cartão
+  ─────────────────  ────────────────────────────────────
+   Substituição       jogador que entra, jogador que sai
+  ─────────────────  ────────────────────────────────────
+   Penálti marcado    marcador, equipa
+  ─────────────────  ────────────────────────────────────
+   Penálti falhado    marcador, equipa
+  ─────────────────  ────────────────────────────────────
+   Lesão              jogador, observação
+  ─────────────────  ────────────────────────────────────
+   VAR                decisão, observação
+
+  O formulário deverá usar as escalações da partida para mostrar jogadores reais,
+  evitando texto livre.
+
+  ### 4. Estatísticas
+
+  A tab Estatísticas deve separar visualização e edição.
+
+  #### Modo público
+
+  - posse de bola;
+  - remates;
+  - remates à baliza;
+  - cantos;
+  - faltas;
+  - fora de jogo;
+  - cartões;
+  - passes;
+  - precisão de passe;
+  - comparação Casa/Fora através de barras;
+  - actualização em tempo real.
+
+  #### Modo operador
+
+  Adicionar MatchStatsEditor com:
+
+  - campos numéricos por equipa;
+  - validações;
+  - cálculo de percentagens;
+  - estado de rascunho;
+  - guardar;
+  - cancelar;
+  - última actualização;
+  - autor da actualização.
+
+  Edição permitida apenas para roles com permissão explícita e enquanto a partida não
+  estiver arquivada.
+
+  #### Origem dos dados
+
+  Definir claramente:
+
+  - estatísticas derivadas automaticamente dos eventos;
+  - estatísticas introduzidas manualmente;
+  - estatísticas calculadas pelo backend;
+  - campos que podem ser corrigidos pelo operador.
+
+  A UI deve indicar quando uma métrica é:
+
+  Automática
+  Manual
+  A aguardar dados
+
+  ### 5. Relatório
+
+  O Relatório deve deixar de repetir golos e estatísticas já existentes.
+
+  Deve conter apenas:
+
+  - estado do relatório;
+  - resultado oficial;
+  - duração;
+  - observações do árbitro;
+  - incidentes relevantes;
+  - documento do árbitro;
+  - submissão;
+  - aprovação;
+  - histórico do relatório.
+
+  Remover da tab Relatório:
+
+  - lista duplicada de golos;
+  - estatísticas duplicadas;
+  - controlos que já existem na tab Eventos;
+  - layout completo de página;
+  - botões duplicados de resultado.
+
+  ## Componentes novos
+
+  Criar:
+
+  components/match-detail/
+  ├── MatchDetailShell.tsx
+  ├── MatchHeader.tsx
+  ├── MatchSummaryStrip.tsx
+  ├── MatchWorkspaceTabs.tsx
+  ├── MatchOverviewPanel.tsx
+  ├── MatchEventComposer.tsx
+  ├── MatchEventTimeline.tsx
+  ├── MatchEventCard.tsx
+  ├── MatchPlayerSelector.tsx
+  ├── MatchSubstitutionForm.tsx
+  ├── MatchStatsEditor.tsx
+  ├── MatchStatsComparison.tsx
+  ├── MatchReportSummary.tsx
+  └── MatchPermissionGate.tsx
+
+  Componentes actuais a substituir ou consolidar:
+
+  - MatchEventsPanel
+  - MatchTimeline
+  - MatchEventForm
+  - partes visuais de MatchReportPage
+  - partes visuais de MatchLineupPage
+  - MatchStatsPanel
+
+  As páginas completas devem permanecer apenas como rotas directas compatíveis, mas
+  deverão reutilizar os mesmos painéis do novo shell.
+
+  ## Permissões
+
+  Todas as acções devem passar por uma matriz explícita:
+
+   Acção                  Público         Manager    Árbitro    Delegado    Admin
+  ━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━━━━━  ━━━━━━━━━  ━━━━━━━━━━  ━━━━━━━
+   Ver partida                Sim             Sim        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Ver eventos                Sim             Sim        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Registar evento            Não             Sim        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Corrigir evento            Não             Não        Não         Não      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Editar escalação           Não             Sim        Não         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Confirmar escalação        Não             Não        Não         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Editar estatísticas        Não             Sim        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Controlar relógio          Não    Configurável        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Submeter relatório         Não             Sim        Sim         Sim      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Aprovar relatório          Não             Não        Não         Não      Sim
+  ─────────────────────  ─────────  ──────────────  ─────────  ──────────  ───────
+   Arquivar partida           Não             Não        Não         Não      Sim
+
+  O MatchPermissionGate deverá:
+
+  - esconder acções sem permissão;
+  - não apenas desactivá-las;
+  - mostrar mensagens explicativas apenas quando necessário;
+  - impedir que o Frontend sugira acções que o backend rejeitaria.
+
+  ## Contratos backend necessários
+
+  ### Eventos
+
+  Garantir que o endpoint devolve:
+
+  {
+    "id": "...",
+    "event_type": "goal",
+    "minute": 45,
+    "extra_time": true,
+    "period": "first_half",
+    "club": "...",
+    "club_name": "Sport Luanda",
+    "player": "...",
+    "player_name": "João Manuel",
+    "player_number": 9,
+    "player_avatar": "...",
+    "assist_player": "...",
+    "assist_player_name": "Pedro Silva",
+    "player_off": null,
+    "player_off_name": null,
+    "created_by": "...",
+    "created_at": "..."
+  }
+
+  ### Escalações
+
+  Disponibilizar jogadores por equipa e estado da escalação para o MatchPlayerSelector.
+
+  ### Estatísticas
+
+  Separar:
+
+  - GET /matches/{id}/stats/
+  - PATCH /matches/{id}/stats/
+  - origem da estatística;
+  - autor;
+  - timestamp;
+  - versão.
+
+  ### Auditoria
+
+  Os eventos e estatísticas devem conservar:
+
+  - autor;
+  - momento;
+  - versão;
+  - alteração anterior;
+  - alteração nova.
+
+  ## Ordem de implementação
+
+  ### Fase 1 — Shell visual
+
+  - Criar MatchDetailShell.
+  - Extrair MatchHeader.
+  - Extrair MatchSummaryStrip.
+  - Remover duplicação de breadcrumbs e layouts.
+  - Definir tab inicial como Resumo.
+
+  ### Fase 2 — Eventos
+
+  - Criar MatchEventTimeline.
+  - Criar MatchEventCard.
+  - Criar MatchEventComposer.
+  - Integrar jogadores das escalações.
+  - Remover MatchEventsPanel e MatchEventForm duplicados.
+  - Adicionar filtros e agrupamento por período.
+
+  ### Fase 3 — Estatísticas
+
+  - Refatorar MatchStatsPanel.
+  - Criar comparação Casa/Fora.
+  - Criar MatchStatsEditor.
+  - Integrar permissões e bloqueio por estado.
+  - Mostrar origem e última actualização.
+
+  ### Fase 4 — Escalações
+
+  - Extrair o conteúdo visual de MatchLineupPage.
+  - Remover layout duplicado.
+  - Criar visual compacto para a tab.
+  - Manter a edição contextual em pre_match.
+
+  ### Fase 5 — Relatório
+
+  - Reduzir MatchReportPage ao resumo oficial.
+  - Remover golos e estatísticas duplicados.
+  - Manter submissão, aprovação e documento.
+
+  ### Fase 6 — Segurança e sincronização
+
+  - Aplicar MatchPermissionGate.
+  - Integrar realtime nos eventos e estatísticas.
+  - Estados de loading, erro e offline.
+  - Bloqueio visual em finished e archived.
+  - Auditoria de eventos e estatísticas.
+
+  ### Fase 7 — Validação
+
+  - Testes dos componentes;
+  - testes de permissões;
+  - testes de registo de golo com jogador;
+  - testes de cartão;
+  - testes de substituição;
+  - testes de edição estatística;
+  - testes de modo offline;
+  - testes de partida arquivada;
+  - validação visual desktop e mobile.
+
+  ## Resultado esperado
+
+  O painel final deverá ter uma leitura simples:
+
+  Cabeçalho fixo da partida
+     ↓
+  Resumo operacional
+     ↓
+  Resumo | Escalações | Eventos | Estatísticas | Relatório
+
+  Cada informação deve existir num único local. Eventos deverão ser registados com
+  jogadores reais, estatísticas deverão ter origem clara e todas as acções operacionais
+  deverão depender de permissões explícitas e do estado actual da partida.
