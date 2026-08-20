@@ -485,6 +485,30 @@ export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
   const homeGoals = (report?.goals || []).filter((g) => g.club === match.home_club)
   const awayGoals = (report?.goals || []).filter((g) => g.club === match.away_club)
 
+  // Inside MatchCenter, the report is a focused official-summary workspace.
+  // Goals and statistics are already handled by the Events and Statistics tabs.
+  if (embedded) {
+    return (
+      <div className="py-md">
+        {loadingReport ? (
+          <div className="flex items-center justify-center py-xl"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+        ) : (
+          <MatchRefereeReport
+            match={match}
+            report={report}
+            canSubmit={canSubmit}
+            canApprove={canApprove}
+            isSubmitting={isSubmitting}
+            isApproving={isApproving}
+            onSubmit={submitReport}
+            onApprove={approveReport}
+            onUpload={uploadRefereeDocument}
+          />
+        )}
+      </div>
+    )
+  }
+
   const pageContent = (
     <>
       {/* Header */}

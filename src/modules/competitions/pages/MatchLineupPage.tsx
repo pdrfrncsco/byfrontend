@@ -475,11 +475,8 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
 
   const pageContent = (
     <>
-      {/* Header */}
- 
-
       {/* Main Content */}
-      <div className="mx-auto max-w-4xl px-lg py-xl">
+      <div className={embedded ? 'py-md' : 'mx-auto max-w-4xl px-lg py-xl'}>
         {match.status === 'archived' && (
           <div className="mb-lg rounded-lg border border-outline-variant/20 bg-surface-container px-md py-sm text-sm text-on-surface-variant">
             Esta partida está arquivada. As escalações são exibidas apenas como histórico.
@@ -617,5 +614,5 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
     )
   }
 
-  return <div className="min-h-screen bg-background">{pageContent}</div>
+  return embedded ? pageContent : <div className="min-h-screen bg-background">{pageContent}</div>
 }
