@@ -1197,3 +1197,182 @@
   Cada informação deve existir num único local. Eventos deverão ser registados com
   jogadores reais, estatísticas deverão ter origem clara e todas as acções operacionais
   deverão depender de permissões explícitas e do estado actual da partida.
+
+
+
+
+  AUDITORIA 4 - LINEUPS
+Identifiquei duas causas prováveis para o 401, além de
+  inconsistências estruturais no fluxo.
+
+  ### Diagnóstico imediato
+
+  O endpoint está corretamente registado em:
+
+  bybackend/competitions/urls.py:80
+
+  POST /api/v1/competitions/matches/{match_id}/lineups/
+
+  O POST exige IsAuthenticated em:
+
+  bybackend/competitions/views/lineup_views.py:75
+
+  Existem duas possibilidades:
+
+  1. O frontend não está a enviar um Authorization: Bearer
+     <token> válido.
+
+  2. O token é válido, mas o backend não consegue resolver o
+     tenant e devolve 401 dentro de create().
+
+  O cliente adiciona o Bearer token em:
+
+  byfrontend/src/lib/api-client.ts:51
+
+  Porém, não encontrei o envio do header X-Tenant-ID. O backend
+  depende de:
+
+  - request.tenant;
+  - X-Tenant-ID;
+  - primeira membership ativa do utilizador.
+
+  Essa resolução está em bybackend/competitions/views/
+  lineup_views.py:27. Em ambientes com múltiplos tenants, usar a
+  “primeira membership” é ambíguo e pode resultar em Tenant não
+  identificado ou tenant incorreto.
+
+  Para confirmar a causa exata, é necessário verificar no
+  Network do navegador o corpo da resposta 401:
+
+  - Given credentials were not provided / token inválido →
+    problema de autenticação;
+
+  - Tenant não identificado → problema de contexto de tenant.
+
+  ### Inconsistências encontradas
+
+  - Há duas implementações de API para lineups:
+      - competition.api.ts;
+      - match.api.ts.
+
+  - Há hooks duplicados:
+      - useCompetitionFull.ts;
+      - useCompetitionAdvanced.ts;
+      - useMatchLineup.ts.
+
+  - O frontend chama o mesmo endpoint com contratos diferentes e
+    faz normalizações distintas.
+
+  - O backend permite criar uma lineup para qualquer club_id do
+    tenant; o create() não verifica se o utilizador é membro
+    autorizado desse clube.
+
+  - confirm e lock verificam explicitamente roles de clube, mas
+    create não aplica a mesma política.
+
+  - O frontend usa isMatchOperator para permitir edição, mas a
+    submissão deveria validar especificamente se o utilizador
+    pertence ao clube selecionado.
+
+  - O endpoint está documentado no frontend como /:teamId, mas o
+    backend trata o identificador como club_id. O contrato deve
+    ser uniformizado.
+
+  - A resposta pública das lineups é permitida sem autenticação,
+    mas a submissão exige autenticação. Isso é válido, porém
+    deve estar claramente separado no frontend para evitar que
+    páginas públicas tentem executar mutações.
+
+  ### Plano recomendado
+
+  #### Fase 1 — Corrigir o 401
+
+  1. Adicionar um interceptor global que envie:
+
+  Authorization: Bearer <access_token>
+  X-Tenant-ID: <tenant_id>
+
+  2. Obter o tenant a partir da membership ativa no auth-store.
+  3. Melhorar o backend para devolver códigos distintos:
+
+  - 401 para token ausente ou inválido;
+  - 400 ou 422 para tenant ausente;
+  - 403 para utilizador sem permissão no clube.
+
+  4. Registar temporariamente, sem expor tokens, os dados
+     seguintes:
+
+  - utilizador autenticado;
+  - tenant resolvido;
+  - clube solicitado;
+  - motivo da rejeição.
+
+  #### Fase 2 — Consolidar o domínio de API
+
+  Escolher uma única implementação, preferencialmente
+  match.api.ts, e remover ou adaptar:
+
+  - competition.api.ts;
+  - competition.validated.ts;
+  - hooks duplicados;
+  - normalizações duplicadas de LineupSubmission.
+
+  Contrato único recomendado:
+
+  GET  /competitions/matches/{matchId}/lineups/
+  GET  /competitions/matches/{matchId}/lineups/{clubId}/
+  POST /competitions/matches/{matchId}/lineups/
+  POST /competitions/matches/{matchId}/lineups/confirm/
+  POST /competitions/matches/{matchId}/lineups/lock/
+
+  #### Fase 3 — Corrigir autorização no backend
+
+  Criar uma permissão reutilizável, por exemplo
+  CanManageClubLineup, que valide:
+
+  - utilizador autenticado;
+  - tenant correto;
+  - clube participante no jogo;
+  - membro ativo do clube;
+  - role manager, coach ou assistant_coach;
+  - eventualmente administrador da organização ou superuser.
+
+  Essa permissão deve ser aplicada em create, confirm e lock.
+
+  #### Fase 4 — Definir claramente os estados
+
+  Fluxo recomendado:
+
+  draft
+    ↓ submissão do clube
+  submitted
+    ↓ aprovação da organização
+  confirmed
+    ↓ bloqueio
+  locked
+
+  submitted → rejected → draft
+
+  O frontend e backend devem usar exatamente os mesmos nomes e
+  regras de transição.
+
+  #### Fase 5 — Testes obrigatórios
+
+  Adicionar testes para:
+
+  - POST sem token → 401;
+  - POST com token expirado → 401;
+  - POST sem tenant → erro específico;
+  - POST com tenant incorreto → 403 ou 404;
+  - membro de outro clube → 403;
+  - manager/coach do clube → 201;
+  - clube não participante no jogo → 400 ou 403;
+  - submissão duplicada;
+  - lineup rejeitada que pode ser corrigida;
+  - lineup confirmada que não pode ser alterada;
+  - tenant com múltiplas memberships.
+
+  A prioridade imediata é verificar o corpo da resposta 401 e
+  garantir o envio de X-Tenant-ID. Depois disso, a refatoração
+  mais importante é eliminar as APIs/hooks duplicados e
+  centralizar a autorização da lineup no backend.

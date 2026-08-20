@@ -1,5 +1,11 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
-import { clearStoredAuthSession, getStoredRefreshToken, getStoredAuthToken, setStoredAuthToken } from '@/lib/storage'
+import {
+  clearStoredAuthSession,
+  getStoredActiveTenantId,
+  getStoredRefreshToken,
+  getStoredAuthToken,
+  setStoredAuthToken,
+} from '@/lib/storage'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
 
@@ -58,6 +64,10 @@ client.interceptors.request.use(
     const token = getStoredAuthToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+    const tenantId = getStoredActiveTenantId()
+    if (tenantId) {
+      config.headers['X-Tenant-ID'] = tenantId
     }
     return config
   },

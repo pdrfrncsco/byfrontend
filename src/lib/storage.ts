@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   authRefreshToken: 'bolayetu_refresh',
   authUser: 'bolayetu_user',
   activeMembership: 'bolayetu_active_membership',
+  activeTenant: 'bolayetu_active_tenant',
   theme: 'theme',
 } as const
 
@@ -61,6 +62,7 @@ export function clearStoredAuthSession(): void {
   safeRemoveItem(STORAGE_KEYS.authRefreshToken)
   safeRemoveItem(STORAGE_KEYS.authUser)
   safeRemoveItem(STORAGE_KEYS.activeMembership)
+  safeRemoveItem(STORAGE_KEYS.activeTenant)
 }
 
 export function setStoredTheme(theme: 'light' | 'dark'): void {
@@ -84,4 +86,17 @@ export function setStoredActiveMembershipId(membershipId: string | null): void {
   }
 
   safeSetItem(STORAGE_KEYS.activeMembership, membershipId)
+}
+
+export function getStoredActiveTenantId(): string | null {
+  return safeGetItem(STORAGE_KEYS.activeTenant)
+}
+
+export function setStoredActiveTenantId(tenantId: string | null): void {
+  if (!tenantId) {
+    safeRemoveItem(STORAGE_KEYS.activeTenant)
+    return
+  }
+
+  safeSetItem(STORAGE_KEYS.activeTenant, tenantId)
 }

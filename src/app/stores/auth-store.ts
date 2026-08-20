@@ -3,6 +3,7 @@ import { authApi } from '@/modules/auth/services/auth.api'
 import {
   clearStoredAuthSession,
   getStoredActiveMembershipId,
+  setStoredActiveTenantId,
   getStoredAuthToken,
   getStoredRefreshToken,
   getStoredUser,
@@ -91,6 +92,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
         memberships[0]?.id ||
         null
       setStoredActiveMembershipId(activeMembershipId)
+      setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({
         sourceUser: user,
         memberships,
@@ -117,6 +119,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
       const memberships = await authApi.getMemberships()
       const activeMembershipId = getStoredActiveMembershipId() || memberships.find(m => m.is_active)?.id || memberships[0]?.id || null
       setStoredActiveMembershipId(activeMembershipId)
+      setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({ sourceUser: freshUser, user: mapToUserProfile(freshUser, memberships, activeMembershipId), memberships, activeMembershipId })
       const refresh = getStoredRefreshToken()
       const token = getStoredAuthToken()
@@ -146,6 +149,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
         memberships[0]?.id ||
         null
       setStoredActiveMembershipId(activeMembershipId)
+      setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({ sourceUser: savedUser, user: mapToUserProfile(savedUser, memberships, activeMembershipId), memberships, activeMembershipId })
     } catch (error) {
       console.warn('Failed to bootstrap auth session:', error)
@@ -162,6 +166,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
       }
 
       setStoredActiveMembershipId(membershipId)
+      setStoredActiveTenantId(activeMembership.tenant)
       return {
         activeMembershipId: membershipId,
         user: mapToUserProfile(state.sourceUser, state.memberships, membershipId),
