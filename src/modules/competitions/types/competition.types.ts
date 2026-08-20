@@ -94,7 +94,7 @@ export interface PlayerStats {
 
 // ─── Lineup Types ──────────────────────────────────────────────────────────
 
-export type LineupStatus = 'draft' | 'submitted' | 'confirmed' | 'rejected' | 'locked'
+export type LineupStatus = 'pending' | 'draft' | 'submitted' | 'confirmed' | 'rejected' | 'locked'
 export type LineupPlayerStatus = 'starter' | 'substitute'
 
 

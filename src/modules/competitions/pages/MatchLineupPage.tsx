@@ -32,6 +32,7 @@ const LINEUP_STATUS_CONFIG: Record<
   string,
   { label: string; variant: 'default' | 'success' | 'warning' | 'danger' | 'secondary' }
 > = {
+  pending: { label: 'Pendente', variant: 'secondary' },
   draft: { label: 'Rascunho', variant: 'secondary' },
   submitted: { label: 'Submetida', variant: 'default' },
   confirmed: { label: 'Confirmada', variant: 'success' },
@@ -507,7 +508,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                     match: match.id,
                     club: match.home_club,
                     formation: '4-3-3',
-                    status: 'draft',
+                    status: 'pending',
                     submitted_at: '',
                     starters: [],
                     substitutes: [],
@@ -542,7 +543,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                     match: match.id,
                     club: match.away_club,
                     formation: '4-3-3',
-                    status: 'draft',
+                    status: 'pending',
                     submitted_at: '',
                     starters: [],
                     substitutes: [],
