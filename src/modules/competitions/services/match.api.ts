@@ -59,8 +59,8 @@ export function mapMatchFromBackend(data: any): Match {
         away: data.away_score ?? 0,
         homeFirstHalf: data.home_first_half,
         awayFirstHalf: data.away_first_half,
-        homePenalties: data.home_penalties,
-        awayPenalties: data.away_penalties,
+        homePenalties: data.home_penalties ?? data.home_penalty_score,
+        awayPenalties: data.away_penalties ?? data.away_penalty_score,
       }
     : undefined
 
@@ -303,7 +303,7 @@ export const matchApi = {
   async clockAction(
     matchId: string,
     action: MatchClockAction,
-    options?: { expectedVersion?: number; stoppageTimeMinutes?: number },
+    options?: { expectedVersion?: number; stoppageTimeMinutes?: number; homePenaltyScore?: number; awayPenaltyScore?: number },
   ): Promise<Match> {
     const response = await client.post<ApiResponse<any>>(
       `/competitions/matches/${matchId}/clock/action/`,
@@ -311,6 +311,8 @@ export const matchApi = {
         action,
         expected_version: options?.expectedVersion,
         stoppage_time_minutes: options?.stoppageTimeMinutes,
+        home_penalty_score: options?.homePenaltyScore,
+        away_penalty_score: options?.awayPenaltyScore,
       },
     )
     return mapMatchFromBackend(response.data.data || response.data)

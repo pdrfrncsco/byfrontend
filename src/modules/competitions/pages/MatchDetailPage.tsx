@@ -146,7 +146,7 @@ export function MatchDetailPage() {
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
 
   // Data fetching (hooks must be called unconditionally to preserve hook order)
-  const { isLoading: loadingComp } = useCompetition(competitionId)
+  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: match, isLoading: loadingMatch } = useMatchDetail(competitionId, matchIdValue)
 
   // Live state for scoreboard
@@ -165,6 +165,9 @@ export function MatchDetailPage() {
   })
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const competitionConfig = (competition as any)?.config ?? {}
+  const extraTimeAllowed = Boolean(competitionConfig.extraTimeOnDraw || competitionConfig.knockoutStage?.extraTimeOnDraw)
+  const penaltiesAllowed = Boolean(competitionConfig.penaltiesOnDraw || competitionConfig.knockoutStage?.penaltiesOnDraw)
 
   // Guard: redirect if no matchId or competitionId (hooks above are safe due to enabled flags)
   if (!matchId || !compId) {
@@ -365,6 +368,8 @@ export function MatchDetailPage() {
             <MatchClockControls
               match={liveState.match ?? match}
               canControl={isMatchOperator}
+              extraTimeAllowed={extraTimeAllowed}
+              penaltiesAllowed={penaltiesAllowed}
               onUpdated={() => liveState.refetch()}
             />
             {match.status === 'pre_match' && (

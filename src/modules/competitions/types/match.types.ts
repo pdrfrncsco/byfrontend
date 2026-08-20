@@ -18,6 +18,8 @@ export type MatchClockAction =
   | 'resume_clock'
   | 'finish_match'
   | 'set_stoppage_time'
+  | 'start_extra_time'
+  | 'start_penalties'
 
 export type MatchEventType =
   | 'goal'
@@ -149,6 +151,8 @@ export interface Match {
   clock_elapsed_seconds?: number;
   stoppage_time_minutes?: number;
   clock_version?: number;
+  home_penalty_score?: number | null;
+  away_penalty_score?: number | null;
   score?: MatchScore;
   events?: MatchEvent[];
   homeLineup?: MatchLineup;
