@@ -21,13 +21,17 @@ export function MatchClockControls({ match, canControl, extraTimeAllowed = false
   const action = match.status === 'pre_match'
     ? 'start_first_half'
     : match.status === 'halftime'
-      ? 'start_second_half'
+      ? (match.current_period === 'extra_halftime' ? 'start_extra_second_half' : 'start_second_half')
       : match.status === 'live' && match.current_period === 'first_half'
         ? (match.clock_running ? 'end_first_half' : 'resume_clock')
       : match.status === 'live' && match.current_period === 'second_half'
           ? (match.clock_running ? 'finish_match' : 'resume_clock')
           : match.status === 'live' && match.current_period === 'extra_time'
             ? ((match.home_score ?? 0) !== (match.away_score ?? 0) || !penaltiesAllowed ? 'finish_match' : null)
+            : match.status === 'live' && match.current_period === 'extra_first_half'
+              ? 'end_extra_first_half'
+              : match.status === 'live' && match.current_period === 'extra_second_half'
+                  ? ((match.home_score ?? 0) !== (match.away_score ?? 0) || !penaltiesAllowed ? 'finish_match' : null)
             : match.status === 'live' && match.current_period === 'penalties'
               ? null
           : null
@@ -39,8 +43,12 @@ export function MatchClockControls({ match, canControl, extraTimeAllowed = false
       ? 'Terminar a partida e abrir o resultado final?'
       : nextAction === 'end_first_half'
         ? 'Terminar o primeiro tempo e iniciar o intervalo?'
-        : nextAction === 'start_second_half'
+      : nextAction === 'start_second_half'
           ? 'Iniciar o segundo tempo?'
+          : nextAction === 'end_extra_first_half'
+            ? 'Terminar o primeiro período do prolongamento?'
+            : nextAction === 'start_extra_second_half'
+              ? 'Iniciar o segundo período do prolongamento?'
           : nextAction === 'start_first_half'
             ? 'Iniciar o primeiro tempo?'
             : null
@@ -96,7 +104,7 @@ export function MatchClockControls({ match, canControl, extraTimeAllowed = false
       {action && (
         <Button variant="primary" size="sm" onClick={() => void execute(action)} disabled={pendingAction !== null}>
           {pendingAction === action ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : action === 'end_first_half' ? <Pause className="mr-xs h-4 w-4" /> : action === 'finish_match' ? <StopCircle className="mr-xs h-4 w-4" /> : <Play className="mr-xs h-4 w-4" />}
-          {action === 'start_first_half' ? 'Iniciar 1.º tempo' : action === 'end_first_half' ? 'Terminar 1.º tempo' : action === 'start_second_half' ? 'Iniciar 2.º tempo' : action === 'resume_clock' ? 'Retomar relógio' : 'Terminar partida'}
+          {action === 'start_first_half' ? 'Iniciar 1.º tempo' : action === 'end_first_half' ? 'Terminar 1.º tempo' : action === 'start_second_half' ? 'Iniciar 2.º tempo' : action === 'end_extra_first_half' ? 'Terminar 1.º prolongamento' : action === 'start_extra_second_half' ? 'Iniciar 2.º prolongamento' : action === 'resume_clock' ? 'Retomar relógio' : 'Terminar partida'}
         </Button>
       )}
       {match.status === 'live' && match.current_period === 'second_half' && match.clock_running && extraTimeAllowed && (
@@ -104,7 +112,7 @@ export function MatchClockControls({ match, canControl, extraTimeAllowed = false
           Iniciar prolongamento
         </Button>
       )}
-      {match.status === 'live' && (match.current_period === 'second_half' || match.current_period === 'extra_time' || match.current_period === 'penalties') && penaltiesAllowed && (!extraTimeAllowed || match.current_period !== 'second_half') && ((match.home_score ?? 0) === (match.away_score ?? 0) || match.current_period === 'penalties') && (
+      {match.status === 'live' && (match.current_period === 'extra_time' || match.current_period === 'extra_second_half' || match.current_period === 'penalties') && penaltiesAllowed && ((match.home_score ?? 0) === (match.away_score ?? 0) || match.current_period === 'penalties') && (
         <Button variant="secondary" size="sm" onClick={() => void handlePenalties()} disabled={pendingAction !== null}>
           {match.current_period === 'extra_time' ? 'Iniciar penáltis' : 'Finalizar penáltis'}
         </Button>

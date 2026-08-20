@@ -1,6 +1,6 @@
 import type { Match, MatchEvent, MatchStatus } from '../types'
 
-export type MatchClockPeriod = 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime' | 'finished'
+export type MatchClockPeriod = 'first_half' | 'second_half' | 'extra_time' | 'extra_first_half' | 'extra_halftime' | 'extra_second_half' | 'penalties' | 'halftime' | 'finished'
 
 export interface MatchClockInfo {
   period: MatchClockPeriod
@@ -15,6 +15,9 @@ const PERIOD_ORDER: Record<MatchClockPeriod, number> = {
   first_half: 1,
   second_half: 2,
   extra_time: 3,
+  extra_first_half: 3,
+  extra_halftime: 3,
+  extra_second_half: 3,
   penalties: 4,
   halftime: 2,
   finished: 5,
@@ -28,6 +31,12 @@ function normalizePeriod(value?: string): MatchClockPeriod {
       return 'second_half'
     case 'extra_time':
       return 'extra_time'
+    case 'extra_first_half':
+      return 'extra_first_half'
+    case 'extra_halftime':
+      return 'extra_halftime'
+    case 'extra_second_half':
+      return 'extra_second_half'
     case 'penalties':
       return 'penalties'
     case 'halftime':
@@ -56,6 +65,12 @@ function formatPeriodLabel(period: MatchClockPeriod): string {
       return '2T'
     case 'extra_time':
       return 'ET'
+    case 'extra_first_half':
+      return 'ET1'
+    case 'extra_halftime':
+      return 'ET INT'
+    case 'extra_second_half':
+      return 'ET2'
     case 'penalties':
       return 'PEN'
     case 'halftime':
@@ -71,6 +86,9 @@ function getClockMinuteForPeriod(period: MatchClockPeriod, minute: number): numb
   if (period === 'first_half') return Math.max(0, Math.min(minute, 45))
   if (period === 'second_half') return Math.max(45, Math.min(minute, 90))
   if (period === 'extra_time') return Math.max(90, Math.min(minute, 120))
+  if (period === 'extra_first_half') return Math.max(90, Math.min(minute, 105))
+  if (period === 'extra_second_half') return Math.max(105, Math.min(minute, 120))
+  if (period === 'extra_halftime') return 105
   if (period === 'penalties') return Math.max(120, Math.min(minute, 130))
   if (period === 'halftime') return 45
   if (period === 'finished') return 90
@@ -85,6 +103,9 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
   const explicitMinute = typeof (match as any)?.current_minute === 'number' ? (match as any).current_minute : undefined
 
   if (status === 'halftime') {
+    if (explicitPeriod === 'extra_halftime') {
+      return { period: 'extra_halftime', minute: 105, minuteExtra: 0, display: 'Intervalo prolongamento', shortLabel: 'ET INT', fullLabel: 'Intervalo prolongamento' }
+    }
     return {
       period: 'halftime',
       minute: 45,
@@ -135,9 +156,9 @@ export function getMatchClockInfo(match?: Partial<Match> | null, now = Date.now(
   const elapsedSeconds = Number((match as any)?.clock_elapsed_seconds ?? 0)
   if (status === 'live' && clockRunning && clockStartedAt) {
     const elapsedMinutes = Math.max(0, Math.floor((now - new Date(clockStartedAt).getTime()) / 60_000) + Math.floor(elapsedSeconds / 60))
-    const periodBase = period === 'second_half' ? 45 : period === 'extra_time' ? 90 : 0
+    const periodBase = period === 'second_half' ? 45 : period === 'extra_time' || period === 'extra_first_half' ? 90 : period === 'extra_second_half' ? 105 : 0
     minute = periodBase + elapsedMinutes
-    const regulationEnd = period === 'first_half' ? 45 : period === 'second_half' ? 90 : period === 'extra_time' ? 120 : minute
+    const regulationEnd = period === 'first_half' ? 45 : period === 'second_half' ? 90 : period === 'extra_time' || period === 'extra_second_half' ? 120 : period === 'extra_first_half' ? 105 : minute
     if (minute > regulationEnd) {
       minuteExtra = minute - regulationEnd
       minute = regulationEnd

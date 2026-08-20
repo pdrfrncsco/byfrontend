@@ -19,6 +19,8 @@ export type MatchClockAction =
   | 'finish_match'
   | 'set_stoppage_time'
   | 'start_extra_time'
+  | 'end_extra_first_half'
+  | 'start_extra_second_half'
   | 'start_penalties'
 
 export type MatchEventType =
@@ -144,7 +146,7 @@ export interface Match {
   scheduledAt: string;
   venue?: string;
   status: MatchStatus;
-  current_period?: 'first_half' | 'second_half' | 'extra_time' | 'penalties' | 'halftime' | 'fulltime' | null;
+  current_period?: 'first_half' | 'second_half' | 'extra_time' | 'extra_first_half' | 'extra_halftime' | 'extra_second_half' | 'penalties' | 'halftime' | 'fulltime' | null;
   current_minute?: number | null;
   clock_running?: boolean;
   clock_started_at?: string | null;
