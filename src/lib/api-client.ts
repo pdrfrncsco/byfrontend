@@ -25,6 +25,10 @@ const refreshClient = axios.create({
 
 let refreshPromise: Promise<string | null> | null = null
 
+function isAuthRequest(url?: string): boolean {
+  return Boolean(url && /^\/auth\//.test(url))
+}
+
 function clearSession() {
   clearStoredAuthSession()
 }
@@ -66,7 +70,7 @@ client.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`
     }
     const tenantId = getStoredActiveTenantId()
-    if (tenantId) {
+    if (tenantId && !isAuthRequest(config.url)) {
       config.headers['X-Tenant-ID'] = tenantId
     }
     return config
