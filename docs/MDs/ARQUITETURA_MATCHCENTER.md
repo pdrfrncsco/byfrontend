@@ -1376,3 +1376,136 @@ Identifiquei duas causas prováveis para o 401, além de
   garantir o envio de X-Tenant-ID. Depois disso, a refatoração
   mais importante é eliminar as APIs/hooks duplicados e
   centralizar a autorização da lineup no backend.
+
+
+  • A causa dos dois problemas é a mesma: o proprietário do clube foi criado como
+  ClubMember(role="president"), mas não foi criado como TenantMembership.
+
+  ### Inconsistências encontradas
+
+  1. Após a aprovação da afiliação, o backend cria:
+
+  ClubMember → role: president
+
+  em club_affiliation_service.py.
+
+  2. Porém, o endpoint:
+
+  GET /api/v1/auth/me/memberships/
+
+  só devolve TenantMembership.
+
+  3. O frontend usa exclusivamente essa resposta para:
+
+  - preencher a aba “Organizações”;
+  - escolher o tenant ativo;
+  - gravar activeTenant;
+  - enviar X-Tenant-ID.
+
+  4. Como o proprietário não tem TenantMembership:
+
+  memberships = []
+  activeTenant = null
+
+  Consequentemente:
+
+  - a aba Organizações fica vazia;
+  - X-Tenant-ID não é enviado;
+  - o endpoint de lineup retorna 400 Tenant não identificado.
+
+  O fluxo está dividido entre dois conceitos que não são sincronizados:
+
+  ClubMember       → autorização dentro do clube
+  TenantMembership → contexto da organização/tenant
+
+  ### Plano de correção recomendado
+
+  #### Fase A — Corrigir novos vínculos
+
+  No fluxo de aprovação de afiliação, em:
+
+  bybackend/clubs/services/club_affiliation_service.py
+
+  criar ou reativar automaticamente:
+
+  TenantMembership(
+      user=submitted_by,
+      tenant=request_obj.tenant,
+      role="member",
+      is_active=True
+  )
+
+  A operação deve ser atómica juntamente com:
+
+  - ativação do clube;
+  - criação do ClubMember como president;
+  - aprovação da afiliação.
+
+  O ClubMember continuará a ser a fonte de autorização do clube, enquanto
+  TenantMembership será o contexto de tenant.
+
+  #### Fase B — Corrigir dados já existentes
+
+  Criar um comando de reparação, por exemplo:
+
+  python manage.py repair_club_owner_memberships
+
+  Esse comando deve:
+
+  1. localizar ClubMember ativos com roles president, manager ou coach;
+  2. obter club.tenant;
+  3. criar ou reativar a TenantMembership;
+  4. não duplicar memberships existentes;
+  5. gerar relatório dos registos corrigidos.
+
+  #### Fase C — Melhorar o endpoint de memberships
+
+  Adicionar testes garantindo que:
+
+  GET /auth/me/memberships/
+
+  devolve o tenant quando o utilizador:
+
+  - é proprietário de clube;
+  - possui uma membership inativa que deve permanecer excluída.
+
+  #### Fase D — Tornar o frontend mais robusto
+
+  No auth-store:
+
+  - validar que a membership ativa ainda existe;
+  - limpar activeMembership e activeTenant inválidos;
+  - não escolher silenciosamente uma membership aleatória quando existem várias;
+  - mostrar um estado “A selecionar organização” quando não há tenant ativo.
+
+  Na aba “Organizações” do byfrontend/src/modules/shared/pages/ProfilePage.tsx, manter
+  a lista baseada em TenantMembership, porque ela representa corretamente as
+  organizações acessíveis ao utilizador.
+
+  #### Fase E — Diagnóstico operacional temporário
+
+  Adicionar logs sem expor tokens:
+
+  user_id
+  club_id
+  club_member_role
+  tenant_membership_exists
+  resolved_tenant_id
+  x_tenant_id_present
+
+  Isso permitirá confirmar rapidamente se um utilizador possui:
+
+  ClubMember presidente: sim
+  TenantMembership ativa: não
+
+  ### Ordem ideal
+
+  1. Corrigir ClubAffiliationService.review_request.
+  2. Executar reparação dos proprietários existentes.
+  3. Confirmar que /auth/me/memberships/ retorna o tenant.
+  4. Confirmar que o frontend grava activeTenant.
+  5. Testar submissão de lineup.
+  6. Adicionar testes de regressão para proprietário do clube.
+
+  Não é necessário alterar o modelo de base de dados. É necessário sincronizar os dois
+  vínculos existentes e reparar os dados já criados.

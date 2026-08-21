@@ -59,6 +59,18 @@ function mapToUserProfile(
   }
 }
 
+function resolveActiveMembershipId(
+  memberships: TenantMembership[] = [],
+  storedMembershipId: string | null = null,
+): string | null {
+  return (
+    memberships.find(m => m.id === storedMembershipId)?.id ||
+    memberships.find(m => m.is_active)?.id ||
+    memberships[0]?.id ||
+    null
+  )
+}
+
 interface AuthStoreState {
   sourceUser: User | null
   user: UserProfile | null
@@ -86,11 +98,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
 
     try {
       const memberships = await authApi.getMemberships()
-      const activeMembershipId =
-        getStoredActiveMembershipId() ||
-        memberships.find(m => m.is_active)?.id ||
-        memberships[0]?.id ||
-        null
+      const activeMembershipId = resolveActiveMembershipId(memberships, getStoredActiveMembershipId())
       setStoredActiveMembershipId(activeMembershipId)
       setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({
@@ -117,7 +125,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
     try {
       const freshUser = await authApi.getMe()
       const memberships = await authApi.getMemberships()
-      const activeMembershipId = getStoredActiveMembershipId() || memberships.find(m => m.is_active)?.id || memberships[0]?.id || null
+      const activeMembershipId = resolveActiveMembershipId(memberships, getStoredActiveMembershipId())
       setStoredActiveMembershipId(activeMembershipId)
       setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({ sourceUser: freshUser, user: mapToUserProfile(freshUser, memberships, activeMembershipId), memberships, activeMembershipId })
@@ -143,11 +151,7 @@ export const useAuthStore = create<AuthStoreState>(set => ({
 
     try {
       const memberships = await authApi.getMemberships()
-      const activeMembershipId =
-        getStoredActiveMembershipId() ||
-        memberships.find(m => m.is_active)?.id ||
-        memberships[0]?.id ||
-        null
+      const activeMembershipId = resolveActiveMembershipId(memberships, getStoredActiveMembershipId())
       setStoredActiveMembershipId(activeMembershipId)
       setStoredActiveTenantId(memberships.find(m => m.id === activeMembershipId)?.tenant || null)
       set({ sourceUser: savedUser, user: mapToUserProfile(savedUser, memberships, activeMembershipId), memberships, activeMembershipId })
