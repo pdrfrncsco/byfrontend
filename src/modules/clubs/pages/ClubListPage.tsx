@@ -1,15 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { ClubCard } from '@/modules/clubs/components/ClubCard'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useDebounce } from '@/hooks/useDebounce'
-import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { PublicListHero } from '@/modules/shared/components/PublicListHero'
+import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
@@ -34,148 +31,72 @@ export default function ClubListPage() {
   const clubs = data?.results ?? []
   const total = data?.count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const hasFilters = debouncedSearch.trim() !== '' || organization.trim() !== ''
 
-  const summary = useMemo(() => {
-    const filters = [debouncedSearch, organization].filter(Boolean).length
-    return `${filters} filtro(s) ativos`
-  }, [debouncedSearch, organization])
-
-  if (isError) {
-    return (
-      <div className="container py-xl">
-        <ErrorState
-          title="Não foi possível carregar os clubes"
-          message="Verifique a ligação e tente novamente."
-          onRetry={() => refetch()}
-        />
-      </div>
-    )
+  const clearFilters = () => {
+    setSearch('')
+    setOrganization('')
+    setPageSize(9)
+    setPage(1)
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      {/* Background Gradient Accents */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
-
-      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-        <PublicListHero
-          badge="Portal público de clubes"
-          title="Descubra clubes, estrutura e identidade pública"
-          description="Explore clubes do ecossistema BolaYetu com pesquisa rápida, paginação fluida e acesso direto ao plantel, staff, documentos e patrocinadores."
-          stats={[
-            { label: `${total} clube(s)` },
-            { label: summary },
-            { label: `${pageSize} por página` },
-          ]}
-          insightIcon={SlidersHorizontal}
-          insightTitle="Filtros ativos"
-          insightDescription="Pesquisa e organização atualizam a listagem em tempo real."
-          metrics={[
-            { label: 'Página atual', value: page },
-            { label: 'Resultados', value: isFetching ? '...' : total },
-          ]}
-        />
-
-        <Card variant="flat" padding="none">
-          <CardContent className="grid gap-md p-lg lg:grid-cols-[1.3fr_1fr_auto_auto] lg:items-end">
-            <label className="space-y-xs">
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Pesquisar</span>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
-                <Input
-                  variant="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Nome do clube ou cidade"
-                />
-              </div>
-            </label>
-
-            <label className="space-y-xs">
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Organização</span>
-              <Input
+    <ExplorePageShell
+      breadcrumbs={[{ label: 'Clubes' }]}
+      eyebrow="Explorar clubes"
+      title="Descubra clubes, estrutura e identidade pública"
+      description="Explore clubes do ecossistema BolaYetu e aceda diretamente a plantéis, staff, competições e informação institucional."
+    >
+      <ExploreSection title="Todos os clubes" description="Pesquise por nome, cidade ou organização para encontrar um clube.">
+        <div className="space-y-lg">
+          <SearchToolbar
+            value={search}
+            onChange={setSearch}
+            placeholder="Pesquisar por nome ou cidade..."
+            filters={
+              <input
                 value={organization}
-                onChange={(event) => setOrganization(event.target.value)}
-                placeholder="Slug da organização"
+                onChange={event => setOrganization(event.target.value)}
+                placeholder="Organização"
+                aria-label="Filtrar por organização"
+                className="h-10 w-full min-w-40 rounded-lg border border-outline-variant bg-surface-container-high px-md text-sm text-on-surface outline-none placeholder:text-on-surface-variant focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-auto"
               />
-            </label>
+            }
+            actions={hasFilters ? <Button variant="ghost" size="sm" onClick={clearFilters}>Limpar</Button> : undefined}
+          />
 
-            <label className="space-y-xs">
-              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">Itens por página</span>
-              <NativeSelect value={String(pageSize)} onChange={(event) => setPageSize(Number(event.target.value))}>
-                {PAGE_SIZE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+          <div className="flex flex-col gap-sm sm:flex-row sm:items-center sm:justify-between">
+            <ResultCount count={total} label={total === 1 ? 'clube encontrado' : 'clubes encontrados'} />
+            <label className="flex items-center gap-sm text-sm text-on-surface-variant">
+              <span>Por página</span>
+              <NativeSelect value={String(pageSize)} onChange={event => setPageSize(Number(event.target.value))}>
+                {PAGE_SIZE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
               </NativeSelect>
             </label>
+          </div>
 
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearch('')
-                setOrganization('')
-                setPageSize(9)
-                setPage(1)
-              }}
-            >
-              Limpar
-            </Button>
-          </CardContent>
-        </Card>
-
-        {isLoading ? (
-          <PageSkeleton variant="list" />
-        ) : clubs.length === 0 ? (
-          <EmptyState
-            title="Nenhum clube encontrado"
-            description="Tente ajustar os filtros ou limpar a pesquisa para encontrar clubes."
-            action={{
-              label: 'Limpar filtros',
-              onClick: () => {
-                setSearch('')
-                setOrganization('')
-                setPage(1)
-              },
-            }}
-          />
-        ) : (
-          <>
-            <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
-              {clubs.map((club) => (
-                <ClubCard key={club.id} club={club} />
-              ))}
-            </div>
-
-            <div className="flex flex-col items-center justify-between gap-md rounded-[1.5rem] border border-outline-variant/20 bg-surface-container px-lg py-md shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur md:flex-row">
-              <p className="text-sm text-on-surface-variant">
-                Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
-                <span className="font-semibold text-on-surface">{totalPages}</span>
-              </p>
-              <div className="flex items-center gap-sm">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((value) => Math.max(1, value - 1))}
-                >
-                  Anterior
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-                >
-                  Seguinte
-                </Button>
+          {isLoading ? (
+            <PageSkeleton variant="list" />
+          ) : isError ? (
+            <ErrorState title="Não foi possível carregar os clubes" message="Verifique a ligação e tente novamente." onRetry={() => refetch()} />
+          ) : clubs.length === 0 ? (
+            <EmptyState title="Nenhum clube encontrado" description="Tente ajustar os filtros ou limpar a pesquisa para encontrar clubes." action={hasFilters ? { label: 'Limpar filtros', onClick: clearFilters } : undefined} />
+          ) : (
+            <>
+              <div className="grid gap-lg sm:grid-cols-2 xl:grid-cols-3" aria-busy={isFetching}>
+                {clubs.map(club => <ClubCard key={club.id} club={club} />)}
               </div>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+              <div className="flex flex-col items-center justify-between gap-md rounded-xl border border-outline-variant bg-surface-container-low px-lg py-md sm:flex-row">
+                <p className="text-sm text-on-surface-variant">Página <span className="font-semibold text-on-surface">{page}</span> de <span className="font-semibold text-on-surface">{totalPages}</span></p>
+                <div className="flex items-center gap-sm">
+                  <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => setPage(value => Math.max(1, value - 1))}>Anterior</Button>
+                  <Button variant="secondary" size="sm" disabled={page >= totalPages} onClick={() => setPage(value => Math.min(totalPages, value + 1))}>Seguinte</Button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </ExploreSection>
+    </ExplorePageShell>
   )
 }
