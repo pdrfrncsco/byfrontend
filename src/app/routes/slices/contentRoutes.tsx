@@ -127,7 +127,11 @@ export function contentRouteElements() {
       />
       <Route
         path={competitionRoutes.matchDetail(':compId', ':matchId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>}
+        element={
+          <PublicLayout variant="explore">
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
+          </PublicLayout>
+        }
       />
       <Route
         path={competitionRoutes.matchLineup(':compId', ':matchId')}
