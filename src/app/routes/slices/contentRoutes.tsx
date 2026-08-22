@@ -13,7 +13,7 @@ const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
 
 const PlayerCreatePage = lazy(() =>
-  import('@/modules/players/pages/PlayerCreatePage').then(m => ({ default: m.PlayerCreatePage })),
+  import('@/modules/players/pages/DashboardPlayerCreatePage').then(m => ({ default: m.DashboardPlayerCreatePage })),
 )
 const PlayerSettingsPage = lazy(() =>
   import('@/modules/players/pages/PlayerSettingsPage').then(m => ({ default: m.PlayerSettingsPage })),

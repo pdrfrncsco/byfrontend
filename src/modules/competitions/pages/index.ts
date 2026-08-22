@@ -15,4 +15,6 @@ export * from './MatchDetailPage'
 export * from './MatchLineupPage'
 export * from './MatchReportPage'
 export * from './CompetitionDrawPage'
+export * from './CompetitionDashboardPage'
+
 

@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense } from 'react'
 import { PendingOnboardingRedirect } from '@/app/routes'
 import { ExecutiveDashboardPage } from './ExecutiveDashboardPage'
-import { CompetitionDashboardPage } from './CompetitionDashboardPage'
+import { CompetitionDashboardPage } from '@/modules/competitions/pages/CompetitionDashboardPage'
 import ClubDashboardPage from '@/modules/clubs/pages/ClubDashboardPage'
 import OrganizationDashboardPage from '@/modules/organizations/pages/OrganizationDashboardPage'
 import {

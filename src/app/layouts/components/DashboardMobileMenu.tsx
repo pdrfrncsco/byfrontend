@@ -2,7 +2,10 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { X, LogOut } from 'lucide-react'
-import { getActiveSidebarHref } from './sidebar-utils'
+import { getActiveSidebarHref, resolveNavContext } from './sidebar-utils'
+import { SidebarEntityHeader } from './SidebarEntityHeader'
+import { useAuth } from '@/app/providers/AuthProvider'
+import { useTenant } from '@/app/providers/TenantProvider'
 
 interface SidebarLink {
   label: string
@@ -28,6 +31,17 @@ interface DashboardMobileMenuProps {
   onLogout: () => void
 }
 
+function renderIcon(icon: React.ReactNode) {
+  if (React.isValidElement(icon)) {
+    return icon
+  }
+  if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null)) {
+    const IconComponent = icon as unknown as React.ComponentType<{ className?: string }>
+    return <IconComponent className="w-4 h-4" />
+  }
+  return null
+}
+
 export function DashboardMobileMenu({
   isOpen,
   onClose,
@@ -40,9 +54,13 @@ export function DashboardMobileMenu({
 }: DashboardMobileMenuProps) {
   const { t } = useTranslation()
   const location = useLocation()
+  const { user } = useAuth()
+  const { tenant } = useTenant()
   const activeHref = getActiveSidebarHref(location, sidebarLinks)
 
   if (!isOpen) return null
+
+  const navContext = resolveNavContext(location.pathname, tenant, user)
 
   return (
     <div className="dashboard-overlay fixed inset-0 z-50 flex justify-start backdrop-blur-sm md:hidden">
@@ -53,25 +71,18 @@ export function DashboardMobileMenu({
         >
           <X className="w-6 h-6" />
         </button>
-        <div className="mb-xl mt-lg px-md text-center">
-          {logo && (
-            <img 
-              alt="Logo" 
-              className={`mx-auto mb-md object-contain ${dashboardType === 'federation' ? 'h-16' : 'h-20'}`} 
-              src={logo} 
-            />
-          )}
-          <h1 className="font-display-lg text-primary text-xl uppercase tracking-tighter">BOLA YETU</h1>
-          <p className="dashboard-muted mt-1 text-[10px] font-semibold uppercase tracking-widest">
-            {subLabel}
-          </p>
+
+        {/* Contextual Header */}
+        <div className="mt-xl">
+          <SidebarEntityHeader context={navContext} />
         </div>
+
         <nav className="flex-1 space-y-4 overflow-y-auto px-sm">
           {sidebarSections ? (
             sidebarSections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="space-y-1">
                 {section.title && (
-                  <p className="dashboard-muted px-md text-[10px] font-bold uppercase tracking-[0.22em] opacity-80">
+                  <p className="dashboard-muted px-md text-[10px] font-bold uppercase tracking-[0.22em] opacity-80 mb-sm">
                     {section.title}
                   </p>
                 )}
@@ -85,7 +96,7 @@ export function DashboardMobileMenu({
                         title={link.label}
                         className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all"
                       >
-                        {link.icon}
+                        {renderIcon(link.icon)}
                         <span className="font-title-md text-sm">{link.label}</span>
                       </button>
                     ) : (
@@ -100,7 +111,7 @@ export function DashboardMobileMenu({
                             : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                         }`}
                       >
-                        {link.icon}
+                        {renderIcon(link.icon)}
                         <span className="font-title-md text-sm">{link.label}</span>
                       </Link>
                     )
@@ -118,7 +129,7 @@ export function DashboardMobileMenu({
                   title={link.label}
                   className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all"
                 >
-                  {link.icon}
+                  {renderIcon(link.icon)}
                   <span className="font-title-md text-sm">{link.label}</span>
                 </button>
               ) : (
@@ -133,7 +144,7 @@ export function DashboardMobileMenu({
                       : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                   }`}
                 >
-                  {link.icon}
+                  {renderIcon(link.icon)}
                   <span className="font-title-md text-sm">{link.label}</span>
                 </Link>
               )

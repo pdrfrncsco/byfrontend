@@ -34,12 +34,12 @@ import {
 } from '../hooks'
 import {
   OrganizationDetailSkeleton,
-  OrganizationErrorState,
   OrganizationHistoryTable,
   KpiCard,
 } from '../components'
 import { organizationRoutes } from '../routes'
 import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
+import { ErrorState } from '@/components/ui/empty-state'
 
 export function OrganizationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -66,7 +66,7 @@ export function OrganizationDetailPage() {
   if (isErrorOrg || !organization) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-lg">
-        <OrganizationErrorState
+      <ErrorState
           message="Não foi possível obter os detalhes desta organização. Verifique se o endereço está correto."
           onRetry={refetchOrg}
         />

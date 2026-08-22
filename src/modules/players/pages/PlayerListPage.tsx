@@ -7,7 +7,8 @@ import { ErrorState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
-import { PlayerCard, PlayerEmptyState, PlayerListSkeleton } from '../components'
+import { PlayerCard, PlayerListSkeleton } from '../components'
+import { EmptyState } from '@/components/ui/empty-state'
 import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
 import type { Player, PlayerPosition } from '../types'
@@ -224,9 +225,11 @@ export function PlayerListPage() {
         {isLoading ? (
           <PlayerListSkeleton />
         ) : players.length === 0 ? (
-          <PlayerEmptyState
-            message={isSearching ? `Sem resultados para "${debouncedSearch}"` : 'Nenhum jogador encontrado com os filtros seleccionados.'}
-            onReset={activeFilters > 0 ? handleClearFilters : undefined}
+          <EmptyState
+            icon={User}
+            title={isSearching ? `Sem resultados para "${debouncedSearch}"` : 'Nenhum jogador encontrado'}
+            description={isSearching ? 'Tente pesquisar por outro nome ou ajuste os filtros.' : 'Nenhum jogador encontrado com os filtros seleccionados.'}
+            action={activeFilters > 0 ? { label: t('players.list.clearFilters'), onClick: handleClearFilters, variant: 'secondary' } : undefined}
           />
         ) : (
           <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">

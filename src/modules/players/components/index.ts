@@ -1,5 +1,4 @@
 export { PlayerCard } from './PlayerCard'
-export { PlayerEmptyState } from './PlayerEmptyState'
 export { PlayerListSkeleton, PlayerDetailSkeleton, PlayerFormSkeleton } from './PlayerSkeleton'
 export { PlayerCareerTimeline } from './PlayerCareerTimeline'
 export { PlayerDocumentsTab } from './PlayerDocumentsTab'

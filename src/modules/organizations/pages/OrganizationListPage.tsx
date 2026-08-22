@@ -6,9 +6,8 @@ import { usePublicOrganizations } from '../hooks'
 import {
   OrganizationCard,
   OrganizationListSkeleton,
-  OrganizationEmptyState,
-  OrganizationErrorState,
 } from '../components'
+import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 
 export function OrganizationListPage() {
   const [search, setSearch] = useState('')
@@ -106,7 +105,7 @@ export function OrganizationListPage() {
 
         {isError && (
           <div className="py-12">
-            <OrganizationErrorState onRetry={refetch} />
+            <ErrorState onRetry={refetch} />
           </div>
         )}
 
@@ -120,14 +119,13 @@ export function OrganizationListPage() {
 
         {!isLoading && !isError && (!organizations || organizations.length === 0) && (
           <div className="py-12">
-            <OrganizationEmptyState
+            <EmptyState
               title={search || typeFilter ? 'Sem resultados para os filtros' : 'Nenhuma organização registada'}
               description={
                 search || typeFilter
                   ? 'Experimente mudar os termos da sua pesquisa ou selecionar uma categoria diferente.'
                   : 'Não existem organizações públicas registadas de momento.'
               }
-              iconType="search"
               action={search || typeFilter ? { label: 'Limpar filtros', onClick: clearFilters } : undefined}
             />
           </div>

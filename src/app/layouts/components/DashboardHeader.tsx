@@ -1,8 +1,11 @@
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu, Search } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
 import { NotificationsDropdown } from '@/modules/notifications/components/NotificationsDropdown'
+import { DashboardBreadcrumb } from './DashboardBreadcrumb'
+import { GlobalSearch } from './GlobalSearch'
 
 interface DashboardHeaderProps {
   tenantName?: string
@@ -47,18 +50,8 @@ export function DashboardHeader({
           </span>
         </div>
 
-        {/* Quick Breadcrumbs */}
-        <div className="hidden md:flex gap-md text-sm" aria-label={t('dashboard.topbar.general')}>
-          <span className="text-primary font-bold border-b-2 border-primary pb-1">
-            {t('dashboard.topbar.general')}
-          </span>
-          <span className="dashboard-muted">
-            {t('dashboard.topbar.analytics')}
-          </span>
-          <span className="dashboard-muted">
-            {t('dashboard.topbar.reports')}
-          </span>
-        </div>
+        {/* Dynamic Breadcrumbs */}
+        <DashboardBreadcrumb />
       </div>
 
       <div className="flex items-center gap-lg">
@@ -71,17 +64,9 @@ export function DashboardHeader({
             </div>
           )}
         </div>
-        {/* Search Input */}
-        <div className="relative hidden lg:block w-64">
-          <Search className="dashboard-muted absolute left-md top-1/2 w-4 h-4 -translate-y-1/2" />
-          <input 
-            type="text"
-            placeholder={t('dashboard.topbar.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="dashboard-search w-full rounded-full border pl-xl pr-md py-1.5 text-xs transition-all focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-        </div>
+
+        {/* Unified Global Search */}
+        <GlobalSearch />
 
         <div className="h-8 w-px" style={{ backgroundColor: 'var(--dashboard-border)' }}></div>
 

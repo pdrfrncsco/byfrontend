@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button } from '@/components/ui'
-import { useDashboardOverview } from '../hooks/useDashboard'
+import { useDashboardOverview } from '@/modules/dashboards/hooks/useDashboard'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { ROUTES } from '@/constants'
 import { 

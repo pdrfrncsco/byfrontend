@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-states'
-import { ClubEmptyState } from '@/modules/clubs/components/ClubEmptyState'
 import { ClubDetailSkeleton } from '@/modules/clubs/components/ClubSkeleton'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
@@ -140,7 +139,11 @@ export default function ClubDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <ClubEmptyState onReset={() => navigate('/clubs')} />
+          <EmptyState
+            title="Clube não encontrado"
+            description="Não foi possível encontrar informação para este clube."
+            action={{ label: 'Ver todos os clubes', onClick: () => navigate('/clubs') }}
+          />
         </div>
       </div>
     )

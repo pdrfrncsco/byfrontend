@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { ClubCard } from '@/modules/clubs/components/ClubCard'
-import { ClubEmptyState } from '@/modules/clubs/components/ClubEmptyState'
+import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 import { ClubListSkeleton } from '@/modules/clubs/components/ClubSkeleton'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ErrorState } from '@/components/ui/empty-state'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
@@ -130,11 +129,16 @@ export default function ClubListPage() {
         {isLoading ? (
           <ClubListSkeleton />
         ) : clubs.length === 0 ? (
-          <ClubEmptyState
-            onReset={() => {
-              setSearch('')
-              setOrganization('')
-              setPage(1)
+          <EmptyState
+            title="Nenhum clube encontrado"
+            description="Tente ajustar os filtros ou limpar a pesquisa para encontrar clubes."
+            action={{
+              label: 'Limpar filtros',
+              onClick: () => {
+                setSearch('')
+                setOrganization('')
+                setPage(1)
+              },
             }}
           />
         ) : (

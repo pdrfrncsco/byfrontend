@@ -14,7 +14,7 @@ import {
 } from '@/components/ui'
 import { CompetitionCard } from '../components/CompetitionCard'
 import { CompetitionSkeleton } from '../components/CompetitionSkeleton'
-import { CompetitionEmptyState } from '../components/CompetitionEmptyState'
+import { EmptyState } from '@/components/ui/empty-state'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import type { CompetitionStatus, CompetitionType } from '../types'
 
@@ -177,7 +177,12 @@ export function CompetitionListPage() {
             </div>
           </Card>
         ) : competitions.length === 0 ? (
-          <CompetitionEmptyState hasFilters={hasFilters} onClearFilters={handleClearFilters} />
+          <EmptyState
+            icon={Trophy}
+            title="Sem competições"
+            description={hasFilters ? 'Nenhuma competição corresponde aos filtros aplicados. Tente ajustar ou limpar os filtros.' : 'Ainda não existe nenhuma competição registada.'}
+            action={hasFilters ? { label: 'Limpar filtros', onClick: handleClearFilters } : undefined}
+          />
         ) : (
           <div className="space-y-md">
             <p className="text-sm text-on-surface-variant">

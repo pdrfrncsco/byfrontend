@@ -65,3 +65,6 @@ export { Textarea, type TextareaProps } from './textarea'
 export { Progress } from './progress'
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip'
 export { NativeSelect, nativeSelectVariants, type NativeSelectProps } from './native-select'
+export { KpiCard, type KpiCardProps } from './kpi-card'
+export { PageSkeleton } from './page-skeleton'
+

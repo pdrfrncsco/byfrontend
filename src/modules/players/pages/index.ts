@@ -1,6 +1,6 @@
 export { PlayerListPage } from './PlayerListPage'
 export { PlayerDetailPage } from './PlayerDetailPage'
-export { PlayerCreatePage } from './PlayerCreatePage'
+export { DashboardPlayerCreatePage } from './DashboardPlayerCreatePage'
 export { PlayerSettingsPage } from './PlayerSettingsPage'
 export { PlayerDashboardPage } from './PlayerDashboardPage'
 export { PlayerDashboardSettingsPage } from './PlayerDashboardSettingsPage'

@@ -1,8 +1,11 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Settings, HelpCircle, LogOut } from 'lucide-react'
-import { getActiveSidebarHref } from './sidebar-utils'
+import { Settings, HelpCircle, LogOut } from 'lucide-react'
+import { getActiveSidebarHref, resolveNavContext } from './sidebar-utils'
+import { SidebarEntityHeader } from './SidebarEntityHeader'
+import { useAuth } from '@/app/providers/AuthProvider'
+import { useTenant } from '@/app/providers/TenantProvider'
 
 interface SidebarLink {
   label: string
@@ -27,6 +30,17 @@ interface DashboardSidebarProps {
   onLogout: () => void
 }
 
+function renderIcon(icon: React.ReactNode) {
+  if (React.isValidElement(icon)) {
+    return icon
+  }
+  if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null)) {
+    const IconComponent = icon as unknown as React.ComponentType<{ className?: string }>
+    return <IconComponent className="w-4 h-4" />
+  }
+  return null
+}
+
 export function DashboardSidebar({
   logo,
   dashboardType,
@@ -37,36 +51,23 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const { t } = useTranslation()
   const location = useLocation()
+  const { user } = useAuth()
+  const { tenant } = useTenant()
   const activeHref = getActiveSidebarHref(location, sidebarLinks)
+
+  const navContext = resolveNavContext(location.pathname, tenant, user)
 
   return (
     <aside className="dashboard-sidebar-surface hidden h-screen w-64 sticky top-0 z-40 flex-col border-r p-md backdrop-blur-xl md:flex">
-      <div className="mb-xl px-md flex flex-col items-center text-center">
-        {logo ? (
-          <img 
-            alt="Logo" 
-            className={`object-contain mb-md transition-all duration-300 ${dashboardType === 'federation' ? 'h-20 w-auto' : 'h-24 w-24'}`} 
-            src={logo} 
-          />
-        ) : (
-          <div className="dashboard-soft mb-md flex h-16 w-16 items-center justify-center rounded-full border" style={{ borderColor: 'var(--dashboard-border)' }}>
-            <LayoutDashboard className="text-primary w-8 h-8" />
-          </div>
-        )}
-        <div>
-          <h1 className="font-display-lg text-primary text-2xl uppercase tracking-tighter leading-none">BOLA YETU</h1>
-          <p className="dashboard-muted mt-1.5 text-[11px] font-semibold uppercase tracking-widest opacity-80">
-            {subLabel}
-          </p>
-        </div>
-      </div>
+      {/* Contextual Header */}
+      <SidebarEntityHeader context={navContext} />
 
       <nav className="flex-1 space-y-4 overflow-y-auto custom-scrollbar px-sm">
         {sidebarSections ? (
           sidebarSections.map((section, sectionIndex) => (
             <div key={sectionIndex} className="space-y-1">
               {section.title && (
-                <p className="dashboard-muted px-md text-[10px] font-bold uppercase tracking-[0.22em] opacity-80">
+                <p className="dashboard-muted px-md text-[10px] font-bold uppercase tracking-[0.22em] opacity-80 mb-sm">
                   {section.title}
                 </p>
               )}
@@ -80,7 +81,7 @@ export function DashboardSidebar({
                       title={link.label}
                       className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all duration-200"
                     >
-                      {link.icon}
+                      {renderIcon(link.icon)}
                       <span className="font-title-md text-sm">{link.label}</span>
                     </button>
                   ) : (
@@ -94,7 +95,7 @@ export function DashboardSidebar({
                           : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                       }`}
                     >
-                      {link.icon}
+                      {renderIcon(link.icon)}
                       <span className="font-title-md text-sm">{link.label}</span>
                       {link.count !== undefined && link.count > 0 && (
                         <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-[#031427]">
@@ -117,7 +118,7 @@ export function DashboardSidebar({
                 title={link.label}
                 className="dashboard-muted flex w-full cursor-not-allowed items-center gap-md rounded-lg p-md text-left opacity-55 transition-all duration-200"
               >
-                {link.icon}
+                {renderIcon(link.icon)}
                 <span className="font-title-md text-sm">{link.label}</span>
               </button>
             ) : (
@@ -131,7 +132,7 @@ export function DashboardSidebar({
                     : 'dashboard-muted dashboard-soft-hover hover:text-[var(--dashboard-strong)]'
                 }`}
               >
-                {link.icon}
+                {renderIcon(link.icon)}
                 <span className="font-title-md text-sm">{link.label}</span>
                 {link.count !== undefined && link.count > 0 && (
                   <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-[#031427]">

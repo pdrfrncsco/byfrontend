@@ -12,8 +12,8 @@ import { ROUTES } from '@/constants/routes'
 import {
   DashboardPageSelector,
   ExecutiveDashboardPage,
-  CompetitionDashboardPage,
 } from '@/modules/dashboards'
+import { CompetitionDashboardPage } from '@/modules/competitions/pages/CompetitionDashboardPage'
 import {
   OrganizationDashboardPage,
   OrganizationSettingsPage,
@@ -35,11 +35,11 @@ const ClubCompetitionsPage = lazy(() => import('@/modules/clubs/pages/ClubCompet
 const ClubMatchLineupManagerPage = lazy(() => import('@/modules/clubs/pages/ClubMatchLineupManagerPage'))
 const ClubTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
 const ClubTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
-const ClubTransferDetailPage = lazy(() => import('@/modules/transfers/pages/ClubTransferDetailPage'))
-const OrgTransfersPage = lazy(() => import('@/modules/transfers/pages/OrgTransfersListPage'))
-const OrgTransferCreatePage = lazy(() => import('@/modules/transfers/pages/OrgTransferCreatePage'))
-const OrgTransferDetailPage = lazy(() => import('@/modules/transfers/pages/OrgTransferDetailPage'))
-const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/OrgTransfersListPage'))
+const ClubTransferDetailPage = lazy(() => import('@/modules/transfers/pages/TransferDetailPage'))
+const OrgTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
+const OrgTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
+const OrgTransferDetailPage = lazy(() => import('@/modules/transfers/pages/TransferDetailPage'))
+const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
 const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
 const CompetitionAdminListPage = lazy(() => import('@/modules/competitions/pages/CompetitionAdminListPage').then(m => ({ default: m.CompetitionAdminListPage })))
 const CompetitionMatchesPage = lazy(() => import('@/modules/competitions/pages/CompetitionMatchesPage').then(m => ({ default: m.CompetitionMatchesPage })))
@@ -346,7 +346,7 @@ export function dashboardRouteElements() {
         path={clubRoutes.transfers}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransfersPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><ClubTransfersPage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -354,7 +354,7 @@ export function dashboardRouteElements() {
         path={clubRoutes.transferCreate}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransferCreatePage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><ClubTransferCreatePage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -362,7 +362,7 @@ export function dashboardRouteElements() {
         path={clubRoutes.transferDetail(':id')}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransferDetailPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><ClubTransferDetailPage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -370,7 +370,7 @@ export function dashboardRouteElements() {
         path={ROUTES.DASHBOARD_TRANSFERS}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransfersPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><OrgTransfersPage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -378,7 +378,7 @@ export function dashboardRouteElements() {
         path={ROUTES.DASHBOARD_TRANSFERS_CREATE}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransferCreatePage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><OrgTransferCreatePage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -386,7 +386,7 @@ export function dashboardRouteElements() {
         path={ROUTES.DASHBOARD_TRANSFER_DETAIL(':id')}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransferDetailPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><OrgTransferDetailPage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -394,7 +394,7 @@ export function dashboardRouteElements() {
         path={ROUTES.TRANSFERS}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><LegacyTransfersRedirect /></Suspense>
+            <Suspense fallback={<RouteFallback />}><LegacyTransfersRedirect scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
