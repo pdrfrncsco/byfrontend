@@ -7,11 +7,11 @@ import { organizationRoutes } from '@/modules/organizations/routes'
 import { clubRoutes } from '@/modules/clubs/routes'
 import { playerRoutes } from '@/modules/players/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
+import { transferRoutes } from '@/modules/transfers/routes'
 import { onboardingRoutes } from '@/modules/onboarding/routes'
 import { ROUTES } from '@/constants/routes'
 import {
   DashboardPageSelector,
-  ExecutiveDashboardPage,
 } from '@/modules/dashboards'
 import { CompetitionDashboardPage } from '@/modules/competitions/pages/CompetitionDashboardPage'
 import {
@@ -33,13 +33,9 @@ const ClubSponsorsPage = lazy(() => import('@/modules/clubs/pages/ClubSponsorsPa
 const ClubSquadPage = lazy(() => import('@/modules/clubs/pages/ClubSquadPage'))
 const ClubCompetitionsPage = lazy(() => import('@/modules/clubs/pages/ClubCompetitionsPage'))
 const ClubMatchLineupManagerPage = lazy(() => import('@/modules/clubs/pages/ClubMatchLineupManagerPage'))
-const ClubTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
-const ClubTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
-const ClubTransferDetailPage = lazy(() => import('@/modules/transfers/pages/TransferDetailPage'))
-const OrgTransfersPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
-const OrgTransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
-const OrgTransferDetailPage = lazy(() => import('@/modules/transfers/pages/TransferDetailPage'))
-const LegacyTransfersRedirect = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
+const TransfersListPage = lazy(() => import('@/modules/transfers/pages/TransfersListPage'))
+const TransferCreatePage = lazy(() => import('@/modules/transfers/pages/TransferCreatePage'))
+const TransferDetailPage = lazy(() => import('@/modules/transfers/pages/TransferDetailPage'))
 const ClubOnboardingPage = lazy(() => import('@/modules/clubs/pages/ClubOnboardingPage'))
 const CompetitionAdminListPage = lazy(() => import('@/modules/competitions/pages/CompetitionAdminListPage').then(m => ({ default: m.CompetitionAdminListPage })))
 const CompetitionMatchesPage = lazy(() => import('@/modules/competitions/pages/CompetitionMatchesPage').then(m => ({ default: m.CompetitionMatchesPage })))
@@ -127,7 +123,7 @@ export function dashboardRouteElements() {
       />
       <Route
         path={dashboardRoutes.executive}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><ExecutiveDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'executive']}><Navigate to={dashboardRoutes.root} replace /></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.competition}
@@ -346,7 +342,7 @@ export function dashboardRouteElements() {
         path={clubRoutes.transfers}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransfersPage scope="club" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransfersListPage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -354,7 +350,7 @@ export function dashboardRouteElements() {
         path={clubRoutes.transferCreate}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransferCreatePage scope="club" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransferCreatePage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -362,41 +358,37 @@ export function dashboardRouteElements() {
         path={clubRoutes.transferDetail(':id')}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><ClubTransferDetailPage scope="club" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransferDetailPage scope="club" /></Suspense>
           </ProtectedRoute>
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_TRANSFERS}
+        path={transferRoutes.list}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransfersPage scope="organization" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransfersListPage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_TRANSFERS_CREATE}
+        path={transferRoutes.create}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransferCreatePage scope="organization" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransferCreatePage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
       <Route
-        path={ROUTES.DASHBOARD_TRANSFER_DETAIL(':id')}
+        path={transferRoutes.detail(':id')}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><OrgTransferDetailPage scope="organization" /></Suspense>
+            <Suspense fallback={<RouteFallback />}><TransferDetailPage scope="organization" /></Suspense>
           </ProtectedRoute>
         }
       />
       <Route
-        path={ROUTES.TRANSFERS}
-        element={
-          <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><LegacyTransfersRedirect scope="organization" /></Suspense>
-          </ProtectedRoute>
-        }
+        path={transferRoutes.legacy}
+        element={<ProtectedRoute><Navigate to={transferRoutes.list} replace /></ProtectedRoute>}
       />
       <Route
         path={ROUTES.CLUB_ONBOARDING}
