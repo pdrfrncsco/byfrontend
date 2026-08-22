@@ -1,6 +1,7 @@
 export { Navigation } from './Navigation'
 export type { PublicHeaderVariant } from './Navigation'
 export { PublicHeader } from './PublicHeader'
+export { ExplorePageShell, ExploreSection, SearchToolbar, ResultCount, EntityCard, EntityGrid } from './explore'
 export { HeroSection } from './HeroSection'
 export { TrustedBy } from './TrustedBy'
 export { FeaturesGrid } from './FeaturesGrid'
