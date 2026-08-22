@@ -5,13 +5,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
 import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { FormField } from '@/components/ui/form-field'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ROUTES } from '@/constants/routes'
 import { usePlayer, useUpdatePlayer } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
 import {
-  PlayerFormSkeleton,
   PlayerDocumentsSection,
   PlayerVideosSection,
   PlayerAchievementsSection,
@@ -94,7 +94,7 @@ export function PlayerSettingsPage() {
           <span>{t('players.settings.loading')}</span>
         </div>
         <Card variant="flat" padding="lg">
-          <PlayerFormSkeleton />
+          <PageSkeleton variant="detail" />
         </Card>
       </div>
     )

@@ -6,31 +6,23 @@ import { getActiveSidebarHref, resolveNavContext } from './sidebar-utils'
 import { SidebarEntityHeader } from './SidebarEntityHeader'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useTenant } from '@/app/providers/TenantProvider'
-
-interface SidebarLink {
-  label: string
-  href: string
-  icon: React.ReactNode
-  active?: boolean
-  disabled?: boolean
-  count?: number
-}
+import type { NavIcon, NavItem } from '@/types/navigation'
 
 interface SidebarSection {
   title?: string
-  links: SidebarLink[]
+  links: NavItem[]
 }
 
 interface DashboardSidebarProps {
   logo: string | null
   dashboardType: string
-  sidebarLinks: SidebarLink[]
+  sidebarLinks: NavItem[]
   sidebarSections?: SidebarSection[]
   subLabel: string
   onLogout: () => void
 }
 
-function renderIcon(icon: React.ReactNode) {
+function renderIcon(icon: NavIcon) {
   if (React.isValidElement(icon)) {
     return icon
   }
@@ -146,7 +138,7 @@ export function DashboardSidebar({
       </nav>
 
       <div className="mt-auto space-y-1 border-t pt-lg" style={{ borderColor: 'var(--dashboard-border)' }}>
-        <Link
+        {/* <Link
           to="/settings"
           className="dashboard-muted dashboard-soft-hover flex items-center gap-md rounded-lg p-md transition-all hover:text-[var(--dashboard-strong)]"
         >
@@ -159,7 +151,7 @@ export function DashboardSidebar({
         >
           <HelpCircle className="w-5 h-5" />
           <span className="font-title-md text-sm">{t('dashboard.sidebar.support')}</span>
-        </button>
+        </button> */}
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-md p-md rounded-lg text-error hover:bg-error-container/10 transition-all text-left"

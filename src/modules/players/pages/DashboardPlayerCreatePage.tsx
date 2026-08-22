@@ -12,6 +12,7 @@ import { playerCreateSchema, type PlayerCreateFormData } from '../schemas'
 import { ALL_POSITIONS } from '../constants'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { playerRoutes } from '../routes'
+import { getPlayerSidebarLinks } from '../constants/navigation'
 
 export function DashboardPlayerCreatePage() {
   const { t } = useTranslation()
@@ -92,12 +93,7 @@ export function DashboardPlayerCreatePage() {
     reset()
   }
 
-  const sidebarLinks = [
-    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
-    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
-    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
-    { label: t('players.dashboard.sidebar.publicProfile'), href: ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getPlayerSidebarLinks()
 
   return (
     <DashboardLayout

@@ -6,18 +6,11 @@ import { getActiveSidebarHref, resolveNavContext } from './sidebar-utils'
 import { SidebarEntityHeader } from './SidebarEntityHeader'
 import { useAuth } from '@/app/providers/AuthProvider'
 import { useTenant } from '@/app/providers/TenantProvider'
-
-interface SidebarLink {
-  label: string
-  href: string
-  icon: React.ReactNode
-  active?: boolean
-  disabled?: boolean
-}
+import type { NavIcon, NavItem } from '@/types/navigation'
 
 interface SidebarSection {
   title?: string
-  links: SidebarLink[]
+  links: NavItem[]
 }
 
 interface DashboardMobileMenuProps {
@@ -25,13 +18,13 @@ interface DashboardMobileMenuProps {
   onClose: () => void
   logo: string | null
   dashboardType: string
-  sidebarLinks: SidebarLink[]
+  sidebarLinks: NavItem[]
   sidebarSections?: SidebarSection[]
   subLabel: string
   onLogout: () => void
 }
 
-function renderIcon(icon: React.ReactNode) {
+function renderIcon(icon: NavIcon) {
   if (React.isValidElement(icon)) {
     return icon
   }

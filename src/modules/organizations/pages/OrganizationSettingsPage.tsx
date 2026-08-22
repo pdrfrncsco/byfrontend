@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Card, Button } from '@/components/ui'
 import { useOrganizationMe, useUpdateOrganization, useUploadLogo, useUploadBanner, useOnboardingStatus } from '../hooks'
-import { OrganizationSettingsSkeleton, OrganizationSettingsForm } from '../components'
+import { OrganizationSettingsForm } from '../components'
+import { PageSkeleton } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { organizationRoutes } from '../routes'
 import { getOrganizationSidebarSections } from '../constants/navigation'
@@ -25,7 +26,7 @@ export function OrganizationSettingsPage() {
         dashboardType="organization"
         sidebarSections={sidebarSections}
       >
-        <OrganizationSettingsSkeleton />
+        <PageSkeleton variant="detail" />
       </DashboardLayout>
     )
   }

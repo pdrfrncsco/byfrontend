@@ -4,7 +4,7 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Button } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
-import { ClubDetailSkeleton } from '@/modules/clubs/components/ClubSkeleton'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useUpdateClub, useUploadClubLogo } from '@/modules/clubs/hooks/useClubs'
 import { ClubSettingsForm } from '../components'
@@ -25,7 +25,7 @@ export default function ClubSettingsPage() {
         dashboardType="club"
         sidebarLinks={sidebarLinks}
       >
-        <ClubDetailSkeleton />
+        <PageSkeleton variant="detail" />
       </DashboardLayout>
     )
   }

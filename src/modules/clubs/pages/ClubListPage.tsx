@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { ClubCard } from '@/modules/clubs/components/ClubCard'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
-import { ClubListSkeleton } from '@/modules/clubs/components/ClubSkeleton'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Input } from '@/components/ui/input'
@@ -127,7 +127,7 @@ export default function ClubListPage() {
         </Card>
 
         {isLoading ? (
-          <ClubListSkeleton />
+          <PageSkeleton variant="list" />
         ) : clubs.length === 0 ? (
           <EmptyState
             title="Nenhum clube encontrado"

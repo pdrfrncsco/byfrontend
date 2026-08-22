@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { Building2, Filter, Search } from 'lucide-react'
-import { Button, Card, CardContent, Input, NativeSelect } from '@/components/ui'
+import { Button, Card, CardContent, Input, NativeSelect, PageSkeleton } from '@/components/ui'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import { usePublicOrganizations } from '../hooks'
-import {
-  OrganizationCard,
-  OrganizationListSkeleton,
-} from '../components'
+import { OrganizationCard } from '../components'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 
 export function OrganizationListPage() {
@@ -101,7 +98,7 @@ export function OrganizationListPage() {
           </CardContent>
         </Card>
 
-        {isLoading && <OrganizationListSkeleton />}
+        {isLoading && <PageSkeleton variant="list" />}
 
         {isError && (
           <div className="py-12">

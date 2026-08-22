@@ -24,6 +24,8 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  KpiCard,
+  PageSkeleton,
 } from '@/components/ui'
 import {
   usePublicOrganizationDetail,
@@ -33,9 +35,7 @@ import {
   useUnsubscribeOrganization,
 } from '../hooks'
 import {
-  OrganizationDetailSkeleton,
   OrganizationHistoryTable,
-  KpiCard,
 } from '../components'
 import { organizationRoutes } from '../routes'
 import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
@@ -60,7 +60,7 @@ export function OrganizationDetailPage() {
   const historyCount = useMemo(() => history?.length ?? 0, [history])
 
   if (isLoadingOrg) {
-    return <OrganizationDetailSkeleton />
+    return <PageSkeleton variant="detail" />
   }
 
   if (isErrorOrg || !organization) {

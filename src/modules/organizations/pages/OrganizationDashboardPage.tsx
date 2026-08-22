@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
   DataTable,
+  KpiCard,
   Skeleton,
 } from '@/components/ui'
 import {
@@ -22,7 +23,6 @@ import {
   useLaunchOrganization,
   useOnboardingStatus,
 } from '../hooks'
-import { KpiCard } from '../components'
 import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, PlusCircle, Rocket, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'

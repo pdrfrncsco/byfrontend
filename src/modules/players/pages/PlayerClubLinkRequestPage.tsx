@@ -22,6 +22,7 @@ import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useMyRegistrationRequests, usePlayerMe, useSubmitRegistrationRequest } from '../hooks'
 import { playerLinkRequestSchema, type PlayerLinkRequestFormData } from '../schemas'
 import { playerRoutes } from '../routes'
+import { getPlayerSidebarLinks } from '../constants/navigation'
 import type { PlayerRegistrationRequest } from '../types'
 
 function RequestStatusBadge({ status }: { status: string }) {
@@ -66,16 +67,7 @@ export function PlayerClubLinkRequestPage() {
 
   const selectedClubId = watch('club_id')
 
-  const sidebarLinks = [
-    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
-    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" />, active: true },
-    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
-    {
-      label: t('players.dashboard.sidebar.publicProfile'),
-      href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS,
-      icon: <ExternalLink className="h-4 w-4" />,
-    },
-  ]
+  const sidebarLinks = getPlayerSidebarLinks(player?.slug)
 
   const filteredClubs = useMemo(() => {
     const clubs = clubsData?.results ?? []

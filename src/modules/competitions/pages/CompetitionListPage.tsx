@@ -11,9 +11,9 @@ import {
   FormField,
   Input,
   NativeSelect,
+  PageSkeleton,
 } from '@/components/ui'
 import { CompetitionCard } from '../components/CompetitionCard'
-import { CompetitionSkeleton } from '../components/CompetitionSkeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
 import type { CompetitionStatus, CompetitionType } from '../types'
@@ -166,7 +166,7 @@ export function CompetitionListPage() {
         </Card>
 
         {isLoading ? (
-          <CompetitionSkeleton />
+          <PageSkeleton variant="list" />
         ) : isError ? (
           <Card variant="flat" padding="lg" className="border border-error/20 bg-error/5">
             <div className="text-center">

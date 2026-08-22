@@ -26,6 +26,7 @@ import {
 } from '../components'
 import { usePlayerMe } from '../hooks'
 import { playerRoutes } from '../routes'
+import { getPlayerSidebarLinks } from '../constants/navigation'
 import { POSITION_COLOR } from '../constants'
 
 export function PlayerDashboardPage() {
@@ -33,12 +34,7 @@ export function PlayerDashboardPage() {
   const navigate = useNavigate()
   const { data: player, isLoading, isError } = usePlayerMe()
 
-  const sidebarLinks = [
-    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" />, active: true },
-    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
-    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" /> },
-    { label: t('players.dashboard.sidebar.publicProfile'), href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS, icon: <ExternalLink className="h-4 w-4" /> },
-  ]
+  const sidebarLinks = getPlayerSidebarLinks(player?.slug)
 
   if (isLoading) {
     return (

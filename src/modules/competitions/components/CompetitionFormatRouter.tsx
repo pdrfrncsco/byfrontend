@@ -1,6 +1,6 @@
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { LeagueStandingsTable, TournamentGroupsView, CupBracket } from './formats'
-import { CompetitionSkeleton } from './CompetitionSkeleton'
+import { PageSkeleton } from '@/components/ui'
 
 interface Props {
   competitionId: string
@@ -10,7 +10,7 @@ export function CompetitionStandingsRouter({ competitionId }: Props) {
   const { isLeague, isTournament, isCup, isLoading } = useCompetitionConfig(competitionId)
 
   if (isLoading) {
-    return <CompetitionSkeleton />
+    return <PageSkeleton variant="card" />
   }
 
   if (isLeague) {
@@ -23,5 +23,5 @@ export function CompetitionStandingsRouter({ competitionId }: Props) {
     return <CupBracket competitionId={competitionId} />
   }
 
-  return <CompetitionSkeleton />
+  return <PageSkeleton variant="card" />
 }

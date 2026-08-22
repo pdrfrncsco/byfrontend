@@ -6,18 +6,11 @@ import { useTenant } from '@/app/providers/TenantProvider'
 import { DashboardSidebar } from './components/DashboardSidebar'
 import { DashboardHeader } from './components/DashboardHeader'
 import { DashboardMobileMenu } from './components/DashboardMobileMenu'
-
-interface SidebarLink {
-  label: string
-  href: string
-  icon: React.ReactNode
-  active?: boolean
-  disabled?: boolean
-}
+import type { NavItem } from '@/types/navigation'
 
 interface SidebarSection {
   title?: string
-  links: SidebarLink[]
+  links: NavItem[]
 }
 
 interface DashboardLayoutProps {
@@ -25,7 +18,7 @@ interface DashboardLayoutProps {
   title: string
   subtitle?: string
   dashboardType: 'federation' | 'executive' | 'organization' | 'league' | 'club' | 'competition' | 'player'
-  sidebarLinks?: SidebarLink[]
+  sidebarLinks?: NavItem[]
   sidebarSections?: SidebarSection[]
   headerActions?: React.ReactNode
 }

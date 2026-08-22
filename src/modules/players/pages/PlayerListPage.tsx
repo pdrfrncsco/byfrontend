@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import { ErrorState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { PublicListHero } from '@/modules/shared/components/PublicListHero'
-import { PlayerCard, PlayerListSkeleton } from '../components'
+import { PlayerCard } from '../components'
 import { EmptyState } from '@/components/ui/empty-state'
 import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
@@ -223,7 +224,7 @@ export function PlayerListPage() {
         </div>
 
         {isLoading ? (
-          <PlayerListSkeleton />
+          <PageSkeleton variant="list" />
         ) : players.length === 0 ? (
           <EmptyState
             icon={User}

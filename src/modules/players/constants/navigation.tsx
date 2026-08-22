@@ -1,6 +1,5 @@
 import { LayoutDashboard, Handshake, Settings, ExternalLink } from 'lucide-react'
 import { playerRoutes } from '../routes'
-import { ROUTES } from '@/constants/routes'
 
 export function getPlayerSidebarLinks(playerSlug?: string) {
   return [

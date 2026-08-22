@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-states'
-import { ClubDetailSkeleton } from '@/modules/clubs/components/ClubSkeleton'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
 import {
@@ -89,7 +89,7 @@ export default function ClubDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <ClubDetailSkeleton />
+          <PageSkeleton variant="detail" />
         </div>
       </div>
     )

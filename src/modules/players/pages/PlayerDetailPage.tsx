@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NotFound, ServerError } from '@/components/ui/error-states'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import {
   PlayerAchievementsTab,
   PlayerCareerTimeline,
-  PlayerDetailSkeleton,
   PlayerDocumentsTab,
   PlayerStatisticsTab,
   PlayerVideosTab,
@@ -53,7 +53,7 @@ export function PlayerDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <PlayerDetailSkeleton />
+          <PageSkeleton variant="detail" />
         </div>
       </div>
     )

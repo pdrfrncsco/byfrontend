@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, Handshake, LayoutDashboard, Save, Settings } f
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { FormField } from '@/components/ui/form-field'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ROUTES } from '@/constants/routes'
@@ -15,7 +16,6 @@ import {
   PlayerAvatarUpload,
   PlayerDocumentsSection,
   PlayerIdentityDocumentsSection,
-  PlayerFormSkeleton,
   PlayerVideosSection,
   PlayerContactSettingsPanel,
   PlayerPrivacySettingsPanel,
@@ -24,6 +24,7 @@ import { usePlayerMe, useUpdatePlayerMe } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 import { playerRoutes } from '../routes'
+import { getPlayerSidebarLinks } from '../constants/navigation'
 
 export function PlayerDashboardSettingsPage() {
   const { t } = useTranslation()
@@ -31,16 +32,7 @@ export function PlayerDashboardSettingsPage() {
   const { data: player, isLoading, isError } = usePlayerMe()
   const updateMutation = useUpdatePlayerMe()
 
-  const sidebarLinks = [
-    { label: t('players.dashboard.sidebar.general'), href: playerRoutes.dashboard, icon: <LayoutDashboard className="h-4 w-4" /> },
-    { label: t('players.linkRequest.sidebar'), href: playerRoutes.linkClub, icon: <Handshake className="h-4 w-4" /> },
-    { label: t('players.dashboard.sidebar.settings'), href: playerRoutes.dashboardSettings, icon: <Settings className="h-4 w-4" />, active: true },
-    {
-      label: t('players.dashboard.sidebar.publicProfile'),
-      href: player ? playerRoutes.detail(player.slug) : ROUTES.PLAYERS,
-      icon: <ExternalLink className="h-4 w-4" />,
-    },
-  ]
+  const sidebarLinks = getPlayerSidebarLinks(player?.slug)
 
   const {
     register,
@@ -99,7 +91,7 @@ export function PlayerDashboardSettingsPage() {
         dashboardType="player"
         sidebarLinks={sidebarLinks}
       >
-        <PlayerFormSkeleton />
+        <PageSkeleton variant="detail" />
       </DashboardLayout>
     )
   }
