@@ -53,7 +53,7 @@ function ExploreMenu({ pathname }: { pathname: string }) {
             {item.label}
           </Link>
         ))}
-        <Link to={ROUTES.COMPETITIONS} className="mt-sm block border-t border-outline-variant px-md pt-sm text-xs font-semibold text-primary hover:underline">
+        <Link to={ROUTES.PUBLIC_EXPLORE} className="mt-sm block border-t border-outline-variant px-md pt-sm text-xs font-semibold text-primary hover:underline">
           Ver tudo em destaque →
         </Link>
       </div>

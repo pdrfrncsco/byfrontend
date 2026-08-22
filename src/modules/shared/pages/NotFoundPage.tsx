@@ -1,4 +1,4 @@
-import { Navigation, Footer } from '@/modules/shared/components'
+import { PublicHeader, Footer } from '@/modules/shared/components'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants'
 import { useSeo } from '@/hooks/useSeo'
@@ -7,7 +7,7 @@ export function NotFoundPage() {
   useSeo({ title: 'Página não encontrada', noIndex: true })
   return (
     <div className="min-h-screen bg-background text-on-surface">
-      <Navigation variant="explore" />
+      <PublicHeader variant="explore" />
       <main className="flex min-h-[calc(100vh-80px)] items-center justify-center pt-16">
         <div className="text-center px-gutter">
           <h1 className="font-display-lg text-6xl md:text-8xl text-on-surface mb-lg uppercase tracking-tighter leading-none">

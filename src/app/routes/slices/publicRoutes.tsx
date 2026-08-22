@@ -1,7 +1,7 @@
 import { Navigate, Route } from 'react-router-dom'
 import { ROUTES } from '@/constants'
 import { PublicLayout } from '@/app/layouts'
-import { LandingPage } from '@/modules/shared/pages/LandingPage'
+import { LandingPage, ExplorePage } from '@/modules/shared/pages'
 import { LoginPage } from '@/modules/shared/pages/LoginPage'
 import { RegisterPage, RegisterProfilePage } from '@/modules/shared/pages'
 import { RegisterOrganizationPage } from '@/modules/shared/pages/RegisterOrganizationPage'
@@ -21,6 +21,14 @@ export function publicRouteElements() {
         element={
           <PublicLayout>
             <LandingPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path={ROUTES.PUBLIC_EXPLORE}
+        element={
+          <PublicLayout variant="explore">
+            <ExplorePage />
           </PublicLayout>
         }
       />

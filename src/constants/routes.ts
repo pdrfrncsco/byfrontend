@@ -5,6 +5,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
   SETTINGS: '/settings',
+  PUBLIC_EXPLORE: '/explore',
   ORGANIZATIONS: '/organizations',
   ORGANIZATION_DETAIL: (slug: string) => `/organizations/${slug}`,
   ONBOARDING: '/onboarding',

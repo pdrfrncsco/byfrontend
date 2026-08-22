@@ -46,6 +46,7 @@ export function Footer() {
           <div>
             <h4 className="font-title-md text-on-surface mb-md">Explorar</h4>
             <ul className="space-y-sm">
+              <li><Link to={ROUTES.PUBLIC_EXPLORE} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Ver tudo em destaque</Link></li>
               <li><Link to={ROUTES.COMPETITIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Competições</Link></li>
               <li><Link to={ROUTES.CLUBS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Clubes</Link></li>
               <li><Link to={ROUTES.ORGANIZATIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Organizações</Link></li>
