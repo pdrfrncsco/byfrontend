@@ -53,7 +53,7 @@ export function DashboardMobileMenu({
 
   if (!isOpen) return null
 
-  const navContext = resolveNavContext(location.pathname, tenant, user)
+  const navContext = resolveNavContext(location.pathname, tenant, user, dashboardType)
 
   return (
     <div className="dashboard-overlay fixed inset-0 z-50 flex justify-start backdrop-blur-sm md:hidden">

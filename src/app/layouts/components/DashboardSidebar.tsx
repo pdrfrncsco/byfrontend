@@ -47,7 +47,7 @@ export function DashboardSidebar({
   const { tenant } = useTenant()
   const activeHref = getActiveSidebarHref(location, sidebarLinks)
 
-  const navContext = resolveNavContext(location.pathname, tenant, user)
+  const navContext = resolveNavContext(location.pathname, tenant, user, dashboardType)
 
   return (
     <aside className="dashboard-sidebar-surface hidden h-screen w-64 sticky top-0 z-40 flex-col border-r p-md backdrop-blur-xl md:flex">

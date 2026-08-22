@@ -32,10 +32,14 @@ export function getActiveSidebarHref(location: SidebarLocationLike, links: Sideb
 export function resolveNavContext(
   pathname: string,
   tenant: TenantContextLike | null,
-  user: any
+  user: any,
+  dashboardType?: string,
 ): NavContext {
-  // Organizações
-  if (pathname.includes('/org/') || pathname.includes('/organization')) {
+  const normalizedType = dashboardType === 'federation' || dashboardType === 'league'
+    ? 'organization'
+    : dashboardType
+
+  if (normalizedType === 'organization' || pathname.includes('/dashboard/organization') || pathname.includes('/org/') || pathname.includes('/organization')) {
     return {
       type: 'organization',
       entityId: tenant?.id || '',
@@ -45,8 +49,7 @@ export function resolveNavContext(
     }
   }
 
-  // Clubes
-  if (pathname.includes('/club/')) {
+  if (normalizedType === 'club' || pathname.includes('/dashboard/club') || pathname.includes('/club/')) {
     return {
       type: 'club',
       entityId: tenant?.id || '',
@@ -56,8 +59,7 @@ export function resolveNavContext(
     }
   }
 
-  // Competitions
-  if (pathname.includes('/competition/')) {
+  if (normalizedType === 'competition' || pathname.includes('/dashboard/competition') || pathname.includes('/competition/')) {
     return {
       type: 'competition',
       entityId: tenant?.id || '',
@@ -67,8 +69,7 @@ export function resolveNavContext(
     }
   }
 
-  // Jogadores
-  if (pathname.includes('/player/') || user?.role === 'player') {
+  if (normalizedType === 'player' || pathname.includes('/dashboard/player') || pathname.includes('/player/')) {
     return {
       type: 'player',
       entityId: user?.playerId || '',

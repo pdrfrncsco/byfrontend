@@ -66,7 +66,7 @@ export function DashboardHeader({
         </div>
 
         {/* Unified Global Search */}
-        <GlobalSearch />
+        <GlobalSearch value={searchQuery} onChange={setSearchQuery} />
 
         <div className="h-8 w-px" style={{ backgroundColor: 'var(--dashboard-border)' }}></div>
 
