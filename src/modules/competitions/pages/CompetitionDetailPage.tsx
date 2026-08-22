@@ -32,6 +32,10 @@ function isUUID(str: string): boolean {
   return uuidRegex.test(str)
 }
 
+function getErrorMessage(error: unknown) {
+  return (error as { message?: string } | null)?.message ?? 'Verifique a ligação com a API.'
+}
+
 // ─── Matches Tab ──────────────────────────────────────────────────────────────
 
 interface MatchesTabProps {
@@ -59,7 +63,7 @@ function MatchesTab({ competitionId, isAdmin }: MatchesTabProps) {
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="font-medium text-on-surface">Erro ao carregar calendário de jogos.</p>
-        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <p className="text-sm opacity-70">{getErrorMessage(error)}</p>
         <div className="mt-md">
           <Button variant="secondary" size="sm" onClick={() => refetch()}>
             Tentar novamente
@@ -159,7 +163,7 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="font-medium text-on-surface">Erro ao carregar regulamentos.</p>
-        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <p className="text-sm opacity-70">{getErrorMessage(error)}</p>
         <div className="mt-md">
           <Button variant="secondary" size="sm" onClick={() => refetch()}>
             Tentar novamente
@@ -224,7 +228,7 @@ function StatsTab({ competitionId }: { competitionId: string }) {
       <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="font-medium text-on-surface">Erro ao carregar estatísticas.</p>
-        <p className="text-sm opacity-70">{(error as any)?.message ?? 'Verifique a ligação com a API.'}</p>
+        <p className="text-sm opacity-70">{getErrorMessage(error)}</p>
         <div className="mt-md">
           <Button variant="secondary" size="sm" onClick={() => refetch()}>
             Tentar novamente
@@ -279,12 +283,17 @@ export function CompetitionDetailPage() {
 
   if (errorComp) {
     return (
-      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
-        <AlertCircle className="h-12 w-12 text-error opacity-70" />
-        <p className="font-medium text-on-surface">Competição não encontrada.</p>
-        <Link to={competitionRoutes.list}>
-          <Button variant="secondary" size="sm">Voltar às Competições</Button>
-        </Link>
+      <div className="mx-auto w-full max-w-container-max px-gutter py-xl md:py-2xl">
+        <nav aria-label="Breadcrumb" className="mb-2xl flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface">Detalhe</span>
+        </nav>
+        <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
+          <AlertCircle className="h-12 w-12 text-error opacity-70" />
+          <p className="font-medium text-on-surface">Competição não encontrada.</p>
+          <Link to={competitionRoutes.list}><Button variant="secondary" size="sm">Voltar às Competições</Button></Link>
+        </div>
       </div>
     )
   }
@@ -296,6 +305,13 @@ export function CompetitionDetailPage() {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/15 to-pink-600/15 blur-3xl" />
 
       {/* Hero Header */}
+      <div className="mx-auto max-w-container-max px-gutter pt-xl">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="truncate text-on-surface">{loadingComp ? 'A carregar...' : competition?.name ?? 'Detalhe'}</span>
+        </nav>
+      </div>
       {loadingComp ? (
         <CompetitionHeaderSkeleton />
       ) : competition ? (
@@ -323,7 +339,7 @@ export function CompetitionDetailPage() {
       )}
 
       {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl relative z-10">
+      <main aria-label="Conteúdo da competição" className="mx-auto max-w-6xl px-md py-xl sm:px-xl relative z-10">
         <Tabs defaultValue="standings" className="space-y-lg">
           <TabsList className="p-1 bg-surface-container rounded-full backdrop-blur flex-wrap h-auto gap-xs">
             <TabsTrigger value="standings" id="comp-tab-standings" className="rounded-full">
@@ -377,7 +393,7 @@ export function CompetitionDetailPage() {
             <RegulationsTab competitionId={competitionId} />
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
     </div>
   )
 }

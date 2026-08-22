@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Building2, ExternalLink, FileText, MapPin, Trophy, Users } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -40,6 +40,16 @@ function DetailStat({ label, value }: { label: string; value: string | number })
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">{label}</p>
       <p className="mt-1 text-lg font-semibold text-on-surface">{value}</p>
     </div>
+  )
+}
+
+function ClubBreadcrumb({ current = 'Detalhe' }: { current?: string }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-xl flex items-center gap-xs text-sm text-on-surface-variant">
+      <Link to="/clubs" className="hover:text-primary">Clubes</Link>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="truncate text-on-surface">{current}</span>
+    </nav>
   )
 }
 
@@ -89,6 +99,7 @@ export default function ClubDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ClubBreadcrumb current="A carregar..." />
           <PageSkeleton variant="detail" />
         </div>
       </div>
@@ -100,6 +111,7 @@ export default function ClubDetailPage() {
       return (
         <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
           <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <ClubBreadcrumb />
             <PermissionDenied onAction={() => navigate('/clubs')} />
           </div>
         </div>
@@ -110,6 +122,7 @@ export default function ClubDetailPage() {
       return (
         <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
           <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <ClubBreadcrumb />
             <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
           </div>
         </div>
@@ -120,6 +133,7 @@ export default function ClubDetailPage() {
       return (
         <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
           <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+            <ClubBreadcrumb />
             <ServerError onRetry={() => clubQuery.refetch()} />
           </div>
         </div>
@@ -129,6 +143,7 @@ export default function ClubDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ClubBreadcrumb />
           <ServerError onRetry={() => clubQuery.refetch()} />
         </div>
       </div>
@@ -139,6 +154,7 @@ export default function ClubDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <ClubBreadcrumb />
           <EmptyState
             title="Clube não encontrado"
             description="Não foi possível encontrar informação para este clube."
@@ -158,6 +174,7 @@ export default function ClubDetailPage() {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+        <ClubBreadcrumb current={club.name} />
         <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
           <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-center">
             <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-high text-3xl font-bold text-primary shadow-lg">
@@ -210,10 +227,10 @@ export default function ClubDetailPage() {
 
         {kpisQuery.data && <ClubKpisCard kpis={kpisQuery.data} />}
 
-        <div className="grid gap-lg lg:grid-cols-[1.3fr_0.7fr]">
+        <section aria-labelledby="club-overview-title" className="grid gap-lg lg:grid-cols-[1.3fr_0.7fr]">
           <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
             <CardHeader>
-              <CardTitle>Visão geral</CardTitle>
+              <CardTitle id="club-overview-title">Visão geral</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-md sm:grid-cols-2">
               <DetailStat label="Fundação" value={club.founded_year || 'N/A'} />
@@ -236,9 +253,10 @@ export default function ClubDetailPage() {
               <DetailStat label="Cidade" value={club.city || 'N/A'} />
             </CardContent>
           </Card>
-        </div>
+        </section>
 
-        <Tabs defaultValue="squad" className="space-y-lg">
+        <section aria-label="Informação pública do clube">
+          <Tabs defaultValue="squad" className="space-y-lg">
           <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
             <TabsTrigger 
               value="competitions" 
@@ -422,7 +440,8 @@ export default function ClubDetailPage() {
               </div>
             )}
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </section>
       </div>
     </div>
   )
