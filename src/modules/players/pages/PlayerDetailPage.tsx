@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Activity, ArrowLeft, Calendar, MapPin, Ruler, Star, Target, Trophy, User, Weight } from 'lucide-react'
+import { Activity, Calendar, MapPin, Ruler, Star, Target, Trophy, User, Weight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -43,6 +43,16 @@ function DetailStat({
   )
 }
 
+function PlayerBreadcrumb({ current = 'Detalhe' }: { current?: string }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-xl flex items-center gap-xs text-sm text-on-surface-variant">
+      <Link to={playerRoutes.list} className="hover:text-primary">Jogadores</Link>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="truncate text-on-surface">{current}</span>
+    </nav>
+  )
+}
+
 export function PlayerDetailPage() {
   const { t } = useTranslation()
   const { slug = '' } = useParams<{ slug: string }>()
@@ -53,6 +63,7 @@ export function PlayerDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <PlayerBreadcrumb current="A carregar..." />
           <PageSkeleton variant="detail" />
         </div>
       </div>
@@ -63,6 +74,7 @@ export function PlayerDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <PlayerBreadcrumb />
           <ServerError onRetry={() => refetch()} />
         </div>
       </div>
@@ -73,6 +85,7 @@ export function PlayerDetailPage() {
     return (
       <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
         <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+          <PlayerBreadcrumb />
           <NotFound resourceName="jogador" onAction={() => navigate(playerRoutes.list)} />
         </div>
       </div>
@@ -90,14 +103,7 @@ export function PlayerDetailPage() {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-        <Link
-          to={playerRoutes.list}
-          className="inline-flex items-center gap-sm text-sm text-on-surface-variant transition-colors hover:text-primary"
-          id="player-back-link"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {t('players.detail.back')}
-        </Link>
+        <PlayerBreadcrumb current={player.full_name} />
 
         <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
           <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-start">
@@ -203,14 +209,15 @@ export function PlayerDetailPage() {
           </div>
         </section>
 
-        <div className="grid gap-lg sm:grid-cols-2 xl:grid-cols-4">
+        <section aria-label="Resumo estatístico do jogador" className="grid gap-lg sm:grid-cols-2 xl:grid-cols-4">
           <DetailStat icon={Activity} label={t('players.detail.stats.matches')} value={player.total_matches} />
           <DetailStat icon={Trophy} label={t('players.detail.stats.goals')} value={player.total_goals} color="#f59e0b" />
           <DetailStat icon={Target} label={t('players.detail.stats.assists')} value={player.total_assists} color="#10b981" />
           <DetailStat icon={User} label={t('players.detail.stats.position')} value={player.position_label} color={positionColor} />
-        </div>
+        </section>
 
-        <Tabs defaultValue="career" className="space-y-lg">
+        <main aria-label="Conteúdo público do jogador">
+          <Tabs defaultValue="career" className="space-y-lg">
           <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
             <TabsTrigger 
               value="career" 
@@ -285,7 +292,8 @@ export function PlayerDetailPage() {
           >
             <PlayerAchievementsTab slug={slug} fallbackAchievements={player.achievements ?? []} />
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </main>
       </div>
     </div>
   )

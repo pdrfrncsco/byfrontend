@@ -41,6 +41,16 @@ import { organizationRoutes } from '../routes'
 import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
 import { ErrorState } from '@/components/ui/empty-state'
 
+function OrganizationBreadcrumb({ current = 'Detalhe' }: { current?: string }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-xl flex items-center gap-xs text-sm text-on-surface-variant">
+      <Link to={organizationRoutes.list} className="hover:text-primary">Organizações</Link>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" className="truncate text-on-surface">{current}</span>
+    </nav>
+  )
+}
+
 export function OrganizationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
 
@@ -60,13 +70,19 @@ export function OrganizationDetailPage() {
   const historyCount = useMemo(() => history?.length ?? 0, [history])
 
   if (isLoadingOrg) {
-    return <PageSkeleton variant="detail" />
+    return (
+      <div className="mx-auto w-full max-w-container-max px-gutter py-xl md:py-2xl">
+        <OrganizationBreadcrumb current="A carregar..." />
+        <PageSkeleton variant="detail" />
+      </div>
+    )
   }
 
   if (isErrorOrg || !organization) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-lg">
-      <ErrorState
+      <div className="mx-auto flex min-h-[60vh] w-full max-w-container-max flex-col justify-center px-gutter py-xl">
+        <OrganizationBreadcrumb />
+        <ErrorState
           message="Não foi possível obter os detalhes desta organização. Verifique se o endereço está correto."
           onRetry={refetchOrg}
         />
@@ -104,6 +120,7 @@ export function OrganizationDetailPage() {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
+        <OrganizationBreadcrumb current={organization.name} />
         <DetailHeroCard
           eyebrow="Organização pública"
           title={organization.name}
@@ -160,7 +177,8 @@ export function OrganizationDetailPage() {
           }
         />
 
-        <Tabs defaultValue="overview" className="space-y-lg">
+        <main aria-label="Conteúdo da organização">
+          <Tabs defaultValue="overview" className="space-y-lg">
           <TabsList className="h-auto rounded-full p-sm bg-surface-container border border-outline-variant/30">
             <TabsTrigger 
               value="overview" 
@@ -300,7 +318,8 @@ export function OrganizationDetailPage() {
               </Card>
             )}
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        </main>
       </div>
     </div>
   )
