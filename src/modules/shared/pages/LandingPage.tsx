@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Navigation, HeroSection, TrustedBy, FeaturesGrid, Footer } from '@/modules/shared/components'
+import { HeroSection, TrustedBy, FeaturesGrid } from '@/modules/shared/components'
 import { useSeo } from '@/hooks/useSeo'
 
 const HowItWorks = lazy(() =>
@@ -54,11 +54,6 @@ export function LandingPage() {
     path: '/',
   })
 
-  const handleNavClick = (path: string) => {
-    const element = document.querySelector(path)
-    element?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   const handleGetStarted = () => {
     navigate('/register')
   }
@@ -78,9 +73,6 @@ export function LandingPage() {
       >
         {t('landing.skipToContent', 'Saltar para o conteúdo')}
       </a>
-
-      {/* Navigation */}
-      <Navigation onNavClick={handleNavClick} />
 
       {/* Main Content */}
       <main>
@@ -131,9 +123,6 @@ export function LandingPage() {
           </section>
         </Suspense>
       </main>
-
-      {/* Footer */}
-      <Footer />
 
       {/* Demo Modal */}
       {showDemoModal && (

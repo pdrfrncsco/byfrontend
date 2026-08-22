@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+import { ROUTES } from '@/constants'
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -8,14 +10,14 @@ export function Footer() {
     <footer className="bg-surface-container-low border-t border-outline-variant py-xl">
       <div className="max-w-container-max mx-auto px-gutter">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+        <div className="grid grid-cols-1 gap-lg mb-xl md:grid-cols-5">
           {/* Brand */}
           <div>
             <span className="font-display-lg text-headline-lg-mobile text-primary tracking-widest">BOLAYETU</span>
             <p className="font-body-md text-on-surface-variant mt-md">
               Ecossistema unificado para o futebol africano com tecnologia de elite.
             </p>
-            <div className="flex gap-sm mt-lg">
+            {/* <div className="flex gap-sm mt-lg">
               <a
                 href="#"
                 aria-label={t('footer.social.github', 'GitHub')}
@@ -37,7 +39,18 @@ export function Footer() {
               >
                 <span className="material-symbols-outlined" aria-hidden="true">language</span>
               </a>
-            </div>
+            </div> */}
+          </div>
+
+          {/* Explorar */}
+          <div>
+            <h4 className="font-title-md text-on-surface mb-md">Explorar</h4>
+            <ul className="space-y-sm">
+              <li><Link to={ROUTES.COMPETITIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Competições</Link></li>
+              <li><Link to={ROUTES.CLUBS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Clubes</Link></li>
+              <li><Link to={ROUTES.ORGANIZATIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Organizações</Link></li>
+              <li><Link to={ROUTES.PLAYERS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Jogadores</Link></li>
+            </ul>
           </div>
 
           {/* Product */}
@@ -45,22 +58,22 @@ export function Footer() {
             <h4 className="font-title-md text-on-surface mb-md">{t('footer.product')}</h4>
             <ul className="space-y-sm">
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
+                <a href="#features" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
                   {t('footer.features')}
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
+                <a href="#pricing" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
                   {t('footer.pricing')}
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
+                <a href="#faq" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
                   {t('footer.docs')}
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
+                <a href="#how-it-works" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
                   {t('footer.roadmap')}
                 </a>
               </li>
@@ -77,9 +90,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
+                <Link to={ROUTES.NEWS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
                   {t('footer.blog')}
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">

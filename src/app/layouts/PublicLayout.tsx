@@ -1,15 +1,17 @@
 import { ReactNode } from 'react'
-import { Footer } from '@/modules/shared/components'
+import { Footer, Navigation, type PublicHeaderVariant } from '@/modules/shared/components'
 
 interface PublicLayoutProps {
   children: ReactNode
+  variant?: PublicHeaderVariant
 }
 
-export function PublicLayout({ children }: PublicLayoutProps) {
+export function PublicLayout({ children, variant = 'landing' }: PublicLayoutProps) {
   return (
     <div className="min-h-screen bg-background text-on-surface font-body-md">
-      {children}
-      <Footer />
+      <Navigation variant={variant} />
+      <main className={variant === 'landing' ? '' : 'pt-16'}>{children}</main>
+      {variant !== 'minimal' && <Footer />}
     </div>
   )
 }

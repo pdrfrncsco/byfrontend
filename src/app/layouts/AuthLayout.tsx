@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { Navigation } from '@/modules/shared/components'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -7,6 +8,7 @@ interface AuthLayoutProps {
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] text-[var(--text-main)] flex items-center justify-center transition-colors duration-300">
+      <Navigation variant="minimal" />
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="glow-bg">
           <div className="glow-circle glow-1" />

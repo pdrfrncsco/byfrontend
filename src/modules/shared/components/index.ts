@@ -1,4 +1,5 @@
 export { Navigation } from './Navigation'
+export type { PublicHeaderVariant } from './Navigation'
 export { HeroSection } from './HeroSection'
 export { TrustedBy } from './TrustedBy'
 export { FeaturesGrid } from './FeaturesGrid'

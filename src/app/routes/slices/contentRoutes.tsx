@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { Route } from 'react-router-dom'
 import { ProtectedRoute } from '../ProtectedRoute'
+import { PublicLayout } from '@/app/layouts'
 import { clubRoutes } from '@/modules/clubs/routes'
 import { competitionRoutes } from '@/modules/competitions/routes'
 import { organizationRoutes } from '@/modules/organizations/routes'
@@ -74,22 +75,22 @@ export function contentRouteElements() {
   return (
     <>
       {/* Organizations (public) */}
-      <Route path={organizationRoutes.list} element={<OrganizationListPage />} />
-      <Route path={organizationRoutes.detail(':slug')} element={<OrganizationDetailPage />} />
+      <Route path={organizationRoutes.list} element={<PublicLayout variant="explore"><OrganizationListPage /></PublicLayout>} />
+      <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><OrganizationDetailPage /></PublicLayout>} />
 
       {/* Clubs (public) */}
       <Route
         path={clubRoutes.list}
-        element={<Suspense fallback={<RouteFallback />}><ClubListPage /></Suspense>}
+        element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><ClubListPage /></Suspense></PublicLayout>}
       />
       <Route
         path={clubRoutes.detail(':id')}
-        element={<Suspense fallback={<RouteFallback />}><ClubDetailPage /></Suspense>}
+        element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><ClubDetailPage /></Suspense></PublicLayout>}
       />
 
       {/* Players */}
-      <Route path={playerRoutes.list} element={<PlayerListPage />} />
-      <Route path={playerRoutes.detail(':slug')} element={<PlayerDetailPage />} />
+      <Route path={playerRoutes.list} element={<PublicLayout variant="explore"><PlayerListPage /></PublicLayout>} />
+      <Route path={playerRoutes.detail(':slug')} element={<PublicLayout variant="explore"><PlayerDetailPage /></PublicLayout>} />
       <Route
         path={playerRoutes.create}
         element={
@@ -108,8 +109,8 @@ export function contentRouteElements() {
       />
 
       {/* Competitions (public browse) */}
-      <Route path={competitionRoutes.list} element={<CompetitionListPage />} />
-      <Route path={competitionRoutes.detail(':id')} element={<CompetitionDetailPage />} />
+      <Route path={competitionRoutes.list} element={<PublicLayout variant="explore"><CompetitionListPage /></PublicLayout>} />
+      <Route path={competitionRoutes.detail(':id')} element={<PublicLayout variant="explore"><CompetitionDetailPage /></PublicLayout>} />
       <Route
         path={competitionRoutes.rankings(':id')}
         element={<Suspense fallback={<RouteFallback />}><CompetitionRankingsPage /></Suspense>}
