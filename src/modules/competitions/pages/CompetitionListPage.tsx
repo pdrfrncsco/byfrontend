@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Trophy } from 'lucide-react'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useSeo } from '@/hooks/useSeo'
 import { useCompetitionsPaginated } from '../hooks/useCompetitions'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -11,6 +12,7 @@ import type { CompetitionStatus, CompetitionType } from '../types'
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
 export function CompetitionListPage() {
+  useSeo({ title: 'Competições', description: 'Explore campeonatos, taças e torneios de futebol em Angola e África.', path: '/competitions' })
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | CompetitionStatus>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | CompetitionType>('all')

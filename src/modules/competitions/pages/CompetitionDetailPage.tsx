@@ -25,6 +25,7 @@ import { MatchCard } from '../components/MatchCard'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { PlayerStatsTable } from '../components/PlayerStatsTable'
 import { competitionRoutes } from '../routes'
+import { useSeo } from '@/hooks/useSeo'
 
 // Helper function to detect UUID format
 function isUUID(str: string): boolean {
@@ -272,6 +273,11 @@ export function CompetitionDetailPage() {
   const shouldFetchByUuid = isUUID(competitionId)
   
   const { data: competition, isLoading: loadingComp, isError: errorComp } = useCompetition(competitionId)
+  useSeo({
+    title: competition?.name ? `${competition.name} — Competição` : 'Detalhe da competição',
+    description: competition?.name ? `Consulte classificação, jogos, estatísticas e regulamentos de ${competition.name}.` : 'Consulte os detalhes desta competição de futebol.',
+    path: `/competitions/${competitionId}`,
+  })
 
   // Redirect to slug if UUID was detected and competition data is loaded
   useMemo(() => {

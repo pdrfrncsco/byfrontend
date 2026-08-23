@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useSeo } from '@/hooks/useSeo'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Building2, ExternalLink, FileText, MapPin, Trophy, Users } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -62,6 +63,11 @@ export default function ClubDetailPage() {
   const shouldFetchByUuid = isUUID(clubSlug)
   
   const clubQuery = useClub(clubSlug)
+  useSeo({
+    title: clubQuery.data?.name ? `${clubQuery.data.name} — Clube` : 'Detalhe do clube',
+    description: clubQuery.data?.description || 'Consulte o perfil público, plantel e atividade deste clube.',
+    path: `/clubs/${clubSlug}`,
+  })
   const kpisQuery = useClubKpis(clubSlug)
   const squadQuery = useClubSquad(clubSlug)
   const staffQuery = useClubStaff(clubSlug)

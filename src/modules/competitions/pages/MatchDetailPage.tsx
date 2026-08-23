@@ -21,6 +21,7 @@ import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
+import { useSeo } from '@/hooks/useSeo'
 import type { Match } from '../types'
 import { MatchStatsPanel, MatchCountdown, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel, MatchEventCenter, MatchStatsWorkspace } from '../components'
 import type { ReactNode } from 'react'
@@ -165,6 +166,11 @@ export function MatchDetailPage() {
   // Data fetching (hooks must be called unconditionally to preserve hook order)
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: match, isLoading: loadingMatch } = useMatchDetail(competitionId, matchIdValue)
+  useSeo({
+    title: match ? `${match.home_club_name} vs ${match.away_club_name} — Partida` : 'Detalhe da partida',
+    description: 'Acompanhe o placar, eventos, escalações e estatísticas desta partida.',
+    path: `/competitions/${competitionId}/matches/${matchIdValue}`,
+  })
 
   // Live state for scoreboard
   const liveState = useMatchLive({

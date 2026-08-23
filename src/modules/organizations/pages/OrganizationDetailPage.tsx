@@ -40,6 +40,7 @@ import {
 import { organizationRoutes } from '../routes'
 import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
 import { ErrorState } from '@/components/ui/empty-state'
+import { useSeo } from '@/hooks/useSeo'
 
 function OrganizationBreadcrumb({ current = 'Detalhe' }: { current?: string }) {
   return (
@@ -60,6 +61,11 @@ export function OrganizationDetailPage() {
     isError: isErrorOrg,
     refetch: refetchOrg,
   } = usePublicOrganizationDetail(slug)
+  useSeo({
+    title: organization?.name ? `${organization.name} — Organização` : 'Detalhe da organização',
+    description: organization?.description || 'Consulte o perfil público, contactos e atividade desta organização.',
+    path: `/organizations/${slug ?? ''}`,
+  })
 
   const { data: kpis } = useOrganizationKpis(slug)
   const { data: history } = useOrganizationHistory(slug)

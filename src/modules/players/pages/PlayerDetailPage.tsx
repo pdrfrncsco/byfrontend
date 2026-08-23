@@ -15,6 +15,7 @@ import {
   PlayerVideosTab,
 } from '../components'
 import { usePlayer } from '../hooks'
+import { useSeo } from '@/hooks/useSeo'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
 import { playerRoutes } from '../routes'
 
@@ -58,6 +59,11 @@ export function PlayerDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { data: player, isLoading, isError, refetch } = usePlayer(slug)
+  useSeo({
+    title: player?.full_name ? `${player.full_name} — Jogador` : 'Perfil do jogador',
+    description: player?.bio || 'Consulte o perfil, carreira, desempenho e conquistas deste jogador.',
+    path: `/players/${slug}`,
+  })
 
   if (isLoading) {
     return (

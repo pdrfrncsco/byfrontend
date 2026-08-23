@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useSeo } from '@/hooks/useSeo'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
@@ -7,6 +8,7 @@ import { usePublicOrganizations } from '../hooks'
 import { OrganizationCard } from '../components'
 
 export function OrganizationListPage() {
+  useSeo({ title: 'Organizações', description: 'Conheça federações, associações, ligas e academias do ecossistema BolaYetu.', path: '/organizations' })
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const debouncedSearch = useDebounce(search, 300)

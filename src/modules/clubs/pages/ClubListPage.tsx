@@ -4,6 +4,7 @@ import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useSeo } from '@/hooks/useSeo'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Button } from '@/components/ui/button'
 import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
@@ -11,6 +12,7 @@ import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
 export default function ClubListPage() {
+  useSeo({ title: 'Clubes', description: 'Descubra clubes, plantéis e comunidades do futebol em Angola e África.', path: '/clubs' })
   const [search, setSearch] = useState('')
   const [organization, setOrganization] = useState('')
   const [page, setPage] = useState(1)

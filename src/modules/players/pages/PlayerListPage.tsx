@@ -6,6 +6,7 @@ import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { ErrorState, EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useSeo } from '@/hooks/useSeo'
 import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
 import { PlayerCard } from '../components'
 import { usePlayers } from '../hooks'
@@ -14,6 +15,7 @@ import type { Player, PlayerPosition } from '../types'
 
 export function PlayerListPage() {
   const { t } = useTranslation()
+  useSeo({ title: 'Jogadores', description: 'Descubra jogadores, talentos e perfis públicos do futebol em Angola e África.', path: '/players' })
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPosition, setSelectedPosition] = useState<PlayerPosition | ''>('')
   const [selectedNationality, setSelectedNationality] = useState('')

@@ -10,6 +10,7 @@ import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
 import { MatchCard } from '../components'
+import { useSeo } from '@/hooks/useSeo'
 import type { ReactNode } from 'react'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
@@ -48,6 +49,7 @@ export function MatchCenterPage() {
   const { isAdmin } = useCompetitionAccess()
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
+  useSeo({ title: 'Centro de Jogos', description: 'Acompanhe jogos, jornadas e resultados desta competição.', path: `/competitions/${competitionId}/match-center` })
 
   const { isLoading: loadingComp } = useCompetition(competitionId)
   const [statusFilter, setStatusFilter] = useState<MatchStatus[] | null>(null)
