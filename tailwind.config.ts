@@ -58,6 +58,9 @@ module.exports = {
         'on-primary-fixed': '#00201a',
         'primary': '#94d3c1',
         'on-primary-fixed': '#00201a',
+        // Warning — usado em ResetPasswordPage (força da password)
+        'warning': 'var(--color-warning, #f59e0b)',
+        'on-warning': 'var(--color-on-warning, #000)',
       },
       borderRadius: {
         DEFAULT: '0.125rem',
