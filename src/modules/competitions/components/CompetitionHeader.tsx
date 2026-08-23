@@ -54,8 +54,8 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
         title={competition.name}
         description={`Temporada ${competition.season}. Explore a classificação, os jogos, as estatísticas e os regulamentos desta competição.`}
         visual={
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-container/30 shadow-sm">
-            <Trophy className="h-8 w-8 text-primary" />
+          <div className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-amber-500 to-orange-600 text-on-primary shadow-[0_16px_28px_rgba(245,158,11,0.28)]">
+            <Trophy className="h-9 w-9" />
           </div>
         }
         chips={[
@@ -63,9 +63,9 @@ export function CompetitionHeader({ competition, isLoading = false }: Competitio
           { label: typeLabel },
           { icon: Calendar, label: `Época ${competition.season}` },
         ]}
-        backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(var(--color-primary-rgb),0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.82))]"
+        backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.10),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.84))]"
         actions={
-          <Badge variant={statusCfg.variant} className="self-start">
+          <Badge variant={statusCfg.variant} className="self-start rounded-full px-sm py-1 text-xs font-semibold">
             {statusCfg.label}
           </Badge>
         }

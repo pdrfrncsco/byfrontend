@@ -24,11 +24,11 @@ export function ClubCard({ club }: { club: Club }) {
       variant="glass"
       padding="none"
       hoverable
-      className="group overflow-hidden border-outline-variant/25 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low shadow-[0_12px_40px_-24px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-1"
+      className="group overflow-hidden border border-outline-variant/80 bg-surface-container-low shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-transform duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-surface-container-high"
       style={accentStyle}
     >
       <div
-        className="h-1.5 w-full bg-gradient-to-r from-primary/85 via-primary/40 to-transparent"
+        className="h-1.5 w-full"
         style={club.primary_color ? { background: `linear-gradient(90deg, ${club.primary_color}, ${club.secondary_color || club.primary_color})` } : undefined}
       />
       <CardContent className="p-lg">
@@ -48,8 +48,8 @@ export function ClubCard({ club }: { club: Club }) {
           </div>
 
           <div className="min-w-0 flex-1 space-y-sm">
-            <div className="flex flex-wrap items-center gap-sm">
-              <h4 className="truncate font-semibold text-on-surface">{club.name}</h4>
+            <div className="flex items-center justify-between gap-sm">
+              <h4 className="truncate font-semibold text-on-surface transition-colors group-hover:text-primary">{club.name}</h4>
               {club.is_verified && <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />}
             </div>
 
@@ -66,7 +66,7 @@ export function ClubCard({ club }: { club: Club }) {
             </div>
 
             <div className="flex items-center justify-between pt-sm">
-              <p className="text-xs text-on-surface-variant">Perfil público do clube</p>
+              <p className="text-xs text-on-surface-variant">Perfil público</p>
               <Link to={`/clubs/${club.slug || club.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5">
                 Ver perfil
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />

@@ -19,7 +19,7 @@ export function OrganizationCard({ organization, className }: OrganizationCardPr
       padding="md"
       hoverable
       className={cn(
-        'block transform transition-all duration-300 hover:-translate-y-1.5 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background',
+        'block transform transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:bg-surface-container-high focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background',
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function OrganizationCard({ organization, className }: OrganizationCardPr
           )}
 
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-xs">
+            <div className="flex flex-wrap items-center justify-between gap-xs">
               <h3 className="truncate font-title-md text-base text-on-surface transition-colors group-hover:text-primary">
                 {organization.name}
               </h3>

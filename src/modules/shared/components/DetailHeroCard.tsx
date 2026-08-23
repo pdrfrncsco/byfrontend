@@ -34,13 +34,13 @@ export function DetailHeroCard({
       variant="flat"
       padding="none"
       className={cn(
-        'overflow-hidden rounded-[2rem] border-outline-variant/20 shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]',
+        'overflow-hidden rounded-[2rem] border border-outline-variant/80 bg-surface-container-low shadow-[0_22px_48px_-32px_rgba(15,17,23,0.28)]',
         className,
       )}
     >
       <CardContent
         className={cn(
-          'grid gap-xl p-xl backdrop-blur md:grid-cols-[auto_1fr_auto] md:items-center',
+          'grid gap-lg p-lg backdrop-blur md:grid-cols-[auto_1fr_auto] md:items-center md:p-xl',
           backgroundClassName,
         )}
       >
@@ -48,14 +48,14 @@ export function DetailHeroCard({
 
         <div className="space-y-md">
           {eyebrow ? (
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+            <div className="inline-flex items-center gap-sm rounded-full border border-primary/25 bg-primary-container/20 px-md py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
               {eyebrow}
             </div>
           ) : null}
 
           <div className="space-y-sm">
-            <h1 className="font-title-lg text-3xl text-on-surface md:text-4xl">{title}</h1>
-            {description ? <p className="max-w-3xl text-base leading-7 text-on-surface-variant">{description}</p> : null}
+            <h1 className="font-display-lg text-[2.25rem] leading-[0.96] tracking-[-0.05em] text-on-surface md:text-[3.1rem]">{title}</h1>
+            {description ? <p className="max-w-3xl text-base leading-relaxed text-on-surface-variant md:text-[1.05rem]">{description}</p> : null}
           </div>
 
           {chips.length > 0 ? (
@@ -65,9 +65,9 @@ export function DetailHeroCard({
                 return (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5"
+                    className="inline-flex items-center gap-2 rounded-full border border-outline-variant/60 bg-surface-container-high px-md py-1.5 text-sm font-medium shadow-[0_1px_0_rgba(15,23,42,0.02)]"
                   >
-                    {ChipIcon ? <ChipIcon className="h-4 w-4" /> : null}
+                    {ChipIcon ? <ChipIcon className="h-4 w-4 text-primary" /> : null}
                     {chip.label}
                   </span>
                 )

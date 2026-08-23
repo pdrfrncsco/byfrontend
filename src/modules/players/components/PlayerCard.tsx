@@ -27,7 +27,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
       variant="glass"
       padding="none"
       hoverable
-      className="group overflow-hidden border-outline-variant/25 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low shadow-[0_12px_40px_-24px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-1"
+      className="group overflow-hidden border border-outline-variant/80 bg-surface-container-low shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-transform duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-surface-container-high"
       style={accentStyle}
     >
       <div
@@ -36,7 +36,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
       />
       <CardContent className="p-lg">
         <div className="flex items-start gap-md">
-          {/* Avatar */}
           <div
             className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline-variant/20 text-lg font-bold text-on-primary shadow-sm"
             style={{
@@ -51,9 +50,11 @@ export function PlayerCard({ player }: PlayerCardProps) {
             )}
           </div>
 
-          {/* Info */}
           <div className="min-w-0 flex-1 space-y-sm">
-            <h4 className="truncate font-semibold text-on-surface">{player.full_name}</h4>
+            <div className="flex items-start justify-between gap-sm">
+              <h4 className="truncate font-semibold text-on-surface transition-colors group-hover:text-primary">{player.full_name}</h4>
+              <ArrowUpRight className="h-4 w-4 shrink-0 text-on-surface-variant transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+            </div>
 
             <div className="flex flex-wrap items-center gap-sm">
               <Badge
@@ -80,7 +81,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
               )}
             </div>
 
-            {/* Location & Age */}
             <div className="flex items-center gap-1 text-sm text-on-surface-variant">
               {player.nationality && (
                 <>
@@ -95,7 +95,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
               )}
             </div>
 
-            {/* Stats */}
             <div className="flex items-center gap-md pt-sm text-xs text-on-surface-variant" aria-label={t('players.card.stats')}>
               <div className="flex items-center gap-1" title={t('players.card.goals')}>
                 <Trophy size={12} style={{ color: '#f59e0b' }} aria-hidden="true" />
@@ -113,14 +112,12 @@ export function PlayerCard({ player }: PlayerCardProps) {
           </div>
         </div>
 
-        {/* Action Link */}
         <div className="mt-md border-t border-outline-variant/15 pt-sm">
           <Link
             to={`/players/${player.slug}`}
             className="flex items-center justify-between text-xs font-semibold text-primary hover:underline"
           >
             <span>{t('players.card.view_profile')}</span>
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
           </Link>
         </div>
       </CardContent>
