@@ -46,9 +46,13 @@ function ExploreMenu({ pathname }: { pathname: string }) {
       <summary className={`flex cursor-pointer list-none items-center gap-xs rounded-md px-md py-sm text-sm font-semibold transition-colors [&::-webkit-details-marker]:hidden ${active ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}>
         Explorar <span className="material-symbols-outlined text-base transition-transform group-open:rotate-180" aria-hidden="true">expand_more</span>
       </summary>
-      <div className="absolute left-0 top-full mt-sm w-64 rounded-xl border border-outline-variant bg-surface-container-low p-sm shadow-xl">
+      <div className="absolute left-0 top-full mt-sm w-64 rounded-xl border border-outline-variant bg-surface-container-low p-sm shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
         {exploreLinks.map(item => (
-          <Link key={item.href} to={item.href} className={`flex items-center gap-sm rounded-lg px-md py-sm text-sm transition-colors ${isActivePath(pathname, item.href) ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'}`}>
+          <Link
+            key={item.href}
+            to={item.href}
+            className={`flex items-center gap-sm rounded-lg px-md py-sm text-sm transition-colors ${isActivePath(pathname, item.href) ? 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20' : 'text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'}`}
+          >
             <span className="material-symbols-outlined text-lg" aria-hidden="true">{item.icon}</span>
             {item.label}
           </Link>
