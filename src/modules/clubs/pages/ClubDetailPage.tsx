@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-states'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
+import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
 import {
@@ -175,46 +176,33 @@ export default function ClubDetailPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      {/* Background Gradient Accents */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <ClubBreadcrumb current={club.name} />
-        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
-          <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-center">
-            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-outline-variant/20 bg-surface-container-high text-3xl font-bold text-primary shadow-lg">
+
+        <DetailHeroCard
+          eyebrow="Clube público"
+          title={club.name}
+          description={club.description || 'Perfil público do clube com plantel, staff, documentos e patrocinadores.'}
+          visual={
+            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.5rem] border border-outline-variant/20 bg-surface-container-high text-2xl font-bold text-primary shadow-[0_16px_28px_rgba(15,23,42,0.12)]">
               {club.logo_url ? (
                 <img src={club.logo_url} alt={`${club.name} logo`} className="h-full w-full object-cover" />
               ) : (
                 initials
               )}
             </div>
-
-            <div className="space-y-md">
-              <div className="flex flex-wrap items-center gap-sm">
-                <h1 className="font-title-lg text-3xl text-on-surface md:text-4xl">{club.name}</h1>
-                <Badge variant={club.status === 'suspended' ? 'danger' : club.status === 'active' ? 'primary' : 'warning'}>
-                  {club.status_label || club.status || 'active'}
-                </Badge>
-                {club.is_verified && <Badge variant="secondary">Verificado</Badge>}
-              </div>
-
-              <p className="max-w-3xl text-base leading-7 text-on-surface-variant">
-                {club.description || 'Perfil público do clube com plantel, staff, documentos e patrocinadores.'}
-              </p>
-
-              <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  <MapPin className="h-4 w-4" />
-                  {[club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível'}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                  {club.tenant_name || club.tenant_slug || 'Organização não indicada'}
-                </span>
-              </div>
-            </div>
-
+          }
+          chips={[
+            { icon: MapPin, label: [club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível' },
+            { label: club.tenant_name || club.tenant_slug || 'Organização não indicada' },
+            { label: club.status_label || club.status || 'active' },
+            { label: club.is_verified ? 'Verificado' : 'Público' },
+          ]}
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.12),transparent_32%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.10),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.84))]"
+          actions={
             <div className="flex flex-wrap gap-sm">
               {club.website && (
                 <Button asChild variant="secondary">
@@ -228,8 +216,8 @@ export default function ClubDetailPage() {
                 Voltar
               </Button>
             </div>
-          </div>
-        </section>
+          }
+        />
 
         {kpisQuery.data && <ClubKpisCard kpis={kpisQuery.data} />}
 

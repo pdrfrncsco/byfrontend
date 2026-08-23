@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NotFound, ServerError } from '@/components/ui/error-states'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
+import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
 import {
   PlayerAchievementsTab,
   PlayerCareerTimeline,
@@ -104,116 +105,44 @@ export function PlayerDetailPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      {/* Background Gradient Accents */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
 
       <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
         <PlayerBreadcrumb current={player.full_name} />
 
-        <section className="rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur">
-          <div className="grid gap-xl lg:grid-cols-[auto_1fr_auto] lg:items-start">
-            <div className="space-y-md">
-              <div
-                className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl border-2 text-3xl font-bold text-on-primary shadow-lg"
-                style={{ borderColor: positionColor, background: positionColor }}
-              >
-                {player.avatar ? (
-                  <img src={player.avatar} alt={player.full_name} className="h-full w-full object-cover" />
-                ) : (
-                  initials
-                )}
-              </div>
-              <Badge
-                variant="outline"
-                style={{
-                  borderColor: positionColor,
-                  color: positionColor,
-                  background: `${positionColor}15`,
-                }}
-              >
-                {player.position_label}
-              </Badge>
-            </div>
-
-            <div className="space-y-md">
-              <div className="flex flex-wrap items-center gap-sm">
-                <h1 className="font-title-lg text-3xl text-on-surface md:text-4xl" id="player-detail-name">
-                  {player.full_name}
-                </h1>
-                <Badge
-                  variant="outline"
-                  style={{
-                    borderColor: statusColor,
-                    color: statusColor,
-                    background: `${statusColor}15`,
-                  }}
-                >
-                  {player.status_label}
-                </Badge>
-              </div>
-
-              {player.current_club && (
-                <Link
-                  to={`/clubs/${player.current_club.slug}`}
-                  className="inline-flex items-center gap-sm rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5 text-sm font-medium text-on-surface transition-colors hover:text-primary"
-                  id="player-current-club-link"
-                >
-                  <Star className="h-4 w-4 text-amber-400" />
-                  {player.current_club.name}
-                  {player.current_club.shirt_number && (
-                    <span className="rounded-full bg-primary-container/20 px-sm py-0.5 text-xs text-primary">
-                      #{player.current_club.shirt_number}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-                {player.nationality && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    <MapPin className="h-4 w-4" />
-                    {player.nationality}
-                  </span>
-                )}
-                {player.age && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    <Calendar className="h-4 w-4" />
-                    {t('players.common.years', { count: player.age })}
-                  </span>
-                )}
-                {player.height_cm && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    <Ruler className="h-4 w-4" />
-                    {player.height_cm} cm
-                  </span>
-                )}
-                {player.weight_kg && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    <Weight className="h-4 w-4" />
-                    {player.weight_kg} kg
-                  </span>
-                )}
-                {player.foot && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    <Activity className="h-4 w-4" />
-                    {t(`players.detail.${player.foot === 'left' ? 'footLeft' : player.foot === 'right' ? 'footRight' : 'footBoth'}`)}
-                  </span>
-                )}
-              </div>
-
-              {player.bio && (
-                <p className="max-w-3xl text-base leading-7 text-on-surface-variant">{player.bio}</p>
+        <DetailHeroCard
+          eyebrow="Jogador público"
+          title={player.full_name}
+          description={player.bio || 'Perfil público do jogador com estatísticas, posição, clube atual e evolução na carreira.'}
+          visual={
+            <div
+              className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.5rem] border-2 text-2xl font-bold text-on-primary shadow-[0_16px_28px_rgba(15,23,42,0.12)]"
+              style={{ borderColor: positionColor, background: positionColor }}
+            >
+              {player.avatar ? (
+                <img src={player.avatar} alt={player.full_name} className="h-full w-full object-cover" />
+              ) : (
+                initials
               )}
             </div>
-
+          }
+          chips={[
+            { label: player.position_label },
+            { label: player.status_label },
+            ...(player.nationality ? [{ icon: MapPin, label: player.nationality }] : []),
+            ...(player.current_club ? [{ label: player.current_club.name }] : []),
+            ...(player.age ? [{ icon: Calendar, label: t('players.common.years', { count: player.age }) }] : []),
+          ]}
+          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.12),transparent_32%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.10),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.84))]"
+          actions={
             <div className="flex flex-wrap gap-sm">
               <Button variant="secondary" onClick={() => navigator.clipboard?.writeText(window.location.href)}>
                 Partilhar perfil
               </Button>
             </div>
-          </div>
-        </section>
+          }
+        />
 
         <section aria-label="Resumo estatístico do jogador" className="grid gap-lg sm:grid-cols-2 xl:grid-cols-4">
           <DetailStat icon={Activity} label={t('players.detail.stats.matches')} value={player.total_matches} />
