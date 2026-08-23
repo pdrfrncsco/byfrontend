@@ -23,6 +23,7 @@ import { matchApi } from '../services/match.api'
 import { toast } from 'sonner'
 import type { Match } from '../types'
 import { MatchStatsPanel, MatchCountdown, MatchClockControls, MatchDetailHeader, MatchSummaryStrip, MatchOverviewPanel, MatchEventCenter, MatchStatsWorkspace } from '../components'
+import type { ReactNode } from 'react'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -51,6 +52,21 @@ const TABS: TabConfig[] = [
 function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean {
   if (requiredRoles.includes('*')) return true
   return userRoles.some(role => requiredRoles.includes(role))
+}
+
+function PublicMatchFrame({ competitionId, current, children }: { competitionId: string; current: string; children: ReactNode }) {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-5xl px-lg pt-xl">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="truncate text-on-surface">{current}</span>
+        </nav>
+      </div>
+      {children}
+    </div>
+  )
 }
 
 function ArchiveMatchButton({ matchId, onArchived }: { matchId: string; onArchived?: () => void }) {
@@ -173,7 +189,8 @@ export function MatchDetailPage() {
   // Guard: redirect if no matchId or competitionId (hooks above are safe due to enabled flags)
   if (!matchId || !compId) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
+      <PublicMatchFrame competitionId={competitionId} current="Partida">
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-md">
         <AlertCircle className="h-12 w-12 text-error opacity-70" />
         <p className="text-lg font-medium text-on-surface">ID do jogo não especificado</p>
         <Link to="/competitions">
@@ -181,7 +198,8 @@ export function MatchDetailPage() {
             Voltar às competições
           </Button>
         </Link>
-      </div>
+        </div>
+      </PublicMatchFrame>
     )
   }
 
@@ -205,11 +223,7 @@ export function MatchDetailPage() {
         </DashboardLayout>
       )
     }
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <LoadingComponent />
-      </div>
-    )
+    return <PublicMatchFrame competitionId={competitionId} current="A carregar..."><LoadingComponent /></PublicMatchFrame>
   }
 
   // ─── Not Found State ────────────────────────────────────────────────────
@@ -237,11 +251,7 @@ export function MatchDetailPage() {
         </DashboardLayout>
       )
     }
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-md bg-background">
-        <NotFoundComponent />
-      </div>
-    )
+    return <PublicMatchFrame competitionId={competitionId} current="Partida"><NotFoundComponent /></PublicMatchFrame>
   }
 
   // ─── Tab Content Renderer ───────────────────────────────────────────────
@@ -463,5 +473,5 @@ export function MatchDetailPage() {
     )
   }
 
-  return <div className="min-h-screen bg-background">{pageContent}</div>
+  return <PublicMatchFrame competitionId={competitionId} current={`${match.home_club_name} vs ${match.away_club_name}`}><main aria-label="Detalhe da partida">{pageContent}</main></PublicMatchFrame>
 }

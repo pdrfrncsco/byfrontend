@@ -10,6 +10,7 @@ import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
 import { MatchCard } from '../components'
+import type { ReactNode } from 'react'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
 
@@ -23,6 +24,21 @@ const STATUS_FILTERS: Array<{
   { id: ['finished', 'archived', 'walkover', 'cancelled', 'postponed'], label: 'Finalizados', icon: Calendar },
   { id: null, label: 'Todos', icon: Filter },
 ]
+
+function PublicMatchFrame({ competitionId, current, children }: { competitionId: string; current: string; children: ReactNode }) {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-5xl px-lg pt-xl">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface">{current}</span>
+        </nav>
+      </div>
+      {children}
+    </div>
+  )
+}
 
 // ─── MatchCenterPage (Hub de Partidas por Jornada) ───────────────────────────
 
@@ -80,11 +96,7 @@ export function MatchCenterPage() {
         </DashboardLayout>
       )
     }
-    return (
-      <div className="min-h-screen bg-background p-lg">
-        <LoadingComponent />
-      </div>
-    )
+    return <PublicMatchFrame competitionId={competitionId} current="Centro de Jogos"><LoadingComponent /></PublicMatchFrame>
   }
 
   // ─── No Matches State ───────────────────────────────────────────────────
@@ -118,11 +130,7 @@ export function MatchCenterPage() {
         </div>
       </Card>
     )
-    return (
-      <div className="mx-auto max-w-5xl px-lg py-xl">
-        <NoMatchesComponent />
-      </div>
-    )
+    return <PublicMatchFrame competitionId={competitionId} current="Centro de Jogos"><div className="mx-auto max-w-5xl px-lg py-xl"><NoMatchesComponent /></div></PublicMatchFrame>
   }
 
   // ─── Page Content ───────────────────────────────────────────────────────
@@ -285,5 +293,5 @@ export function MatchCenterPage() {
     )
   }
 
-  return <div className="mx-auto max-w-5xl px-lg py-xl bg-background">{pageContent}</div>
+  return <PublicMatchFrame competitionId={competitionId} current="Centro de Jogos"><main aria-label="Centro de jogos" className="mx-auto max-w-5xl px-lg py-xl">{pageContent}</main></PublicMatchFrame>
 }
