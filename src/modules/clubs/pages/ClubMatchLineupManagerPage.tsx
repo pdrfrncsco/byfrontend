@@ -13,10 +13,15 @@ import {
   UserCheck,
   Send,
   Trophy,
+  ArrowDownToLine,
+  ArrowUpToLine,
+  UserMinus,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { EmptyState } from '@/components/ui/empty-state'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubMeMatches, useClubSquad } from '@/modules/clubs/hooks/useClubs'
@@ -32,6 +37,9 @@ interface CallupPlayer extends LineupPlayer {
   isCalledUp: boolean
   isStarter: boolean
 }
+
+const REQUIRED_STARTERS = 11
+const MAX_SUBSTITUTES = 7
 
 // ─── Position Mapping Helper ──────────────────────────────────────────────────
 
@@ -121,12 +129,12 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
 
   return (
     <div className="relative mx-auto max-w-md my-md">
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary-container/40 via-surface-container to-surface-container-high p-md shadow-xl border border-primary/20">
-        <div className="relative h-full rounded-xl border-2 border-outline-variant/50">
-          <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-outline-variant/50" />
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-outline/30" />
-          <div className="absolute left-1/2 top-0 h-12 w-28 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-outline-variant/50" />
-          <div className="absolute bottom-0 left-1/2 h-12 w-28 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-outline-variant/50" />
+      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-md shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)]">
+        <div className="relative h-full rounded-xl border border-white/25">
+          <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25" />
+          <div className="absolute left-0 right-0 top-1/2 h-px bg-white/20" />
+          <div className="absolute left-1/2 top-0 h-12 w-28 -translate-x-1/2 border-b border-l border-r border-white/20" />
+          <div className="absolute bottom-0 left-1/2 h-12 w-28 -translate-x-1/2 border-t border-l border-r border-white/20" />
         </div>
 
         <div className="absolute inset-0 flex flex-col items-center justify-between py-md">
@@ -157,15 +165,16 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
 
 function PlayerBadgeOnField({ player }: { player: CallupPlayer }) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
       <div
         className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold shadow-lg border-2 ${
-          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-primary-container text-primary border-primary/30'
+          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-amber-300' : 'border-[#f4c430] bg-[#f4c430] text-[#093c6e] shadow-[#f4c430]/30'
         }`}
       >
         {player.playerNumber || player.shirt_number || '#'}
       </div>
-      <span className="mt-1 max-w-[70px] truncate text-center text-[10px] font-bold text-on-surface">
+      {player.is_captain && <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-300 drop-shadow-[0_0_5px_rgba(252,211,77,0.9)]" />}
+      <span className="mt-1 max-w-[70px] truncate text-center text-[10px] font-bold text-white/85">
         {player.playerName || player.player?.full_name?.split(' ').pop()}
       </span>
     </div>
@@ -262,23 +271,36 @@ export default function ClubMatchLineupManagerPage() {
   const starters = useMemo(() => playersList.filter((p) => p.isCalledUp && p.isStarter), [playersList])
   const substitutes = useMemo(() => playersList.filter((p) => p.isCalledUp && !p.isStarter), [playersList])
   const uncalled = useMemo(() => playersList.filter((p) => !p.isCalledUp), [playersList])
+  const hasGoalkeeper = starters.some((player) => player.position === 'GK' || player.is_goalkeeper)
+  const hasCaptain = starters.some((player) => player.is_captain)
+  const lineupChecks = [
+    { label: `${starters.length}/${REQUIRED_STARTERS} titulares`, complete: starters.length === REQUIRED_STARTERS },
+    { label: hasGoalkeeper ? 'Guarda-redes definido' : 'Guarda-redes em falta', complete: hasGoalkeeper },
+    { label: `${substitutes.length}/${MAX_SUBSTITUTES} suplentes`, complete: substitutes.length <= MAX_SUBSTITUTES },
+    { label: hasCaptain ? 'Capitão definido' : 'Capitão em falta', complete: hasCaptain },
+  ]
+  const rosterIsValid = lineupChecks.every((check) => check.complete)
 
   // Submit Mutation
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!matchId || !club?.id) throw new Error('Dados incompletos')
 
-      if (starters.length !== 11) {
-        throw new Error(`O onze inicial deve conter exatamente 11 titulares (atual: ${starters.length}).`)
+      if (starters.length !== REQUIRED_STARTERS) {
+        throw new Error(`O onze inicial deve conter exatamente ${REQUIRED_STARTERS} titulares (atual: ${starters.length}).`)
       }
 
-      if (substitutes.length > 12) {
-        throw new Error(`São permitidos no máximo 12 suplentes no banco de reservas (atual: ${substitutes.length}).`)
+      if (substitutes.length > MAX_SUBSTITUTES) {
+        throw new Error(`São permitidos no máximo ${MAX_SUBSTITUTES} suplentes no banco de reservas (atual: ${substitutes.length}).`)
       }
 
       const hasGK = starters.some((p) => p.position === 'GK' || p.is_goalkeeper)
       if (!hasGK) {
         throw new Error('O onze inicial deve incluir um Guarda-redes (GK).')
+      }
+
+      if (!hasCaptain) {
+        throw new Error('Defina um capitão no onze inicial antes de submeter a escalação.')
       }
 
       const payload = {
@@ -399,6 +421,12 @@ export default function ClubMatchLineupManagerPage() {
 
   const isHome = currentMatch.home_club === club?.id
   const opponentName = isHome ? currentMatch.away_club_name : currentMatch.home_club_name
+  const isLocked =
+    (existingLineup as any)?.status === 'locked' ||
+    (existingLineup as any)?.status === 'confirmed' ||
+    currentMatch.status === 'live' ||
+    currentMatch.status === 'finished'
+  const canSubmit = rosterIsValid && !isLocked
 
   return (
     <DashboardLayout
@@ -415,6 +443,7 @@ export default function ClubMatchLineupManagerPage() {
         </Button>
       }
     >
+      <TooltipProvider>
       <div className="space-y-xl">
         {/* Banner Informacional da Partida */}
         <section className="rounded-2xl border border-outline-variant/20 bg-surface-container p-lg shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
@@ -438,40 +467,25 @@ export default function ClubMatchLineupManagerPage() {
                   <p className="text-xs text-on-surface-variant">Convocados Totais</p>
                   <p className="text-xl font-bold text-on-surface">{starters.length + substitutes.length} / 18</p>
                 </div>
-                {(() => {
-                  const hasGK = starters.some((p) => p.position === 'GK' || p.is_goalkeeper)
-                  const isLocked =
-                    (existingLineup as any)?.status === 'locked' ||
-                    (existingLineup as any)?.status === 'confirmed' ||
-                    currentMatch?.status === 'live' ||
-                    currentMatch?.status === 'finished'
-
-                  const canSubmit = starters.length === 11 && hasGK && !isLocked
-
-                  return (
-                    <Button
-                      variant="primary"
-                      onClick={() => submitMutation.mutate()}
-                      disabled={submitMutation.isPending || !canSubmit}
-                      title={
-                        isLocked
-                          ? 'A escalação está bloqueada e já não pode ser alterada.'
-                          : starters.length !== 11
-                          ? 'Selecione exatamente 11 titulares'
-                          : !hasGK
-                          ? 'Defina um Guarda-redes no 11 inicial'
-                          : 'Submeter escalação oficial'
-                      }
-                    >
-                      {submitMutation.isPending ? (
-                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
-                      ) : (
-                        <Send className="mr-xs h-4 w-4" />
-                      )}
-                      {isLocked ? 'Escalação Bloqueada' : 'Submeter Escalação'}
-                    </Button>
-                  )
-                })()}
+                <Button
+                  variant="primary"
+                  onClick={() => submitMutation.mutate()}
+                  disabled={submitMutation.isPending || !canSubmit}
+                  title={
+                    isLocked
+                      ? 'A escalação está bloqueada e já não pode ser alterada.'
+                      : !rosterIsValid
+                      ? 'Corrija as regras de convocatória antes de submeter.'
+                      : 'Submeter escalação oficial'
+                  }
+                >
+                  {submitMutation.isPending ? (
+                    <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="mr-xs h-4 w-4" />
+                  )}
+                  {isLocked ? 'Escalação Bloqueada' : 'Submeter Escalação'}
+                </Button>
               </div>
             </div>
 
@@ -483,6 +497,21 @@ export default function ClubMatchLineupManagerPage() {
               </div>
             )}
           </section>
+
+        <section className={`sticky top-md z-20 flex flex-wrap items-center justify-between gap-md rounded-xl border px-md py-sm backdrop-blur-md ${rosterIsValid ? 'border-emerald-500/25 bg-emerald-500/10' : 'border-amber-500/30 bg-amber-500/10'}`} aria-label="Estado da convocatória">
+          <div className="flex flex-wrap items-center gap-sm">
+            <span className="text-sm font-semibold text-on-surface">Prontidão da escalação</span>
+            {lineupChecks.map((check) => (
+              <span key={check.label} className={`inline-flex items-center gap-xs rounded-full px-sm py-1 text-xs font-medium ${check.complete ? 'bg-emerald-500/15 text-emerald-800' : 'bg-amber-500/15 text-amber-800'}`}>
+                {check.complete ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}
+                {check.label}
+              </span>
+            ))}
+          </div>
+          <span className={`text-xs font-semibold ${rosterIsValid ? 'text-emerald-700' : 'text-amber-800'}`}>
+            {rosterIsValid ? 'Escalação pronta para submeter' : 'Corrija os itens assinalados para submeter'}
+          </span>
+        </section>
 
         {/* Layout de Gestão Táctica: Campo + Listas */}
         <div className="grid gap-xl lg:grid-cols-12">
@@ -582,9 +611,14 @@ export default function ClubMatchLineupManagerPage() {
                         >
                           <Crown className="h-3.5 w-3.5" />
                         </button>
-                        <Button variant="ghost" size="sm" onClick={() => toggleStarter(p.playerId)} className="h-7 text-xs text-amber-700">
-                          Remover do 11
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-700 transition-colors hover:bg-amber-500/15" aria-label="Mover para suplentes">
+                              <ArrowDownToLine className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Mover para suplentes</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))
@@ -593,13 +627,22 @@ export default function ClubMatchLineupManagerPage() {
             </Card>
 
             {/* Lista 2: Suplentes */}
-            <Card variant="flat" padding="md">
+            <Card variant="flat" padding="md" className={substitutes.length > MAX_SUBSTITUTES ? 'border-error/50 bg-error/5' : ''}>
               <CardHeader className="p-none mb-md flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-bold flex items-center gap-xs text-on-surface">
-                  <Users className="h-4 w-4" /> Suplentes ({substitutes.length}/7)
+                  <Users className="h-4 w-4" /> Suplentes ({substitutes.length}/{MAX_SUBSTITUTES})
                 </CardTitle>
-                <span className="text-xs text-on-surface-variant">Máx. 7 suplentes</span>
+                {substitutes.length > MAX_SUBSTITUTES ? (
+                  <Badge variant="danger">Excesso de suplentes</Badge>
+                ) : (
+                  <span className="text-xs text-on-surface-variant">Máx. {MAX_SUBSTITUTES} suplentes</span>
+                )}
               </CardHeader>
+              {substitutes.length > MAX_SUBSTITUTES && (
+                <div className="mb-md flex items-center gap-xs rounded-lg border border-error/30 bg-error/10 px-sm py-xs text-xs font-medium text-error">
+                  <AlertTriangle className="h-3.5 w-3.5" /> Remova {substitutes.length - MAX_SUBSTITUTES} suplente(s) antes de submeter.
+                </div>
+              )}
               <CardContent className="p-none space-y-xs">
                 {substitutes.length === 0 ? (
                   <p className="py-md text-center text-xs text-on-surface-variant italic">
@@ -621,12 +664,22 @@ export default function ClubMatchLineupManagerPage() {
                       </div>
 
                       <div className="flex items-center gap-xs">
-                        <Button variant="secondary" size="sm" onClick={() => toggleStarter(p.playerId)} className="h-7 text-xs">
-                          + Titular
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => toggleCallup(p.playerId)} className="h-7 text-xs text-error">
-                          Desconvocar
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary/10" aria-label="Promover a titular">
+                              <ArrowUpToLine className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Promover a titular</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button type="button" onClick={() => toggleCallup(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-error transition-colors hover:bg-error/10" aria-label="Desconvocar jogador">
+                              <UserMinus className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Desconvocar jogador</TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   ))
@@ -643,9 +696,13 @@ export default function ClubMatchLineupManagerPage() {
               </CardHeader>
               <CardContent className="p-none space-y-xs">
                 {uncalled.length === 0 ? (
-                  <p className="py-md text-center text-xs text-on-surface-variant italic">
-                    Todos os jogadores do plantel foram convocados.
-                  </p>
+                  <EmptyState
+                    icon={CheckCircle2}
+                    iconClassName="text-emerald-600"
+                    title="Plantel convocado"
+                    description="Todos os jogadores disponíveis já fazem parte da convocatória."
+                    className="max-w-none border-emerald-500/20 bg-emerald-500/5 py-lg"
+                  />
                 ) : (
                   uncalled.map((p) => (
                     <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-outline-variant/10 bg-surface-container-low p-sm text-xs">
@@ -680,6 +737,7 @@ export default function ClubMatchLineupManagerPage() {
           </div>
         </div>
       </div>
+      </TooltipProvider>
     </DashboardLayout>
   )
 }
