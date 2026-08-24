@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { useAuth } from '@/app/providers'
+import { PublicDetailPageShell } from '@/modules/shared/components'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
@@ -53,21 +54,6 @@ const TABS: TabConfig[] = [
 function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean {
   if (requiredRoles.includes('*')) return true
   return userRoles.some(role => requiredRoles.includes(role))
-}
-
-function PublicMatchFrame({ competitionId, current, children }: { competitionId: string; current: string; children: ReactNode }) {
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-5xl px-lg pt-xl">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="truncate text-on-surface">{current}</span>
-        </nav>
-      </div>
-      {children}
-    </div>
-  )
 }
 
 function ArchiveMatchButton({ matchId, onArchived }: { matchId: string; onArchived?: () => void }) {
@@ -195,17 +181,25 @@ export function MatchDetailPage() {
   // Guard: redirect if no matchId or competitionId (hooks above are safe due to enabled flags)
   if (!matchId || !compId) {
     return (
-      <PublicMatchFrame competitionId={competitionId} current="Partida">
+      <PublicDetailPageShell
+        breadcrumb={
+          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page" className="text-on-surface">Partida</span>
+          </nav>
+        }
+      >
         <div className="flex min-h-[60vh] flex-col items-center justify-center gap-md">
-        <AlertCircle className="h-12 w-12 text-error opacity-70" />
-        <p className="text-lg font-medium text-on-surface">ID do jogo não especificado</p>
-        <Link to="/competitions">
-          <Button variant="secondary" size="sm">
-            Voltar às competições
-          </Button>
-        </Link>
+          <AlertCircle className="h-12 w-12 text-error opacity-70" />
+          <p className="text-lg font-medium text-on-surface">ID do jogo não especificado</p>
+          <Link to="/competitions">
+            <Button variant="secondary" size="sm">
+              Voltar às competições
+            </Button>
+          </Link>
         </div>
-      </PublicMatchFrame>
+      </PublicDetailPageShell>
     )
   }
 
@@ -229,7 +223,19 @@ export function MatchDetailPage() {
         </DashboardLayout>
       )
     }
-    return <PublicMatchFrame competitionId={competitionId} current="A carregar..."><LoadingComponent /></PublicMatchFrame>
+    return (
+      <PublicDetailPageShell
+        breadcrumb={
+          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page" className="text-on-surface">A carregar...</span>
+          </nav>
+        }
+      >
+        <LoadingComponent />
+      </PublicDetailPageShell>
+    )
   }
 
   // ─── Not Found State ────────────────────────────────────────────────────
@@ -257,7 +263,19 @@ export function MatchDetailPage() {
         </DashboardLayout>
       )
     }
-    return <PublicMatchFrame competitionId={competitionId} current="Partida"><NotFoundComponent /></PublicMatchFrame>
+    return (
+      <PublicDetailPageShell
+        breadcrumb={
+          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page" className="text-on-surface">Partida</span>
+          </nav>
+        }
+      >
+        <NotFoundComponent />
+      </PublicDetailPageShell>
+    )
   }
 
   // ─── Tab Content Renderer ───────────────────────────────────────────────
@@ -479,5 +497,17 @@ export function MatchDetailPage() {
     )
   }
 
-  return <PublicMatchFrame competitionId={competitionId} current={`${match.home_club_name} vs ${match.away_club_name}`}><main aria-label="Detalhe da partida">{pageContent}</main></PublicMatchFrame>
+  return (
+    <PublicDetailPageShell
+      breadcrumb={
+        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="truncate text-on-surface">{match.home_club_name} vs {match.away_club_name}</span>
+        </nav>
+      }
+    >
+      <main aria-label="Detalhe da partida">{pageContent}</main>
+    </PublicDetailPageShell>
+  )
 }
