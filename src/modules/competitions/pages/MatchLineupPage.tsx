@@ -45,9 +45,11 @@ const LINEUP_STATUS_CONFIG: Record<
 interface FormationFieldProps {
   starters: LineupPlayer[]
   formation?: string
+  activePlayerId?: string | null
+  onPlayerHover?: (playerId: string | null) => void
 }
 
-function FormationField({ starters, formation }: FormationFieldProps) {
+function FormationField({ starters, formation, activePlayerId, onPlayerHover }: FormationFieldProps) {
   // Group by position for formation display
   const positionGroups: Record<string, LineupPlayer[]> = {
     GK: [],
@@ -80,43 +82,44 @@ function FormationField({ starters, formation }: FormationFieldProps) {
   return (
     <div className="relative mx-auto max-w-xl">
       {/* Field background */}
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary-container/40 via-surface-container to-surface-container-high p-lg shadow-lg shadow-primary/10">
+      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-lg shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)]">
         {/* Field markings */}
-        <div className="relative h-full rounded-xl border-2 border-outline-variant/50 bg-[radial-gradient(circle_at_center,rgba(var(--color-primary-rgb),0.08),transparent_60%)]">
+        <div className="relative h-full overflow-hidden rounded-xl border border-white/25 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_58%),linear-gradient(90deg,rgba(255,255,255,0.025),transparent_50%,rgba(255,255,255,0.025))]">
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/20" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-20 w-36 -translate-x-1/2 border-b border-l border-r border-white/20" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-8 w-16 -translate-x-1/2 border-b border-l border-r border-white/15" />
+          <div className="pointer-events-none absolute bottom-0 left-1/2 h-20 w-36 -translate-x-1/2 border-l border-r border-t border-white/20" />
+          <div className="pointer-events-none absolute bottom-0 left-1/2 h-8 w-16 -translate-x-1/2 border-l border-r border-t border-white/15" />
           {/* Center circle */}
-          <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-outline-variant/50" />
-          {/* Center line */}
-          <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-outline/40" />
-          {/* Goal areas */}
-          <div className="absolute left-1/2 top-0 h-16 w-32 -translate-x-1/2 border-b-2 border-l-2 border-r-2 border-outline-variant/50" />
-          <div className="absolute bottom-0 left-1/2 h-16 w-32 -translate-x-1/2 border-t-2 border-l-2 border-r-2 border-outline-variant/50" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/40" />
         </div>
 
         {/* Players on field */}
         <div className="absolute inset-0 flex flex-col items-center justify-between py-lg sm:py-xl">
           {/* Goalkeeper */}
           <div className="flex justify-center">
-            <PlayerMarker player={positionGroups.GK[0]} />
+            <PlayerMarker player={positionGroups.GK[0]} activePlayerId={activePlayerId} onPlayerHover={onPlayerHover} />
           </div>
 
           {/* Defenders */}
           <div className={`flex w-full justify-center px-md sm:px-lg ${rowClass(defenderCount)}`}>
             {positionGroups.DEF.slice(0, defenderCount).map((player, i) => (
-              <PlayerMarker key={player.id || i} player={player} />
+              <PlayerMarker key={player.id || i} player={player} activePlayerId={activePlayerId} onPlayerHover={onPlayerHover} />
             ))}
           </div>
 
           {/* Midfielders */}
           <div className={`flex w-full justify-center px-md sm:px-lg ${rowClass(midfielderCount)}`}>
             {positionGroups.MID.slice(0, midfielderCount).map((player, i) => (
-              <PlayerMarker key={player.id || i} player={player} />
+              <PlayerMarker key={player.id || i} player={player} activePlayerId={activePlayerId} onPlayerHover={onPlayerHover} />
             ))}
           </div>
 
           {/* Forwards */}
           <div className={`flex justify-center ${rowClass(forwardCount)}`}>
             {positionGroups.FWD.slice(0, forwardCount).map((player, i) => (
-              <PlayerMarker key={player.id || i} player={player} />
+              <PlayerMarker key={player.id || i} player={player} activePlayerId={activePlayerId} onPlayerHover={onPlayerHover} />
             ))}
           </div>
         </div>
@@ -127,24 +130,27 @@ function FormationField({ starters, formation }: FormationFieldProps) {
 
 // ─── Player Marker ────────────────────────────────────────────────────────────
 
-function PlayerMarker({ player }: { player?: LineupPlayer }) {
+function PlayerMarker({ player, activePlayerId, onPlayerHover }: { player?: LineupPlayer; activePlayerId?: string | null; onPlayerHover?: (playerId: string | null) => void }) {
   if (!player) {
     return <div className="h-10 w-10 rounded-full bg-white/10" />
   }
 
+  const playerId = player.id || player.player_id || player.playerId
+  const active = Boolean(playerId && playerId === activePlayerId)
+
   return (
-    <div className="group relative flex flex-col items-center">
+    <div className={`group relative flex cursor-default flex-col items-center transition-transform duration-200 hover:z-10 hover:-translate-y-1 ${active ? '-translate-y-1' : ''}`} onMouseEnter={() => onPlayerHover?.(playerId)} onMouseLeave={() => onPlayerHover?.(null)}>
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shadow-md ${
-          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-2 border-amber-300' : 'bg-primary-container text-primary border-2 border-primary/30'
+        className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold shadow-lg transition-shadow duration-200 ${
+          player.is_goalkeeper ? 'border-amber-300 bg-amber-100 text-amber-700 shadow-amber-300/30' : 'border-[#f4c430] bg-[#f4c430] text-[#093c6e] shadow-[#f4c430]/30'
         }`}
       >
         {player.shirt_number}
       </div>
       {player.is_captain && (
-        <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-500" />
+        <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-300 drop-shadow-[0_0_5px_rgba(252,211,77,0.9)]" />
       )}
-      <span className="mt-1 max-w-20 truncate text-center text-xs font-medium text-on-surface">
+      <span className={`mt-1 max-w-20 truncate rounded px-1 text-center text-xs font-medium transition-colors ${active ? 'bg-white/20 text-white' : 'text-white/85'}`}>
         {player.player?.full_name?.split(' ').pop() || 'Jogador'}
       </span>
     </div>
@@ -159,23 +165,30 @@ function PlayerCard({
   editable = false,
   onDragStart,
   onDrop,
+  active = false,
+  onPlayerHover,
 }: {
   player: LineupPlayer
   isStarter: boolean
   editable?: boolean
   onDragStart?: () => void
   onDrop?: () => void
+  active?: boolean
+  onPlayerHover?: (playerId: string | null) => void
 }) {
+  const playerId = player.id || player.player_id || player.playerId
   return (
     <div
       draggable={editable}
       onDragStart={onDragStart}
       onDragOver={(event) => editable && event.preventDefault()}
       onDrop={(event) => { event.preventDefault(); onDrop?.() }}
-      className={`flex items-center gap-sm rounded-lg border p-sm transition-all ${
+      onMouseEnter={() => onPlayerHover?.(playerId)}
+      onMouseLeave={() => onPlayerHover?.(null)}
+      className={`flex items-center gap-sm rounded-lg border p-sm transition-all hover:-translate-y-0.5 hover:shadow-sm ${
         isStarter
-          ? 'border-primary/30 bg-primary-container/10'
-          : 'border-outline-variant/20 bg-surface-container'
+          ? active ? 'border-primary bg-primary-container/20 shadow-sm' : 'border-primary/30 bg-primary-container/10'
+          : active ? 'border-primary/50 bg-surface-container-low shadow-sm' : 'border-outline-variant/20 bg-surface-container'
       }`}
     >
       {/* Shirt number */}
@@ -195,7 +208,7 @@ function PlayerCard({
           <span className="truncate text-sm font-medium text-on-surface">
             {player.player?.full_name || 'Jogador'}
           </span>
-          {player.is_captain && <Crown className="h-3 w-3 text-amber-500" />}
+          {player.is_captain && <Crown className="h-3 w-3 text-amber-500 drop-shadow-[0_0_4px_rgba(245,158,11,0.8)]" />}
           {player.is_goalkeeper && <Goal className="h-3 w-3 text-amber-600" />}
         </div>
         <span className="text-xs text-on-surface-variant">
@@ -249,6 +262,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
   const [draggedPlayer, setDraggedPlayer] = useState<{ id: string; source: 'starter' | 'substitute' } | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [activePlayerId, setActivePlayerId] = useState<string | null>(null)
   const statusConfig = LINEUP_STATUS_CONFIG[String(lineup.status).toLowerCase()] || LINEUP_STATUS_CONFIG.draft
   const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
   const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
@@ -324,7 +338,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
 
       {/* Formation Field */}
       {starterPlayers.length > 0 && (
-        <FormationField starters={starterPlayers} formation={lineup.formation} />
+        <FormationField starters={starterPlayers} formation={lineup.formation} activePlayerId={activePlayerId} onPlayerHover={setActivePlayerId} />
       )}
 
       {/* Starters List */}
@@ -335,7 +349,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
         </h4>
         <div className="grid gap-sm sm:grid-cols-2">
             {starterPlayers.map((player) => (
-            <PlayerCard key={playerId(player)} player={player} isStarter editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'starter' })} onDrop={() => movePlayer('starter', playerId(player))} />
+            <PlayerCard key={playerId(player)} player={player} isStarter active={activePlayerId === playerId(player)} onPlayerHover={setActivePlayerId} editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'starter' })} onDrop={() => movePlayer('starter', playerId(player))} />
           ))}
         </div>
       </div>
@@ -349,7 +363,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
           </h4>
             <div className="grid gap-sm sm:grid-cols-2" onDragOver={(event) => editable && event.preventDefault()} onDrop={() => movePlayer('substitute')}>
             {substitutePlayers.map((player) => (
-              <PlayerCard key={playerId(player)} player={player} isStarter={false} editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'substitute' })} onDrop={() => movePlayer('substitute', playerId(player))} />
+              <PlayerCard key={playerId(player)} player={player} isStarter={false} active={activePlayerId === playerId(player)} onPlayerHover={setActivePlayerId} editable={editable} onDragStart={() => setDraggedPlayer({ id: playerId(player), source: 'substitute' })} onDrop={() => movePlayer('substitute', playerId(player))} />
             ))}
           </div>
         </div>
@@ -371,7 +385,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
           iconClassName="h-10 w-10 text-primary"
           title="Escalação não disponível"
           description="A prancheta táctica ficará disponível assim que a escalação for submetida e aprovada."
-          className="max-w-none border-dashed border-primary/20 bg-primary/[0.03] py-12 shadow-none"
+          className="max-w-none border-dashed border-primary/25 bg-primary/[0.04] py-12 shadow-none backdrop-blur-md"
         />
       )}
     </MatchLineupGrid>
