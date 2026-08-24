@@ -32,6 +32,12 @@ interface MatchStatsWorkspaceProps {
 
 type Draft = Record<EditableMetric, number>
 
+function teamAccent(teamId: string, fallback: string) {
+  const hash = [...teamId].reduce((total, character) => total + character.charCodeAt(0), 0)
+  const accents = ['#0f766e', '#2563eb', '#b45309', '#be123c', '#4338ca']
+  return accents[hash % accents.length] ?? fallback
+}
+
 function toDraft(team?: TeamMatchStats): Draft {
   return METRICS.reduce((draft, metric) => ({ ...draft, [metric.key]: Number(team?.[metric.key] ?? 0) }), {} as Draft)
 }
@@ -78,7 +84,7 @@ export function MatchStatsWorkspace({ stats, homeName, awayName, homeTeamId, awa
             <div className="flex justify-end gap-sm"><Button type="button" variant="secondary" size="sm" onClick={() => setEditing(false)}><X className="mr-xs h-4 w-4" />Cancelar</Button><Button type="submit" variant="primary" size="sm" disabled={isUpdating}>{isUpdating ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Check className="mr-xs h-4 w-4" />}Guardar estatísticas</Button></div>
           </form>
         ) : (
-          <div className="space-y-md"><div className="grid grid-cols-[1fr_auto_1fr] gap-md text-sm font-semibold text-on-surface"><span>{homeName}</span><span className="text-center text-xs text-on-surface-variant">Casa · Fora</span><span className="text-right">{awayName}</span></div>{METRICS.map(metric => { const homeValue = Number(stats?.home?.[metric.key] ?? 0); const awayValue = Number(stats?.away?.[metric.key] ?? 0); const total = homeValue + awayValue || 1; return <div key={metric.key} className="space-y-xs"><div className="grid grid-cols-[1fr_auto_1fr] items-center gap-md text-sm"><span className="font-mono tabular-nums text-on-surface">{homeValue}{metric.suffix}</span><span className="text-center text-on-surface-variant">{metric.label}</span><span className="text-right font-mono tabular-nums text-on-surface">{awayValue}{metric.suffix}</span></div><div className="flex h-2 gap-0.5 overflow-hidden rounded-full bg-surface-container-high"><span className="bg-primary" style={{ width: `${homeValue / total * 100}%` }} /><span className="bg-red-500" style={{ width: `${awayValue / total * 100}%` }} /></div></div> })}</div>
+          <div className="space-y-md"><div className="grid grid-cols-[1fr_auto_1fr] gap-md text-sm font-semibold text-on-surface"><span>{homeName}</span><span className="text-center text-xs text-on-surface-variant">Casa · Fora</span><span className="text-right">{awayName}</span></div>{METRICS.map(metric => { const homeValue = Number(stats?.home?.[metric.key] ?? 0); const awayValue = Number(stats?.away?.[metric.key] ?? 0); const total = homeValue + awayValue || 1; const homeAccent = teamAccent(homeTeamId, '#0f766e'); const awayAccent = teamAccent(awayTeamId, '#be123c'); return <div key={metric.key} className="group space-y-xs rounded-lg px-xs py-1 transition-colors hover:bg-surface-container-low"><div className="grid grid-cols-[1fr_auto_1fr] items-center gap-md text-sm"><span className="font-mono font-semibold tabular-nums text-on-surface">{homeValue}{metric.suffix}</span><span className="text-center text-xs text-on-surface-variant">{metric.label}</span><span className="text-right font-mono font-semibold tabular-nums text-on-surface">{awayValue}{metric.suffix}</span></div><div className="flex h-2 gap-0.5 overflow-hidden rounded-full bg-surface-container-high"><span className="transition-[width] duration-500" style={{ width: `${homeValue / total * 100}%`, backgroundColor: homeAccent }} /><span className="transition-[width] duration-500" style={{ width: `${awayValue / total * 100}%`, backgroundColor: awayAccent }} /></div></div> })}</div>
         )}
         {!canEdit && <p className="text-xs text-on-surface-variant">Visualização apenas. Não possui permissão para editar estas estatísticas.</p>}
       </div>
