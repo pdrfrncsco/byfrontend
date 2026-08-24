@@ -105,7 +105,7 @@ const FORMATION_SCHEMAS: Record<string, number[]> = {
   '3-4-3': [3, 4, 3],
 }
 
-function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPlayer[]; formation?: string }) {
+function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onPromote }: { starters: CallupPlayer[]; formation?: string; draggedPlayerId?: string | null; onPromote?: (playerId: string) => void }) {
   const fieldRows = useMemo(() => {
     const gk = starters.find((p) => p.is_goalkeeper || (p.positionSpecific || p.position || '').toUpperCase().includes('GK'))
     const fieldPlayers = starters.filter((p) => p !== gk)
@@ -127,9 +127,17 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
     return { gk, rows }
   }, [starters, formation])
 
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault()
+    const playerId = event.dataTransfer.getData('application/x-bolayetu-substitute') || draggedPlayerId
+    if (playerId) onPromote?.(playerId)
+  }
+
+  const openSlots = Math.max(0, REQUIRED_STARTERS - starters.length)
+
   return (
     <div className="relative mx-auto max-w-md my-md">
-      <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-md shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)]">
+      <div onDragOver={(event) => { if (openSlots > 0) event.preventDefault() }} onDrop={handleDrop} className={`aspect-[3/4] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-md shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)] transition-all ${draggedPlayerId && openSlots > 0 ? 'ring-2 ring-[#f4c430]/70 ring-offset-2 ring-offset-surface' : ''}`}>
         <div className="relative h-full rounded-xl border border-white/25">
           <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25" />
           <div className="absolute left-0 right-0 top-1/2 h-px bg-white/20" />
@@ -157,6 +165,11 @@ function FormationField({ starters, formation = '4-3-3' }: { starters: CallupPla
               ))}
             </div>
           ))}
+          {openSlots > 0 && (
+            <div className="absolute inset-x-0 bottom-3 flex justify-center">
+              <span className="rounded-full border border-dashed border-white/40 bg-white/10 px-sm py-xs text-[10px] font-semibold text-white/85">Arraste um suplente para o onze</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -207,6 +220,7 @@ export default function ClubMatchLineupManagerPage() {
   // State management
   const [formation, setFormation] = useState<string>('4-3-3')
   const [callupState, setCallupState] = useState<Record<string, { isCalledUp: boolean; isStarter: boolean; position: string; number: number; isCaptain: boolean }>>({})
+  const [draggedSubstituteId, setDraggedSubstituteId] = useState<string | null>(null)
 
   // Initialize draft from existing submission or club squad
   const initializedPlayers = useMemo(() => {
@@ -372,6 +386,17 @@ export default function ClubMatchLineupManagerPage() {
         },
       }
     })
+  }
+
+  const promoteSubstitute = (pId: string) => {
+    if (starters.length >= REQUIRED_STARTERS) {
+      toast.error(`O onze inicial já tem ${REQUIRED_STARTERS} jogadores.`)
+      return
+    }
+    const player = substitutes.find((item) => item.playerId === pId)
+    if (!player) return
+    toggleStarter(pId)
+    setDraggedSubstituteId(null)
   }
 
   const setCaptain = (pId: string) => {
@@ -544,7 +569,7 @@ export default function ClubMatchLineupManagerPage() {
                   </div>
                 )}
 
-                <FormationField starters={starters} formation={formation} />
+                <FormationField starters={starters} formation={formation} draggedPlayerId={draggedSubstituteId} onPromote={promoteSubstitute} />
 
                 <div className="mt-md space-y-xs text-xs text-on-surface-variant">
                   <div className="flex justify-between border-b border-outline-variant/10 py-1">
@@ -650,7 +675,7 @@ export default function ClubMatchLineupManagerPage() {
                   </p>
                 ) : (
                   substitutes.map((p) => (
-                    <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-outline-variant/15 bg-surface-container p-sm text-xs">
+                    <div key={p.playerId} draggable onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('application/x-bolayetu-substitute', p.playerId); setDraggedSubstituteId(p.playerId) }} onDragEnd={() => setDraggedSubstituteId(null)} className={`flex cursor-grab items-center justify-between rounded-xl border border-outline-variant/15 bg-surface-container p-sm text-xs transition-opacity active:cursor-grabbing ${draggedSubstituteId === p.playerId ? 'opacity-50' : ''}`}>
                       <div className="flex items-center gap-sm">
                         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-highest font-semibold text-on-surface">
                           {p.playerNumber || '#'}
