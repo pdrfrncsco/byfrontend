@@ -7,6 +7,7 @@ export const playerRoutes = {
   edit: (slug: string) => ROUTES.PLAYER_EDIT(slug),
   dashboard: ROUTES.DASHBOARD_PLAYER,
   dashboardSettings: ROUTES.DASHBOARD_PLAYER_SETTINGS,
+  media: ROUTES.DASHBOARD_PLAYER_MEDIA,
   linkClub: ROUTES.DASHBOARD_PLAYER_LINK_CLUB,
   clubRegister: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER,
   clubPlayerRequests: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS,

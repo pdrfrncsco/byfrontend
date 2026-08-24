@@ -5,6 +5,7 @@ export const clubRoutes = {
   detail: (id: string) => `/clubs/${id}`,
   dashboard: ROUTES.DASHBOARD_CLUB,
   settings: ROUTES.DASHBOARD_CLUB_SETTINGS,
+  media: ROUTES.DASHBOARD_CLUB_MEDIA,
   members: ROUTES.DASHBOARD_CLUB_MEMBERS,
   documents: ROUTES.DASHBOARD_CLUB_DOCUMENTS,
   sponsors: ROUTES.DASHBOARD_CLUB_SPONSORS,

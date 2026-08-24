@@ -16,10 +16,10 @@ export async function listMediaAssets(params?: { q?: string }) {
   return unwrap(response.data)
 }
 
-export async function uploadMediaAsset(file: File, ownerId: string, category = 'gallery') {
+export async function uploadMediaAsset(file: File, ownerId: string, ownerType: 'organization' | 'club' | 'player', category = 'gallery') {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('owner_type', 'organization')
+  formData.append('owner_type', ownerType)
   formData.append('owner_id', ownerId)
   formData.append('role', category)
   const response = await apiClient.post<ApiResponse<MediaAsset>>(API_ROUTES.MEDIA.UPLOAD, formData, {

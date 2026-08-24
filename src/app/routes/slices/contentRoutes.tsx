@@ -14,6 +14,8 @@ import { ROUTES } from '@/constants/routes'
 
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
+const ClubMediaPage = lazy(() => import('@/modules/clubs/pages/ClubMediaPage'))
+const PlayerMediaPage = lazy(() => import('@/modules/players/pages/PlayerMediaPage'))
 
 const PlayerCreatePage = lazy(() =>
   import('@/modules/players/pages/DashboardPlayerCreatePage').then(m => ({ default: m.DashboardPlayerCreatePage })),
@@ -81,7 +83,9 @@ export function contentRouteElements() {
       <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><OrganizationDetailPage /></PublicLayout>} />
 
       {/* Digital Asset Management */}
-      <Route path={ROUTES.DASHBOARD_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><MediaManagerPage /></Suspense></ProtectedRoute>} />
+      <Route path={ROUTES.DASHBOARD_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><MediaManagerPage ownerType="organization" ownerId={undefined} /></Suspense></ProtectedRoute>} />
+      <Route path={ROUTES.DASHBOARD_CLUB_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><ClubMediaPage /></Suspense></ProtectedRoute>} />
+      <Route path={ROUTES.DASHBOARD_PLAYER_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><PlayerMediaPage /></Suspense></ProtectedRoute>} />
 
       {/* Clubs (public) */}
       <Route

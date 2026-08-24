@@ -8,13 +8,29 @@ import { getMediaAssetUrl } from '../services'
 import { useDeleteMediaAsset, useMediaAssets, useUploadMediaAsset } from '../hooks'
 import type { MediaAsset } from '../types'
 
+interface MediaManagerPageProps {
+  ownerType: 'organization' | 'club' | 'player'
+  ownerId?: string | null
+  title?: string
+  dashboardType?: 'organization' | 'club' | 'player'
+  sidebarLinks?: React.ComponentProps<typeof DashboardLayout>['sidebarLinks']
+  sidebarSections?: React.ComponentProps<typeof DashboardLayout>['sidebarSections']
+}
+
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export function MediaManagerPage() {
+export function MediaManagerPage({
+  ownerType,
+  ownerId,
+  title = 'Biblioteca de Media',
+  dashboardType = 'organization',
+  sidebarLinks,
+  sidebarSections,
+}: MediaManagerPageProps) {
   const { tenant } = useTenant()
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
@@ -23,14 +39,15 @@ export function MediaManagerPage() {
   const { data, isLoading } = useMediaAssets(query ? { q: query } : {})
   const uploadMutation = useUploadMediaAsset()
   const deleteMutation = useDeleteMediaAsset()
+  const resolvedOwnerId = ownerId ?? (ownerType === 'organization' ? tenant?.id : undefined)
   const assets = data?.results ?? []
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (!file || !tenant?.id) return
+    if (!file || !resolvedOwnerId) return
     setError(null)
-    uploadMutation.mutate({ file, ownerId: tenant.id, category }, { onError: () => setError('Não foi possível carregar este ficheiro.') })
+    uploadMutation.mutate({ file, ownerId: resolvedOwnerId, ownerType, category }, { onError: () => setError('Não foi possível carregar este ficheiro.') })
   }
 
   const openAsset = async (asset: MediaAsset) => {
@@ -43,11 +60,12 @@ export function MediaManagerPage() {
 
   return (
     <DashboardLayout
-      title="Biblioteca de Media"
+      title={title}
       subtitle="Centralize, reutilize e mantenha os ativos digitais da sua organização."
-      dashboardType="organization"
-      sidebarSections={getOrganizationSidebarSections('media')}
-      headerActions={<Button onClick={() => inputRef.current?.click()} disabled={!tenant?.id || uploadMutation.isPending}>
+      dashboardType={dashboardType}
+      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections ?? (ownerType === 'organization' ? getOrganizationSidebarSections('media') : undefined)}
+      headerActions={<Button onClick={() => inputRef.current?.click()} disabled={!resolvedOwnerId || uploadMutation.isPending}>
         {uploadMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UploadCloud className="h-4 w-4" />}
         <span>{uploadMutation.isPending ? 'A carregar...' : 'Carregar ficheiro'}</span>
       </Button>}

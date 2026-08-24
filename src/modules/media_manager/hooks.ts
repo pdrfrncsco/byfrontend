@@ -13,8 +13,8 @@ export function useMediaAssets(params: Record<string, string> = {}) {
 export function useUploadMediaAsset() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ file, ownerId, category }: { file: File; ownerId: string; category?: string }) =>
-      uploadMediaAsset(file, ownerId, category),
+    mutationFn: ({ file, ownerId, ownerType, category }: { file: File; ownerId: string; ownerType: 'organization' | 'club' | 'player'; category?: string }) =>
+      uploadMediaAsset(file, ownerId, ownerType, category),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: mediaKeys.all }),
   })
 }

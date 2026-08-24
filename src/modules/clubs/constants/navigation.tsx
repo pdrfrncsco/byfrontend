@@ -1,4 +1,4 @@
-import { ArrowRightLeft, FileText, Handshake, LayoutDashboard, Settings, Trophy, UserCheck, UserPlus, Users, UsersRound } from 'lucide-react'
+import { ArrowRightLeft, FileText, FolderOpen, Handshake, LayoutDashboard, Settings, Trophy, UserCheck, UserPlus, Users, UsersRound } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 export function getClubSidebarLinks() {
@@ -27,6 +27,11 @@ export function getClubSidebarLinks() {
       label: 'Documentos',
       href: ROUTES.DASHBOARD_CLUB_DOCUMENTS,
       icon: <FileText className="h-4 w-4" />,
+    },
+    {
+      label: 'Biblioteca de Media',
+      href: ROUTES.DASHBOARD_CLUB_MEDIA,
+      icon: <FolderOpen className="h-4 w-4" />,
     },
     {
       label: 'Patrocinadores',
