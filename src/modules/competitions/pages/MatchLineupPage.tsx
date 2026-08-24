@@ -9,8 +9,9 @@ import {
   Check,
   Lock,
   Goal,
+  ClipboardList,
 } from 'lucide-react'
-import { Badge, Button, Card } from '@/components/ui'
+import { Badge, Button, Card, EmptyState } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
@@ -358,15 +359,13 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
       )}
 
       {starterPlayers.length === 0 && substitutePlayers.length === 0 && (
-        <Card variant="flat" padding="lg">
-          <div className="flex flex-col items-center gap-sm py-lg text-center">
-            <Users className="h-10 w-10 text-on-surface-variant/30" />
-            <p className="font-medium text-on-surface-variant">Escalação não disponível</p>
-            <p className="text-sm text-on-surface-variant/70">
-              A escalação será apresentada aqui assim que for submetida.
-            </p>
-          </div>
-        </Card>
+        <EmptyState
+          icon={ClipboardList}
+          iconClassName="h-10 w-10 text-primary"
+          title="Escalação não disponível"
+          description="A prancheta táctica ficará disponível assim que a escalação for submetida e aprovada."
+          className="max-w-none border-dashed border-primary/20 bg-primary/[0.03] py-12 shadow-none"
+        />
       )}
     </MatchLineupGrid>
   )
