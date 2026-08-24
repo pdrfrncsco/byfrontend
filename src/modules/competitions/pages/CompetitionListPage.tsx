@@ -6,7 +6,7 @@ import { useCompetitionsPaginated } from '../hooks/useCompetitions'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
 import { CompetitionCard } from '../components/CompetitionCard'
-import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
 import type { CompetitionStatus, CompetitionType } from '../types'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
@@ -50,9 +50,21 @@ export function CompetitionListPage() {
   return (
     <ExplorePageShell
       breadcrumbs={[{ label: 'Competições' }]}
-      eyebrow="Explorar competições"
-      title="Descubra campeonatos, taças e torneios"
-      description="Encontre competições, acompanhe o calendário e consulte os resultados do futebol no ecossistema BolaYetu."
+      hero={
+        <PublicListHero
+          badge="Explorar competições"
+          title="Descubra campeonatos, taças e torneios"
+          description="Encontre competições, acompanhe o calendário e consulte os resultados do futebol no ecossistema BolaYetu."
+          stats={[{ label: 'Calendário público' }, { label: 'Resultados em direto' }, { label: 'Competições oficiais' }]}
+          insightTitle="Match center e tabela"
+          insightDescription="Acompanhe o estado das provas, classificações e eventos do calendário competitivo."
+          metrics={[
+            { label: 'Competições', value: total },
+            { label: 'Página', value: `${page}/${totalPages}` },
+            { label: 'Estado', value: statusFilter === 'all' ? 'Todas' : statusFilter },
+          ]}
+        />
+      }
     >
       <ExploreSection title="Todas as competições" description="Pesquise e refine os resultados para encontrar a competição certa.">
         <div className="space-y-lg">

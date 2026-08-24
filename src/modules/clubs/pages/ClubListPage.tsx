@@ -7,7 +7,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Button } from '@/components/ui/button'
-import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
@@ -45,9 +45,21 @@ export default function ClubListPage() {
   return (
     <ExplorePageShell
       breadcrumbs={[{ label: 'Clubes' }]}
-      eyebrow="Explorar clubes"
-      title="Descubra clubes, estrutura e identidade pública"
-      description="Explore clubes do ecossistema BolaYetu e aceda diretamente a plantéis, staff, competições e informação institucional."
+      hero={
+        <PublicListHero
+          badge="Explorar clubes"
+          title="Descubra clubes, estrutura e identidade pública"
+          description="Explore clubes do ecossistema BolaYetu e aceda diretamente a plantéis, staff, competições e informação institucional."
+          stats={[{ label: 'Perfis públicos' }, { label: 'Estrutura institucional' }, { label: 'Dados em tempo real' }]}
+          insightTitle="Visibilidade do clube"
+          insightDescription="O ecossistema conecta clubes, organizações e públicos em torno da atividade desportiva."
+          metrics={[
+            { label: 'Totais', value: total },
+            { label: 'Página', value: `${page}/${totalPages}` },
+            { label: 'Pesquisa', value: debouncedSearch ? 'Ativa' : 'Geral' },
+          ]}
+        />
+      }
     >
       <ExploreSection title="Todos os clubes" description="Pesquise por nome, cidade ou organização para encontrar um clube.">
         <div className="space-y-lg">

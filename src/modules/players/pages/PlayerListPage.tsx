@@ -7,7 +7,7 @@ import { ErrorState, EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
-import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
 import { PlayerCard } from '../components'
 import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
@@ -58,9 +58,21 @@ export function PlayerListPage() {
   return (
     <ExplorePageShell
       breadcrumbs={[{ label: 'Jogadores' }]}
-      eyebrow={t('players.list.badge')}
-      title={t('players.list.title')}
-      description={t('players.list.subtitle')}
+      hero={
+        <PublicListHero
+          badge={t('players.list.badge')}
+          title={t('players.list.title')}
+          description={t('players.list.subtitle')}
+          stats={[{ label: 'Scouting público' }, { label: 'Perfis detalhados' }, { label: 'Acesso rápido' }]}
+          insightTitle="Descoberta de talento"
+          insightDescription="Pesquise por posição, nacionalidade e disponibilidade para encontrar jogadores com o perfil ideal."
+          metrics={[
+            { label: 'Jogadores', value: totalCount },
+            { label: 'Página', value: page },
+            { label: 'Filtros', value: activeFilters },
+          ]}
+        />
+      }
     >
       <ExploreSection title="Diretório de jogadores" description={t('players.list.discoveryDescription')}>
         <div className="space-y-lg">

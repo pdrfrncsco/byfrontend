@@ -3,7 +3,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
-import { ExplorePageShell, ExploreSection, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
 import { usePublicOrganizations } from '../hooks'
 import { OrganizationCard } from '../components'
 
@@ -27,9 +27,21 @@ export function OrganizationListPage() {
   return (
     <ExplorePageShell
       breadcrumbs={[{ label: 'Organizações' }]}
-      eyebrow="Explorar organizações"
-      title="Descubra organizações oficiais do ecossistema"
-      description="Conheça federações, associações, ligas, organizadores e academias de futebol registados na plataforma BolaYetu."
+      hero={
+        <PublicListHero
+          badge="Explorar organizações"
+          title="Descubra organizações oficiais do ecossistema"
+          description="Conheça federações, associações, ligas, organizadores e academias de futebol registados na plataforma BolaYetu."
+          stats={[{ label: 'Estrutura oficial' }, { label: 'Rede de clubes' }, { label: 'Visibilidade regional' }]}
+          insightTitle="Rede futebolística"
+          insightDescription="As organizações conectam clubes, competições e comunidades em torno de um mesmo ecossistema."
+          metrics={[
+            { label: 'Organizações', value: organizations?.length ?? 0 },
+            { label: 'Tipo', value: typeFilter || 'Todos' },
+            { label: 'Pesquisa', value: debouncedSearch ? 'Ativa' : 'Geral' },
+          ]}
+        />
+      }
     >
       <ExploreSection title="Diretório público" description="Pesquise por nome, localização ou tipo de organização.">
         <div className="space-y-lg">

@@ -11,9 +11,10 @@ interface ExplorePageShellProps {
   children: ReactNode
   breadcrumbs?: ExploreBreadcrumb[]
   eyebrow?: string
-  title: string
+  title?: string
   description?: string
   actions?: ReactNode
+  hero?: ReactNode
 }
 
 export function ExplorePageShell({
@@ -23,6 +24,7 @@ export function ExplorePageShell({
   title,
   description,
   actions,
+  hero,
 }: ExplorePageShellProps) {
   return (
     <main className="relative mx-auto w-full max-w-container-max px-gutter pb-2xl pt-xl md:pt-2xl">
@@ -46,14 +48,16 @@ export function ExplorePageShell({
           ))}
         </nav>
 
-        <header className="mb-2xl flex flex-col gap-lg rounded-[2rem] border border-outline-variant/60 bg-surface-container-low/80 p-lg shadow-[0_22px_48px_-32px_rgba(15,17,23,0.28)] backdrop-blur-sm md:flex-row md:items-end md:justify-between md:p-xl">
-          <div className="max-w-4xl">
-            {eyebrow && <p className="mb-sm text-[11px] font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>}
-            <h1 className="max-w-4xl font-display-lg text-[2.6rem] leading-[0.92] tracking-[-0.05em] text-on-surface md:text-[5rem]">{title}</h1>
-            {description && <p className="mt-md max-w-3xl text-base leading-relaxed text-on-surface-variant md:text-[1.125rem]">{description}</p>}
-          </div>
-          {actions && <div className="flex shrink-0 flex-wrap items-center gap-sm">{actions}</div>}
-        </header>
+        {hero ?? (
+          <header className="mb-2xl flex flex-col gap-lg rounded-[2rem] border border-outline-variant/60 bg-surface-container-low/80 p-lg shadow-[0_22px_48px_-32px_rgba(15,17,23,0.28)] backdrop-blur-sm md:flex-row md:items-end md:justify-between md:p-xl">
+            <div className="max-w-4xl">
+              {eyebrow && <p className="mb-sm text-[11px] font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>}
+              <h1 className="max-w-4xl font-display-lg text-[2.6rem] leading-[0.92] tracking-[-0.05em] text-on-surface md:text-[5rem]">{title}</h1>
+              {description && <p className="mt-md max-w-3xl text-base leading-relaxed text-on-surface-variant md:text-[1.125rem]">{description}</p>}
+            </div>
+            {actions && <div className="flex shrink-0 flex-wrap items-center gap-sm">{actions}</div>}
+          </header>
+        )}
 
         {children}
       </div>
