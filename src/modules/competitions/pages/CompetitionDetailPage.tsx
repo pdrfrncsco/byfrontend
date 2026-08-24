@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button, Card } from '@/components/ui'
+import { PublicDetailPageShell } from '@/modules/shared/components'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { useCompetitionRounds, useGenerateSchedule } from '../hooks/useCompetitionMatches'
@@ -289,35 +290,34 @@ export function CompetitionDetailPage() {
 
   if (errorComp) {
     return (
-      <div className="mx-auto w-full max-w-container-max px-gutter py-xl md:py-2xl">
-        <nav aria-label="Breadcrumb" className="mb-2xl flex items-center gap-xs text-sm text-on-surface-variant">
-          <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="text-on-surface">Detalhe</span>
-        </nav>
+      <PublicDetailPageShell
+        breadcrumb={
+          <nav aria-label="Breadcrumb" className="mb-xl flex items-center gap-xs text-sm text-on-surface-variant">
+            <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page" className="text-on-surface">Detalhe</span>
+          </nav>
+        }
+      >
         <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
           <AlertCircle className="h-12 w-12 text-error opacity-70" />
           <p className="font-medium text-on-surface">Competição não encontrada.</p>
           <Link to={competitionRoutes.list}><Button variant="secondary" size="sm">Voltar às Competições</Button></Link>
         </div>
-      </div>
+      </PublicDetailPageShell>
     )
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      {/* Background Gradient Accents */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/15 to-indigo-600/15 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/15 to-pink-600/15 blur-3xl" />
-
-      {/* Hero Header */}
-      <div className="mx-auto max-w-container-max px-gutter pt-xl">
+    <PublicDetailPageShell
+      breadcrumb={
         <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
           <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page" className="truncate text-on-surface">{loadingComp ? 'A carregar...' : competition?.name ?? 'Detalhe'}</span>
         </nav>
-      </div>
+      }
+    >
       {loadingComp ? (
         <CompetitionHeaderSkeleton />
       ) : competition ? (
@@ -400,6 +400,6 @@ export function CompetitionDetailPage() {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
+    </PublicDetailPageShell>
   )
 }
