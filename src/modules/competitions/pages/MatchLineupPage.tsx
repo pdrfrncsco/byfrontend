@@ -44,9 +44,10 @@ const LINEUP_STATUS_CONFIG: Record<
 
 interface FormationFieldProps {
   starters: LineupPlayer[]
+  formation?: string
 }
 
-function FormationField({ starters }: FormationFieldProps) {
+function FormationField({ starters, formation }: FormationFieldProps) {
   // Group by position for formation display
   const positionGroups: Record<string, LineupPlayer[]> = {
     GK: [],
@@ -70,8 +71,14 @@ function FormationField({ starters }: FormationFieldProps) {
     }
   })
 
+  const formationRows = (formation?.match(/\d+/g) ?? []).map(Number).filter(Number.isFinite)
+  const defenderCount = formationRows[0] ?? positionGroups.DEF.length
+  const midfielderCount = formationRows[1] ?? positionGroups.MID.length
+  const forwardCount = formationRows.slice(2).reduce((total, count) => total + count, 0) || positionGroups.FWD.length
+  const rowClass = (count: number) => count >= 4 ? 'gap-xs sm:gap-sm' : count === 3 ? 'gap-md sm:gap-xl' : 'gap-xl sm:gap-2xl'
+
   return (
-    <div className="relative mx-auto max-w-md">
+    <div className="relative mx-auto max-w-xl">
       {/* Field background */}
       <div className="aspect-[3/4] rounded-2xl bg-gradient-to-b from-primary-container/40 via-surface-container to-surface-container-high p-lg shadow-lg shadow-primary/10">
         {/* Field markings */}
@@ -86,29 +93,29 @@ function FormationField({ starters }: FormationFieldProps) {
         </div>
 
         {/* Players on field */}
-        <div className="absolute inset-0 flex flex-col items-center justify-between py-lg">
+        <div className="absolute inset-0 flex flex-col items-center justify-between py-lg sm:py-xl">
           {/* Goalkeeper */}
           <div className="flex justify-center">
             <PlayerMarker player={positionGroups.GK[0]} />
           </div>
 
           {/* Defenders */}
-          <div className="flex w-full justify-around px-lg">
-            {positionGroups.DEF.slice(0, 4).map((player, i) => (
+          <div className={`flex w-full justify-center px-md sm:px-lg ${rowClass(defenderCount)}`}>
+            {positionGroups.DEF.slice(0, defenderCount).map((player, i) => (
               <PlayerMarker key={player.id || i} player={player} />
             ))}
           </div>
 
           {/* Midfielders */}
-          <div className="flex w-full justify-around px-lg">
-            {positionGroups.MID.slice(0, 4).map((player, i) => (
+          <div className={`flex w-full justify-center px-md sm:px-lg ${rowClass(midfielderCount)}`}>
+            {positionGroups.MID.slice(0, midfielderCount).map((player, i) => (
               <PlayerMarker key={player.id || i} player={player} />
             ))}
           </div>
 
           {/* Forwards */}
-          <div className="flex justify-center gap-xl">
-            {positionGroups.FWD.slice(0, 2).map((player, i) => (
+          <div className={`flex justify-center ${rowClass(forwardCount)}`}>
+            {positionGroups.FWD.slice(0, forwardCount).map((player, i) => (
               <PlayerMarker key={player.id || i} player={player} />
             ))}
           </div>
@@ -317,7 +324,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
 
       {/* Formation Field */}
       {starterPlayers.length > 0 && (
-        <FormationField starters={starterPlayers} />
+        <FormationField starters={starterPlayers} formation={lineup.formation} />
       )}
 
       {/* Starters List */}
