@@ -185,44 +185,36 @@ function PlayerCard({
       onDrop={(event) => { event.preventDefault(); onDrop?.() }}
       onMouseEnter={() => onPlayerHover?.(playerId)}
       onMouseLeave={() => onPlayerHover?.(null)}
-      className={`flex items-center gap-sm rounded-lg border p-sm transition-all hover:-translate-y-0.5 hover:shadow-sm ${
+      className={`flex min-w-0 items-center gap-sm rounded-lg border px-sm py-xs transition-all hover:-translate-y-0.5 hover:shadow-sm ${
         isStarter
-          ? active ? 'border-primary bg-primary-container/20 shadow-sm' : 'border-primary/30 bg-primary-container/10'
-          : active ? 'border-primary/50 bg-surface-container-low shadow-sm' : 'border-outline-variant/20 bg-surface-container'
+          ? active ? 'border-primary bg-primary-container/15 shadow-sm' : 'border-primary/20 bg-transparent'
+          : active ? 'border-primary/50 bg-surface-container-low shadow-sm' : 'border-outline-variant/15 bg-transparent'
       }`}
     >
       {/* Shirt number */}
       <div
-        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+        className={`flex w-6 flex-shrink-0 items-center justify-center text-xs font-bold tabular-nums ${
           player.is_goalkeeper
-            ? 'bg-amber-100 text-amber-700 border border-amber-200'
-            : 'bg-primary-container/20 text-primary'
+            ? 'text-amber-700'
+            : 'text-primary'
         }`}
       >
         {player.shirt_number}
       </div>
 
       {/* Player info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-xs">
-          <span className="truncate text-sm font-medium text-on-surface">
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-center gap-xs">
+          <span className="min-w-0 truncate text-xs font-semibold text-on-surface sm:text-sm">
             {player.player?.full_name || 'Jogador'}
           </span>
-          {player.is_captain && <Crown className="h-3 w-3 text-amber-500 drop-shadow-[0_0_4px_rgba(245,158,11,0.8)]" />}
-          {player.is_goalkeeper && <Goal className="h-3 w-3 text-amber-600" />}
+          {player.is_captain && <Crown className="h-3 w-3 flex-shrink-0 text-amber-500 drop-shadow-[0_0_4px_rgba(245,158,11,0.8)]" />}
+          {player.is_goalkeeper && <Goal className="h-3 w-3 flex-shrink-0 text-amber-600" />}
         </div>
-        <span className="text-xs text-on-surface-variant">
+        <span className="block truncate text-[11px] text-on-surface-variant">
           {player.position_display || player.position}
         </span>
       </div>
-
-      {/* Status badge */}
-      <Badge
-        variant={isStarter ? 'success' : 'secondary'}
-        className="text-xs"
-      >
-        {isStarter ? 'Titular' : 'Suplente'}
-      </Badge>
     </div>
   )
 }
