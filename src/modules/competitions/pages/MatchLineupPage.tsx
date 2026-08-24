@@ -488,7 +488,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="space-y-2xl">
+          <div className="grid gap-lg lg:grid-cols-2">
             {/* Home Team Lineup */}
             <Card variant="flat" padding="lg">
               {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
