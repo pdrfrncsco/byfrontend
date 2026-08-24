@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin } from 'lucide-react'
+import { ArrowUpRight, Calendar, MapPin } from 'lucide-react'
 import type { Match } from '../types'
 import { getMatchClockInfo } from '../utils/match-clock'
 import { MatchCountdown } from './MatchCountdown'
@@ -40,12 +40,13 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
   })
   const timeStr = matchDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
 
-  const isLive = match.status === 'live'
+  const isLive = match.status === 'live' || match.status === 'halftime'
 
   const card = (
     <div
-      className={`group relative overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container transition-all hover:border-primary/30 hover:shadow-sm ${compact ? 'p-md' : 'p-lg'}`}
+      className={`group relative overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_24px_-18px_rgba(15,17,23,0.45)] ${compact ? 'p-md' : 'p-lg'}`}
     >
+      <span className={`absolute inset-x-0 top-0 h-1 ${isLive ? 'bg-amber-500' : 'bg-primary/20'}`} aria-hidden="true" />
       {/* Live pulse indicator */}
       {isLive && (
         <span className="absolute right-3 top-3 flex h-2.5 w-2.5">
@@ -88,14 +89,13 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
               alt={homeName} 
               className="h-8 w-8 flex-shrink-0 rounded-full object-cover" 
               onError={(e) => { 
-                // prefer React state, but keep inline fallback safe
                 e.currentTarget.onerror = null
-                e.currentTarget.src = undefined as any
                 e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove('hidden')
               }}
             />
           ) : null}
-          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? '' : ''}`}>
+          <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? 'hidden' : ''}`}>
             {homeName?.charAt(0) || '?'}
           </div>
           <span className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
@@ -132,10 +132,11 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
 
       {/* Link overlay for hover arrow */}
       {showLink && (
-        <div className="mt-sm flex justify-end">
-          <span className="text-xs text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            Ver detalhe →
+        <div className="mt-md flex items-center justify-end gap-xs text-xs font-semibold text-primary opacity-70 transition-opacity group-hover:opacity-100">
+          <span>
+            Ver detalhe
           </span>
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
       )}
     </div>
