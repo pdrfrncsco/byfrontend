@@ -9,6 +9,7 @@ export interface EmptyStateProps {
   description: string
   icon?: LucideIcon
   iconClassName?: string
+  visual?: React.ReactNode
   action?: {
     label: string
     onClick: () => void
@@ -22,6 +23,7 @@ export function EmptyState({
   description,
   icon: Icon,
   iconClassName,
+  visual,
   action,
   className,
 }: EmptyStateProps) {
@@ -34,11 +36,11 @@ export function EmptyState({
         className,
       )}
     >
-      {Icon && (
+      {visual ?? (Icon && (
         <div className="mb-sm rounded-full border border-outline-variant/40 bg-surface-bright p-lg text-outline">
           <Icon className={cn('h-8 w-8 text-primary', iconClassName)} aria-hidden="true" />
         </div>
-      )}
+      ))}
 
       <div className="space-y-sm">
         <h3 className="font-title-md text-xl text-on-surface">{title}</h3>

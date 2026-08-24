@@ -9,7 +9,6 @@ import {
   Check,
   Lock,
   Goal,
-  ClipboardList,
 } from 'lucide-react'
 import { Badge, Button, Card, EmptyState } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -219,6 +218,22 @@ function PlayerCard({
   )
 }
 
+function TacticalBoardEmptyVisual() {
+  return (
+    <div className="relative mb-lg h-28 w-44 overflow-hidden rounded-xl border border-white/25 bg-[linear-gradient(135deg,rgba(14,56,52,0.96),rgba(10,39,36,0.9))] shadow-[0_16px_32px_-20px_rgba(15,118,110,0.75)]" aria-hidden="true">
+      <div className="absolute inset-3 rounded-lg border border-white/20" />
+      <div className="absolute inset-x-3 top-1/2 h-px bg-white/20" />
+      <div className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20" />
+      <div className="absolute left-1/2 top-3 h-6 w-12 -translate-x-1/2 border-b border-l border-r border-white/15" />
+      <div className="absolute bottom-3 left-1/2 h-6 w-12 -translate-x-1/2 border-l border-r border-t border-white/15" />
+      <span className="absolute left-8 top-7 h-3 w-3 rounded-full border-2 border-[#0b3d70] bg-[#f4c430] shadow-[0_0_10px_rgba(244,196,48,0.7)]" />
+      <span className="absolute right-8 top-10 h-3 w-3 rounded-full border-2 border-[#0b3d70] bg-[#f4c430] shadow-[0_0_10px_rgba(244,196,48,0.7)]" />
+      <span className="absolute bottom-8 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-[#0b3d70] bg-[#f4c430] shadow-[0_0_10px_rgba(244,196,48,0.7)]" />
+      <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px]" />
+    </div>
+  )
+}
+
 // ─── Lineup Section ───────────────────────────────────────────────────────────
 
 interface LineupSectionProps {
@@ -293,11 +308,11 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
           <h3 className="text-lg font-semibold text-on-surface">
             {isHome ? match.home_club_name : match.away_club_name}
           </h3>
-          <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
+          {/*<Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>*/}
         </div>
         <div className="flex items-center gap-sm">
           {lineup.formation && (
-            <span className="text-sm text-on-surface-variant">Formação: {lineup.formation}</span>
+            <span className="text-sm text-on-surface-variant"> {lineup.formation}</span>
           )}
 
           {onConfirm && String(lineup.status).toLowerCase() === 'submitted' && (
@@ -373,11 +388,10 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
 
       {starterPlayers.length === 0 && substitutePlayers.length === 0 && (
         <EmptyState
-          icon={ClipboardList}
-          iconClassName="h-10 w-10 text-primary"
+          visual={<TacticalBoardEmptyVisual />}
           title="Escalação não disponível"
-          description="A prancheta táctica ficará disponível assim que a escalação for submetida e aprovada."
-          className="max-w-none border-dashed border-primary/25 bg-primary/[0.04] py-12 shadow-none backdrop-blur-md"
+          description="O quadro táctico será preenchido assim que a escalação for disponibilizada."
+          className="max-w-none border-dashed border-white/30 bg-[linear-gradient(135deg,rgba(255,255,255,0.52),rgba(219,242,235,0.32))] py-12 shadow-[0_18px_42px_-30px_rgba(15,118,110,0.48)] backdrop-blur-md"
         />
       )}
     </MatchLineupGrid>
