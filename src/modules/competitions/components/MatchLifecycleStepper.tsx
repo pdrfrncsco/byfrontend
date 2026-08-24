@@ -19,6 +19,20 @@ function stageIndex(status: MatchStatus) {
 export function MatchLifecycleStepper({ match }: { match: Match }) {
   const currentIndex = stageIndex(match.status)
   const reportStatus = (match as any).report_status as string | undefined
+  const isTerminal = ['finished', 'archived', 'cancelled', 'walkover'].includes(match.status)
+
+  if (isTerminal) {
+    return (
+      <section className="flex flex-wrap items-center justify-between gap-sm rounded-xl border border-outline-variant/20 bg-surface-container-low px-md py-sm" aria-label="Estado da partida">
+        <div className="flex items-center gap-sm">
+          <Trophy className="h-4 w-4 text-primary" />
+          <span className="text-sm font-semibold text-on-surface">Estado final</span>
+          {reportStatus && <span className="text-xs text-on-surface-variant">Relatório: {reportStatus}</span>}
+        </div>
+        <MatchStatusBadge status={match.status} currentMinute={match.current_minute} period={match.current_period as any} />
+      </section>
+    )
+  }
 
   return (
     <section className="rounded-xl border border-outline-variant/20 bg-surface-container p-md" aria-label="Ciclo de vida da partida">

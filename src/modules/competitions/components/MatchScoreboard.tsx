@@ -70,7 +70,7 @@ export function MatchScoreboard({ match, compact = false, className = '' }: Matc
     </div>
   }
 
-  return <div className={`rounded-2xl border border-outline-variant/20 bg-surface-container p-lg sm:p-xl ${className}`}>
+  return <div className={`rounded-2xl border border-outline-variant/20 bg-surface-container p-lg shadow-[0_18px_40px_-30px_rgba(15,17,23,0.35)] sm:p-xl ${className}`}>
     <div className="mb-lg flex flex-col items-center justify-center gap-sm">
       <MatchStatusBadge status={match.status} currentMinute={currentMinute} period={currentPeriod} />
       {(match.status === 'live' || match.status === 'halftime' || match.status === 'finished') && (
@@ -81,7 +81,7 @@ export function MatchScoreboard({ match, compact = false, className = '' }: Matc
     </div>
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-md sm:gap-xl">
       <div className="flex min-w-0 flex-col items-center gap-sm text-center"><TeamBadge name={homeName} logo={match.homeTeamLogo || match.home_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{homeName}</span></div>
-      <div className="text-center"><div className="flex items-center gap-sm font-mono text-4xl font-bold tabular-nums text-on-surface sm:text-6xl">{hasScore ? <><span>{homeScore}</span><span className="text-on-surface-variant">-</span><span>{awayScore}</span></> : <span className="text-2xl text-on-surface-variant">VS</span>}</div>{match.score?.homeFirstHalf !== undefined && <span className="text-xs text-on-surface-variant">Intervalo {match.score?.homeFirstHalf ?? '-'}-{match.score?.awayFirstHalf ?? '-'}</span>}</div>
+      <div className="text-center"><div className="flex items-center gap-sm font-mono text-5xl font-black tabular-nums tracking-tight text-on-surface sm:text-7xl">{hasScore ? <><span>{homeScore}</span><span className="text-on-surface-variant/60">-</span><span>{awayScore}</span></> : <span className="text-2xl text-on-surface-variant">VS</span>}</div>{match.score?.homeFirstHalf !== undefined && <span className="text-xs text-on-surface-variant">Intervalo {match.score?.homeFirstHalf ?? '-'}-{match.score?.awayFirstHalf ?? '-'}</span>}</div>
       <div className="flex min-w-0 flex-col items-center gap-sm text-center"><TeamBadge name={awayName} logo={match.awayTeamLogo || match.away_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{awayName}</span></div>
     </div>
   </div>

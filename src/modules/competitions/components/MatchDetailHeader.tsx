@@ -16,15 +16,12 @@ export function MatchDetailHeader({ match, backTo, children }: MatchDetailHeader
   return (
     <header className="mb-lg rounded-2xl border border-outline-variant/20 bg-surface-container">
       <div className="mx-auto max-w-5xl px-lg py-lg">
-        <Link to={backTo} className="mb-md inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar à competição
-        </Link>
+
         <MatchScoreboard match={match} />
+        {children}
         <div className="mt-lg">
           <MatchLifecycleStepper match={match} />
         </div>
-        {children}
       </div>
     </header>
   )
