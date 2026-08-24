@@ -36,6 +36,7 @@ export const ROUTES = {
   DASHBOARD_ORGANIZATION_MEMBERS: '/dashboard/organization/members',
   DASHBOARD_ORGANIZATION_AFFILIATIONS: '/dashboard/organization/affiliations',
   DASHBOARD_ORGANIZATION_LINEUPS: '/dashboard/organization/lineups',
+  DASHBOARD_MEDIA: '/dashboard/media',
   DASHBOARD_CLUB: '/dashboard/club',
   DASHBOARD_CLUB_SETTINGS: '/dashboard/club/settings',
   DASHBOARD_CLUB_MEMBERS: '/dashboard/club/members',
@@ -309,5 +310,12 @@ export const API_ROUTES = {
     UNREAD_COUNT: '/notifications/unread-count/',
     MARK_READ: (id: string) => `/notifications/${id}/mark-read/`,
     STREAM: '/notifications/stream/',
+  },
+  MEDIA: {
+    LIST: '/media/',
+    UPLOAD: '/media/upload/',
+    GET: (id: string) => `/media/${id}/`,
+    DELETE: (id: string) => `/media/${id}/`,
+    SIGNED_URL: (id: string) => `/media/${id}/signed-url/`,
   },
 }

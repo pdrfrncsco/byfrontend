@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ClipboardList, Home, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
+import { ClipboardList, FolderOpen, Home, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 export type OrganizationNavKey =
@@ -10,6 +10,7 @@ export type OrganizationNavKey =
   | 'competitions'
   | 'members'
   | 'affiliations'
+  | 'media'
   | 'settings'
 
 interface OrganizationSidebarOptions {
@@ -66,6 +67,11 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
     href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
     icon: <Shield className="h-4 w-4" />,
   },
+  media: {
+    label: 'Biblioteca de Media',
+    href: ROUTES.DASHBOARD_MEDIA,
+    icon: <FolderOpen className="h-4 w-4" />,
+  },
   settings: {
     label: 'Configurações',
     href: ROUTES.ORGANIZATION_SETTINGS,
@@ -105,6 +111,7 @@ export function getOrganizationSidebarSections(
         buildLink('competitions', active),
         buildLink('members', active),
         buildLink('affiliations', active),
+        buildLink('media', active),
         buildLink('settings', active),
       ],
     },

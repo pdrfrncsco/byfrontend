@@ -9,6 +9,8 @@ import { playerRoutes } from '@/modules/players/routes'
 import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
 import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
 import { OrganizationListPage, OrganizationDetailPage } from '@/modules/organizations'
+import MediaManagerPage from '@/modules/media_manager/pages/MediaManagerPage'
+import { ROUTES } from '@/constants/routes'
 
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
@@ -77,6 +79,9 @@ export function contentRouteElements() {
       {/* Organizations (public) */}
       <Route path={organizationRoutes.list} element={<PublicLayout variant="explore"><OrganizationListPage /></PublicLayout>} />
       <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><OrganizationDetailPage /></PublicLayout>} />
+
+      {/* Digital Asset Management */}
+      <Route path={ROUTES.DASHBOARD_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><MediaManagerPage /></Suspense></ProtectedRoute>} />
 
       {/* Clubs (public) */}
       <Route
