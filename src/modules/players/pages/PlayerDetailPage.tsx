@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NotFound, ServerError } from '@/components/ui/error-states'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
-import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
+import { DetailHeroCard, PublicDetailPageShell } from '@/modules/shared/components'
 import {
   PlayerAchievementsTab,
   PlayerCareerTimeline,
@@ -68,34 +68,25 @@ export function PlayerDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <PlayerBreadcrumb current="A carregar..." />
-          <PageSkeleton variant="detail" />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<PlayerBreadcrumb current="A carregar..." />}>
+        <PageSkeleton variant="detail" />
+      </PublicDetailPageShell>
     )
   }
 
   if (isError) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <PlayerBreadcrumb />
-          <ServerError onRetry={() => refetch()} />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<PlayerBreadcrumb />}>
+        <ServerError onRetry={() => refetch()} />
+      </PublicDetailPageShell>
     )
   }
 
   if (!player) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <PlayerBreadcrumb />
-          <NotFound resourceName="jogador" onAction={() => navigate(playerRoutes.list)} />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<PlayerBreadcrumb />}>
+        <NotFound resourceName="jogador" onAction={() => navigate(playerRoutes.list)} />
+      </PublicDetailPageShell>
     )
   }
 
@@ -104,14 +95,8 @@ export function PlayerDetailPage() {
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
-
-      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-        <PlayerBreadcrumb current={player.full_name} />
-
-        <DetailHeroCard
+    <PublicDetailPageShell breadcrumb={<PlayerBreadcrumb current={player.full_name} />}>
+      <DetailHeroCard
           eyebrow="Jogador público"
           title={player.full_name}
           description={player.bio || 'Perfil público do jogador com estatísticas, posição, clube atual e evolução na carreira.'}
@@ -229,7 +214,6 @@ export function PlayerDetailPage() {
           </TabsContent>
           </Tabs>
         </main>
-      </div>
-    </div>
+    </PublicDetailPageShell>
   )
 }

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-states'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
-import { DetailHeroCard } from '@/modules/shared/components/DetailHeroCard'
+import { DetailHeroCard, PublicDetailPageShell } from '@/modules/shared/components'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
 import {
@@ -104,85 +104,61 @@ export default function ClubDetailPage() {
 
   if (clubQuery.isLoading) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <ClubBreadcrumb current="A carregar..." />
-          <PageSkeleton variant="detail" />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb current="A carregar..." />}>
+        <PageSkeleton variant="detail" />
+      </PublicDetailPageShell>
     )
   }
 
   if (clubQuery.isError) {
     if (errorStatus === 403) {
       return (
-        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-            <ClubBreadcrumb />
-            <PermissionDenied onAction={() => navigate('/clubs')} />
-          </div>
-        </div>
+        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
+          <PermissionDenied onAction={() => navigate('/clubs')} />
+        </PublicDetailPageShell>
       )
     }
 
     if (errorStatus === 404) {
       return (
-        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-            <ClubBreadcrumb />
-            <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
-          </div>
-        </div>
+        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
+          <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
+        </PublicDetailPageShell>
       )
     }
 
     if (errorStatus === 500) {
       return (
-        <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-          <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-            <ClubBreadcrumb />
-            <ServerError onRetry={() => clubQuery.refetch()} />
-          </div>
-        </div>
+        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
+          <ServerError onRetry={() => clubQuery.refetch()} />
+        </PublicDetailPageShell>
       )
     }
 
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <ClubBreadcrumb />
-          <ServerError onRetry={() => clubQuery.refetch()} />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
+        <ServerError onRetry={() => clubQuery.refetch()} />
+      </PublicDetailPageShell>
     )
   }
 
   if (!club) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-        <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-          <ClubBreadcrumb />
-          <EmptyState
-            title="Clube não encontrado"
-            description="Não foi possível encontrar informação para este clube."
-            action={{ label: 'Ver todos os clubes', onClick: () => navigate('/clubs') }}
-          />
-        </div>
-      </div>
+      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
+        <EmptyState
+          title="Clube não encontrado"
+          description="Não foi possível encontrar informação para este clube."
+          action={{ label: 'Ver todos os clubes', onClick: () => navigate('/clubs') }}
+        />
+      </PublicDetailPageShell>
     )
   }
 
   const initials = (club.short_name || club.name || '?').slice(0, 2).toUpperCase()
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-on-surface">
-      <div className="pointer-events-none absolute -top-40 -left-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-600/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-600/20 blur-3xl" />
-
-      <div className="mx-auto max-w-6xl px-md py-xl sm:px-xl space-y-xl relative z-10">
-        <ClubBreadcrumb current={club.name} />
-
-        <DetailHeroCard
+    <PublicDetailPageShell breadcrumb={<ClubBreadcrumb current={club.name} />}>
+      <DetailHeroCard
           eyebrow="Clube público"
           title={club.name}
           description={club.description || 'Perfil público do clube com plantel, staff, documentos e patrocinadores.'}
@@ -436,7 +412,6 @@ export default function ClubDetailPage() {
           </TabsContent>
           </Tabs>
         </section>
-      </div>
-    </div>
+    </PublicDetailPageShell>
   )
 }
