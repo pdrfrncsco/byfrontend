@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -21,6 +21,8 @@ import {
   usePlayerDocuments,
 } from '../hooks'
 import { playerDocumentSchema, type PlayerDocumentFormData } from '../schemas'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 const DOCUMENT_CATEGORY_VALUES = [
   'contract',
@@ -35,11 +37,12 @@ const DOCUMENT_CATEGORY_VALUES = [
 
 interface PlayerDocumentsSectionProps {
   slug: string
+  ownerId: string
 }
 
-export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
+export function PlayerDocumentsSection({ slug, ownerId }: PlayerDocumentsSectionProps) {
   const { t } = useTranslation()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null)
   const { data: documents = [], isLoading } = usePlayerDocuments(slug)
   const createMutation = useCreatePlayerDocument(slug)
   const deleteMutation = useDeletePlayerDocument(slug)
@@ -48,7 +51,6 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
     register,
     handleSubmit,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm<PlayerDocumentFormData>({
@@ -69,7 +71,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
   const rows = useMemo(() => (Array.isArray(documents) ? documents : []), [documents])
 
   const onSubmit = (data: PlayerDocumentFormData) => {
-    if (!(data.document instanceof File)) return
+    if (!(data.document instanceof File) && !selectedAsset) return
 
     createMutation.mutate(
       {
@@ -80,7 +82,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
         valid_until: data.valid_until || undefined,
         club: data.club || undefined,
         is_private: data.is_private,
-        document: data.document,
+        ...(data.document instanceof File ? { document: data.document } : { asset: selectedAsset?.id }),
       },
       {
         onSuccess: () => {
@@ -94,7 +96,7 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
             is_private: false,
             document: undefined,
           })
-          if (fileInputRef.current) fileInputRef.current.value = ''
+          setSelectedAsset(null)
         },
       },
     )
@@ -168,21 +170,16 @@ export function PlayerDocumentsSection({ slug }: PlayerDocumentsSectionProps) {
               error={errors.document?.message}
               required
             >
-              <Input
-                ref={fileInputRef}
-                id="doc-file"
-                type="file"
-                accept=".pdf,.doc,.docx,.txt,.csv,application/pdf"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (file) {
-                    setValue('document', file, { shouldValidate: true })
-                  }
-                }}
-                state={errors.document ? 'error' : 'default'}
+              <MediaAssetPicker
+                ownerType="player"
+                ownerId={ownerId}
+                role="document"
+                accept="document"
+                onSelected={(_, asset) => setSelectedAsset(asset)}
+                trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
               />
               <p className="text-xs text-on-surface-variant">
-                {watchedFile instanceof File ? watchedFile.name : t('players.documents.section.fileHint')}
+                {selectedAsset?.name || (watchedFile instanceof File ? watchedFile.name : 'Escolha um documento já carregado na Biblioteca de Media.')}
               </p>
             </FormField>
 

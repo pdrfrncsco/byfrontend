@@ -112,10 +112,6 @@ export const playerDocumentSchema = z
       )
       .optional(),
   })
-  .refine((data) => data.document instanceof File, {
-    message: 'O documento é obrigatório.',
-    path: ['document'],
-  })
 
 export type PlayerDocumentFormData = z.infer<typeof playerDocumentSchema>
 

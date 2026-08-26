@@ -1,11 +1,11 @@
-import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useUploadPlayerAvatar } from '../hooks'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
 
 interface PlayerAvatarUploadProps {
   slug?: string
+  ownerId: string
   avatarUrl?: string | null
   initials: string
   accentColor?: string
@@ -16,26 +16,11 @@ export function PlayerAvatarUpload({
   slug,
   avatarUrl,
   initials,
+  ownerId,
   accentColor = '#94d3c1',
   onUploaded,
 }: PlayerAvatarUploadProps) {
   const { t } = useTranslation()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const uploadMutation = useUploadPlayerAvatar(slug)
-
-  const handlePick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    uploadMutation.mutate(file, {
-      onSuccess: (player) => {
-        if (player.avatar) {
-          onUploaded?.(player.avatar)
-        }
-      },
-    })
-  }
-
   return (
     <div className="space-y-sm">
       <div
@@ -48,26 +33,14 @@ export function PlayerAvatarUpload({
           initials
         )}
       </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        className="hidden"
-        onChange={handlePick}
+      <MediaAssetPicker
+        ownerType="player"
+        ownerId={ownerId}
+        role="avatar"
+        accept="image"
+        onSelected={(url) => onUploaded?.(url)}
+        trigger={<Button type="button" variant="secondary" size="sm"><Upload className="h-4 w-4" />Selecionar avatar</Button>}
       />
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        loading={uploadMutation.isPending}
-        onClick={() => inputRef.current?.click()}
-      >
-        <Upload className="h-4 w-4" />
-        {t('players.avatar.upload')}
-      </Button>
-      {uploadMutation.isError && (
-        <p className="text-sm text-error">{t('players.avatar.error')}</p>
-      )}
     </div>
   )
 }

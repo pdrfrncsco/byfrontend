@@ -134,6 +134,7 @@ export function PlayerSettingsPage() {
       <div className="flex items-start gap-lg">
         <PlayerAvatarUpload
           slug={slug}
+          ownerId={player.id}
           avatarUrl={avatar || player.avatar}
           initials={initials}
           accentColor={positionColor}
@@ -398,7 +399,7 @@ export function PlayerSettingsPage() {
         </TabsContent>
 
         <TabsContent value="documents">
-          <PlayerDocumentsSection slug={slug ?? ''} />
+          <PlayerDocumentsSection slug={slug ?? ''} ownerId={player.id} />
         </TabsContent>
 
         <TabsContent value="videos">

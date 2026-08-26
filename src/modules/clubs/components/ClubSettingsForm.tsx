@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Palette, Globe } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { clubSettingsSchema, type ClubSettingsFormData } from '../schemas'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
 
 interface ClubSettingsFormProps {
   club: any
   updateMutation: any
-  uploadLogoMutation: any
 }
 
 function toFormDefaults(club?: any): ClubSettingsFormData {
@@ -34,9 +34,8 @@ function toFormDefaults(club?: any): ClubSettingsFormData {
 export function ClubSettingsForm({
   club,
   updateMutation,
-  uploadLogoMutation,
 }: ClubSettingsFormProps) {
-  const logoInputRef = useRef<HTMLInputElement>(null)
+  const [selectedLogoUrl, setSelectedLogoUrl] = useState<string | null>(null)
 
   const {
     register,
@@ -80,12 +79,6 @@ export function ClubSettingsForm({
     )
   }
 
-  const onLogoPick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    uploadLogoMutation.mutate(file)
-  }
-
   const logoLetter = (name || club.name || '?').slice(0, 1).toUpperCase()
 
   return (
@@ -108,8 +101,8 @@ export function ClubSettingsForm({
             <div className="p-lg">
               <div className="-mt-16 flex items-end gap-md">
                 <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border-4 border-surface-container-high bg-surface-container text-2xl font-bold text-primary shadow-lg">
-                  {club.logo_url ? (
-                    <img src={club.logo_url} alt={club.name} className="h-full w-full object-cover" />
+                  {(selectedLogoUrl || club.logo_url) ? (
+                    <img src={selectedLogoUrl || club.logo_url || ''} alt={club.name} className="h-full w-full object-cover" />
                   ) : (
                     logoLetter
                   )}
@@ -135,19 +128,17 @@ export function ClubSettingsForm({
               <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Logo</p>
               <div className="mt-sm flex items-center gap-md">
                 <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-primary text-lg font-bold text-on-primary">
-                  {club.logo_url ? <img src={club.logo_url} alt={club.name} className="h-full w-full object-cover" /> : logoLetter}
+                  {selectedLogoUrl || club.logo_url ? <img src={selectedLogoUrl || club.logo_url || ''} alt={club.name} className="h-full w-full object-cover" /> : logoLetter}
                 </div>
                 <div className="space-y-xs">
-                  <input
-                    ref={logoInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/svg+xml"
-                    onChange={onLogoPick}
-                    className="hidden"
+                  <MediaAssetPicker
+                    ownerType="club"
+                    ownerId={club.id}
+                    role="logo"
+                    accept="image"
+                    onSelected={(url) => setSelectedLogoUrl(url)}
+                    trigger={<Button variant="outline" size="sm">Selecionar logo</Button>}
                   />
-                  <Button variant="outline" size="sm" onClick={() => logoInputRef.current?.click()} loading={uploadLogoMutation.isPending}>
-                    Alterar logo
-                  </Button>
                   <p className="text-[10px] text-outline">JPEG, PNG, WebP ou SVG</p>
                 </div>
               </div>

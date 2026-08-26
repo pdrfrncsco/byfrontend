@@ -6,14 +6,13 @@ import { Button } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
-import { useClubMe, useUpdateClub, useUploadClubLogo } from '@/modules/clubs/hooks/useClubs'
+import { useClubMe, useUpdateClub } from '@/modules/clubs/hooks/useClubs'
 import { ClubSettingsForm } from '../components'
 
 export default function ClubSettingsPage() {
   const navigate = useNavigate()
   const { data: club, isLoading } = useClubMe()
   const updateMutation = useUpdateClub()
-  const uploadLogoMutation = useUploadClubLogo()
 
   const sidebarLinks = getClubSidebarLinks()
 
@@ -69,7 +68,6 @@ export default function ClubSettingsPage() {
       <ClubSettingsForm
         club={club}
         updateMutation={updateMutation}
-        uploadLogoMutation={uploadLogoMutation}
       />
     </DashboardLayout>
   )
