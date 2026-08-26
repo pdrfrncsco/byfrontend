@@ -1,4 +1,4 @@
-export type MediaAssetType = 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'AUDIO' | 'PDF' | 'ARCHIVE'
+export type MediaAssetType = 'image' | 'video' | 'document' | 'audio' | 'pdf' | 'archive'
 
 export interface MediaAsset {
   id: string
@@ -43,4 +43,22 @@ export interface MediaAssetListResponse {
   next: string | null
   previous: string | null
   results: MediaAsset[]
+}
+
+export interface MediaUsage {
+  id: string
+  owner_type: string
+  owner_id: string
+  role: string
+  order: number
+  is_active: boolean
+  asset: MediaAsset
+  created_at: string
+}
+
+export interface MediaUsageListResponse {
+  count: number
+  next: string | null
+  previous: string | null
+  results: MediaUsage[]
 }

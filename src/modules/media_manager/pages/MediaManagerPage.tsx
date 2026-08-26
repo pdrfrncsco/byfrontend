@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react'
-import { FileImage, FolderOpen, Info, Loader2, Search, Trash2, UploadCloud, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowLeft, ArrowRight, FileImage, FolderOpen, Info, Loader2, Search, Trash2, UploadCloud, X } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, EmptyState, Input, Skeleton } from '@/components/ui'
 import { useTenant } from '@/app/providers/TenantProvider'
 import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
 import { getMediaAssetUrl } from '../services'
-import { useDeleteMediaAsset, useMediaAsset, useMediaAssets, useUploadMediaAsset } from '../hooks'
+import { useAttachMediaUsage, useDeleteMediaAsset, useDetachMediaUsage, useMediaAsset, useMediaAssets, useMediaUsages, useUploadMediaAsset } from '../hooks'
 import type { MediaAsset } from '../types'
 
 interface MediaManagerPageProps {
@@ -37,19 +37,30 @@ export function MediaManagerPage({
   const [uploadCategory, setUploadCategory] = useState('gallery')
   const [filterCategory, setFilterCategory] = useState('')
   const [assetType, setAssetType] = useState('')
+  const [page, setPage] = useState(1)
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const resolvedOwnerId = ownerId ?? (ownerType === 'organization' ? tenant?.id : undefined)
   const listParams = {
     ...(query ? { q: query } : {}),
     ...(filterCategory ? { category: filterCategory } : {}),
     ...(assetType ? { asset_type: assetType } : {}),
+    page,
+    page_size: 24,
   }
   const { data, isLoading } = useMediaAssets(listParams)
   const { data: selectedAsset, isLoading: isDetailLoading } = useMediaAsset(selectedAssetId)
+  const { data: usagesData } = useMediaUsages(ownerType, resolvedOwnerId)
   const uploadMutation = useUploadMediaAsset()
   const deleteMutation = useDeleteMediaAsset()
-  const resolvedOwnerId = ownerId ?? (ownerType === 'organization' ? tenant?.id : undefined)
+  const attachMutation = useAttachMediaUsage()
+  const detachMutation = useDetachMediaUsage()
   const assets = data?.results ?? []
+  const usages = usagesData?.results ?? []
+
+  useEffect(() => {
+    setPage(1)
+  }, [query, filterCategory, assetType])
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -81,6 +92,10 @@ export function MediaManagerPage({
     >
       <input ref={inputRef} type="file" className="hidden" onChange={handleUpload} accept="image/*,video/*,audio/*,.pdf,.zip" />
       <div className="space-y-lg">
+        <Card padding="md" className="space-y-sm">
+          <div className="flex items-center justify-between gap-md"><div><h3 className="font-semibold text-on-surface">Utilizações neste módulo</h3><p className="text-sm text-on-surface-variant">Assets associados ao owner atual através de MediaUsage.</p></div><span className="text-sm font-semibold text-primary">{usages.length}</span></div>
+          {usages.length > 0 ? <div className="grid gap-sm md:grid-cols-2">{usages.map(usage => <div key={usage.id} className="flex items-center justify-between gap-sm rounded-lg border border-outline-variant/20 px-md py-sm"><div className="min-w-0"><p className="truncate text-sm font-semibold text-on-surface">{usage.asset.name}</p><p className="text-xs text-on-surface-variant">{usage.role}</p></div><Button variant="ghost" size="sm" disabled={detachMutation.isPending} onClick={() => detachMutation.mutate(usage.id)} aria-label={`Desassociar ${usage.asset.name}`}><X className="h-4 w-4" /></Button></div>)}</div> : <p className="text-sm text-on-surface-variant">Ainda não existem assets associados.</p>}
+        </Card>
         <Card padding="md" className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
           <div className="relative max-w-xl flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-outline" aria-hidden="true" />
@@ -93,7 +108,7 @@ export function MediaManagerPage({
           </label>
           <label className="flex items-center gap-sm text-sm text-on-surface-variant">Tipo
             <select value={assetType} onChange={event => setAssetType(event.target.value)} className="rounded-md border border-outline-variant/40 bg-surface px-sm py-2 text-sm text-on-surface">
-              <option value="">Todos</option><option value="IMAGE">Imagem</option><option value="VIDEO">Vídeo</option><option value="DOCUMENT">Documento</option><option value="AUDIO">Áudio</option><option value="PDF">PDF</option>
+              <option value="">Todos</option><option value="image">Imagem</option><option value="video">Vídeo</option><option value="document">Documento</option><option value="audio">Áudio</option><option value="pdf">PDF</option>
             </select>
           </label>
           <label className="flex items-center gap-sm text-sm text-on-surface-variant">Categoria
@@ -105,7 +120,8 @@ export function MediaManagerPage({
         {error && <p role="alert" className="rounded-md border border-error/30 bg-error-container/30 px-md py-sm text-sm text-error">{error}</p>}
         {isLoading ? <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">{[1, 2, 3, 4].map(item => <Skeleton key={item} className="h-56 rounded-xl" />)}</div> : assets.length === 0 ? (
           <EmptyState icon={FolderOpen} title="A biblioteca está vazia" description="Carregue o primeiro ficheiro para começar a reutilizar media na plataforma." action={{ label: 'Carregar ficheiro', onClick: () => inputRef.current?.click() }} />
-        ) : <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+        ) : <>
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
           {assets.map(asset => {
             const preview = asset.thumbnail_url || asset.public_url
             return <Card key={asset.id} padding="none" className="group overflow-hidden">
@@ -113,11 +129,19 @@ export function MediaManagerPage({
                 {preview && asset.mime_type.startsWith('image/') ? <img src={preview} alt={asset.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <FileImage className="h-10 w-10" aria-hidden="true" />}
               </button>
               <div className="space-y-sm p-md"><p className="truncate font-semibold text-on-surface" title={asset.name}>{asset.name}</p><div className="flex items-center justify-between text-xs text-on-surface-variant"><span>{asset.category}</span><span>{formatBytes(asset.size_bytes)}</span></div>
-                <Button variant="ghost" size="sm" className="w-full" disabled={deleteMutation.isPending} onClick={() => { if (window.confirm(`Eliminar ${asset.name}?`)) deleteMutation.mutate(asset.id) }}><Trash2 className="h-4 w-4" />Eliminar</Button>
+                <div className="grid grid-cols-2 gap-xs"><Button variant="secondary" size="sm" disabled={!resolvedOwnerId || attachMutation.isPending} onClick={() => attachMutation.mutate({ assetId: asset.id, ownerType, ownerId: resolvedOwnerId as string, role: uploadCategory })}>Usar aqui</Button><Button variant="ghost" size="sm" disabled={deleteMutation.isPending} onClick={() => { if (window.confirm(`Eliminar ${asset.name}?`)) deleteMutation.mutate(asset.id) }}><Trash2 className="h-4 w-4" />Eliminar</Button></div>
               </div>
             </Card>
           })}
-        </div>}
+          </div>
+          {(data?.count ?? 0) > 24 && <div className="flex items-center justify-between border-t border-outline-variant/20 pt-md">
+            <p className="text-sm text-on-surface-variant">Página {page} de {Math.ceil((data?.count ?? 0) / 24)}</p>
+            <div className="flex gap-sm">
+              <Button variant="outline" size="sm" disabled={!data?.previous || isLoading} onClick={() => setPage(current => current - 1)}><ArrowLeft className="h-4 w-4" />Anterior</Button>
+              <Button variant="outline" size="sm" disabled={!data?.next || isLoading} onClick={() => setPage(current => current + 1)}>Seguinte<ArrowRight className="h-4 w-4" /></Button>
+            </div>
+          </div>}
+        </>}
       </div>
       {selectedAssetId && <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 p-md" role="dialog" aria-modal="true" aria-label="Detalhes do asset" onClick={() => setSelectedAssetId(null)}>
         <Card padding="lg" className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto" onClick={event => event.stopPropagation()}>

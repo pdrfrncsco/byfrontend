@@ -1,14 +1,14 @@
 import apiClient from '@/lib/api-client'
 import { API_ROUTES } from '@/constants/routes'
 import type { ApiResponse } from '@/types'
-import type { MediaAsset, MediaAssetListResponse, SignedMediaUrl } from './types'
+import type { MediaAsset, MediaAssetListResponse, MediaUsage, MediaUsageListResponse, SignedMediaUrl } from './types'
 
 function unwrap<T>(payload: ApiResponse<T> | T): T {
   if (payload && typeof payload === 'object' && 'data' in payload && 'success' in payload) return payload.data
   return payload
 }
 
-export async function listMediaAssets(params?: { q?: string; asset_type?: string; category?: string }) {
+export async function listMediaAssets(params?: { q?: string; asset_type?: string; category?: string; page?: number; page_size?: number }) {
   const response = await apiClient.get<MediaAssetListResponse | ApiResponse<MediaAssetListResponse>>(
     API_ROUTES.MEDIA.LIST,
     { params },
@@ -41,4 +41,26 @@ export async function getMediaAssetUrl(asset: MediaAsset) {
 export async function getMediaAsset(id: string) {
   const response = await apiClient.get<ApiResponse<MediaAsset>>(API_ROUTES.MEDIA.GET(id))
   return unwrap(response.data)
+}
+
+export async function listMediaUsages(ownerType: string, ownerId: string) {
+  const response = await apiClient.get<MediaUsageListResponse | ApiResponse<MediaUsageListResponse>>(
+    API_ROUTES.MEDIA.USAGE,
+    { params: { owner_type: ownerType, owner_id: ownerId } },
+  )
+  return unwrap(response.data)
+}
+
+export async function attachMediaUsage(assetId: string, ownerType: string, ownerId: string, role: string) {
+  const response = await apiClient.post<ApiResponse<MediaUsage>>(API_ROUTES.MEDIA.USAGE, {
+    asset_id: assetId,
+    owner_type: ownerType,
+    owner_id: ownerId,
+    role,
+  })
+  return unwrap(response.data)
+}
+
+export async function detachMediaUsage(usageId: string) {
+  await apiClient.delete(API_ROUTES.MEDIA.USAGE_DELETE(usageId))
 }

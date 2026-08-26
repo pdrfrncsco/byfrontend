@@ -316,6 +316,8 @@ export const API_ROUTES = {
   MEDIA: {
     LIST: '/media/',
     UPLOAD: '/media/upload/',
+    USAGE: '/media/usage/',
+    USAGE_DELETE: (id: string) => `/media/usage/${id}/`,
     GET: (id: string) => `/media/${id}/`,
     DELETE: (id: string) => `/media/${id}/`,
     SIGNED_URL: (id: string) => `/media/${id}/signed-url/`,
