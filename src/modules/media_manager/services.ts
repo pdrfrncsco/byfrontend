@@ -3,6 +3,13 @@ import { API_ROUTES } from '@/constants/routes'
 import type { ApiResponse } from '@/types'
 import type { MediaAsset, MediaAssetListResponse, MediaUsage, MediaUsageListResponse, SignedMediaUrl } from './types'
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
+
+function resolveAssetUrl(url: string) {
+  if (/^https?:\/\//i.test(url)) return url
+  return `${apiBaseUrl.replace(/\/api\/v1\/?$/, '')}${url.startsWith('/') ? url : `/${url}`}`
+}
+
 function unwrap<T>(payload: ApiResponse<T> | T): T {
   if (payload && typeof payload === 'object' && 'data' in payload && 'success' in payload) return payload.data
   return payload
@@ -33,9 +40,9 @@ export async function deleteMediaAsset(id: string) {
 }
 
 export async function getMediaAssetUrl(asset: MediaAsset) {
-  if (asset.public_url) return asset.public_url
+  if (asset.public_url) return resolveAssetUrl(asset.public_url)
   const response = await apiClient.get<ApiResponse<SignedMediaUrl>>(API_ROUTES.MEDIA.SIGNED_URL(asset.id))
-  return unwrap(response.data).url
+  return resolveAssetUrl(unwrap(response.data).url)
 }
 
 export async function getMediaAsset(id: string) {

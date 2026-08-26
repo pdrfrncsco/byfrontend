@@ -8,6 +8,13 @@ import { getMediaAssetUrl } from '../services'
 import { useAttachMediaUsage, useDeleteMediaAsset, useDetachMediaUsage, useMediaAsset, useMediaAssets, useMediaUsages, useUploadMediaAsset } from '../hooks'
 import type { MediaAsset } from '../types'
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
+
+function resolvePreviewUrl(url: string) {
+  if (/^https?:\/\//i.test(url)) return url
+  return `${apiBaseUrl.replace(/\/api\/v1\/?$/, '')}${url.startsWith('/') ? url : `/${url}`}`
+}
+
 interface MediaManagerPageProps {
   ownerType: 'organization' | 'club' | 'player'
   ownerId?: string | null
@@ -123,7 +130,8 @@ export function MediaManagerPage({
         ) : <>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
           {assets.map(asset => {
-            const preview = asset.thumbnail_url || asset.public_url
+            const rawPreview = asset.thumbnail_url || asset.public_url
+            const preview = rawPreview ? resolvePreviewUrl(rawPreview) : null
             return <Card key={asset.id} padding="none" className="group overflow-hidden">
               <button type="button" onClick={() => setSelectedAssetId(asset.id)} className="flex aspect-[4/3] w-full items-center justify-center bg-surface-container text-outline" aria-label={`Ver detalhes de ${asset.name}`}>
                 {preview && asset.mime_type.startsWith('image/') ? <img src={preview} alt={asset.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : <FileImage className="h-10 w-10" aria-hidden="true" />}
