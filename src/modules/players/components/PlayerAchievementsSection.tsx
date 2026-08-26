@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -21,6 +21,8 @@ import {
   usePlayerAchievements,
 } from '../hooks'
 import { playerAchievementSchema, type PlayerAchievementFormData } from '../schemas'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 const ACHIEVEMENT_TYPE_VALUES = [
   'league_title',
@@ -49,12 +51,13 @@ const ACHIEVEMENT_LEVEL_VALUES = ['club', 'national', 'continental', 'internatio
 
 interface PlayerAchievementsSectionProps {
   slug: string
+  ownerId: string
 }
 
-export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionProps) {
+export function PlayerAchievementsSection({ slug, ownerId }: PlayerAchievementsSectionProps) {
   const { t } = useTranslation()
-  const trophyInputRef = useRef<HTMLInputElement>(null)
-  const certificateInputRef = useRef<HTMLInputElement>(null)
+  const [trophyAsset, setTrophyAsset] = useState<MediaAsset | null>(null)
+  const [certificateAsset, setCertificateAsset] = useState<MediaAsset | null>(null)
   const { data: achievements = [], isLoading } = usePlayerAchievements(slug)
   const createMutation = useCreatePlayerAchievement(slug)
   const deleteMutation = useDeletePlayerAchievement(slug)
@@ -63,7 +66,6 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
     register,
     handleSubmit,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm<PlayerAchievementFormData>({
@@ -100,8 +102,10 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
         competition: data.competition || undefined,
         club: data.club || undefined,
         trophy_image: data.trophy_image instanceof File ? data.trophy_image : undefined,
+        trophy_asset: trophyAsset?.id,
         trophy_image_url: data.trophy_image_url || undefined,
         certificate: data.certificate instanceof File ? data.certificate : undefined,
+        certificate_asset: certificateAsset?.id,
         certificate_url: data.certificate_url || undefined,
       },
       {
@@ -120,8 +124,8 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
             certificate: undefined,
             certificate_url: '',
           })
-          if (trophyInputRef.current) trophyInputRef.current.value = ''
-          if (certificateInputRef.current) certificateInputRef.current.value = ''
+          setTrophyAsset(null)
+          setCertificateAsset(null)
         },
       },
     )
@@ -230,24 +234,11 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
                 htmlFor="achievement-trophy-file"
                 error={errors.trophy_image?.message}
               >
-                <Input
-                  ref={trophyInputRef}
-                  id="achievement-trophy-file"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0]
-                    if (file) {
-                      setValue('trophy_image', file, { shouldValidate: true })
-                      setValue('trophy_image_url', '')
-                    }
-                  }}
-                  state={errors.trophy_image ? 'error' : 'default'}
-                />
+                <MediaAssetPicker ownerType="player" ownerId={ownerId} role="gallery" accept="image" onSelected={(_, asset) => setTrophyAsset(asset)} trigger={<Button type="button" variant="outline"><Trophy className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
                 <p className="text-xs text-on-surface-variant">
-                  {watchedTrophyFile instanceof File
+                  {trophyAsset?.name || (watchedTrophyFile instanceof File
                     ? watchedTrophyFile.name
-                    : t('players.achievements.section.trophyImageHint')}
+                    : t('players.achievements.section.trophyImageHint'))}
                 </p>
               </FormField>
               <FormField
@@ -255,24 +246,11 @@ export function PlayerAchievementsSection({ slug }: PlayerAchievementsSectionPro
                 htmlFor="achievement-certificate-file"
                 error={errors.certificate?.message}
               >
-                <Input
-                  ref={certificateInputRef}
-                  id="achievement-certificate-file"
-                  type="file"
-                  accept=".pdf,.doc,.docx,.txt,.csv,application/pdf,image/jpeg,image/png"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0]
-                    if (file) {
-                      setValue('certificate', file, { shouldValidate: true })
-                      setValue('certificate_url', '')
-                    }
-                  }}
-                  state={errors.certificate ? 'error' : 'default'}
-                />
+                <MediaAssetPicker ownerType="player" ownerId={ownerId} role="certificate" accept="document" onSelected={(_, asset) => setCertificateAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
                 <p className="text-xs text-on-surface-variant">
-                  {watchedCertificateFile instanceof File
+                  {certificateAsset?.name || (watchedCertificateFile instanceof File
                     ? watchedCertificateFile.name
-                    : t('players.achievements.section.certificateFileHint')}
+                    : t('players.achievements.section.certificateFileHint'))}
                 </p>
               </FormField>
             </div>

@@ -316,7 +316,7 @@ export async function createPlayerAchievement(
   slug: string,
   data: PlayerAchievementCreate
 ): Promise<PlayerAchievement> {
-  if (data.trophy_image || data.certificate) {
+  if (data.trophy_image || data.certificate || data.trophy_asset || data.certificate_asset) {
     const formData = new FormData()
     formData.append('title', data.title)
     formData.append('achievement_type', data.achievement_type)
@@ -327,7 +327,9 @@ export async function createPlayerAchievement(
     if (data.competition) formData.append('competition', data.competition)
     if (data.club) formData.append('club', data.club)
     if (data.trophy_image) formData.append('trophy_image', data.trophy_image)
+    if (data.trophy_asset) formData.append('trophy_asset', data.trophy_asset)
     if (data.certificate) formData.append('certificate', data.certificate)
+    if (data.certificate_asset) formData.append('certificate_asset', data.certificate_asset)
     if (data.trophy_image_url) formData.append('trophy_image_url', data.trophy_image_url)
     if (data.certificate_url) formData.append('certificate_url', data.certificate_url)
     if (data.stats_snapshot) formData.append('stats_snapshot', JSON.stringify(data.stats_snapshot))

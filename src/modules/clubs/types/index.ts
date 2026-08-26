@@ -124,7 +124,8 @@ export interface ClubDocumentCreateData {
   title: string
   category: ClubDocumentCategory
   description?: string
-  document: File
+  document?: File
+  asset?: string
   is_public?: boolean
   valid_until?: string
 }
@@ -156,6 +157,7 @@ export interface ClubSponsorCreateData {
   description?: string
   website?: string
   logo?: File
+  logo_asset?: string
   is_active?: boolean
   sort_order?: number
 }

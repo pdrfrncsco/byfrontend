@@ -45,9 +45,7 @@ export const clubDocumentSchema = z.object({
   description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').optional().or(z.literal('')),
   is_public: z.boolean(),
   valid_until: z.string().optional().or(z.literal('')),
-  document: z
-    .custom<File>((value) => value instanceof File, 'Selecione um ficheiro válido.')
-    .refine((file) => file.size > 0, 'Selecione um ficheiro válido.'),
+  document: z.custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.').optional(),
 })
 
 export type ClubDocumentFormData = z.infer<typeof clubDocumentSchema>

@@ -16,7 +16,7 @@ interface MediaAssetPickerProps {
   ownerType: 'organization' | 'club' | 'player'
   ownerId: string
   role: string
-  accept?: 'image' | 'document' | 'all'
+  accept?: 'image' | 'document' | 'video' | 'all'
   trigger: React.ReactNode
   onSelected?: (url: string, asset: MediaAsset) => void
 }
@@ -32,7 +32,7 @@ export function MediaAssetPicker({
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const assetType = accept === 'image' ? 'image' : accept === 'document' ? 'document' : undefined
+  const assetType = accept === 'image' ? 'image' : accept === 'document' ? 'document' : accept === 'video' ? 'video' : undefined
   const { data, isLoading } = useMediaAssets({ ...(query ? { q: query } : {}), ...(assetType ? { asset_type: assetType } : {}), page_size: 24 })
   const attachMutation = useAttachMediaUsage()
   const assets = data?.results ?? []

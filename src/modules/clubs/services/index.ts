@@ -208,7 +208,8 @@ export async function createClubDocument(slug: string, data: ClubDocumentCreateD
   formData.append('title', data.title)
   formData.append('category', data.category)
   if (data.description) formData.append('description', data.description)
-  formData.append('document', data.document)
+  if (data.document) formData.append('document', data.document)
+  if (data.asset) formData.append('asset', data.asset)
   if (data.is_public !== undefined) formData.append('is_public', String(data.is_public))
   if (data.valid_until) formData.append('valid_until', data.valid_until)
 
@@ -238,6 +239,7 @@ export async function createClubSponsor(slug: string, data: ClubSponsorCreateDat
   if (data.description) formData.append('description', data.description)
   if (data.website) formData.append('website', data.website)
   if (data.logo) formData.append('logo', data.logo)
+  if (data.logo_asset) formData.append('logo_asset', data.logo_asset)
   if (data.is_active !== undefined) formData.append('is_active', String(data.is_active))
   if (data.sort_order !== undefined) formData.append('sort_order', String(data.sort_order))
 

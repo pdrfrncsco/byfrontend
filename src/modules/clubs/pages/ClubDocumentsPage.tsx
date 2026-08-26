@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -25,6 +25,8 @@ import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubDocuments, useClubMe, useCreateClubDocument, useDeleteClubDocument } from '@/modules/clubs/hooks/useClubs'
 import { clubDocumentSchema, type ClubDocumentFormData } from '@/modules/clubs/schemas'
 import type { ClubDocument } from '@/modules/clubs/types'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 function categoryLabel(category?: string | null) {
   switch (category) {
@@ -49,6 +51,7 @@ export default function ClubDocumentsPage() {
   const deleteMutation = useDeleteClubDocument()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const formCardRef = useRef<HTMLDivElement>(null)
+  const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null)
 
   const {
     register,
@@ -133,7 +136,7 @@ export default function ClubDocumentsPage() {
           title: data.title,
           category: data.category,
           description: data.description || undefined,
-          document: data.document,
+          asset: selectedAsset?.id,
           is_public: data.is_public,
           valid_until: data.valid_until || undefined,
         },
@@ -146,9 +149,9 @@ export default function ClubDocumentsPage() {
             description: '',
             is_public: true,
             valid_until: '',
-            document: undefined as unknown as File,
+            document: undefined,
           } as ClubDocumentFormData)
-          if (fileInputRef.current) fileInputRef.current.value = ''
+          setSelectedAsset(null)
           formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         },
       },
@@ -233,20 +236,8 @@ export default function ClubDocumentsPage() {
                   <Textarea id="description" rows={4} {...register('description')} />
                 </FormField>
                 <FormField label="Ficheiro" htmlFor="document" error={errors.document?.message as string | undefined} required>
-                  <Input
-                    ref={fileInputRef}
-                    id="document"
-                    type="file"
-                    accept=".pdf,.doc,.docx,.jpg,.png"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0]
-                      if (file) {
-                        setValue('document', file, { shouldDirty: true, shouldValidate: true })
-                      }
-                    }}
-                    state={errors.document ? 'error' : 'default'}
-                  />
-                  <p className="text-[10px] text-outline">{watchedFile ? watchedFile.name : 'PDF, DOC, DOCX, JPG ou PNG'}</p>
+                  <MediaAssetPicker ownerType="club" ownerId={club.id} role="document" accept="document" onSelected={(_, asset) => setSelectedAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
+                  <p className="text-[10px] text-outline">{selectedAsset?.name || (watchedFile ? watchedFile.name : 'Escolha um documento já carregado na Biblioteca de Media')}</p>
                 </FormField>
                 <div className="flex items-center gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container px-md py-3">
                   <input id="is_public" type="checkbox" {...register('is_public')} className="h-4 w-4 rounded border-outline-variant text-primary" />

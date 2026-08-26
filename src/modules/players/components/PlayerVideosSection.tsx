@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -22,16 +22,19 @@ import {
   usePublishPlayerVideo,
 } from '../hooks'
 import { playerVideoSchema, type PlayerVideoFormData } from '../schemas'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 const VIDEO_TYPE_VALUES = ['highlights', 'skills', 'interview', 'match_clip', 'training', 'other'] as const
 
 interface PlayerVideosSectionProps {
   slug: string
+  ownerId: string
 }
 
-export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
+export function PlayerVideosSection({ slug, ownerId }: PlayerVideosSectionProps) {
   const { t } = useTranslation()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null)
   const { data: videos = [], isLoading } = usePlayerVideos(slug)
   const createMutation = useCreatePlayerVideo(slug)
   const deleteMutation = useDeletePlayerVideo(slug)
@@ -71,6 +74,7 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
         video_url: data.video_url || undefined,
         thumbnail_url: data.thumbnail_url || undefined,
         video: data.video instanceof File ? data.video : undefined,
+        media_asset: selectedAsset?.id,
         match: data.match || undefined,
         is_featured: data.is_featured,
         order: data.order || undefined,
@@ -88,7 +92,7 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
             is_featured: false,
             order: '',
           })
-          if (fileInputRef.current) fileInputRef.current.value = ''
+          setSelectedAsset(null)
         },
       },
     )
@@ -162,22 +166,9 @@ export function PlayerVideosSection({ slug }: PlayerVideosSectionProps) {
                 htmlFor="video-file"
                 error={errors.video?.message}
               >
-                <Input
-                  ref={fileInputRef}
-                  id="video-file"
-                  type="file"
-                  accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0]
-                    if (file) {
-                      setValue('video', file, { shouldValidate: true })
-                      setValue('video_url', '')
-                    }
-                  }}
-                  state={errors.video ? 'error' : 'default'}
-                />
+                <MediaAssetPicker ownerType="player" ownerId={ownerId} role="video" accept="video" onSelected={(_, asset) => setSelectedAsset(asset)} trigger={<Button type="button" variant="outline"><Video className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
                 <p className="text-xs text-on-surface-variant">
-                  {watchedFile instanceof File ? watchedFile.name : t('players.videos.section.fileHint')}
+                  {selectedAsset?.name || (watchedFile instanceof File ? watchedFile.name : 'Escolha um vídeo já carregado na Biblioteca de Media.')}
                 </p>
               </FormField>
               <FormField label={t('players.videos.section.order')} htmlFor="video-order" error={errors.order?.message}>

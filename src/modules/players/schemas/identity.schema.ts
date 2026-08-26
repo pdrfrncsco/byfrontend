@@ -50,9 +50,10 @@ export const playerIdentityDocumentSchema = z
         'Selecione um ficheiro válido.'
       )
       .optional(),
+    asset: z.string().uuid().optional(),
   })
   .refine(
-    (data) => data.document_front instanceof File || !!data.document_number,
+    (data) => data.document_front instanceof File || !!data.asset || !!data.document_number,
     {
       message: 'Carregue a frente do documento ou indique o número do documento.',
       path: ['document_front'],

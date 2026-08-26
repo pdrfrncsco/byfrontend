@@ -655,8 +655,10 @@ export interface PlayerAchievementCreate {
   competition?: string
   club?: string
   trophy_image?: File
+  trophy_asset?: string
   trophy_image_url?: string
   certificate?: File
+  certificate_asset?: string
   certificate_url?: string
   stats_snapshot?: Record<string, unknown>
 }

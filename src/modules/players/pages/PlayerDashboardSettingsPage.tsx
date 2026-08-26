@@ -236,7 +236,7 @@ export function PlayerDashboardSettingsPage() {
         </TabsContent>
 
         <TabsContent value="identity">
-          <PlayerIdentityDocumentsSection slug={player.slug} />
+          <PlayerIdentityDocumentsSection slug={player.slug} ownerId={player.id} />
         </TabsContent>
 
         <TabsContent value="contact">
@@ -250,10 +250,10 @@ export function PlayerDashboardSettingsPage() {
           <PlayerDocumentsSection slug={player.slug} ownerId={player.id} />
         </TabsContent>
         <TabsContent value="videos">
-          <PlayerVideosSection slug={player.slug} />
+          <PlayerVideosSection slug={player.slug} ownerId={player.id} />
         </TabsContent>
         <TabsContent value="achievements">
-          <PlayerAchievementsSection slug={player.slug} />
+          <PlayerAchievementsSection slug={player.slug} ownerId={player.id} />
         </TabsContent>
       </Tabs>
     </DashboardLayout>

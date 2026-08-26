@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -25,6 +25,8 @@ import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubSponsors, useCreateClubSponsor, useDeleteClubSponsor } from '@/modules/clubs/hooks/useClubs'
 import { clubSponsorSchema, type ClubSponsorFormData } from '@/modules/clubs/schemas'
 import type { ClubSponsor } from '@/modules/clubs/types'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 function sponsorTypeLabel(type?: string | null) {
   switch (type) {
@@ -51,6 +53,7 @@ export default function ClubSponsorsPage() {
   const deleteMutation = useDeleteClubSponsor()
   const logoInputRef = useRef<HTMLInputElement>(null)
   const formCardRef = useRef<HTMLDivElement>(null)
+  const [selectedLogo, setSelectedLogo] = useState<MediaAsset | null>(null)
 
   const {
     register,
@@ -137,7 +140,7 @@ export default function ClubSponsorsPage() {
           sponsor_type: data.sponsor_type,
           description: data.description || undefined,
           website: data.website || undefined,
-          logo: data.logo,
+          logo_asset: selectedLogo?.id,
           is_active: data.is_active,
           sort_order: data.sort_order === '' ? undefined : Number(data.sort_order),
         },
@@ -153,7 +156,7 @@ export default function ClubSponsorsPage() {
             sort_order: '',
             logo: undefined,
           })
-          if (logoInputRef.current) logoInputRef.current.value = ''
+          setSelectedLogo(null)
           formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         },
       },
@@ -242,20 +245,8 @@ export default function ClubSponsorsPage() {
                   <Textarea id="description" rows={4} {...register('description')} />
                 </FormField>
                 <FormField label="Logo" htmlFor="logo" error={errors.logo?.message as string | undefined}>
-                  <Input
-                    ref={logoInputRef}
-                    id="logo"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/svg+xml"
-                    onChange={(event) => {
-                      const file = event.target.files?.[0]
-                      if (file) {
-                        setValue('logo', file, { shouldDirty: true, shouldValidate: true })
-                      }
-                    }}
-                    state={errors.logo ? 'error' : 'default'}
-                  />
-                  <p className="text-[10px] text-outline">{watchedLogo ? watchedLogo.name : 'PNG, JPG, WebP ou SVG'}</p>
+                  <MediaAssetPicker ownerType="club" ownerId={club.id} role="sponsor_logo" accept="image" onSelected={(_, asset) => setSelectedLogo(asset)} trigger={<Button type="button" variant="outline"><ImageUp className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
+                  <p className="text-[10px] text-outline">{selectedLogo?.name || (watchedLogo ? watchedLogo.name : 'Escolha um logo já carregado na Biblioteca de Media')}</p>
                 </FormField>
                 <div className="flex items-center gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container px-md py-3">
                   <input id="is_active" type="checkbox" {...register('is_active')} className="h-4 w-4 rounded border-outline-variant text-primary" />

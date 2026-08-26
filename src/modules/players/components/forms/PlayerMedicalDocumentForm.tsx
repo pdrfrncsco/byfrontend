@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +31,8 @@ import {
   type MedicalDocumentUpload,
 } from '../../schemas/medical.schema'
 import { getMedicalDocumentTypeLabel } from '../../hooks/usePlayerMedical'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 interface PlayerMedicalDocumentFormProps {
   playerId: string
@@ -46,7 +48,7 @@ export function PlayerMedicalDocumentForm({
   onCancel,
 }: PlayerMedicalDocumentFormProps) {
   const { t } = useTranslation()
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null)
   const [fileSizeError, setFileSizeError] = useState<string | null>(null)
 
   const baseMedicalDocumentUploadSchema = z.object({
@@ -77,48 +79,9 @@ export function PlayerMedicalDocumentForm({
     },
   })
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-
-      if (!file) {
-        setSelectedFile(null)
-        setFileSizeError(null)
-        return
-      }
-
-      // Validate file size (10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setFileSizeError('Ficheiro não pode exceder 10MB')
-        setSelectedFile(null)
-        return
-      }
-
-      // Validate file type
-      const validTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/png',
-        'image/webp',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      ]
-
-      if (!validTypes.includes(file.type)) {
-        setFileSizeError('Tipo de ficheiro não suportado (PDF, JPG, PNG, WEBP, DOC, DOCX)')
-        setSelectedFile(null)
-        return
-      }
-
-      setSelectedFile(file)
-      setFileSizeError(null)
-    },
-    []
-  )
-
   const handleSubmit = async (data: Omit<MedicalDocumentUpload, 'file'>) => {
-    if (!selectedFile) {
-      setFileSizeError('Ficheiro é obrigatório')
+    if (!selectedAsset) {
+      setFileSizeError('Selecione um asset na Biblioteca de Media')
       return
     }
 
@@ -132,11 +95,11 @@ export function PlayerMedicalDocumentForm({
         formData.append('expires_at', new Date(data.expires_at).toISOString())
       }
       formData.append('is_confidential', String(data.is_confidential))
-      formData.append('file', selectedFile)
+      formData.append('file', selectedAsset.id)
 
       await onSubmit(formData)
       form.reset()
-      setSelectedFile(null)
+      setSelectedAsset(null)
     } catch (error) {
       console.error('Error submitting medical document form:', error)
     }
@@ -318,33 +281,19 @@ export function PlayerMedicalDocumentForm({
                 <div className="flex items-center justify-center gap-md">
                   <Upload className="h-6 w-6 text-on-surface-variant/50" />
                   <div className="text-center">
-                    <label htmlFor="file-input" className="cursor-pointer">
-                      <span className="text-sm font-medium text-primary">
-                        Clique para selecionar
-                      </span>
-                      <span className="text-sm text-on-surface-variant"> ou arraste aqui</span>
-                    </label>
-                    <input
-                      id="file-input"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileChange}
-                      accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
-                    />
+                    <MediaAssetPicker ownerType="player" ownerId={playerId} role="document" accept="document" onSelected={(_, asset) => { setSelectedAsset(asset); setFileSizeError(null) }} trigger={<Button type="button" variant="outline"><FileText className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
                     <p className="mt-sm text-xs text-on-surface-variant">
                       PDF, JPG, PNG, WEBP, DOC, DOCX — Máx. 10MB
                     </p>
                   </div>
                 </div>
 
-                {selectedFile && (
+                {selectedAsset && (
                   <div className="mt-md p-md bg-green-50 rounded flex items-center gap-md">
                     <FileText className="h-4 w-4 text-green-700" />
                     <div className="text-sm">
-                      <p className="font-medium text-green-700">{selectedFile.name}</p>
-                      <p className="text-xs text-green-600">
-                        {(selectedFile.size / 1024).toFixed(2)} KB
-                      </p>
+                      <p className="font-medium text-green-700">{selectedAsset.name}</p>
+                      <p className="text-xs text-green-600">Asset selecionado na Biblioteca de Media</p>
                     </div>
                   </div>
                 )}
@@ -357,7 +306,7 @@ export function PlayerMedicalDocumentForm({
                 )}
               </div>
               <FormDescription className="mt-sm">
-                {selectedFile
+                {selectedAsset
                   ? 'Ficheiro selecionado com sucesso'
                   : 'Nenhum ficheiro selecionado'}
               </FormDescription>
@@ -392,7 +341,7 @@ export function PlayerMedicalDocumentForm({
 
             {/* Form Actions */}
             <div className="flex gap-md pt-md">
-              <Button type="submit" disabled={isLoading || !selectedFile} className="flex-1">
+              <Button type="submit" disabled={isLoading || !selectedAsset} className="flex-1">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-md h-4 w-4 animate-spin" />

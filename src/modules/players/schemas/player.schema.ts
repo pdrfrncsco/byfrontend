@@ -150,8 +150,8 @@ export const playerVideoSchema = z
     is_featured: z.boolean(),
     order: z.union([z.coerce.number().int().min(0), z.literal('')]).optional(),
   })
-  .refine((data) => data.video_url || data.video instanceof File, {
-    message: 'Indique uma URL do vídeo ou carregue um ficheiro.',
+  .refine((data) => data.video_url || data.video instanceof File || data.media_asset, {
+    message: 'Indique uma URL ou selecione um vídeo na Biblioteca de Media.',
     path: ['video'],
   })
 
@@ -201,6 +201,7 @@ export const playerAchievementSchema = z
       .optional(),
 
     trophy_image_url: z.string().url('URL da imagem inválida.').optional().or(z.literal('')),
+    trophy_asset: z.string().uuid().optional(),
 
     certificate: z
       .custom<File | undefined>(
@@ -210,6 +211,7 @@ export const playerAchievementSchema = z
       .optional(),
 
     certificate_url: z.string().url('URL do certificado inválida.').optional().or(z.literal('')),
+    certificate_asset: z.string().uuid().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.trophy_image instanceof File && data.trophy_image_url) {

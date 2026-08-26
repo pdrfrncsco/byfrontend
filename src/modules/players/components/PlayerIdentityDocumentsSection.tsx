@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ExternalLink, FileText, Trash2, Upload } from 'lucide-react'
@@ -19,6 +19,8 @@ import {
   usePlayerIdentityDocuments,
 } from '../hooks'
 import { playerIdentityDocumentSchema, type PlayerIdentityDocumentFormData } from '../schemas/identity.schema'
+import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import type { MediaAsset } from '@/modules/media_manager/types'
 
 const DOCUMENT_TYPES = [
   { value: 'national_id', label: 'Bilhete de identidade' },
@@ -32,9 +34,9 @@ function getDocumentTypeLabel(value: string) {
   return DOCUMENT_TYPES.find((option) => option.value === value)?.label ?? value
 }
 
-export function PlayerIdentityDocumentsSection({ slug }: { slug: string }) {
-  const fileFrontRef = useRef<HTMLInputElement>(null)
-  const fileBackRef = useRef<HTMLInputElement>(null)
+export function PlayerIdentityDocumentsSection({ slug, ownerId }: { slug: string; ownerId: string }) {
+  const [frontAsset, setFrontAsset] = useState<MediaAsset | null>(null)
+  const [backAsset, setBackAsset] = useState<MediaAsset | null>(null)
   const { data: documents = [], isLoading } = usePlayerIdentityDocuments(slug)
   const create = useCreateIdentityDocument(slug)
   const remove = useDeleteIdentityDocument(slug)
@@ -43,7 +45,6 @@ export function PlayerIdentityDocumentsSection({ slug }: { slug: string }) {
     register,
     handleSubmit,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm<PlayerIdentityDocumentFormData>({
@@ -73,8 +74,8 @@ export function PlayerIdentityDocumentsSection({ slug }: { slug: string }) {
       document_front: undefined,
       document_back: undefined,
     })
-    if (fileFrontRef.current) fileFrontRef.current.value = ''
-    if (fileBackRef.current) fileBackRef.current.value = ''
+    setFrontAsset(null)
+    setBackAsset(null)
   }, [create.isSuccess, reset])
 
   const rows = useMemo(() => (Array.isArray(documents) ? documents : []), [documents])
@@ -89,6 +90,7 @@ export function PlayerIdentityDocumentsSection({ slug }: { slug: string }) {
       expiry_date: values.expiry_date || undefined,
       document_front: values.document_front,
       document_back: values.document_back,
+      asset: frontAsset?.id,
     })
   }
 
@@ -145,34 +147,16 @@ export function PlayerIdentityDocumentsSection({ slug }: { slug: string }) {
             </div>
 
             <FormFieldSimple label="Frente do documento" htmlFor="identity-document-front" error={errors.document_front?.message} required>
-              <Input
-                ref={fileFrontRef}
-                id="identity-document-front"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  setValue('document_front', file, { shouldValidate: true, shouldDirty: true })
-                }}
-              />
+              <MediaAssetPicker ownerType="player" ownerId={ownerId} role="document" accept="document" onSelected={(_, asset) => setFrontAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
               <p className="mt-xs text-xs text-on-surface-variant">
-                {frontFile instanceof File ? frontFile.name : 'Selecione a frente do documento'}
+                {frontAsset?.name || (frontFile instanceof File ? frontFile.name : 'Selecione a frente do documento')}
               </p>
             </FormFieldSimple>
 
             <FormFieldSimple label="Verso do documento" htmlFor="identity-document-back" error={errors.document_back?.message}>
-              <Input
-                ref={fileBackRef}
-                id="identity-document-back"
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  setValue('document_back', file, { shouldValidate: true, shouldDirty: true })
-                }}
-              />
+              <MediaAssetPicker ownerType="player" ownerId={ownerId} role="document" accept="document" onSelected={(_, asset) => setBackAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
               <p className="mt-xs text-xs text-on-surface-variant">
-                {backFile instanceof File ? backFile.name : 'Opcional'}
+                {backAsset?.name || (backFile instanceof File ? backFile.name : 'Opcional')}
               </p>
             </FormFieldSimple>
 

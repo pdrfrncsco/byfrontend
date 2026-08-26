@@ -403,11 +403,11 @@ export function PlayerSettingsPage() {
         </TabsContent>
 
         <TabsContent value="videos">
-          <PlayerVideosSection slug={slug ?? ''} />
+          <PlayerVideosSection slug={slug ?? ''} ownerId={player.id} />
         </TabsContent>
 
         <TabsContent value="achievements">
-          <PlayerAchievementsSection slug={slug ?? ''} />
+          <PlayerAchievementsSection slug={slug ?? ''} ownerId={player.id} />
         </TabsContent>
       </Tabs>
     </div>
