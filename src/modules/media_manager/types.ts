@@ -11,6 +11,25 @@ export interface MediaAsset {
   public_url?: string | null
   status: string
   created_at: string
+  updated_at?: string
+  original_filename?: string
+  extension?: string
+  width?: number | null
+  height?: number | null
+  owner_type?: string
+  owner_id?: string | null
+  visibility?: string
+  variants?: MediaVariant[]
+}
+
+export interface MediaVariant {
+  id: string
+  variant_type: string
+  cdn_url: string
+  width?: number | null
+  height?: number | null
+  size_bytes: number
+  mime_type: string
 }
 
 export interface SignedMediaUrl {

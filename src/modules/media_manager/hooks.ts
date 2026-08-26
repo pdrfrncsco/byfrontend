@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { deleteMediaAsset, listMediaAssets, uploadMediaAsset } from './services'
+import { deleteMediaAsset, getMediaAsset, listMediaAssets, uploadMediaAsset } from './services'
 
 export const mediaKeys = {
   all: ['media-assets'] as const,
   list: (params: Record<string, string>) => [...mediaKeys.all, 'list', params] as const,
+  detail: (id: string) => [...mediaKeys.all, 'detail', id] as const,
 }
 
 export function useMediaAssets(params: Record<string, string> = {}) {
@@ -24,5 +25,14 @@ export function useDeleteMediaAsset() {
   return useMutation({
     mutationFn: deleteMediaAsset,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: mediaKeys.all }),
+  })
+}
+
+export function useMediaAsset(id: string | null) {
+  return useQuery({
+    queryKey: mediaKeys.detail(id ?? ''),
+    queryFn: () => getMediaAsset(id as string),
+    enabled: Boolean(id),
+    staleTime: 60_000,
   })
 }

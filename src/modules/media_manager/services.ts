@@ -8,7 +8,7 @@ function unwrap<T>(payload: ApiResponse<T> | T): T {
   return payload
 }
 
-export async function listMediaAssets(params?: { q?: string }) {
+export async function listMediaAssets(params?: { q?: string; asset_type?: string; category?: string }) {
   const response = await apiClient.get<MediaAssetListResponse | ApiResponse<MediaAssetListResponse>>(
     API_ROUTES.MEDIA.LIST,
     { params },
@@ -36,4 +36,9 @@ export async function getMediaAssetUrl(asset: MediaAsset) {
   if (asset.public_url) return asset.public_url
   const response = await apiClient.get<ApiResponse<SignedMediaUrl>>(API_ROUTES.MEDIA.SIGNED_URL(asset.id))
   return unwrap(response.data).url
+}
+
+export async function getMediaAsset(id: string) {
+  const response = await apiClient.get<ApiResponse<MediaAsset>>(API_ROUTES.MEDIA.GET(id))
+  return unwrap(response.data)
 }
