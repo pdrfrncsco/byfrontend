@@ -54,8 +54,8 @@ export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayou
           </button>
         </header>
 
-        {/* Step indicator — tabs are only clickable for already-reached steps */}
-        <nav className="mb-lg grid gap-sm rounded-lg border border-outline-variant/40 bg-surface-container-low p-sm sm:grid-cols-3">
+        {/* Navigation shows progress while keeping future steps visually quiet. */}
+        <nav aria-label="Etapas do onboarding" className="mb-lg grid grid-cols-2 gap-sm rounded-lg border border-outline-variant/40 bg-surface-container-low p-sm sm:grid-cols-4">
           {steps.map((item) => {
             const Icon = item.icon
             const active    = item.number === step
@@ -65,16 +65,21 @@ export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayou
 
             const baseClass  = 'flex items-center gap-sm rounded-lg px-md py-sm text-sm font-semibold transition-colors'
             const stateClass = active
-              ? 'bg-primary text-on-primary-fixed cursor-default'
+              ? 'bg-primary text-on-primary-fixed shadow-sm ring-2 ring-primary/20 cursor-default'
               : completed && unlocked
-                ? 'bg-primary-container/25 text-primary hover:bg-primary-container/40 cursor-pointer'
+                ? 'bg-primary-container/35 text-primary hover:bg-primary-container/55 cursor-pointer'
                 : unlocked
                   ? 'text-on-surface-variant hover:bg-surface-container cursor-pointer'
                   : 'text-on-surface-variant/40 cursor-not-allowed'
 
             if (isClickable) {
               return (
-                <Link key={item.number} to={item.href} className={`${baseClass} ${stateClass}`}>
+                <Link
+                  key={item.number}
+                  to={item.href}
+                  aria-current={active ? 'step' : undefined}
+                  className={`${baseClass} ${stateClass}`}
+                >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Link>
@@ -84,8 +89,11 @@ export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayou
             return (
               <div
                 key={item.number}
+                aria-current={active ? 'step' : undefined}
+                aria-disabled={!unlocked}
                 className={`${baseClass} ${stateClass}`}
                 title={!unlocked ? 'Complete o passo anterior primeiro' : undefined}
+                aria-label={!unlocked ? `${item.label}. Complete o passo anterior primeiro` : item.label}
               >
                 {!unlocked ? <Lock className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                 <span>{item.label}</span>
@@ -95,7 +103,14 @@ export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayou
         </nav>
 
         {/* Progress bar */}
-        <div className="mb-lg h-1 w-full overflow-hidden rounded-full bg-surface-container-high">
+        <div
+          className="mb-lg h-1.5 w-full overflow-hidden rounded-full bg-surface-container-high"
+          role="progressbar"
+          aria-label="Progresso do onboarding"
+          aria-valuemin={1}
+          aria-valuemax={steps.length}
+          aria-valuenow={step}
+        >
           <div
             className="h-full rounded-full bg-primary transition-all duration-500"
             style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
