@@ -37,11 +37,11 @@ export function PlayerOnboardingContactPage() {
   const onSubmit = async (values: PlayerContactUpdate) => {
     await update.mutateAsync(values)
     await complete.mutateAsync('contact')
-    navigate(ROUTES.ONBOARDING_PLAYER_GUARDIAN)
+    navigate(ROUTES.ONBOARDING_PLAYER_IDENTITY)
   }
 
   return (
-    <PlayerOnboardingLayout step={5}>
+    <PlayerOnboardingLayout step={4}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Contactos</h2>

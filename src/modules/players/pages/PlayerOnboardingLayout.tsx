@@ -13,10 +13,10 @@ interface PlayerOnboardingLayoutProps {
 
 const steps = [
   { number: 1, label: 'Conta',          href: ROUTES.ONBOARDING_PLAYER,           icon: UserRound  },
-  { number: 2, label: 'Identidade',     href: ROUTES.ONBOARDING_PLAYER_IDENTITY,  icon: FileCheck2 },
-  { number: 3, label: 'Dados pessoais', href: ROUTES.ONBOARDING_PLAYER_PROFILE,   icon: UserRound  },
-  { number: 4, label: 'Futebol',        href: ROUTES.ONBOARDING_PLAYER_FOOTBALL,  icon: Activity   },
-  { number: 5, label: 'Contacto',       href: ROUTES.ONBOARDING_PLAYER_CONTACT,   icon: Phone      },
+  { number: 2, label: 'Dados pessoais', href: ROUTES.ONBOARDING_PLAYER_PROFILE,   icon: UserRound  },
+  { number: 3, label: 'Futebol',        href: ROUTES.ONBOARDING_PLAYER_FOOTBALL,  icon: Activity   },
+  { number: 4, label: 'Contacto',       href: ROUTES.ONBOARDING_PLAYER_CONTACT,   icon: Phone      },
+  { number: 5, label: 'Identidade',     href: ROUTES.ONBOARDING_PLAYER_IDENTITY,  icon: FileCheck2 },
   { number: 6, label: 'Responsável',    href: ROUTES.ONBOARDING_PLAYER_GUARDIAN,  icon: Users      },
   { number: 7, label: 'Clube',          href: ROUTES.ONBOARDING_PLAYER_CLUB,      icon: Building2  },
   { number: 8, label: 'Revisão',        href: ROUTES.ONBOARDING_PLAYER_REVIEW,    icon: CheckCircle2 },
@@ -89,9 +89,6 @@ export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayou
               >
                 {!unlocked ? <Lock className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                 <span>{item.label}</span>
-                {!unlocked && (
-                  <span className="ml-auto text-xs opacity-60">Bloqueado</span>
-                )}
               </div>
             )
           })}

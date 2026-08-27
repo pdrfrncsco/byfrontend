@@ -57,14 +57,14 @@ export function PlayerOnboardingProfilePage() {
 
   if (isLoading) {
     return (
-      <PlayerOnboardingLayout step={3}>
+      <PlayerOnboardingLayout step={2}>
         <div className="text-sm text-on-surface-variant">A carregar perfil...</div>
       </PlayerOnboardingLayout>
     )
   }
 
   return (
-    <PlayerOnboardingLayout step={3}>
+    <PlayerOnboardingLayout step={2}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
             <h2 className="text-xl font-semibold text-on-surface">

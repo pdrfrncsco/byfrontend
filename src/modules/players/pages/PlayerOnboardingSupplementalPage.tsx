@@ -16,7 +16,7 @@ export function PlayerOnboardingSupplementalPage({ kind }: { kind: SupplementalK
   const navigate = useNavigate()
   const complete = useCompleteOnboardingStep()
   const item = content[kind]
-  const previous = kind === 'guardian' ? ROUTES.ONBOARDING_PLAYER_CONTACT : ROUTES.ONBOARDING_PLAYER_GUARDIAN
+  const previous = kind === 'guardian' ? ROUTES.ONBOARDING_PLAYER_IDENTITY : ROUTES.ONBOARDING_PLAYER_GUARDIAN
 
   const onContinue = async () => {
     await complete.mutateAsync(kind)

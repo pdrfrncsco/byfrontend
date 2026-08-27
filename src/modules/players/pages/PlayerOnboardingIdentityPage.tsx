@@ -8,7 +8,7 @@ export function PlayerOnboardingIdentityPage() {
   const navigate = useNavigate()
 
   return (
-    <PlayerOnboardingLayout step={2}>
+    <PlayerOnboardingLayout step={5}>
       <Card variant="flat" className="border-outline-variant/30">
         <CardContent className="space-y-lg p-lg">
           <div className="flex items-start gap-md">
@@ -28,12 +28,12 @@ export function PlayerOnboardingIdentityPage() {
           </div>
 
           <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
-            <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)}>
+            <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_CONTACT)}>
               <ArrowLeft className="h-4 w-4" />
-              Continuar onboarding
+              Voltar
             </Button>
-            <Button type="button" onClick={() => navigate(ROUTES.DASHBOARD_PLAYER_SETTINGS)}>
-              Ir para o dashboard
+            <Button type="button" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_GUARDIAN)}>
+              Continuar
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

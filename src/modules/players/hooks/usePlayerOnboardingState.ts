@@ -24,8 +24,8 @@ export const STEP_ROUTE_MAP: Record<NonNullable<OnboardingStep>, string> = {
  * tries to skip ahead.
  */
 export const STEP_ORDER: NonNullable<OnboardingStep>[] = [
-  'account', 'identity', 'personal', 'football',
-  'contact', 'guardian', 'club', 'review',
+  'account', 'personal', 'football', 'contact',
+  'identity', 'guardian', 'club', 'review',
 ]
 
 /** Normalise backend step names that were renamed on the frontend */

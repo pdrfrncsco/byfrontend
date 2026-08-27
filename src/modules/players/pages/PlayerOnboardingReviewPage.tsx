@@ -53,9 +53,9 @@ export function PlayerOnboardingReviewPage() {
           <>
             <div className="grid gap-md md:grid-cols-2">
               <StatusRow label="Dados pessoais" complete={Boolean(data?.has_basic_info ?? data?.personal_complete)} />
-              <StatusRow label="Identidade (opcional)" complete={Boolean(data?.identity_complete)} />
               <StatusRow label="Informação futebolística" complete={Boolean(data?.has_football_info ?? data?.football_complete)} />
               <StatusRow label="Contacto" complete={Boolean(data?.contact_complete)} />
+              <StatusRow label="Identidade (opcional)" complete={Boolean(data?.identity_complete)} />
               <StatusRow label="Responsável legal" complete={Boolean(data?.guardian_complete || !player?.is_minor)} />
               <StatusRow label="Clube" complete={Boolean(data?.club_complete)} />
             </div>
@@ -102,7 +102,7 @@ export function PlayerOnboardingReviewPage() {
 
             <div className="flex flex-col-reverse gap-sm sm:flex-row sm:justify-between">
               <Button asChild variant="secondary">
-                <Link to={ROUTES.ONBOARDING_PLAYER_FOOTBALL}>
+                <Link to={ROUTES.ONBOARDING_PLAYER_CLUB}>
                   Voltar ao passo anterior
                 </Link>
               </Button>

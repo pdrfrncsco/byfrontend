@@ -60,7 +60,7 @@ export function PlayerOnboardingFootballPage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={4}>
+    <PlayerOnboardingLayout step={3}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Perfil futebolístico</h2>
