@@ -145,6 +145,11 @@ export async function getPlayerMe(): Promise<PlayerDetail> {
   return unwrapData(res.data)
 }
 
+export async function createPlayerMe(data: PlayerCreate): Promise<Player> {
+  const res = await apiClient.post(API_ROUTES.PLAYERS.ME, data)
+  return unwrapData(res.data)
+}
+
 export async function getPlayerOnboardingStatus(): Promise<PlayerOnboardingStatus> {
   const res = await apiClient.get(API_ROUTES.PLAYERS.ME_ONBOARDING_STATUS)
   return unwrapData(res.data)

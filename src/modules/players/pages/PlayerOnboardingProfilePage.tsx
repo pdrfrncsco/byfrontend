@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { AlertCircle, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button, Input, Label } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { usePlayerOnboardingStatus, useUpdatePlayerMe, useCompleteOnboardingStep } from '../hooks'
+import { usePlayerOnboardingStatus, useCreatePlayerMe, useUpdatePlayerMe, useCompleteOnboardingStep } from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 interface ProfileFormData {
@@ -17,6 +17,7 @@ interface ProfileFormData {
 export function PlayerOnboardingProfilePage() {
   const navigate = useNavigate()
   const { data, isLoading } = usePlayerOnboardingStatus()
+  const createPlayer = useCreatePlayerMe()
   const updatePlayer = useUpdatePlayerMe()
   const completeStep = useCompleteOnboardingStep()
   const form = useForm<ProfileFormData>({
@@ -39,12 +40,17 @@ export function PlayerOnboardingProfilePage() {
   }, [data?.player, form])
 
   const onSubmit = async (values: ProfileFormData) => {
-    await updatePlayer.mutateAsync({
+    const payload = {
       first_name: values.first_name.trim(),
       last_name: values.last_name.trim(),
       date_of_birth: values.date_of_birth,
       nationality: values.nationality.trim(),
-    })
+    }
+    if (data?.has_player_profile) {
+      await updatePlayer.mutateAsync(payload)
+    } else {
+      await createPlayer.mutateAsync(payload)
+    }
     await completeStep.mutateAsync('personal')
     navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)
   }
@@ -57,44 +63,17 @@ export function PlayerOnboardingProfilePage() {
     )
   }
 
-  if (data && !data.has_player_profile) {
-    return (
-      <PlayerOnboardingLayout step={3}>
-        <div className="flex flex-col gap-md rounded-lg border border-error/30 bg-error-container/10 p-md text-sm">
-          <div className="flex items-start gap-md">
-            <AlertCircle className="mt-0.5 h-5 w-5 text-error" />
-            <div>
-              <h2 className="font-semibold text-on-surface">Perfil de jogador não encontrado</h2>
-              <p className="mt-xs text-on-surface-variant">
-                Esta conta ainda não tem um perfil de jogador associado.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-sm mt-sm">
-                      <Button variant="primary" onClick={() => navigate(`${ROUTES.DASHBOARD_PLAYERS_CREATE}?from=onboarding`)}>
-              Criar perfil de jogador
-            </Button>
-            <Button variant="outline" onClick={() => navigate(ROUTES.PLAYERS)}>
-              Explorar jogadores
-            </Button>
-          </div>
-
-          <p className="mt-sm text-xs text-on-surface-variant">
-            Ao criar o perfil será possível completar o onboarding e usar o portal do jogador para pedidos de vínculo a clubes.
-          </p>
-        </div>
-      </PlayerOnboardingLayout>
-    )
-  }
-
   return (
     <PlayerOnboardingLayout step={3}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-lg" noValidate>
         <div>
-          <h2 className="text-xl font-semibold text-on-surface">Dados pessoais</h2>
+            <h2 className="text-xl font-semibold text-on-surface">
+              {data?.has_player_profile ? 'Dados pessoais' : 'Criar perfil de jogador'}
+            </h2>
           <p className="mt-xs text-sm text-on-surface-variant">
-            Estes campos identificam o jogador no ecossistema BolaYetu.
+            {data?.has_player_profile
+              ? 'Estes campos identificam o jogador no ecossistema BolaYetu.'
+              : 'Preencha os seus dados para criar o perfil e continuar o onboarding.'}
           </p>
         </div>
 
@@ -153,14 +132,14 @@ export function PlayerOnboardingProfilePage() {
           </div>
         </div>
 
-        {updatePlayer.isError && (
+        {(updatePlayer.isError || createPlayer.isError || completeStep.isError) && (
           <p role="alert" className="rounded-md bg-error-container/20 p-sm text-sm text-error">
-            Não foi possível guardar os dados do perfil. Verifique os campos e tente novamente.
+            Não foi possível guardar o perfil. Verifique os campos e tente novamente.
           </p>
         )}
 
         <div className="flex justify-end">
-          <Button type="submit" loading={updatePlayer.isPending}>
+          <Button type="submit" loading={updatePlayer.isPending || createPlayer.isPending || completeStep.isPending}>
             Continuar
             <ArrowRight className="h-4 w-4" />
           </Button>

@@ -29,7 +29,6 @@ export function PlayerOnboardingReviewPage() {
       && data.football_complete
       && data.contact_complete
       && (data.guardian_complete || !player?.is_minor)
-      && data.documents_complete
       && data.club_complete
   )
 
@@ -39,7 +38,7 @@ export function PlayerOnboardingReviewPage() {
   }
 
   return (
-    <PlayerOnboardingLayout step={9}>
+    <PlayerOnboardingLayout step={8}>
       <div className="space-y-lg">
         <div>
           <h2 className="text-xl font-semibold text-on-surface">Revisão final</h2>
@@ -58,7 +57,6 @@ export function PlayerOnboardingReviewPage() {
               <StatusRow label="Informação futebolística" complete={Boolean(data?.has_football_info ?? data?.football_complete)} />
               <StatusRow label="Contacto" complete={Boolean(data?.contact_complete)} />
               <StatusRow label="Responsável legal" complete={Boolean(data?.guardian_complete || !player?.is_minor)} />
-              <StatusRow label="Documentos" complete={Boolean(data?.documents_complete)} />
               <StatusRow label="Clube" complete={Boolean(data?.club_complete)} />
             </div>
 

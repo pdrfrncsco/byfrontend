@@ -1,13 +1,13 @@
 import { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Activity, CheckCircle2, UserRound, Lock, FileCheck2, Phone, Users, FolderOpen, Building2 } from 'lucide-react'
+import { Activity, CheckCircle2, UserRound, Lock, FileCheck2, Phone, Users, Building2 } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 import { usePlayerOnboardingState, STEP_ORDER } from '../hooks/usePlayerOnboardingState'
 import type { OnboardingStep } from '../types'
 
 interface PlayerOnboardingLayoutProps {
   children: ReactNode
-  /** Current step (1–9) in the nine-step player onboarding flow. */
+  /** Current step (1–8) in the eight-step player onboarding flow. */
   step: number
 }
 
@@ -18,9 +18,8 @@ const steps = [
   { number: 4, label: 'Futebol',        href: ROUTES.ONBOARDING_PLAYER_FOOTBALL,  icon: Activity   },
   { number: 5, label: 'Contacto',       href: ROUTES.ONBOARDING_PLAYER_CONTACT,   icon: Phone      },
   { number: 6, label: 'Responsável',    href: ROUTES.ONBOARDING_PLAYER_GUARDIAN,  icon: Users      },
-  { number: 7, label: 'Documentos',     href: ROUTES.ONBOARDING_PLAYER_DOCUMENTS, icon: FolderOpen },
-  { number: 8, label: 'Clube',          href: ROUTES.ONBOARDING_PLAYER_CLUB,      icon: Building2  },
-  { number: 9, label: 'Revisão',        href: ROUTES.ONBOARDING_PLAYER_REVIEW,    icon: CheckCircle2 },
+  { number: 7, label: 'Clube',          href: ROUTES.ONBOARDING_PLAYER_CLUB,      icon: Building2  },
+  { number: 8, label: 'Revisão',        href: ROUTES.ONBOARDING_PLAYER_REVIEW,    icon: CheckCircle2 },
 ]
 
 export function PlayerOnboardingLayout({ children, step }: PlayerOnboardingLayoutProps) {

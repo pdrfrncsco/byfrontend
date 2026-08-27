@@ -34,15 +34,14 @@ export type OnboardingStep =
   | 'football'
   | 'contact'
   | 'guardian'
-  | 'documents'
   | 'club'
   | 'review'
   | null
 
-/** Ordered list of all 9 onboarding steps */
+/** Ordered list of the 8 onboarding steps */
 export const ONBOARDING_STEPS_ORDER: NonNullable<OnboardingStep>[] = [
   'account', 'identity', 'personal', 'football',
-  'contact', 'guardian', 'documents', 'club', 'review',
+  'contact', 'guardian', 'club', 'review',
 ]
 
 // ─── Player Base Types ────────────────────────────────────────────────────────
@@ -314,7 +313,6 @@ export interface PlayerOnboardingStatus {
   football_complete: boolean
   contact_complete: boolean
   guardian_complete: boolean
-  documents_complete: boolean
   club_complete: boolean
   review_complete: boolean
   completed_at: string | null

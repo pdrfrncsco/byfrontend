@@ -39,7 +39,6 @@ export function PendingOnboardingRedirect() {
         football: ROUTES.ONBOARDING_PLAYER_FOOTBALL,
         contact: ROUTES.ONBOARDING_PLAYER_CONTACT,
         guardian: ROUTES.ONBOARDING_PLAYER_GUARDIAN,
-        documents: ROUTES.ONBOARDING_PLAYER_DOCUMENTS,
         club: ROUTES.ONBOARDING_PLAYER_CLUB,
         review: ROUTES.ONBOARDING_PLAYER_REVIEW,
       }

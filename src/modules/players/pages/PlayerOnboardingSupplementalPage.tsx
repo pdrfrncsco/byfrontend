@@ -5,19 +5,18 @@ import { ROUTES } from '@/constants/routes'
 import { useCompleteOnboardingStep } from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
-type SupplementalKind = 'guardian' | 'documents' | 'club'
+type SupplementalKind = 'guardian' | 'club'
 
 const content: Record<SupplementalKind, { title: string; description: string; step: number; next: string; nextLabel: string }> = {
-  guardian: { title: 'Responsável legal', description: 'Este passo é obrigatório para jogadores menores. A gestão do responsável legal será disponibilizada quando o perfil for identificado como menor.', step: 6, next: ROUTES.ONBOARDING_PLAYER_DOCUMENTS, nextLabel: 'Continuar para documentos' },
-  documents: { title: 'Documentos adicionais', description: 'Pode adicionar contratos, licenças e certificados no portal depois de concluir o onboarding. O documento de identidade já foi tratado no passo anterior.', step: 7, next: ROUTES.ONBOARDING_PLAYER_CLUB, nextLabel: 'Continuar para clube' },
-  club: { title: 'Ligação a um clube', description: 'A ligação a um clube é opcional. Pode enviar um pedido de vínculo a partir do portal do jogador após concluir o onboarding.', step: 8, next: ROUTES.ONBOARDING_PLAYER_REVIEW, nextLabel: 'Continuar para revisão' },
+  guardian: { title: 'Responsável legal', description: 'Este passo é obrigatório para jogadores menores. A gestão do responsável legal será disponibilizada quando o perfil for identificado como menor.', step: 6, next: ROUTES.ONBOARDING_PLAYER_CLUB, nextLabel: 'Continuar para clube' },
+  club: { title: 'Ligação a um clube', description: 'A ligação a um clube é opcional. Pode enviar um pedido de vínculo a partir do portal do jogador após concluir o onboarding.', step: 7, next: ROUTES.ONBOARDING_PLAYER_REVIEW, nextLabel: 'Continuar para revisão' },
 }
 
 export function PlayerOnboardingSupplementalPage({ kind }: { kind: SupplementalKind }) {
   const navigate = useNavigate()
   const complete = useCompleteOnboardingStep()
   const item = content[kind]
-  const previous = kind === 'guardian' ? ROUTES.ONBOARDING_PLAYER_CONTACT : kind === 'documents' ? ROUTES.ONBOARDING_PLAYER_GUARDIAN : ROUTES.ONBOARDING_PLAYER_DOCUMENTS
+  const previous = kind === 'guardian' ? ROUTES.ONBOARDING_PLAYER_CONTACT : ROUTES.ONBOARDING_PLAYER_GUARDIAN
 
   const onContinue = async () => {
     await complete.mutateAsync(kind)
@@ -36,5 +35,4 @@ export function PlayerOnboardingSupplementalPage({ kind }: { kind: SupplementalK
 }
 
 export function PlayerOnboardingGuardianPage() { return <PlayerOnboardingSupplementalPage kind="guardian" /> }
-export function PlayerOnboardingDocumentsPage() { return <PlayerOnboardingSupplementalPage kind="documents" /> }
 export function PlayerOnboardingClubPage() { return <PlayerOnboardingSupplementalPage kind="club" /> }

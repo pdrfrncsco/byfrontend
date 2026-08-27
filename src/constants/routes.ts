@@ -21,7 +21,6 @@ export const ROUTES = {
   ONBOARDING_PLAYER_IDENTITY: '/onboarding/player/identity',
   ONBOARDING_PLAYER_CONTACT: '/onboarding/player/contact',
   ONBOARDING_PLAYER_GUARDIAN: '/onboarding/player/guardian',
-  ONBOARDING_PLAYER_DOCUMENTS: '/onboarding/player/documents',
   ONBOARDING_PLAYER_CLUB: '/onboarding/player/club',
   REGISTER_PLAYER: '/register/player',
   REGISTER_CLUB: '/register/club',

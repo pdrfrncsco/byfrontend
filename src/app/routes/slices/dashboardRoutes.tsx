@@ -98,9 +98,6 @@ const PlayerOnboardingContactPage = lazy(() =>
 const PlayerOnboardingGuardianPage = lazy(() =>
   import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingGuardianPage })),
 )
-const PlayerOnboardingDocumentsPage = lazy(() =>
-  import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingDocumentsPage })),
-)
 const PlayerOnboardingClubPage = lazy(() =>
   import('@/modules/players/pages/PlayerOnboardingSupplementalPage').then((m) => ({ default: m.PlayerOnboardingClubPage })),
 )
@@ -461,10 +458,6 @@ export function dashboardRouteElements() {
       <Route
         path={onboardingRoutes.playerGuardian}
         element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingGuardianPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
-      />
-      <Route
-        path={onboardingRoutes.playerDocuments}
-        element={<ProtectedRoute requiredRoles={['player']}><PlayerOnboardingGuard><Suspense fallback={<RouteFallback />}><PlayerOnboardingDocumentsPage /></Suspense></PlayerOnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.playerClub}

@@ -14,19 +14,18 @@ export const STEP_ROUTE_MAP: Record<NonNullable<OnboardingStep>, string> = {
   football:  ROUTES.ONBOARDING_PLAYER_FOOTBALL,
   contact:   ROUTES.ONBOARDING_PLAYER_CONTACT,
   guardian:  ROUTES.ONBOARDING_PLAYER_GUARDIAN,
-  documents: ROUTES.ONBOARDING_PLAYER_DOCUMENTS,
   club:      ROUTES.ONBOARDING_PLAYER_CLUB,
   review:    ROUTES.ONBOARDING_PLAYER_REVIEW,
 }
 
 /**
- * Sequential order of all 9 onboarding steps.
+ * Sequential order of the 8 onboarding steps.
  * Used by the guard to compute which step to redirect to when a user
  * tries to skip ahead.
  */
 export const STEP_ORDER: NonNullable<OnboardingStep>[] = [
   'account', 'identity', 'personal', 'football',
-  'contact', 'guardian', 'documents', 'club', 'review',
+  'contact', 'guardian', 'club', 'review',
 ]
 
 /** Normalise backend step names that were renamed on the frontend */

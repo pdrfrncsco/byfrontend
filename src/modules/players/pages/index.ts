@@ -16,7 +16,6 @@ export { PlayerOnboardingContactPage } from './PlayerOnboardingContactPage'
 export {
   PlayerOnboardingSupplementalPage,
   PlayerOnboardingGuardianPage,
-  PlayerOnboardingDocumentsPage,
   PlayerOnboardingClubPage,
 } from './PlayerOnboardingSupplementalPage'
 export { PlayerOnboardingCompletePage } from './onboarding/PlayerOnboardingCompletePage'

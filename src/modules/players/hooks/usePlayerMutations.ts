@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   // Core
   createPlayer,
+  createPlayerMe,
   updatePlayer,
   registerPlayer,
   updatePlayerMe,
@@ -104,6 +105,18 @@ export function useCreatePlayer() {
     mutationFn: (data: PlayerCreate) => createPlayer(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
+    },
+  })
+}
+
+export function useCreatePlayerMe() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: PlayerCreate) => createPlayerMe(data),
+    onSuccess: async (response) => {
+      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+      await queryClient.refetchQueries({ queryKey: playerKeys.onboardingStatus() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.detail(response.slug) })
     },
   })
 }
