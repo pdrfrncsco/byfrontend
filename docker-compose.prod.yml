@@ -1,0 +1,17 @@
+name: by-frontend
+
+services:
+  build:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:?set VITE_API_BASE_URL in .env.production.local}
+        VITE_API_URL: ${VITE_API_URL:?set VITE_API_URL in .env.production.local}
+        VITE_APP_VERSION: ${VITE_APP_VERSION:-local}
+    container_name: by-frontend-build
+    # Extracts the compiled static bundle onto the host so the VPS's native
+    # Nginx can serve it directly. Re-run this project on every release.
+    volumes:
+      - ${FRONTEND_DIST_HOST_PATH:-./dist}:/out
+    command: ["sh", "-c", "rm -rf /out/* && cp -r /app/dist/. /out/"]
+    restart: "no"
