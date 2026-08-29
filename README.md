@@ -50,6 +50,12 @@ npm run dev
 # Build for production
 npm run build
 
+# Build the local Docker bundle (API at http://localhost:8008)
+docker compose --env-file .env.docker.local -f docker-compose.prod.yml up --build
+
+# Remove the one-shot build container after the bundle is extracted
+docker compose --env-file .env.docker.local -f docker-compose.prod.yml down
+
 # Run tests
 npm run test
 
