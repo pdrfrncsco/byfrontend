@@ -1,0 +1,31 @@
+# BOLAYETU Frontend — Dockerfile.dev
+#
+# Development image: installs all dependencies and runs the Vite dev server
+# with HMR (Hot Module Replacement). Used by docker-compose.dev.yml in the
+# project root.
+#
+# The src/ and public/ directories are bind-mounted from the host so that
+# file changes are reflected instantly without rebuilding the image.
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Force development mode so npm never skips devDependencies
+ENV NODE_ENV=development
+
+# Copy manifests first (better layer caching)
+COPY package.json package-lock.json ./
+
+# Install all dependencies including devDependencies
+RUN npm install
+
+# Sanity check — fail the build early if vite was not installed
+RUN test -f node_modules/.bin/vite || (echo "ERROR: vite binary not found after npm install" && exit 1)
+
+# Source is mounted at runtime via volumes — no COPY needed here.
+
+EXPOSE 5173
+
+# Shell form so npm properly adds node_modules/.bin to PATH
+CMD ["/bin/sh", "-c", "npm run dev"]

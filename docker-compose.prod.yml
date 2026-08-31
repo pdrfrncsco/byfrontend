@@ -1,7 +1,7 @@
 name: by-frontend
 
 services:
-  build:
+  frontend-build:
     build:
       context: .
       args:

@@ -8,9 +8,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies (use ci for reproducible installs)
+# Install ALL deps (devDependencies are needed for tsc + vite build)
 COPY package.json package-lock.json ./
-RUN npm ci --frozen-lockfile
+RUN npm ci --include=dev
 
 # Copy source and build
 COPY . .
