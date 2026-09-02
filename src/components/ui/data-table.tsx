@@ -65,15 +65,15 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder ? null : header.column.getCanSort() ? (
                     <button
                       type="button"
-                      className="inline-flex items-center gap-1 hover:text-on-surface"
+                      className="inline-flex items-center gap-1.5 hover:text-on-surface transition-colors duration-200 group"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
-                        asc: <ArrowUp className="h-3 w-3" aria-hidden="true" />,
-                        desc: <ArrowDown className="h-3 w-3" aria-hidden="true" />,
+                        asc: <ArrowUp className="h-3 w-3 text-primary" aria-hidden="true" />,
+                        desc: <ArrowDown className="h-3 w-3 text-primary" aria-hidden="true" />,
                       }[header.column.getIsSorted() as string] ?? (
-                        <ArrowUpDown className="h-3 w-3 opacity-40" aria-hidden="true" />
+                        <ArrowUpDown className="h-3 w-3 opacity-30 group-hover:opacity-60 transition-opacity" aria-hidden="true" />
                       )}
                     </button>
                   ) : (

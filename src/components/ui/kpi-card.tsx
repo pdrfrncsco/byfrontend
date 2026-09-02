@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { Card } from './card'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 
 export interface KpiCardProps {
   label: string
@@ -18,32 +19,41 @@ export function KpiCard({ label, value, icon, trend, className }: KpiCardProps) 
     <Card
       padding="md"
       hoverable
-      className={cn('group relative flex flex-col justify-between overflow-hidden', className)}
+      className={cn('group relative flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-lg', className)}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
       <div className="mb-md flex items-start justify-between">
-        <span className="font-label-sm font-semibold uppercase tracking-wider text-outline">{label}</span>
+        <span className="font-label-sm font-medium uppercase tracking-wider text-on-surface-variant group-hover:text-primary transition-colors duration-300">
+          {label}
+        </span>
         {icon && (
-          <div className="rounded-lg border border-outline-variant/20 bg-surface-container-high p-sm text-primary transition-transform duration-300 group-hover:scale-110">
+          <div className="rounded-xl border border-outline-variant/30 bg-surface-container-high p-2 text-primary shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-primary/10 group-hover:border-primary/30">
             {icon}
           </div>
         )}
       </div>
 
-      <div className="mt-auto flex items-end justify-between">
-        <span className="font-headline-lg text-3xl text-on-surface transition-colors duration-300 group-hover:text-primary">
+      <div className="mt-auto flex items-end justify-between gap-sm">
+        <span className="font-display-lg text-3xl font-bold tracking-tight text-on-surface transition-colors duration-300 group-hover:text-primary">
           {value}
         </span>
         {trend && (
-          <span
+          <div
             className={cn(
-              'rounded px-sm py-0.5 text-xs font-bold',
-              trend.isPositive ? 'bg-primary-container/20 text-primary' : 'bg-error-container/25 text-error',
+              'flex items-center gap-xs rounded-full px-2 py-0.5 text-[10px] font-bold transition-all duration-300',
+              trend.isPositive
+                ? 'bg-success-container/20 text-success'
+                : 'bg-error-container/20 text-error',
             )}
           >
-            {trend.value}
-          </span>
+            {trend.isPositive ? (
+              <TrendingUp className="h-3 w-3" />
+            ) : (
+              <TrendingDown className="h-3 w-3" />
+            )}
+            <span>{trend.value}</span>
+          </div>
         )}
       </div>
     </Card>

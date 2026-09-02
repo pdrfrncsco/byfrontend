@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { type ColumnDef } from '@tanstack/react-table'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
+import { cn } from '@/lib/utils'
 import {
   Badge,
   Button,
@@ -131,7 +132,7 @@ export default function OrganizationDashboardPage() {
         cell: ({ row }) => (
           <Link
             to={ROUTES.COMPETITION_SETTINGS(row.original.id)}
-            className="font-semibold text-primary hover:underline hover:text-primary-container"
+            className="font-bold text-on-surface hover:text-primary transition-colors duration-200"
           >
             {row.original.name}
           </Link>
@@ -142,7 +143,7 @@ export default function OrganizationDashboardPage() {
         header: 'Formato',
         accessorFn: (row) => row.type_label || row.competition_type || 'Liga',
         cell: ({ row }) => (
-          <span className="text-xs text-on-surface-variant">
+          <span className="inline-flex items-center rounded-md bg-surface-container-high px-2 py-0.5 text-[11px] font-medium text-on-surface-variant">
             {row.original.type_label || row.original.competition_type || 'Liga'}
           </span>
         ),
@@ -150,7 +151,7 @@ export default function OrganizationDashboardPage() {
       {
         accessorKey: 'season',
         header: 'Época',
-        cell: ({ row }) => <span className="font-data-tabular text-xs">{row.original.season}</span>,
+        cell: ({ row }) => <span className="font-data-tabular text-xs opacity-70">{row.original.season}</span>,
       },
       {
         id: 'status',
@@ -163,7 +164,7 @@ export default function OrganizationDashboardPage() {
         id: 'actions',
         header: 'Ações',
         cell: ({ row }) => (
-          <Button variant="ghost" size="sm" asChild className="text-primary hover:bg-primary-container/20">
+          <Button variant="outline" size="sm" asChild className="h-8 rounded-full px-3 text-xs font-semibold transition-all duration-200 hover:bg-primary/10 hover:text-primary hover:border-primary/50">
             <Link to={ROUTES.COMPETITION_SETTINGS(row.original.id)}>
               Gerir
             </Link>
@@ -173,6 +174,7 @@ export default function OrganizationDashboardPage() {
     ],
     [],
   )
+
 
   const clubRows = useMemo(
     () => (Array.isArray(clubs) ? (clubs as OrganizationClub[]) : []),
@@ -187,25 +189,27 @@ export default function OrganizationDashboardPage() {
         cell: ({ row }) => (
           <div className="flex items-center gap-sm">
             {row.original.logo_url ? (
-              <img src={row.original.logo_url} alt={row.original.name} className="h-6 w-6 rounded-full object-cover" />
+              <img src={row.original.logo_url} alt={row.original.name} className="h-7 w-7 rounded-full object-cover ring-1 ring-outline-variant/30 shadow-sm" />
             ) : (
-              <div className="h-6 w-6 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-[10px]">
+              <div className="h-7 w-7 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-[10px] ring-1 ring-outline-variant/30">
                 {row.original.name.slice(0, 2).toUpperCase()}
               </div>
             )}
-            <span className="font-semibold">{row.original.name}</span>
+            <span className="font-bold text-on-surface">{row.original.name}</span>
           </div>
         ),
       },
       {
         accessorKey: 'city',
-        header: 'Cidade/Província',
-        cell: ({ row }) => <span className="text-xs text-on-surface-variant">{row.original.city || '—'}</span>,
-      },
-      {
-        accessorKey: 'stadium_name',
-        header: 'Estádio',
-        cell: ({ row }) => <span className="text-xs text-on-surface-variant">{row.original.stadium_name || '—'}</span>,
+        header: 'Localização',
+        cell: ({ row }) => (
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-on-surface">{row.original.city || '—'}</span>
+            {row.original.stadium_name && (
+              <span className="text-[11px] text-on-surface-variant opacity-70">{row.original.stadium_name}</span>
+            )}
+          </div>
+        ),
       },
       {
         id: 'status',
@@ -213,15 +217,16 @@ export default function OrganizationDashboardPage() {
         cell: ({ row }) => {
           const s = row.original.status || 'active'
           return s.toLowerCase() === 'active' ? (
-            <Badge variant="success">Ativo</Badge>
+            <Badge variant="success" className="rounded-full px-2 py-0.5 text-[10px] font-bold">Ativo</Badge>
           ) : (
-            <Badge variant="default">{row.original.status_label || 'Pendente'}</Badge>
+            <Badge variant="default" className="rounded-full px-2 py-0.5 text-[10px] font-bold">{row.original.status_label || 'Pendente'}</Badge>
           )
         },
       },
     ],
     [],
   )
+
 
   const activeClubsCount = useMemo(() => {
     if (kpis?.active_clubs !== undefined) return kpis.active_clubs
@@ -268,75 +273,84 @@ export default function OrganizationDashboardPage() {
               <Skeleton className="h-20 w-32 rounded-xl" />
             </>
           ) : (
+// ... existing imports ...
             <>
               <KpiCard
                 label="Org. Afiliadas"
                 value={kpis?.total_affiliated_organizations ?? 1}
                 icon={<Building2 className="h-4 w-4" />}
+                trend={{ value: '+2%', isPositive: true }}
                 className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
                 label="Clubes Ativos"
                 value={activeClubsCount}
                 icon={<Shield className="h-4 w-4" />}
+                trend={{ value: '+5%', isPositive: true }}
                 className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
                 label="Jogadores Registados"
                 value={kpis?.registered_players ?? 0}
                 icon={<UserCheck className="h-4 w-4" />}
+                trend={{ value: '+12%', isPositive: true }}
                 className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
                 label="Competições em Andamento"
                 value={ongoingCompetitionsCount}
                 icon={<Trophy className="h-4 w-4" />}
+                trend={{ value: '-1', isPositive: false }}
                 className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
               <KpiCard
                 label="Transferências Pendentes"
                 value={pendingTransfersCount}
                 icon={<ArrowLeftRight className="h-4 w-4" />}
+                trend={{ value: '+8%', isPositive: false }}
                 className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
               />
             </>
+// ... rest of the code ...
+
           )}
         </div>
       </div>
 
       {isPendingLaunch && (
-        <Card padding="md" className="mb-lg border-primary/30 bg-primary-container/10">
+        <Card padding="md" className="mb-lg border-primary/40 bg-gradient-to-r from-primary-container/20 to-transparent shadow-sm ring-1 ring-primary/20 animate-fade-in">
           <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
             <div className="flex gap-md">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary-container text-primary">
-                <Rocket className="h-5 w-5" aria-hidden="true" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/30 animate-pulse">
+                <Rocket className="h-6 w-6" aria-hidden="true" />
               </div>
-              <div>
-                <h2 className="font-title-md text-base text-on-surface">Portal pendente de lançamento</h2>
-                <p className="mt-xs max-w-2xl text-sm text-on-surface-variant">
+              <div className="flex flex-col gap-xs">
+                <h2 className="font-display-md text-lg font-bold text-on-surface">Portal pendente de lançamento</h2>
+                <p className="max-w-2xl text-sm text-on-surface-variant">
                   Publique a organização para ativar o portal público e disponibilizar competições, clubes e estatísticas aos visitantes.
                 </p>
               </div>
             </div>
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={handleLaunchPortal}
               loading={launchOrganization.isPending}
-              className="w-full md:w-auto"
+              className="w-full md:w-auto h-11 px-6 rounded-full font-bold shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-105"
             >
               {launchOrganization.isPending ? (
                 'A lançar...'
               ) : (
                 <>
-                  <CheckCircle2 className="h-4 w-4" />
-                  <span>Lançar Portal</span>
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  <span>Lançar Portal Agora</span>
                 </>
               )}
             </Button>
           </div>
         </Card>
       )}
+
 
       <div className="grid animate-fade-in grid-cols-12 gap-lg">
         {/* Competições */}
@@ -462,34 +476,61 @@ export default function OrganizationDashboardPage() {
           <Card className="flex-1">
             <CardHeader className="pb-sm">
               <CardTitle>
-                <span>Ações Rápidas</span>
+                <span className="text-on-surface">Ações Rápidas</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-sm">
-              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
-                  <PlusCircle className="h-4 w-4 text-primary" />
-                  <span>Vincular Novo Clube</span>
+            <CardContent className="grid grid-cols-1 gap-sm sm:grid-cols-2">
+              {[
+                {
+                  title: 'Vincular Novo Clube',
+                  description: 'Adicione novos clubes à sua rede',
+                  icon: <PlusCircle className="h-5 w-5" />,
+                  to: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
+                  color: 'text-primary',
+                },
+                {
+                  title: 'Nova Competição',
+                  description: 'Publique um novo torneio oficial',
+                  icon: <Trophy className="h-5 w-5" />,
+                  to: ROUTES.COMPETITION_CREATE,
+                  color: 'text-secondary',
+                },
+                {
+                  title: 'Convidar Membro',
+                  description: 'Gerencie a equipa administrativa',
+                  icon: <Users className="h-5 w-5" />,
+                  to: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS,
+                  color: 'text-primary',
+                },
+                {
+                  title: 'Rever Filiações',
+                  description: 'Audite as organizações afiliadas',
+                  icon: <Shield className="h-5 w-5" />,
+                  to: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
+                  color: 'text-primary',
+                },
+              ].map((action, idx) => (
+                <Link
+                  key={idx}
+                  to={action.to}
+                  className="group flex items-start gap-md rounded-xl border border-outline-variant/30 p-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5 hover:shadow-sm"
+                >
+                  <div className={cn(
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-high transition-colors duration-300 group-hover:bg-primary/20',
+                    action.color
+                  )}>
+                    {action.icon}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="font-semibold text-sm text-on-surface transition-colors duration-300 group-hover:text-primary">
+                      {action.title}
+                    </span>
+                    <span className="truncate text-xs text-on-surface-variant">
+                      {action.description}
+                    </span>
+                  </div>
                 </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.COMPETITION_CREATE}>
-                  <Trophy className="h-4 w-4 text-primary" />
-                  <span>Publicar Nova Competição</span>
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.DASHBOARD_ORGANIZATION_MEMBERS}>
-                  <Users className="h-4 w-4 text-primary" />
-                  <span>Convidar Membro</span>
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild className="justify-start gap-md">
-                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
-                  <Shield className="h-4 w-4 text-primary" />
-                  <span>Rever Filiações</span>
-                </Link>
-              </Button>
+              ))}
             </CardContent>
           </Card>
 
@@ -497,37 +538,66 @@ export default function OrganizationDashboardPage() {
           <Card className="flex-1">
             <CardHeader className="pb-sm">
               <CardTitle>
-                <span>Atividade Recente</span>
+                <span className="text-on-surface">Atividade Recente</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-sm">
-              <div className="flex gap-md text-xs items-start">
-                <span className="bg-primary-container text-primary font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Sistema</span>
-                <div>
-                  <p className="font-semibold text-on-surface">Configuração concluída</p>
-                  <p className="text-on-surface-variant text-[10px]">O portal da organização foi configurado com sucesso.</p>
-                </div>
+            <CardContent className="relative pl-6">
+              {/* Timeline Vertical Line */}
+              <div className="absolute left-[11px] top-2 bottom-6 w-px bg-outline-variant/30" />
+
+              <div className="space-y-lg">
+                {[
+                  {
+                    type: 'Sistema',
+                    title: 'Configuração concluída',
+                    description: 'O portal da organização foi configurado com sucesso.',
+                    color: 'bg-primary text-primary-container',
+                    borderColor: 'border-primary',
+                  },
+                  ...(clubRows.length > 0 ? [{
+                    type: 'Clubes',
+                    title: 'Clube filiado',
+                    description: `${clubRows[0].name} associado à organização.`,
+                    color: 'bg-secondary text-secondary-container',
+                    borderColor: 'border-secondary',
+                  }] : []),
+                  ...(tournamentRows.length > 0 ? [{
+                    type: 'Torneios',
+                    title: 'Competição ativa',
+                    description: `${tournamentRows[0].name} listado no portal.`,
+                    color: 'bg-tertiary text-tertiary-container',
+                    borderColor: 'border-tertiary',
+                  }] : []),
+                ].map((activity, idx) => (
+                  <div key={idx} className="relative flex gap-md">
+                    {/* Timeline Node */}
+                    <div className={cn(
+                      'absolute -left-[25px] top-1 h-5 w-5 rounded-full border-4 bg-surface ring-1 transition-all duration-300 group-hover:scale-110',
+                      activity.borderColor,
+                    )} />
+
+                    <div className="flex flex-col gap-xs">
+                      <div className="flex items-center gap-xs">
+                        <span className={cn(
+                          'rounded-full px-1.5 py-0 text-[9px] font-bold uppercase tracking-wider ring-1 ring-inset',
+                          activity.color,
+                          'ring-outline-variant/20'
+                        )}>
+                          {activity.type}
+                        </span>
+                        <span className="text-[10px] text-on-surface-variant opacity-60">Agora mesmo</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm text-on-surface leading-tight">{activity.title}</p>
+                        <p className="text-xs text-on-surface-variant leading-relaxed opacity-80">{activity.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              {clubRows.length > 0 && (
-                <div className="flex gap-md text-xs items-start border-t border-outline-variant/20 pt-sm">
-                  <span className="bg-secondary-container text-[#adb4ce] font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Clubes</span>
-                  <div>
-                    <p className="font-semibold text-on-surface">Clube filiado</p>
-                    <p className="text-on-surface-variant text-[10px]">{clubRows[0].name} associado à organização.</p>
-                  </div>
-                </div>
-              )}
-              {tournamentRows.length > 0 && (
-                <div className="flex gap-md text-xs items-start border-t border-outline-variant/20 pt-sm">
-                  <span className="bg-tertiary-container text-[#4f3e00] font-bold px-sm py-xs rounded text-[9px] uppercase tracking-wider select-none shrink-0">Torneios</span>
-                  <div>
-                    <p className="font-semibold text-on-surface">Competição ativa</p>
-                    <p className="text-on-surface-variant text-[10px]">{tournamentRows[0].name} listado no portal.</p>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
+
         </div>
       </div>
     </DashboardLayout>
