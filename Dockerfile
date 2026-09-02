@@ -10,7 +10,9 @@ WORKDIR /app
 
 # Install ALL deps (devDependencies are needed for tsc + vite build)
 COPY package.json package-lock.json ./
-RUN npm ci --include=dev
+RUN npm ci --include=dev --no-audit --no-fund \
+	&& test -x node_modules/.bin/tsc \
+	&& test -x node_modules/.bin/vite
 
 # Copy source and build
 COPY . .

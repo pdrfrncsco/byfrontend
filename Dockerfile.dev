@@ -18,7 +18,7 @@ ENV NODE_ENV=development
 COPY package.json package-lock.json ./
 
 # Install all dependencies including devDependencies
-RUN npm install
+RUN npm install --include=dev --no-audit --no-fund
 
 # Sanity check — fail the build early if vite was not installed
 RUN test -f node_modules/.bin/vite || (echo "ERROR: vite binary not found after npm install" && exit 1)
@@ -28,4 +28,4 @@ RUN test -f node_modules/.bin/vite || (echo "ERROR: vite binary not found after 
 EXPOSE 5173
 
 # Shell form so npm properly adds node_modules/.bin to PATH
-CMD ["/bin/sh", "-c", "npm run dev"]
+CMD ["/bin/sh", "-c", "npm run dev -- --host 0.0.0.0 --port 5173"]
