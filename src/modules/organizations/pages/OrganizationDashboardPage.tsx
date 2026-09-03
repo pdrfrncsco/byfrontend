@@ -294,20 +294,20 @@ export default function OrganizationDashboardPage() {
               />
               <KpiCard
                 variant="blue"
-                label="Clubes ativos"
+                label="Clubes activos"
                 value={activeClubsCount}
                 icon={<Building2 className="h-4 w-4" />}
                 trend={activeClubsCount > 0 ? { value: '+5%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
                 className="py-md px-lg"
               />
-              <KpiCard
-                variant="purple"
-                label="Jogadores"
-                value={kpis?.registered_players ?? 0}
-                icon={<UserCheck className="h-4 w-4" />}
-                trend={kpis?.registered_players > 0 ? { value: '+12%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
-                className="py-md px-lg"
-              />
+                <KpiCard
+                  variant="purple"
+                  label="Jogadores"
+                  value={kpis?.registered_players ?? 0}
+                  icon={<UserCheck className="h-4 w-4" />}
+                  trend={(kpis?.registered_players ?? 0) > 0 ? { value: '+12%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
+                  className="py-md px-lg"
+                />
               <KpiCard
                 variant="amber"
                 label="Competições"
