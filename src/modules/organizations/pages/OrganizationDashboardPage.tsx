@@ -24,7 +24,7 @@ import {
   useLaunchOrganization,
   useOnboardingStatus,
 } from '../hooks'
-import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, PlusCircle, Rocket, Shield, Trophy, UserCheck, Users } from 'lucide-react'
+import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, Link as LinkIcon, PlusCircle, Rocket, Shield, Trophy, UserCheck, Users } from 'lucide-react'
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
@@ -294,7 +294,7 @@ export default function OrganizationDashboardPage() {
               />
               <KpiCard
                 variant="blue"
-                label="Clubes activos"
+                label="Clubes ativos"
                 value={activeClubsCount}
                 icon={<Building2 className="h-4 w-4" />}
                 trend={activeClubsCount > 0 ? { value: '+5%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
@@ -405,7 +405,7 @@ export default function OrganizationDashboardPage() {
           <div>
             <CardHeader>
               <CardTitle>
-                <Users className="h-5 w-5 text-primary" aria-hidden="true" />
+                <ArrowLeftRight className="h-5 w-5 text-primary" aria-hidden="true" />
                 <span>Movimentações & Transferências</span>
               </CardTitle>
             </CardHeader>
@@ -522,7 +522,7 @@ export default function OrganizationDashboardPage() {
                 {
                   title: 'Rever filiações',
                   description: 'Pedidos pendentes',
-                  icon: <Shield className="h-5 w-5" />,
+                  icon: <LinkIcon className="h-5 w-5" />,
                   to: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
                   color: 'text-[#854f0b]',
                   bg: 'bg-[#faeeda]',

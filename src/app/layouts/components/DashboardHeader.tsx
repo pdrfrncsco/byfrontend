@@ -41,14 +41,7 @@ export function DashboardHeader({
         >
           <Menu className="w-6 h-6" />
         </button>
-{/* 
-        {/* Tenant / Workspace Active Indicator
-        <div className="dashboard-soft hidden sm:flex items-center gap-2 rounded-full border px-3 py-1" style={{ borderColor: 'var(--dashboard-border)', backgroundColor: 'var(--surface-1)' }}>
-          <Globe className="w-3.5 h-3.5 text-[#0f6e56]" />
-          <span className="text-[11px] font-medium text-on-surface-variant">
-            {tenantName ? tenantName : t('dashboard.topbar.globalTenant')}
-          </span>
-        </div> */}
+
 
         {/* Dynamic Breadcrumbs */}
         <DashboardBreadcrumb />

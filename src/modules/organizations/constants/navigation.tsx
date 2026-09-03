@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ClipboardList, FolderOpen, Home, Settings, Shield, Trophy, UserCheck, Users } from 'lucide-react'
+import { Building2, ClipboardList, Home, Image, Link as LinkIcon, Settings, Trophy, UserCheck, Users } from 'lucide-react'
 import { ROUTES } from '@/constants/routes'
 
 export type OrganizationNavKey =
@@ -45,7 +45,7 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
   clubs: {
     label: 'Clubes associados',
     href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS,
-    icon: <Shield className="h-4 w-4" />,
+    icon: <Building2 className="h-4 w-4" />,
   },
   players: {
     label: 'Jogadores',
@@ -65,12 +65,12 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
   affiliations: {
     label: 'Pedidos de filiação',
     href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
-    icon: <Shield className="h-4 w-4" />,
+    icon: <LinkIcon className="h-4 w-4" />,
   },
   media: {
     label: 'Biblioteca de média',
     href: ROUTES.DASHBOARD_MEDIA,
-    icon: <FolderOpen className="h-4 w-4" />,
+    icon: <Image className="h-4 w-4" />,
   },
   settings: {
     label: 'Configurações',

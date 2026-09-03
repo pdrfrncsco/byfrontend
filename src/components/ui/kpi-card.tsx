@@ -53,7 +53,7 @@ export function KpiCard({ label, value, icon, variant = 'teal', trend, className
       </div>
 
       <div className="mt-auto flex items-end justify-between gap-sm">
-        <span className="font-display-lg text-3xl font-bold tracking-tight text-on-surface transition-colors duration-300 group-hover:text-primary">
+        <span className="font-display-lg text-3xl font-medium tracking-tight text-on-surface transition-colors duration-300 group-hover:text-primary">
           {value}
         </span>
         {trend && (
