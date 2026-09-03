@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Menu } from 'lucide-react'
+import { Menu, Globe } from 'lucide-react'
 import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
 import { NotificationsDropdown } from '@/modules/notifications/components/NotificationsDropdown'
 import { DashboardBreadcrumb } from './DashboardBreadcrumb'
@@ -35,20 +35,20 @@ export function DashboardHeader({
     <header className="dashboard-surface sticky top-0 z-30 h-16 w-full flex justify-between items-center px-lg border-b backdrop-blur-xl">
       <div className="flex items-center gap-lg">
         {/* Hamburger Button for mobile */}
-        <button 
+        <button
           onClick={onOpenMobileMenu}
           className="dashboard-muted dashboard-soft-hover md:hidden rounded-full p-sm transition-colors hover:text-[var(--dashboard-strong)]"
         >
           <Menu className="w-6 h-6" />
         </button>
-
-        {/* Tenant / Workspace Active Indicator */}
-        <div className="dashboard-soft hidden sm:flex items-center gap-sm rounded-full border px-md py-1.5" style={{ borderColor: 'var(--dashboard-border)' }}>
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span className="dashboard-strong text-[11px] font-semibold uppercase tracking-wider">
-            {tenantName ? `Inquilino: ${tenantName}` : t('dashboard.topbar.globalTenant')}
+{/* 
+        {/* Tenant / Workspace Active Indicator
+        <div className="dashboard-soft hidden sm:flex items-center gap-2 rounded-full border px-3 py-1" style={{ borderColor: 'var(--dashboard-border)', backgroundColor: 'var(--surface-1)' }}>
+          <Globe className="w-3.5 h-3.5 text-[#0f6e56]" />
+          <span className="text-[11px] font-medium text-on-surface-variant">
+            {tenantName ? tenantName : t('dashboard.topbar.globalTenant')}
           </span>
-        </div>
+        </div> */}
 
         {/* Dynamic Breadcrumbs */}
         <DashboardBreadcrumb />
@@ -71,25 +71,24 @@ export function DashboardHeader({
         <div className="h-8 w-px" style={{ backgroundColor: 'var(--dashboard-border)' }}></div>
 
         {/* Profile Avatar / Menu */}
-        <div className="flex items-center gap-md">
-          <div className="text-right hidden xl:block">
-            <p className="dashboard-strong text-xs font-semibold leading-none">
+        <button
+          onClick={() => navigate('/profile')}
+          title="Ver Perfil"
+          className="flex items-center gap-3 pl-1 pr-3 py-1 rounded-full border transition-all hover:bg-surface-1"
+          style={{ borderColor: 'var(--dashboard-border)' }}
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-xs font-bold uppercase">
+            {username?.charAt(0) || '?'}
+          </div>
+          <div className="text-left hidden xl:block">
+            <p className="text-xs font-semibold leading-none text-on-surface">
               {username || 'Utilizador Demo'}
             </p>
-            <p className="dashboard-muted mt-1 text-[10px] font-bold uppercase">
+            <p className="mt-0.5 text-[10px] font-medium text-on-surface-variant">
               {role || 'Executivo'}
             </p>
           </div>
-          <button
-            onClick={() => navigate('/profile')}
-            title="Ver Perfil"
-            className="dashboard-avatar flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary transition-all hover:scale-105 hover:border-primary cursor-pointer"
-          >
-            <span className="text-primary text-sm font-bold uppercase">
-              {username?.charAt(0) || '?'}
-            </span>
-          </button>
-        </div>
+        </button>
       </div>
     </header>
   )

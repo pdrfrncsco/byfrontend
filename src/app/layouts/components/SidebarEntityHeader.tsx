@@ -26,7 +26,7 @@ export function SidebarEntityHeader({ context }: SidebarEntityHeaderProps) {
         ) : (
           <div className={cn(
             "h-full w-full flex items-center justify-center",
-            "bg-primary/10 text-primary text-sm font-semibold",
+            "bg-[#0f6e56] text-white text-sm font-semibold",
             context.type === 'player' ? "rounded-full" : "rounded-md"
           )}>
             {fallback}

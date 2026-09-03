@@ -88,12 +88,20 @@ export default function OrganizationDashboardPage() {
   const launchOrganization = useLaunchOrganization()
 
   const headerActions = (
-    <Button variant="primary" size="sm" asChild>
-      <Link to={ROUTES.COMPETITION_CREATE}>
-        <PlusCircle className="h-4 w-4" />
-        <span>Criar Competição</span>
-      </Link>
-    </Button>
+    <div className="flex items-center gap-xs">
+      <Button variant="outline" size="sm" asChild className="h-9 px-4 rounded-full text-xs font-semibold transition-all hover:bg-primary/5 hover:text-primary">
+        <Link to={ROUTES.DASHBOARD_ORGANIZATION_MEMBERS}>
+          <Users className="h-3.5 w-3.5 mr-1.5" />
+          <span>Convidar membro</span>
+        </Link>
+      </Button>
+      <Button variant="primary" size="sm" asChild className="h-9 px-4 rounded-full text-xs font-semibold transition-all">
+        <Link to={ROUTES.COMPETITION_CREATE}>
+          <PlusCircle className="h-3.5 w-3.5 mr-1.5" />
+          <span>Nova competição</span>
+        </Link>
+      </Button>
+    </div>
   )
 
   const sidebarSections = getOrganizationSidebarSections('overview', { showLineups })
@@ -249,21 +257,22 @@ export default function OrganizationDashboardPage() {
 
   return (
     <DashboardLayout
-      title={org ? `Portal — ${org.name}` : 'Portal da Organização'}
-      subtitle="Painel administrativo de gestão de clubes, competições e estatísticas"
+      title={org ? org.name : 'Portal da Organização'}
+      subtitle="Bem-vindo ao Painel administrativo · gestão de clubes, competições e estatísticas"
       dashboardType="organization"
       sidebarSections={sidebarSections}
       headerActions={headerActions}
     >
-      <div className="mb-xl flex animate-fade-in flex-col justify-between gap-lg lg:flex-row lg:items-end">
-        <div>
-          <h1 className="mb-xs font-display-lg text-3xl leading-none tracking-tight text-on-surface">
-            {org ? `Bem-vindo, ${org.name}` : 'Bem-vindo'}
-          </h1>
-          <p className="text-sm text-on-surface-variant">Consola operacional e resumo analítico da sua organização.</p>
-        </div>
+      <div className="mb-xl flex animate-fade-in flex-col gap-lg">
+        <div className="flex flex-col justify-between gap-lg lg:flex-row lg:items-end">
+          {/* <div className="max-w-2xl">
+            <h1 className="mb-xs font-display-lg text-3xl leading-none tracking-tight text-on-surface">
+              {org ? `Bem-vindo, ${org.name}` : 'Bem-vindo'}
+            </h1>
+            <p className="text-sm text-on-surface-variant">Consola operacional e resumo analítico da sua organização.</p>
+          </div> */}
 
-        <div className="flex w-full flex-wrap gap-md lg:w-auto">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {isLoadingKpiSection ? (
             <>
               <Skeleton className="h-20 w-32 rounded-xl" />
@@ -276,39 +285,44 @@ export default function OrganizationDashboardPage() {
 // ... existing imports ...
             <>
               <KpiCard
-                label="Org. Afiliadas"
+                variant="teal"
+                label="Orgs. afiliadas"
                 value={kpis?.total_affiliated_organizations ?? 1}
-                icon={<Building2 className="h-4 w-4" />}
-                trend={{ value: '+2%', isPositive: true }}
-                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+                icon={<Users className="h-4 w-4" />}
+                trend={{ value: '+2% este mês', isPositive: true }}
+                className="py-md px-lg"
               />
               <KpiCard
-                label="Clubes Ativos"
+                variant="blue"
+                label="Clubes ativos"
                 value={activeClubsCount}
-                icon={<Shield className="h-4 w-4" />}
-                trend={{ value: '+5%', isPositive: true }}
-                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+                icon={<Building2 className="h-4 w-4" />}
+                trend={activeClubsCount > 0 ? { value: '+5%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
+                className="py-md px-lg"
               />
               <KpiCard
-                label="Jogadores Registados"
+                variant="purple"
+                label="Jogadores"
                 value={kpis?.registered_players ?? 0}
                 icon={<UserCheck className="h-4 w-4" />}
-                trend={{ value: '+12%', isPositive: true }}
-                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+                trend={kpis?.registered_players > 0 ? { value: '+12%', isPositive: true } : { value: 'Sem dados ainda', isNeutral: true }}
+                className="py-md px-lg"
               />
               <KpiCard
-                label="Competições em Andamento"
+                variant="amber"
+                label="Competições"
                 value={ongoingCompetitionsCount}
                 icon={<Trophy className="h-4 w-4" />}
-                trend={{ value: '-1', isPositive: false }}
-                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+                trend={ongoingCompetitionsCount > 0 ? { value: '-1', isPositive: false } : { value: 'Sem dados ainda', isNeutral: true }}
+                className="py-md px-lg"
               />
               <KpiCard
-                label="Transferências Pendentes"
+                variant="danger"
+                label="Transf. pendentes"
                 value={pendingTransfersCount}
                 icon={<ArrowLeftRight className="h-4 w-4" />}
-                trend={{ value: '+8%', isPositive: false }}
-                className="min-w-[120px] flex-1 py-md px-lg lg:flex-none"
+                trend={{ value: 'Aguardam revisão', isNeutral: false, isPositive: false }}
+                className="py-md px-lg"
               />
             </>
 // ... rest of the code ...
@@ -373,12 +387,12 @@ export default function OrganizationDashboardPage() {
               columns={tournamentColumns}
               data={tournamentRows}
               isLoading={isLoadingTournamentsSection}
-              emptyMessage="Nenhuma competição configurada de momento."
+              emptyMessage="Nenhuma competição ainda"
               emptyAction={
-                <Button variant="primary" size="sm" asChild>
-                  <Link to={ROUTES.COMPETITIONS}>
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span>Configurar Competição</span>
+                <Button variant="primary" size="sm" asChild className="mx-auto">
+                  <Link to={ROUTES.COMPETITION_CREATE}>
+                    <PlusCircle className="h-3.5 w-3.5 mr-1.5" />
+                    <span>Nova competição</span>
                   </Link>
                 </Button>
               }
@@ -421,7 +435,7 @@ export default function OrganizationDashboardPage() {
                 </div>
               ) : (
                 <div className="py-md text-center text-xs text-on-surface-variant">
-                  Nenhuma transferência recente registada.
+                  Nenhuma transferência recente.
                 </div>
               )}
             </CardContent>
@@ -457,14 +471,14 @@ export default function OrganizationDashboardPage() {
               columns={clubColumns}
               data={clubRows}
               isLoading={isLoadingClubs}
-              emptyMessage="Nenhum clube associado registado."
+              emptyMessage="Nenhum clube associado"
               emptyAction={
-                <Button variant="primary" size="sm" asChild>
-                <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span>Vincular Novo Clube</span>
-                </Link>
-              </Button>
+                <Button variant="outline" size="sm" asChild className="mx-auto">
+                  <Link to={ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS}>
+                    <PlusCircle className="h-3.5 w-3.5 mr-1.5" />
+                    <span>Vincular clube</span>
+                  </Link>
+                </Button>
               }
             />
           </CardContent>
@@ -482,32 +496,36 @@ export default function OrganizationDashboardPage() {
             <CardContent className="grid grid-cols-1 gap-sm sm:grid-cols-2">
               {[
                 {
-                  title: 'Vincular Novo Clube',
-                  description: 'Adicione novos clubes à sua rede',
-                  icon: <PlusCircle className="h-5 w-5" />,
+                  title: 'Vincular clube',
+                  description: 'Associar novo clube',
+                  icon: <Building2 className="h-5 w-5" />,
                   to: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
-                  color: 'text-primary',
+                  color: 'text-[#0f6e56]',
+                  bg: 'bg-[#e1f5ee]',
                 },
                 {
-                  title: 'Nova Competição',
-                  description: 'Publique um novo torneio oficial',
+                  title: 'Nova competição',
+                  description: 'Publicar competição',
                   icon: <Trophy className="h-5 w-5" />,
                   to: ROUTES.COMPETITION_CREATE,
-                  color: 'text-secondary',
+                  color: 'text-[#185fa5]',
+                  bg: 'bg-[#e6f1fb]',
                 },
                 {
-                  title: 'Convidar Membro',
-                  description: 'Gerencie a equipa administrativa',
+                  title: 'Convidar membro',
+                  description: 'Gerir equipa',
                   icon: <Users className="h-5 w-5" />,
                   to: ROUTES.DASHBOARD_ORGANIZATION_MEMBERS,
-                  color: 'text-primary',
+                  color: 'text-[#534ab7]',
+                  bg: 'bg-[#eeedfe]',
                 },
                 {
-                  title: 'Rever Filiações',
-                  description: 'Audite as organizações afiliadas',
+                  title: 'Rever filiações',
+                  description: 'Pedidos pendentes',
                   icon: <Shield className="h-5 w-5" />,
                   to: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
-                  color: 'text-primary',
+                  color: 'text-[#854f0b]',
+                  bg: 'bg-[#faeeda]',
                 },
               ].map((action, idx) => (
                 <Link
@@ -516,7 +534,8 @@ export default function OrganizationDashboardPage() {
                   className="group flex items-start gap-md rounded-xl border border-outline-variant/30 p-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/5 hover:shadow-sm"
                 >
                   <div className={cn(
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-high transition-colors duration-300 group-hover:bg-primary/20',
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 group-hover:bg-primary/20',
+                    action.bg,
                     action.color
                   )}>
                     {action.icon}
@@ -551,22 +570,22 @@ export default function OrganizationDashboardPage() {
                     type: 'Sistema',
                     title: 'Configuração concluída',
                     description: 'O portal da organização foi configurado com sucesso.',
-                    color: 'bg-primary text-primary-container',
+                    color: 'bg-primary text-white',
                     borderColor: 'border-primary',
                   },
                   ...(clubRows.length > 0 ? [{
                     type: 'Clubes',
                     title: 'Clube filiado',
                     description: `${clubRows[0].name} associado à organização.`,
-                    color: 'bg-secondary text-secondary-container',
-                    borderColor: 'border-secondary',
+                    color: 'bg-[#185fa5] text-white',
+                    borderColor: 'border-[#185fa5]',
                   }] : []),
                   ...(tournamentRows.length > 0 ? [{
                     type: 'Torneios',
                     title: 'Competição ativa',
                     description: `${tournamentRows[0].name} listado no portal.`,
-                    color: 'bg-tertiary text-tertiary-container',
-                    borderColor: 'border-tertiary',
+                    color: 'bg-[#854f0b] text-white',
+                    borderColor: 'border-[#854f0b]',
                   }] : []),
                 ].map((activity, idx) => (
                   <div key={idx} className="relative flex gap-md">
@@ -599,6 +618,7 @@ export default function OrganizationDashboardPage() {
           </Card>
 
         </div>
+      </div>
       </div>
     </DashboardLayout>
   )

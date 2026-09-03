@@ -90,7 +90,7 @@ export function DashboardSidebar({
                       {renderIcon(link.icon)}
                       <span className="font-title-md text-sm">{link.label}</span>
                       {link.count !== undefined && link.count > 0 && (
-                        <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-[#031427]">
+                        <span className="ml-auto rounded-full bg-[#fcebeb] px-2 py-0.5 text-xs font-semibold text-[#a32d2d]">
                           {link.count}
                         </span>
                       )}
@@ -127,7 +127,7 @@ export function DashboardSidebar({
                 {renderIcon(link.icon)}
                 <span className="font-title-md text-sm">{link.label}</span>
                 {link.count !== undefined && link.count > 0 && (
-                  <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-[#031427]">
+                  <span className="ml-auto rounded-full bg-[#fcebeb] px-2 py-0.5 text-xs font-semibold text-[#a32d2d]">
                     {link.count}
                   </span>
                 )}

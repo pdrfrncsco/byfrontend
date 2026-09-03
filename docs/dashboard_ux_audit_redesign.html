@@ -1,0 +1,662 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:14px;background:var(--surface-0)}
+.tabs{display:flex;gap:6px;padding:0 0 0;border-bottom:0.5px solid var(--border);margin-bottom:0}
+.tab{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text-secondary);border:0.5px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;background:transparent}
+.tab.active{color:var(--text-primary);background:var(--surface-2);border-color:var(--border)}
+.scene{display:none}.scene.active{display:block}
+
+/* SIDEBAR */
+.sb{width:176px;background:var(--surface-2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;height:100%}
+.sb-header{padding:12px 12px 10px;border-bottom:0.5px solid var(--border)}
+.sb-entity{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background .1s}
+.sb-entity:hover{background:var(--surface-1)}
+.sb-logo{width:32px;height:32px;border-radius:8px;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+.sb-name{font-size:13px;font-weight:500;color:var(--text-primary);line-height:1.2}
+.sb-type{font-size:11px;color:var(--text-muted)}
+.sb-chevron{margin-left:auto;color:var(--text-muted);font-size:13px}
+.sb-section{padding:8px 12px 4px}
+.sb-section-label{font-size:10.5px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--text-secondary);transition:background .1s}
+.sb-item:hover{background:var(--surface-1);color:var(--text-primary)}
+.sb-item.active{background:#e1f5ee;color:#0f6e56;font-weight:500}
+.sb-item i{font-size:16px}
+.sb-footer{margin-top:auto;padding:10px 12px;border-top:0.5px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer}
+.sb-user:hover{background:var(--surface-1)}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg-accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--text-accent);flex-shrink:0}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;font-size:12.5px;color:var(--text-danger);margin-top:2px}
+.sb-logout:hover{background:var(--bg-danger)}
+
+/* TOPBAR */
+.topbar{height:52px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;background:var(--surface-2)}
+.topbar-tenant{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;background:var(--surface-1);border:0.5px solid var(--border);font-size:12.5px;font-weight:500;color:var(--text-secondary)}
+.topbar-tenant i{font-size:14px;color:#0f6e56}
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text-muted)}
+.breadcrumb span{color:var(--text-secondary)}
+.breadcrumb .current{color:var(--text-primary);font-weight:500}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.search-pill{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-1);font-size:12.5px;color:var(--text-muted);cursor:pointer}
+.notif-btn{width:32px;height:32px;border-radius:7px;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);position:relative}
+.notif-badge{width:8px;height:8px;border-radius:50%;background:#e24b4a;position:absolute;top:5px;right:5px;border:1.5px solid var(--surface-2)}
+.user-pill{display:flex;align-items:center;gap:7px;padding:4px 10px 4px 4px;border-radius:20px;border:0.5px solid var(--border);cursor:pointer}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff}
+.user-name{font-size:12.5px;font-weight:500;color:var(--text-primary)}
+.user-role{font-size:11px;color:var(--text-muted)}
+
+/* PAGE */
+.page-header{padding:20px 20px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;background:var(--surface-2)}
+.page-title{font-size:20px;font-weight:500;color:var(--text-primary);line-height:1.2}
+.page-sub{font-size:13px;color:var(--text-secondary);margin-top:3px}
+.page-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-primary{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);background:#0f6e56;color:#fff;font-size:13px;font-weight:500;cursor:pointer;border:none;white-space:nowrap}
+.btn-outline{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);background:transparent;color:var(--text-primary);font-size:13px;cursor:pointer;border:0.5px solid var(--border-strong);white-space:nowrap}
+.btn-ghost{padding:7px 8px;border-radius:var(--radius);background:transparent;color:var(--text-secondary);font-size:13px;cursor:pointer;border:0.5px solid transparent;display:flex;align-items:center;gap:5px}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:16px 20px;background:var(--surface-0)}
+.kpi{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:11.5px;color:var(--text-muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.kpi-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-value{font-size:26px;font-weight:500;color:var(--text-primary);line-height:1}
+.kpi-trend{display:flex;align-items:center;gap:3px;font-size:11.5px;margin-top:6px}
+.kpi-trend.up{color:#0f6e56}.kpi-trend.neutral{color:var(--text-muted)}.kpi-trend.warn{color:#a32d2d}
+
+/* BODY */
+.body-wrap{display:flex;gap:0;background:var(--surface-0)}
+.col-main{flex:1;min-width:0;padding:16px 12px 16px 20px;display:flex;flex-direction:column;gap:16px}
+.col-side{width:260px;flex-shrink:0;padding:16px 20px 16px 8px;display:flex;flex-direction:column;gap:12px}
+
+/* CARDS */
+.card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:0.5px solid var(--border)}
+.card-title{font-size:13.5px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:7px}
+.card-title i{font-size:15px;color:var(--text-muted)}
+.card-link{font-size:12.5px;color:var(--text-accent);cursor:pointer;display:flex;align-items:center;gap:3px}
+.card-body{padding:14px 16px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:28px 20px}
+.empty-icon{width:36px;height:36px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--text-muted)}
+.empty-title{font-size:13.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px}
+.empty-desc{font-size:12.5px;color:var(--text-secondary);margin-bottom:12px;line-height:1.45}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px}
+.qa-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:8px;border:0.5px solid var(--border);cursor:pointer;transition:background .1s;background:var(--surface-2)}
+.qa-item:hover{background:var(--surface-1);border-color:var(--border-strong)}
+.qa-item-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.qa-item-text{display:flex;flex-direction:column}
+.qa-item-name{font-size:12.5px;font-weight:500;color:var(--text-primary)}
+.qa-item-desc{font-size:11.5px;color:var(--text-secondary);margin-top:1px}
+
+/* ACTIVITY */
+.activity-item{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.activity-content{flex:1;min-width:0}
+.activity-title{font-size:12.5px;font-weight:500;color:var(--text-primary)}
+.activity-desc{font-size:12px;color:var(--text-secondary);margin-top:1px}
+.activity-time{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:11.5px;font-weight:500;color:var(--text-muted);text-align:left;padding:8px 12px;border-bottom:0.5px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
+.tbl td{font-size:13px;color:var(--text-primary);padding:10px 12px;border-bottom:0.5px solid var(--border)}
+.tbl tr:last-child td{border-bottom:none}
+
+/* ANNOTATION */
+.annot{background:var(--bg-warning);border:0.5px solid var(--border-warning);border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--text-primary);line-height:1.5}
+.annot i{color:var(--text-warning);font-size:15px;margin-top:1px;flex-shrink:0}
+.annot-success{background:var(--bg-success);border-color:var(--border-success)}
+.annot-success i{color:var(--text-success)}
+
+/* PROBLEM MARKERS */
+.prob{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;background:#fcebeb;color:#a32d2d;border-radius:4px;padding:2px 7px;margin-bottom:4px}
+.fix{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;background:#e1f5ee;color:#085041;border-radius:4px;padding:2px 7px;margin-bottom:4px}
+.layout{display:flex;gap:0;border:0.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface-0)}
+.badge-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:500}
+</style>
+
+<h2 class="sr-only">Auditoria UX e redesign do dashboard de organização — comparação antes e depois com anotações</h2>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('problems')">Problemas identificados</button>
+  <button class="tab" onclick="show('redesign')">Redesign proposto</button>
+  <button class="tab" onclick="show('sidebar')">Sidebar detalhado</button>
+  <button class="tab" onclick="show('kpis')">KPI cards</button>
+</div>
+
+<!-- SCENE: PROBLEMS -->
+<div class="scene active" id="scene-problems" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 1 — Layout quebrado</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px">
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="flex:1;background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:10px;font-size:12px;color:var(--text-secondary)">
+              <div style="font-size:16px;font-weight:500;color:var(--text-primary);margin-bottom:3px">PORTAL — FC SPORT</div>
+              <div style="font-size:11px;color:var(--text-muted)">subtítulo aqui</div>
+            </div>
+            <div style="width:140px;background:#fef3f3;border:0.5px dashed #e24b4a;border-radius:7px;padding:10px;font-size:11.5px;color:#a32d2d">
+              "Bem-vindo, FC Sport" flutua aqui, sobreposto aos KPIs — zona de colisão visual
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px">
+            <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px;font-size:11px;text-align:center;color:var(--text-muted)">KPI 1</div>
+            <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px;font-size:11px;text-align:center;color:var(--text-muted)">KPI 2</div>
+            <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px;font-size:11px;text-align:center;color:var(--text-muted)">KPI 3</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+            <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px;font-size:11px;text-align:center;color:var(--text-muted)">KPI 4 (maior)</div>
+            <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px;font-size:11px;text-align:center;color:var(--text-muted)">KPI 5 (maior)</div>
+          </div>
+          <div style="font-size:11px;color:#a32d2d;margin-top:6px">↑ Grid 3+2 assimétrico sem motivo visual</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 2 — Topbar sobrecarregado</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px">
+          <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <div style="padding:3px 8px;border-radius:20px;background:#e1f5ee;font-size:11px;color:#085041;font-weight:500">PORTAL GLOBAL BOLAYETU</div>
+            <div style="font-size:11px;color:var(--text-muted)">Início</div>
+            <div style="font-size:11px;color:var(--text-secondary)">›</div>
+            <div style="font-size:11px;color:#0f6e56">Painel</div>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
+              <i class="ti ti-bell" style="font-size:15px;color:var(--text-secondary)" aria-hidden="true"></i>
+              <div style="width:120px;border:0.5px solid var(--border);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--text-muted)">Pesquisar...</div>
+              <div style="font-size:11px;color:var(--text-secondary)">Pedro Francisco OWNER</div>
+              <div style="width:20px;height:20px;border-radius:50%;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff">P</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:11.5px;color:#a32d2d;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>"PORTAL GLOBAL BOLAYETU" — contexto desconhecido, sem tooltip ou label</div>
+            <div style="font-size:11.5px;color:#a32d2d;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>Sino sem badge de contagem — não comunica estado</div>
+            <div style="font-size:11.5px;color:#a32d2d;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>Campo de pesquisa inline ocupa espaço fixo na topbar</div>
+            <div style="font-size:11.5px;color:#a32d2d;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle" style="font-size:13px" aria-hidden="true"></i>Nome + Role + Avatar = 3 elementos para 1 pessoa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 3 — KPI labels em ALL CAPS</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:8px;padding:10px 14px;text-align:center">
+              <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.08em;margin-bottom:4px">ORG. AFILIADAS</div>
+              <div style="font-size:24px;font-weight:500;color:var(--text-primary)">1</div>
+            </div>
+            <div style="font-size:18px;color:var(--text-muted)">→</div>
+            <div style="background:var(--bg-success);border:0.5px solid var(--border-success);border-radius:8px;padding:10px 14px;text-align:center">
+              <div style="font-size:11.5px;color:#085041;margin-bottom:4px">Orgs. afiliadas</div>
+              <div style="font-size:24px;font-weight:500;color:var(--text-primary)">1</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.5">ALL CAPS reduz legibilidade em ~25% e cria tensão visual desnecessária. Sentence case com font-weight 400–500 é suficiente para hierarquia.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 4 — Sidebar: ícone e copy errados</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+              <i class="ti ti-layout-dashboard" style="font-size:16px;color:#a32d2d" aria-hidden="true"></i>
+              <span style="font-size:12.5px;color:#a32d2d">Terminar Sessão</span>
+            </div>
+            <div style="font-size:18px;color:var(--text-muted)">→</div>
+            <div style="background:var(--bg-success);border:0.5px solid var(--border-success);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+              <i class="ti ti-logout" style="font-size:16px;color:#a32d2d" aria-hidden="true"></i>
+              <span style="font-size:12.5px;color:#a32d2d">Terminar sessão</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary)">Ícone de dashboard para logout é semanticamente errado. Usar <code>ti-logout</code> e sentence case no label.</div>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:7px;padding:8px 10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;flex-shrink:0">FS</div>
+            <div>
+              <div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">FC Sport</div>
+              <div style="font-size:11px;color:var(--text-muted)">Organização</div>
+            </div>
+            <i class="ti ti-chevron-down" style="margin-left:auto;font-size:13px;color:var(--text-muted)" aria-hidden="true"></i>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary)">Entity header com logo real (ou iniciais coloridas) em vez de "OR" genérico.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 5 — Empty states sem personalidade</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px;display:flex;gap:12px">
+          <div style="flex:1;background:#fef3f3;border:0.5px solid #f09595;border-radius:8px;padding:14px;text-align:center">
+            <div style="font-size:12px;color:#a32d2d;margin-bottom:6px">Nenhuma competição configurada de momento.</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;background:#0f6e56;color:#fff;font-size:12px">Configurar Competição</div>
+          </div>
+          <div style="font-size:18px;color:var(--text-muted);align-self:center">→</div>
+          <div style="flex:1;border:0.5px dashed var(--border-strong);border-radius:8px;padding:14px;text-align:center">
+            <div style="width:32px;height:32px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--text-muted)"><i class="ti ti-trophy" style="font-size:16px" aria-hidden="true"></i></div>
+            <div style="font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:3px">Nenhuma competição ainda</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);margin-bottom:10px">Crie a primeira competição da organização.</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:0.5px solid var(--border);font-size:12px;color:var(--text-primary);cursor:pointer"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i>Nova competição</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="prob"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Problema 6 — Ações Rápidas cortadas</div>
+      <div class="card" style="margin-top:0">
+        <div class="card-body" style="padding:12px;display:flex;gap:12px">
+          <div style="flex:1;background:#fef3f3;border:0.5px solid #f09595;border-radius:8px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="border:0.5px solid #f09595;border-radius:7px;padding:8px">
+              <div style="font-size:12px;font-weight:500;color:#a32d2d">Vincular Novo Clube</div>
+              <div style="font-size:11px;color:#a32d2d">Adicione novo...</div>
+            </div>
+            <div style="border:0.5px solid #f09595;border-radius:7px;padding:8px">
+              <div style="font-size:12px;font-weight:500;color:#a32d2d">Nova Competição</div>
+              <div style="font-size:11px;color:#a32d2d">Publique um n...</div>
+            </div>
+          </div>
+          <div style="font-size:18px;color:var(--text-muted);align-self:center">→</div>
+          <div style="flex:1;border:0.5px solid var(--border);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;border:0.5px solid var(--border)">
+              <div style="width:26px;height:26px;border-radius:6px;background:#e1f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-building-stadium" style="font-size:14px;color:#0f6e56" aria-hidden="true"></i></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Vincular clube</div><div style="font-size:11px;color:var(--text-secondary)">Associar um novo clube</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;border:0.5px solid var(--border)">
+              <div style="width:26px;height:26px;border-radius:6px;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-trophy" style="font-size:14px;color:#185fa5" aria-hidden="true"></i></div>
+              <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Nova competição</div><div style="font-size:11px;color:var(--text-secondary)">Publicar competição</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE: REDESIGN -->
+<div class="scene" id="scene-redesign">
+  <div class="layout" style="height:auto;min-height:600px">
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sb-header">
+        <div class="sb-entity">
+          <div class="sb-logo">FS</div>
+          <div>
+            <div class="sb-name">FC Sport</div>
+            <div class="sb-type">Organização</div>
+          </div>
+          <i class="ti ti-chevron-down sb-chevron" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:6px 0">
+        <div class="sb-section">
+          <div class="sb-section-label">Contexto</div>
+          <div class="sb-item active"><i class="ti ti-home" aria-hidden="true"></i>Início</div>
+          <div class="sb-item"><i class="ti ti-list-check" aria-hidden="true"></i>Submissões</div>
+        </div>
+        <div class="sb-section" style="margin-top:4px">
+          <div class="sb-section-label">Gestão</div>
+          <div class="sb-item"><i class="ti ti-building-stadium" aria-hidden="true"></i>Clubes associados</div>
+          <div class="sb-item"><i class="ti ti-users" aria-hidden="true"></i>Jogadores</div>
+          <div class="sb-item"><i class="ti ti-trophy" aria-hidden="true"></i>Competições</div>
+          <div class="sb-item"><i class="ti ti-user-circle" aria-hidden="true"></i>Membros</div>
+          <div class="sb-item"><i class="ti ti-link" aria-hidden="true"></i>Pedidos de filiação</div>
+          <div class="sb-item"><i class="ti ti-photo" aria-hidden="true"></i>Biblioteca de média</div>
+          <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Configurações</div>
+        </div>
+      </div>
+      <div class="sb-footer">
+        <div class="sb-user">
+          <div class="sb-avatar">PF</div>
+          <div>
+            <div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Pedro Francisco</div>
+            <div style="font-size:11px;color:var(--text-muted)">Owner</div>
+          </div>
+        </div>
+        <div class="sb-logout">
+          <i class="ti ti-logout" style="font-size:15px" aria-hidden="true"></i>Terminar sessão
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-tenant"><i class="ti ti-globe" aria-hidden="true"></i>Portal Global Bolayetu</div>
+        <div class="breadcrumb">
+          <span>Início</span>
+          <i class="ti ti-chevron-right" style="font-size:11px" aria-hidden="true"></i>
+          <span class="current">Painel</span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-pill"><i class="ti ti-search" style="font-size:13px" aria-hidden="true"></i>Pesquisar...</div>
+          <div class="notif-btn" aria-label="Notificações">
+            <i class="ti ti-bell" style="font-size:16px" aria-hidden="true"></i>
+            <div class="notif-badge"></div>
+          </div>
+          <div class="user-pill">
+            <div class="user-avatar">PF</div>
+            <div>
+              <div class="user-name">Pedro Francisco</div>
+              <div class="user-role">Owner</div>
+            </div>
+            <i class="ti ti-chevron-down" style="font-size:12px;color:var(--text-muted);margin-left:2px" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">FC Sport</div>
+          <div class="page-sub">Painel administrativo · gestão de clubes, competições e estatísticas</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn-outline"><i class="ti ti-users" style="font-size:14px" aria-hidden="true"></i>Convidar membro</button>
+          <button class="btn-primary"><i class="ti ti-plus" style="font-size:14px" aria-hidden="true"></i>Nova competição</button>
+        </div>
+      </div>
+
+      <!-- KPI GRID (5 uniform) -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label"><div class="kpi-icon" style="background:#e1f5ee"><i class="ti ti-users" style="font-size:13px;color:#0f6e56" aria-hidden="true"></i></div>Orgs. afiliadas</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-trend up"><i class="ti ti-trending-up" style="font-size:12px" aria-hidden="true"></i>+2% este mês</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><div class="kpi-icon" style="background:#e6f1fb"><i class="ti ti-building-stadium" style="font-size:13px;color:#185fa5" aria-hidden="true"></i></div>Clubes ativos</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><div class="kpi-icon" style="background:#eeedfe"><i class="ti ti-user" style="font-size:13px;color:#534ab7" aria-hidden="true"></i></div>Jogadores</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><div class="kpi-icon" style="background:#faeeda"><i class="ti ti-trophy" style="font-size:13px;color:#854f0b" aria-hidden="true"></i></div>Competições</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label"><div class="kpi-icon" style="background:#fcebeb"><i class="ti ti-arrows-exchange" style="font-size:13px;color:#a32d2d" aria-hidden="true"></i></div>Transferências pendentes</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-trend warn"><i class="ti ti-clock" style="font-size:12px" aria-hidden="true"></i>Aguardam revisão</div>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="body-wrap" style="flex:1">
+        <div class="col-main">
+          <!-- Competições -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-trophy" aria-hidden="true"></i>Competições organizacionais</div>
+              <a class="card-link">Ver todas <i class="ti ti-arrow-right" style="font-size:12px" aria-hidden="true"></i></a>
+            </div>
+            <div class="empty">
+              <div class="empty-icon"><i class="ti ti-trophy" style="font-size:18px" aria-hidden="true"></i></div>
+              <div class="empty-title">Nenhuma competição ainda</div>
+              <div class="empty-desc">Crie a primeira competição desta organização e convide clubes a participar.</div>
+              <button class="btn-primary" style="margin:0 auto"><i class="ti ti-plus" style="font-size:14px" aria-hidden="true"></i>Nova competição</button>
+            </div>
+          </div>
+          <!-- Clubes -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-building-stadium" aria-hidden="true"></i>Clubes associados</div>
+              <a class="card-link">Ver todos <i class="ti ti-arrow-right" style="font-size:12px" aria-hidden="true"></i></a>
+            </div>
+            <div class="empty">
+              <div class="empty-icon"><i class="ti ti-building-stadium" style="font-size:18px" aria-hidden="true"></i></div>
+              <div class="empty-title">Nenhum clube associado</div>
+              <div class="empty-desc">Associe clubes à organização para gerir escalações e participações.</div>
+              <button class="btn-outline" style="margin:0 auto"><i class="ti ti-plus" style="font-size:14px" aria-hidden="true"></i>Vincular clube</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-side">
+          <!-- Transferências -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Transferências</div>
+              <a class="card-link">Ver painel <i class="ti ti-arrow-right" style="font-size:12px" aria-hidden="true"></i></a>
+            </div>
+            <div style="padding:12px 14px">
+              <div style="font-size:12.5px;color:var(--text-secondary);text-align:center;padding:12px 0">Nenhuma transferência recente.</div>
+            </div>
+          </div>
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-zap" aria-hidden="true"></i>Ações rápidas</div>
+            </div>
+            <div class="qa-grid">
+              <div class="qa-item">
+                <div class="qa-item-icon" style="background:#e1f5ee"><i class="ti ti-building-stadium" style="color:#0f6e56" aria-hidden="true"></i></div>
+                <div class="qa-item-text">
+                  <span class="qa-item-name">Vincular clube</span>
+                  <span class="qa-item-desc">Associar novo clube</span>
+                </div>
+              </div>
+              <div class="qa-item">
+                <div class="qa-item-icon" style="background:#e6f1fb"><i class="ti ti-trophy" style="color:#185fa5" aria-hidden="true"></i></div>
+                <div class="qa-item-text">
+                  <span class="qa-item-name">Nova competição</span>
+                  <span class="qa-item-desc">Publicar competição</span>
+                </div>
+              </div>
+              <div class="qa-item">
+                <div class="qa-item-icon" style="background:#eeedfe"><i class="ti ti-user-plus" style="color:#534ab7" aria-hidden="true"></i></div>
+                <div class="qa-item-text">
+                  <span class="qa-item-name">Convidar membro</span>
+                  <span class="qa-item-desc">Gerir equipa</span>
+                </div>
+              </div>
+              <div class="qa-item">
+                <div class="qa-item-icon" style="background:#faeeda"><i class="ti ti-link" style="color:#854f0b" aria-hidden="true"></i></div>
+                <div class="qa-item-text">
+                  <span class="qa-item-name">Rever filiações</span>
+                  <span class="qa-item-desc">Pedidos pendentes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Atividade -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ti ti-activity" aria-hidden="true"></i>Atividade recente</div>
+            </div>
+            <div style="padding:10px 14px">
+              <div class="activity-item">
+                <div class="activity-dot" style="background:#0f6e56"></div>
+                <div class="activity-content">
+                  <div class="activity-title">Configuração concluída</div>
+                  <div class="activity-desc">Portal da organização configurado.</div>
+                  <div class="activity-time">Agora mesmo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE: SIDEBAR -->
+<div class="scene" id="scene-sidebar" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div>
+    <div class="prob" style="margin-bottom:8px"><i class="ti ti-x" style="font-size:12px" aria-hidden="true"></i>Sidebar actual — problemas</div>
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;width:180px">
+      <div style="padding:10px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:8px">
+        <div style="width:32px;height:32px;border-radius:8px;background:#ccc;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#666">OR</div>
+        <div>
+          <div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Organização</div>
+          <div style="font-size:11px;color:#a32d2d">← "Organização" repetido</div>
+        </div>
+      </div>
+      <div style="padding:8px 10px">
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">CONTEXTO</div>
+        <div style="padding:6px 8px;border-radius:6px;background:#e1f5ee;font-size:12px;color:#0f6e56;display:flex;align-items:center;gap:6px"><i class="ti ti-home" style="font-size:14px" aria-hidden="true"></i>Início</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"><i class="ti ti-list" style="font-size:14px" aria-hidden="true"></i>Submissões de Escalações</div>
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;margin:8px 0 4px">GESTÃO</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Clubes Associados</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Jogadores Registados</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Competições</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Membros</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Pedidos de Filiação</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Biblioteca de Media</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary)">Configurações</div>
+      </div>
+      <div style="padding:8px 10px;border-top:0.5px solid var(--border);display:flex;align-items:center;gap:6px">
+        <i class="ti ti-layout-dashboard" style="font-size:16px;color:#a32d2d" aria-hidden="true"></i>
+        <span style="font-size:12px;color:#a32d2d">Terminar Sessão</span>
+      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:12px;color:#a32d2d;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-x" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>"OR" genérico sem cor — não identifica a entidade</div>
+      <div style="font-size:12px;color:#a32d2d;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-x" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>"Organização / Organização" — label duplo redundante</div>
+      <div style="font-size:12px;color:#a32d2d;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-x" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Ícone de dashboard no botão de logout</div>
+      <div style="font-size:12px;color:#a32d2d;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-x" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Title Case nos labels ("Jogadores Registados")</div>
+      <div style="font-size:12px;color:#a32d2d;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-x" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Sem badge de contagem em filiações pendentes</div>
+    </div>
+  </div>
+  <div>
+    <div class="fix" style="margin-bottom:8px"><i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i>Sidebar redesenhado — correções</div>
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;width:180px">
+      <div style="padding:10px 12px;border-bottom:0.5px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:8px;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0">FS</div>
+          <div style="min-width:0">
+            <div style="font-size:12.5px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">FC Sport</div>
+            <div style="font-size:11px;color:var(--text-muted)">Organização</div>
+          </div>
+          <i class="ti ti-chevron-down" style="font-size:12px;color:var(--text-muted);flex-shrink:0" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div style="padding:8px 10px">
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;padding:0 6px">Contexto</div>
+        <div style="padding:6px 8px;border-radius:6px;background:#e1f5ee;font-size:12px;color:#085041;display:flex;align-items:center;gap:6px;font-weight:500"><i class="ti ti-home" style="font-size:14px" aria-hidden="true"></i>Início</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:6px"><i class="ti ti-list-check" style="font-size:14px" aria-hidden="true"></i>Submissões</div>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;padding:0 6px">Gestão</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"><i class="ti ti-building-stadium" style="font-size:14px" aria-hidden="true"></i>Clubes associados</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"><i class="ti ti-users" style="font-size:14px" aria-hidden="true"></i>Jogadores</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"><i class="ti ti-trophy" style="font-size:14px" aria-hidden="true"></i>Competições</div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:6px"><i class="ti ti-link" style="font-size:14px" aria-hidden="true"></i>Pedidos de filiação</div>
+          <div style="padding:1px 6px;border-radius:10px;background:#fcebeb;color:#a32d2d;font-size:10.5px;font-weight:500">3</div>
+        </div>
+        <div style="padding:6px 8px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px"><i class="ti ti-settings" style="font-size:14px" aria-hidden="true"></i>Configurações</div>
+      </div>
+      <div style="padding:8px 10px;border-top:0.5px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:7px;cursor:pointer">
+          <div style="width:24px;height:24px;border-radius:50%;background:var(--bg-accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--text-accent);flex-shrink:0">PF</div>
+          <div style="font-size:12px;font-weight:500;color:var(--text-primary)">Pedro Francisco</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:7px;cursor:pointer;color:#a32d2d;font-size:12px;margin-top:2px">
+          <i class="ti ti-logout" style="font-size:15px" aria-hidden="true"></i>Terminar sessão
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:12px;color:#085041;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-check" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Logo colorido com iniciais reais "FS"</div>
+      <div style="font-size:12px;color:#085041;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-check" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Nome + tipo sem repetição</div>
+      <div style="font-size:12px;color:#085041;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-check" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Ícone ti-logout correcto</div>
+      <div style="font-size:12px;color:#085041;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-check" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Sentence case em todos os labels</div>
+      <div style="font-size:12px;color:#085041;display:flex;align-items:flex-start;gap:5px"><i class="ti ti-circle-check" style="font-size:14px;flex-shrink:0;margin-top:1px" aria-hidden="true"></i>Badge "3" em pedidos pendentes</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE: KPI CARDS -->
+<div class="scene" id="scene-kpis" style="padding:16px;display:flex;flex-direction:column;gap:16px">
+  <div class="annot"><i class="ti ti-info-circle" aria-hidden="true"></i><span>Antes: grid 3+2 assimétrico, labels ALL CAPS, ícones sem cor semântica, tendências ausentes em 2 de 5 cards.</span></div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+    <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:10px;padding:14px 16px">
+      <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase">ORG. AFILIADAS <span style="padding:1px 5px;background:rgba(162,45,45,.1);border-radius:4px;font-size:9px">ALL CAPS</span></div>
+      <div style="font-size:26px;font-weight:500;color:var(--text-primary)">1</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">+2%</div>
+    </div>
+    <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:10px;padding:14px 16px">
+      <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase">CLUBES ATIVOS</div>
+      <div style="font-size:26px;font-weight:500;color:var(--text-primary)">0</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">+5%</div>
+    </div>
+    <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:10px;padding:14px 16px">
+      <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase">JOGADORES REGISTADOS</div>
+      <div style="font-size:26px;font-weight:500;color:var(--text-primary)">0</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">+12%</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:10px;padding:14px 16px">
+      <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase">COMPETIÇÕES EM ANDAMENTO <span style="padding:1px 5px;background:rgba(162,45,45,.1);border-radius:4px;font-size:9px">sem tendência</span></div>
+      <div style="font-size:26px;font-weight:500;color:var(--text-primary)">0</div>
+    </div>
+    <div style="background:#fef3f3;border:0.5px solid #f09595;border-radius:10px;padding:14px 16px">
+      <div style="font-size:10.5px;font-weight:600;color:#a32d2d;letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase">TRANSFERÊNCIAS PENDENTES <span style="padding:1px 5px;background:rgba(162,45,45,.1);border-radius:4px;font-size:9px">sem tendência</span></div>
+      <div style="font-size:26px;font-weight:500;color:var(--text-primary)">0</div>
+    </div>
+  </div>
+
+  <div style="height:0.5px;background:var(--border)"></div>
+  <div class="annot annot-success"><i class="ti ti-circle-check" aria-hidden="true"></i><span>Depois: grid uniforme 5 colunas, sentence case, ícone colorido por entidade, estado "sem dados" quando valor é 0.</span></div>
+
+  <div class="kpi-grid" style="padding:0;background:transparent">
+    <div class="kpi">
+      <div class="kpi-label"><div class="kpi-icon" style="background:#e1f5ee"><i class="ti ti-users" style="font-size:13px;color:#0f6e56" aria-hidden="true"></i></div>Orgs. afiliadas</div>
+      <div class="kpi-value">1</div>
+      <div class="kpi-trend up"><i class="ti ti-trending-up" style="font-size:12px" aria-hidden="true"></i>+2% este mês</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><div class="kpi-icon" style="background:#e6f1fb"><i class="ti ti-building-stadium" style="font-size:13px;color:#185fa5" aria-hidden="true"></i></div>Clubes ativos</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados ainda</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><div class="kpi-icon" style="background:#eeedfe"><i class="ti ti-user" style="font-size:13px;color:#534ab7" aria-hidden="true"></i></div>Jogadores</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados ainda</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><div class="kpi-icon" style="background:#faeeda"><i class="ti ti-trophy" style="font-size:13px;color:#854f0b" aria-hidden="true"></i></div>Competições</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-trend neutral"><i class="ti ti-minus" style="font-size:12px" aria-hidden="true"></i>Sem dados ainda</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><div class="kpi-icon" style="background:#fcebeb"><i class="ti ti-arrows-exchange" style="font-size:13px;color:#a32d2d" aria-hidden="true"></i></div>Transf. pendentes</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-trend warn"><i class="ti ti-clock" style="font-size:12px" aria-hidden="true"></i>Aguardam revisão</div>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;background:var(--surface-1);border-radius:8px;padding:10px 12px">
+    Decisões de cor por entidade: teal = organizações, blue = clubes, purple = jogadores, amber = competições, red = transferências/alertas. Consistentes com os ícones do sidebar.
+  </div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('scene-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

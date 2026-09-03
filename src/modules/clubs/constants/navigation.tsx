@@ -9,7 +9,7 @@ export function getClubSidebarLinks() {
       icon: <LayoutDashboard className="h-4 w-4" />,
     },
     {
-      label: 'Competições & Jogos',
+      label: 'Competições e jogos',
       href: ROUTES.DASHBOARD_CLUB_COMPETITIONS,
       icon: <Trophy className="h-4 w-4" />,
     },
@@ -29,7 +29,7 @@ export function getClubSidebarLinks() {
       icon: <FileText className="h-4 w-4" />,
     },
     {
-      label: 'Biblioteca de Media',
+      label: 'Biblioteca de média',
       href: ROUTES.DASHBOARD_CLUB_MEDIA,
       icon: <FolderOpen className="h-4 w-4" />,
     },
@@ -44,7 +44,7 @@ export function getClubSidebarLinks() {
       icon: <ArrowRightLeft className="h-4 w-4" />,
     },
     {
-      label: 'Pedidos de Vínculo',
+      label: 'Pedidos de vínculo',
       href: ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS,
       icon: <UserCheck className="h-4 w-4" />,
     },
@@ -54,7 +54,7 @@ export function getClubSidebarLinks() {
       icon: <UsersRound className="h-4 w-4" />,
     },
     {
-      label: 'Registar Jogador',
+      label: 'Registar jogador',
       href: ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER,
       icon: <UserPlus className="h-4 w-4" />,
     },

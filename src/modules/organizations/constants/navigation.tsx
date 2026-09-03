@@ -38,17 +38,17 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
     icon: <Home className="h-4 w-4" />,
   },
   lineups: {
-    label: 'Submissões de Escalações',
+    label: 'Submissões',
     href: ROUTES.DASHBOARD_ORGANIZATION_LINEUPS,
     icon: <ClipboardList className="h-4 w-4" />,
   },
   clubs: {
-    label: 'Clubes Associados',
+    label: 'Clubes associados',
     href: ROUTES.DASHBOARD_ORGANIZATION_CLUBS,
     icon: <Shield className="h-4 w-4" />,
   },
   players: {
-    label: 'Jogadores Registados',
+    label: 'Jogadores',
     href: ROUTES.DASHBOARD_ORGANIZATION_PLAYERS,
     icon: <UserCheck className="h-4 w-4" />,
   },
@@ -63,12 +63,12 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
     icon: <Users className="h-4 w-4" />,
   },
   affiliations: {
-    label: 'Pedidos de Filiação',
+    label: 'Pedidos de filiação',
     href: ROUTES.DASHBOARD_ORGANIZATION_AFFILIATIONS,
     icon: <Shield className="h-4 w-4" />,
   },
   media: {
-    label: 'Biblioteca de Media',
+    label: 'Biblioteca de média',
     href: ROUTES.DASHBOARD_MEDIA,
     icon: <FolderOpen className="h-4 w-4" />,
   },

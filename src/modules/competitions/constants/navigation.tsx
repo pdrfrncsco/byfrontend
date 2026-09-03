@@ -26,13 +26,13 @@ export function getCompetitionSidebarLinks(competitionId?: string): CompetitionS
   const competitionPath = competitionId ?? ''
 
   return [
-    { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <LayoutDashboard className="h-4 w-4" /> },
-    { label: 'Visão Geral', href: competitionRoutes.dashboard, icon: <Trophy className="h-4 w-4" /> },
-    { label: 'Nova Competição', href: competitionRoutes.create, icon: <PlusCircle className="h-4 w-4" /> },
+    { label: 'Painel da organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: 'Visão geral', href: competitionRoutes.dashboard, icon: <Trophy className="h-4 w-4" /> },
+    { label: 'Nova competição', href: competitionRoutes.create, icon: <PlusCircle className="h-4 w-4" /> },
     ...(hasCompetition
       ? [
           {
-            label: 'Painel da Competição',
+            label: 'Painel da competição',
             href: competitionRoutes.adminDashboard(competitionPath),
             icon: <LayoutDashboard className="h-4 w-4" />,
           },
@@ -67,14 +67,14 @@ export function getCompetitionSidebarLinks(competitionId?: string): CompetitionS
             icon: <BookOpen className="h-4 w-4" />,
           },
           {
-            label: 'Página Pública',
+            label: 'Página pública',
             href: competitionRoutes.detail(competitionPath),
             icon: <ExternalLink className="h-4 w-4" />,
           },
         ]
       : [
           {
-            label: 'Página Pública',
+            label: 'Página pública',
             href: competitionRoutes.list,
             icon: <ExternalLink className="h-4 w-4" />,
           },

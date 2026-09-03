@@ -37,18 +37,18 @@ export function EmptyState({
       )}
     >
       {visual ?? (Icon && (
-        <div className="mb-sm rounded-full border border-outline-variant/40 bg-surface-bright p-lg text-outline">
+        <div className="mb-sm rounded-full border border-outline-variant/60 bg-surface-container-high p-lg text-outline shadow-sm">
           <Icon className={cn('h-8 w-8 text-primary', iconClassName)} aria-hidden="true" />
         </div>
       ))}
 
       <div className="space-y-sm">
-        <h3 className="font-title-md text-xl text-on-surface">{title}</h3>
-        <p className="max-w-sm text-body-md text-on-surface-variant">{description}</p>
+        <h3 className="font-title-md text-xl font-semibold text-on-surface">{title}</h3>
+        <p className="max-w-sm text-body-md text-on-surface-variant opacity-80">{description}</p>
       </div>
 
       {action && (
-        <Button variant={action.variant ?? 'primary'} size="sm" className="mt-md" onClick={action.onClick}>
+        <Button variant={action.variant ?? 'primary'} size="sm" className="mt-md px-6" onClick={action.onClick}>
           {action.label}
         </Button>
       )}

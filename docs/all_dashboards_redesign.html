@@ -1,0 +1,646 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);font-size:13px;background:var(--surface-0)}
+.tabs{display:flex;gap:5px;padding:0;border-bottom:0.5px solid var(--border);background:var(--surface-0)}
+.tab{padding:10px 16px;font-size:13px;font-weight:500;color:var(--text-secondary);border:0.5px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;cursor:pointer;background:transparent;white-space:nowrap}
+.tab.active{color:var(--text-primary);background:var(--surface-2);border-color:var(--border)}
+.scene{display:none}.scene.active{display:block}
+
+/* SHELL */
+.shell{display:flex;border:0.5px solid var(--border);border-top:none;overflow:hidden;background:var(--surface-0);min-height:580px}
+
+/* SIDEBAR */
+.sb{width:172px;background:var(--surface-2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sb-hdr{padding:10px;border-bottom:0.5px solid var(--border)}
+.sb-ent{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:8px;cursor:pointer}
+.sb-ent:hover{background:var(--surface-1)}
+.sb-logo{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;flex-shrink:0}
+.sb-nm{font-size:12.5px;font-weight:500;color:var(--text-primary);line-height:1.2}
+.sb-tp{font-size:10.5px;color:var(--text-muted)}
+.sb-body{flex:1;padding:6px 8px;overflow:auto}
+.sb-grp{font-size:10px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 6px 3px}
+.sb-grp:first-child{padding-top:4px}
+.sb-item{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:6px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;transition:background .1s;margin-bottom:1px}
+.sb-item:hover{background:var(--surface-1);color:var(--text-primary)}
+.sb-item.on{font-weight:500}
+.sb-item i{font-size:15px;flex-shrink:0}
+.sb-badge{margin-left:auto;padding:1px 5px;border-radius:10px;font-size:10px;font-weight:500}
+.sb-ft{padding:8px 10px;border-top:0.5px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;margin-bottom:3px}
+.sb-user:hover{background:var(--surface-1)}
+.sb-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.sb-out{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-danger)}
+.sb-out:hover{background:var(--bg-danger)}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--surface-0)}
+
+/* TOPBAR */
+.tb{height:48px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;background:var(--surface-2);flex-shrink:0}
+.tb-ctx{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;background:var(--surface-1);border:0.5px solid var(--border);font-size:12px;font-weight:500;color:var(--text-secondary)}
+.tb-bc{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted)}
+.tb-bc .cur{color:var(--text-primary);font-weight:500}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:7px}
+.tb-sp{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface-1);font-size:12px;color:var(--text-muted)}
+.tb-nb{width:30px;height:30px;border-radius:6px;border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);position:relative}
+.tb-dot{width:7px;height:7px;border-radius:50%;background:#e24b4a;position:absolute;top:4px;right:4px;border:1.5px solid var(--surface-2)}
+.tb-up{display:flex;align-items:center;gap:6px;padding:3px 9px 3px 3px;border-radius:20px;border:0.5px solid var(--border);cursor:pointer}
+.tb-uav{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;flex-shrink:0}
+.tb-uname{font-size:12px;font-weight:500;color:var(--text-primary)}
+.tb-urole{font-size:10.5px;color:var(--text-muted)}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 16px 14px;border-bottom:0.5px solid var(--border);background:var(--surface-2);flex-shrink:0}
+.ph-title{font-size:18px;font-weight:500;color:var(--text-primary)}
+.ph-sub{font-size:12.5px;color:var(--text-secondary);margin-top:2px}
+.ph-acts{display:flex;gap:6px;flex-shrink:0}
+.btn-p{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);color:#fff;font-size:12.5px;font-weight:500;cursor:pointer;border:none;white-space:nowrap}
+.btn-o{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);background:transparent;color:var(--text-primary);font-size:12.5px;cursor:pointer;border:0.5px solid var(--border-strong);white-space:nowrap}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:14px 16px;background:var(--surface-0);flex-shrink:0}
+.kpi{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px}
+.kpi-lbl{font-size:11.5px;color:var(--text-muted);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.kpi-ic{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-ic i{font-size:12px}
+.kpi-val{font-size:24px;font-weight:500;color:var(--text-primary);line-height:1}
+.kpi-tr{display:flex;align-items:center;gap:3px;font-size:11px;margin-top:5px}
+.up{color:#0f6e56}.dn{color:#a32d2d}.neu{color:var(--text-muted)}.warn{color:#854f0b}
+
+/* BODY */
+.body{display:flex;gap:0;flex:1;overflow:hidden}
+.col-m{flex:1;min-width:0;padding:12px 8px 12px 14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.col-s{width:240px;flex-shrink:0;padding:12px 14px 12px 6px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+
+/* CARDS */
+.card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:0.5px solid var(--border)}
+.card-ttl{font-size:13px;font-weight:500;color:var(--text-primary);display:flex;align-items:center;gap:6px}
+.card-ttl i{font-size:14px;color:var(--text-muted)}
+.card-lnk{font-size:12px;color:var(--text-accent);cursor:pointer;display:flex;align-items:center;gap:3px}
+.card-body{padding:12px 14px}
+
+/* EMPTY */
+.empty{text-align:center;padding:22px 16px}
+.empty-ic{width:32px;height:32px;border-radius:50%;background:var(--surface-1);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--text-muted);font-size:16px}
+.empty-t{font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:3px}
+.empty-d{font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.4}
+
+/* QUICK ACTIONS */
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 12px}
+.qa-it{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--border);cursor:pointer}
+.qa-it:hover{background:var(--surface-1)}
+.qa-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.qa-nm{font-size:12px;font-weight:500;color:var(--text-primary)}
+.qa-ds{font-size:11px;color:var(--text-secondary)}
+
+/* ACTIVITY */
+.act-it{display:flex;gap:9px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.act-it:last-child{border:none}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.act-t{font-size:12.5px;font-weight:500;color:var(--text-primary)}
+.act-d{font-size:11.5px;color:var(--text-secondary);margin-top:1px}
+.act-ts{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* PLAYER STAT BAR */
+.stat-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)}
+.stat-row:last-child{border:none}
+.stat-lbl{font-size:12px;color:var(--text-secondary);width:90px;flex-shrink:0}
+.stat-bar{flex:1;height:5px;background:var(--surface-1);border-radius:3px;overflow:hidden}
+.stat-fill{height:100%;border-radius:3px}
+.stat-val{font-size:12px;font-weight:500;color:var(--text-primary);width:28px;text-align:right;flex-shrink:0}
+
+/* PROGRESS */
+.prog-wrap{padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.prog-row{display:flex;align-items:center;gap:8px}
+.prog-lbl{font-size:12px;color:var(--text-secondary);width:80px;flex-shrink:0}
+.prog-bar{flex:1;height:6px;background:var(--surface-1);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px}
+.prog-val{font-size:12px;font-weight:500;color:var(--text-primary);width:36px;text-align:right;flex-shrink:0}
+
+/* MATCH LIST */
+.match-it{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:0.5px solid var(--border)}
+.match-it:last-child{border:none}
+.match-teams{flex:1;font-size:12.5px;color:var(--text-primary);font-weight:500}
+.match-score{font-size:13px;font-weight:500;color:var(--text-primary);min-width:36px;text-align:center}
+.match-status{font-size:11px;padding:2px 7px;border-radius:20px}
+
+/* CAREER ROW */
+.car-it{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:0.5px solid var(--border)}
+.car-it:last-child{border:none}
+.car-logo{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;flex-shrink:0}
+.car-club{font-size:12.5px;font-weight:500;color:var(--text-primary)}
+.car-period{font-size:11.5px;color:var(--text-secondary)}
+.car-stats{margin-left:auto;font-size:12px;color:var(--text-muted)}
+
+/* STATUS DOT */
+.sdot{width:6px;height:6px;border-radius:50%;display:inline-block}
+</style>
+
+<h2 class="sr-only">Protótipo dos dashboards redesenhados — Clube, Competição, Jogador e Executivo</h2>
+
+<div class="tabs">
+  <button class="tab active" onclick="sw('club',this)">Clube</button>
+  <button class="tab" onclick="sw('comp',this)">Competição</button>
+  <button class="tab" onclick="sw('player',this)">Jogador</button>
+  <button class="tab" onclick="sw('exec',this)">Executivo</button>
+  <button class="tab" onclick="sw('issues',this)">Problemas resumidos</button>
+</div>
+
+<!-- ══════════════════════════════════════════ CLUBE ══════════════════════════════════════════ -->
+<div class="scene active" id="scene-club">
+<div class="shell">
+  <div class="sb">
+    <div class="sb-hdr">
+      <div class="sb-ent">
+        <div class="sb-logo" style="background:#185fa5">SC</div>
+        <div><div class="sb-nm">Sporting Clube</div><div class="sb-tp">Clube</div></div>
+        <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted);margin-left:auto" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-grp">Principal</div>
+      <div class="sb-item on" style="color:#185fa5;background:#e6f1fb"><i class="ti ti-home" aria-hidden="true"></i>Dashboard</div>
+      <div class="sb-grp">Gestão desportiva</div>
+      <div class="sb-item"><i class="ti ti-users" aria-hidden="true"></i>Plantel</div>
+      <div class="sb-item"><i class="ti ti-trophy" aria-hidden="true"></i>Competições</div>
+      <div class="sb-item"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Transferências<span class="sb-badge" style="background:#fcebeb;color:#a32d2d">2</span></div>
+      <div class="sb-item"><i class="ti ti-list-check" aria-hidden="true"></i>Lineup manager</div>
+      <div class="sb-grp">Administração</div>
+      <div class="sb-item"><i class="ti ti-user-circle" aria-hidden="true"></i>Membros</div>
+      <div class="sb-item"><i class="ti ti-folder" aria-hidden="true"></i>Documentos</div>
+      <div class="sb-item"><i class="ti ti-star" aria-hidden="true"></i>Patrocinadores</div>
+      <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Configurações</div>
+    </div>
+    <div class="sb-ft">
+      <div class="sb-user">
+        <div class="sb-av" style="background:var(--bg-accent);color:var(--text-accent)">PF</div>
+        <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Pedro Francisco</div><div style="font-size:10.5px;color:var(--text-muted)">Administrador</div></div>
+      </div>
+      <div class="sb-out"><i class="ti ti-logout" style="font-size:14px" aria-hidden="true"></i>Terminar sessão</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="tb">
+      <div class="tb-ctx"><i class="ti ti-globe" style="font-size:13px;color:#0f6e56" aria-hidden="true"></i>FC Sport</div>
+      <div class="tb-bc"><span>Clube</span><i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i><span class="cur">Dashboard</span></div>
+      <div class="tb-r">
+        <div class="tb-sp"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Pesquisar...</div>
+        <div class="tb-nb" aria-label="Notificações"><i class="ti ti-bell" style="font-size:15px" aria-hidden="true"></i><div class="tb-dot"></div></div>
+        <div class="tb-up"><div class="tb-uav" style="background:#185fa5">PF</div><div><div class="tb-uname">Pedro Francisco</div><div class="tb-urole">Administrador</div></div><i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted)" aria-hidden="true"></i></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div><div class="ph-title">Sporting Clube</div><div class="ph-sub">Dashboard operacional · plantel, competições e transferências</div></div>
+      <div class="ph-acts">
+        <button class="btn-o"><i class="ti ti-user-plus" style="font-size:13px" aria-hidden="true"></i>Registar jogador</button>
+        <button class="btn-p" style="background:#185fa5"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i>Nova transferência</button>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e6f1fb"><i class="ti ti-users" style="color:#185fa5" aria-hidden="true"></i></div>Plantel</div><div class="kpi-val">18</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>+3 este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#faeeda"><i class="ti ti-trophy" style="color:#854f0b" aria-hidden="true"></i></div>Competições</div><div class="kpi-val">2</div><div class="kpi-tr up"><i class="ti ti-circle-check" style="font-size:11px" aria-hidden="true"></i>Activas</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e1f5ee"><i class="ti ti-calendar" style="color:#0f6e56" aria-hidden="true"></i></div>Próximo jogo</div><div class="kpi-val" style="font-size:15px;margin-top:3px">Em 3 dias</div><div class="kpi-tr neu">vs FC Porto · Dil</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#fcebeb"><i class="ti ti-arrows-exchange" style="color:#a32d2d" aria-hidden="true"></i></div>Transf. pendentes</div><div class="kpi-val">2</div><div class="kpi-tr warn"><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i>Aguardam aprovação</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#eeedfe"><i class="ti ti-user-circle" style="color:#534ab7" aria-hidden="true"></i></div>Membros</div><div class="kpi-val">7</div><div class="kpi-tr neu"><i class="ti ti-minus" style="font-size:11px" aria-hidden="true"></i>Sem alterações</div></div>
+    </div>
+    <div class="body">
+      <div class="col-m">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-users" aria-hidden="true"></i>Plantel</div><a class="card-lnk">Ver todos <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="match-it"><div style="display:flex;align-items:center;gap:8px;flex:1"><div style="width:24px;height:24px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#185fa5">MF</div><div><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Marco Ferreira</div><div style="font-size:11.5px;color:var(--text-secondary)">Avançado · #9</div></div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#e1f5ee;color:#085041">Activo</div></div>
+          <div class="match-it"><div style="display:flex;align-items:center;gap:8px;flex:1"><div style="width:24px;height:24px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#185fa5">JL</div><div><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">João Lima</div><div style="font-size:11.5px;color:var(--text-secondary)">Médio · #8</div></div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#e1f5ee;color:#085041">Activo</div></div>
+          <div class="match-it"><div style="display:flex;align-items:center;gap:8px;flex:1"><div style="width:24px;height:24px;border-radius:50%;background:#faeeda;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#854f0b">RS</div><div><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Rui Santos</div><div style="font-size:11.5px;color:var(--text-secondary)">Defesa · #4</div></div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#faeeda;color:#633806">Suspenso</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-trophy" aria-hidden="true"></i>Competições activas</div><a class="card-lnk">Ver todas <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Liga Nacional 2026</div><div style="font-size:11.5px;color:var(--text-secondary)">Jornada 14 de 30</div></div><div style="font-size:12px;color:var(--text-muted)">3.º lugar</div></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Taça Regional</div><div style="font-size:11.5px;color:var(--text-secondary)">Fase de grupos</div></div><div style="font-size:12px;color:var(--text-muted)">Grupo B</div></div>
+        </div>
+      </div>
+      <div class="col-s">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-zap" aria-hidden="true"></i>Ações rápidas</div></div>
+          <div class="qa">
+            <div class="qa-it"><div class="qa-ico" style="background:#e6f1fb"><i class="ti ti-user-plus" style="color:#185fa5" aria-hidden="true"></i></div><div><div class="qa-nm">Registar jogador</div><div class="qa-ds">Adicionar ao plantel</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#faeeda"><i class="ti ti-arrows-exchange" style="color:#854f0b" aria-hidden="true"></i></div><div><div class="qa-nm">Transferência</div><div class="qa-ds">Iniciar processo</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#e1f5ee"><i class="ti ti-list-check" style="color:#0f6e56" aria-hidden="true"></i></div><div><div class="qa-nm">Lineup</div><div class="qa-ds">Gerir escalação</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#eeedfe"><i class="ti ti-user-circle" style="color:#534ab7" aria-hidden="true"></i></div><div><div class="qa-nm">Convidar membro</div><div class="qa-ds">Gerir equipa</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-activity" aria-hidden="true"></i>Atividade recente</div></div>
+          <div style="padding:8px 12px">
+            <div class="act-it"><div class="act-dot" style="background:#185fa5"></div><div><div class="act-t">Marco Ferreira registado</div><div class="act-d">Adicionado ao plantel como avançado.</div><div class="act-ts">Há 2 horas</div></div></div>
+            <div class="act-it"><div class="act-dot" style="background:#e24b4a"></div><div><div class="act-t">Transferência pendente</div><div class="act-d">João Lima — aguarda aprovação da org.</div><div class="act-ts">Há 1 dia</div></div></div>
+            <div class="act-it"><div class="act-dot" style="background:#0f6e56"></div><div><div class="act-t">Lineup submetido</div><div class="act-d">Liga Nacional · Jornada 14.</div><div class="act-ts">Há 3 dias</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════ COMPETIÇÃO ══════════════════════════════════════════ -->
+<div class="scene" id="scene-comp">
+<div class="shell">
+  <div class="sb">
+    <div class="sb-hdr">
+      <div class="sb-ent">
+        <div class="sb-logo" style="background:#854f0b">LN</div>
+        <div><div class="sb-nm">Liga Nacional</div><div class="sb-tp">Competição</div></div>
+        <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted);margin-left:auto" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-grp">Principal</div>
+      <div class="sb-item on" style="color:#854f0b;background:#faeeda"><i class="ti ti-home" aria-hidden="true"></i>Dashboard</div>
+      <div class="sb-grp">Competição</div>
+      <div class="sb-item"><i class="ti ti-calendar" aria-hidden="true"></i>Calendário</div>
+      <div class="sb-item"><i class="ti ti-ball-football" aria-hidden="true"></i>Jogos<span class="sb-badge" style="background:#faeeda;color:#633806">3</span></div>
+      <div class="sb-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Classificação</div>
+      <div class="sb-item"><i class="ti ti-circle" aria-hidden="true"></i>Sorteio</div>
+      <div class="sb-grp">Gestão</div>
+      <div class="sb-item"><i class="ti ti-clipboard-list" aria-hidden="true"></i>Inscrições</div>
+      <div class="sb-item"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Suspensões<span class="sb-badge" style="background:#fcebeb;color:#a32d2d">2</span></div>
+      <div class="sb-item"><i class="ti ti-file-text" aria-hidden="true"></i>Regulamento</div>
+      <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Configurações</div>
+    </div>
+    <div class="sb-ft">
+      <div class="sb-user">
+        <div class="sb-av" style="background:var(--bg-accent);color:var(--text-accent)">PF</div>
+        <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Pedro Francisco</div><div style="font-size:10.5px;color:var(--text-muted)">Owner</div></div>
+      </div>
+      <div class="sb-out"><i class="ti ti-logout" style="font-size:14px" aria-hidden="true"></i>Terminar sessão</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="tb">
+      <div class="tb-ctx"><i class="ti ti-globe" style="font-size:13px;color:#0f6e56" aria-hidden="true"></i>FC Sport</div>
+      <div class="tb-bc"><span>Competições</span><i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i><span class="cur">Liga Nacional</span></div>
+      <div class="tb-r">
+        <div class="tb-sp"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Pesquisar...</div>
+        <div class="tb-nb" aria-label="Notificações"><i class="ti ti-bell" style="font-size:15px" aria-hidden="true"></i></div>
+        <div class="tb-up"><div class="tb-uav" style="background:#854f0b">PF</div><div><div class="tb-uname">Pedro Francisco</div><div class="tb-urole">Owner</div></div><i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted)" aria-hidden="true"></i></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="ph-title">Liga Nacional 2026</div>
+          <div style="padding:2px 8px;border-radius:20px;background:#faeeda;color:#633806;font-size:11.5px;font-weight:500">Jornada 14/30</div>
+        </div>
+        <div class="ph-sub">Fase de liga · 8 clubes inscritos · FC Sport</div>
+      </div>
+      <div class="ph-acts">
+        <button class="btn-o"><i class="ti ti-download" style="font-size:13px" aria-hidden="true"></i>Exportar</button>
+        <button class="btn-p" style="background:#854f0b"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i>Agendar jogo</button>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e6f1fb"><i class="ti ti-building-stadium" style="color:#185fa5" aria-hidden="true"></i></div>Clubes inscritos</div><div class="kpi-val">8/12</div><div class="kpi-tr warn"><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i>4 vagas em aberto</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#faeeda"><i class="ti ti-ball-football" style="color:#854f0b" aria-hidden="true"></i></div>Jogos disputados</div><div class="kpi-val">56</div><div class="kpi-tr up"><div style="width:60px;height:5px;background:var(--surface-1);border-radius:3px;overflow:hidden"><div style="width:47%;height:100%;background:#854f0b;border-radius:3px"></div></div>47%</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e1f5ee"><i class="ti ti-calendar" style="color:#0f6e56" aria-hidden="true"></i></div>Próximo jogo</div><div class="kpi-val" style="font-size:14px;margin-top:3px">Sport vs SL</div><div class="kpi-tr neu">Sáb. 14h30</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#eeedfe"><i class="ti ti-tournament" style="color:#534ab7" aria-hidden="true"></i></div>Golos marcados</div><div class="kpi-val">142</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>2.5 por jogo</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#fcebeb"><i class="ti ti-alert-triangle" style="color:#a32d2d" aria-hidden="true"></i></div>Suspensões activas</div><div class="kpi-val">2</div><div class="kpi-tr warn"><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i>Aguardam revisão</div></div>
+    </div>
+    <div class="body">
+      <div class="col-m">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-ball-football" aria-hidden="true"></i>Jogos recentes</div><a class="card-lnk">Ver todos <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="match-it"><div class="match-teams">Sport vs FC Porto</div><div class="match-score">2 – 1</div><div class="match-status" style="background:#e1f5ee;color:#085041">Concluído</div></div>
+          <div class="match-it"><div class="match-teams">SL vs Académica</div><div class="match-score">1 – 1</div><div class="match-status" style="background:#e1f5ee;color:#085041">Concluído</div></div>
+          <div class="match-it"><div class="match-teams">Sport vs SL</div><div class="match-score">– : –</div><div class="match-status" style="background:#faeeda;color:#633806">Agendado</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-chart-bar" aria-hidden="true"></i>Classificação (top 4)</div><a class="card-lnk">Ver completa <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div style="padding:6px 0">
+            <div class="match-it"><div style="width:18px;font-size:11.5px;color:var(--text-muted);text-align:center">1</div><div style="flex:1;font-size:12.5px;font-weight:500;color:var(--text-primary);padding:0 10px">Sport FC</div><div style="font-size:12px;color:var(--text-muted)">32 pts</div></div>
+            <div class="match-it"><div style="width:18px;font-size:11.5px;color:var(--text-muted);text-align:center">2</div><div style="flex:1;font-size:12.5px;color:var(--text-primary);padding:0 10px">SL Clube</div><div style="font-size:12px;color:var(--text-muted)">29 pts</div></div>
+            <div class="match-it"><div style="width:18px;font-size:11.5px;color:var(--text-muted);text-align:center">3</div><div style="flex:1;font-size:12.5px;color:var(--text-primary);padding:0 10px">FC Porto</div><div style="font-size:12px;color:var(--text-muted)">27 pts</div></div>
+            <div class="match-it"><div style="width:18px;font-size:11.5px;color:var(--text-muted);text-align:center">4</div><div style="flex:1;font-size:12.5px;color:var(--text-primary);padding:0 10px">Académica</div><div style="font-size:12px;color:var(--text-muted)">24 pts</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-s">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-zap" aria-hidden="true"></i>Ações rápidas</div></div>
+          <div class="qa">
+            <div class="qa-it"><div class="qa-ico" style="background:#faeeda"><i class="ti ti-calendar-plus" style="color:#854f0b" aria-hidden="true"></i></div><div><div class="qa-nm">Agendar jogo</div><div class="qa-ds">Nova partida</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#fcebeb"><i class="ti ti-alert-triangle" style="color:#a32d2d" aria-hidden="true"></i></div><div><div class="qa-nm">Suspensão</div><div class="qa-ds">Registar</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#e6f1fb"><i class="ti ti-clipboard-list" style="color:#185fa5" aria-hidden="true"></i></div><div><div class="qa-nm">Inscrições</div><div class="qa-ds">Gerir clubes</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#e1f5ee"><i class="ti ti-file-text" style="color:#0f6e56" aria-hidden="true"></i></div><div><div class="qa-nm">Regulamento</div><div class="qa-ds">Actualizar</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-activity" aria-hidden="true"></i>Atividade recente</div></div>
+          <div style="padding:8px 12px">
+            <div class="act-it"><div class="act-dot" style="background:#854f0b"></div><div><div class="act-t">Jogo concluído</div><div class="act-d">Sport 2–1 FC Porto</div><div class="act-ts">Há 2 horas</div></div></div>
+            <div class="act-it"><div class="act-dot" style="background:#e24b4a"></div><div><div class="act-t">Suspensão registada</div><div class="act-d">Rui Santos · 1 jogo</div><div class="act-ts">Há 1 dia</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════ JOGADOR ══════════════════════════════════════════ -->
+<div class="scene" id="scene-player">
+<div class="shell">
+  <div class="sb">
+    <div class="sb-hdr">
+      <div class="sb-ent">
+        <div class="sb-logo" style="background:#534ab7;border-radius:50%">MF</div>
+        <div><div class="sb-nm">Marco Ferreira</div><div class="sb-tp">Jogador · Sporting</div></div>
+        <i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted);margin-left:auto" aria-hidden="true"></i>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-grp">Principal</div>
+      <div class="sb-item on" style="color:#534ab7;background:#eeedfe"><i class="ti ti-home" aria-hidden="true"></i>Dashboard</div>
+      <div class="sb-item"><i class="ti ti-user" aria-hidden="true"></i>Perfil</div>
+      <div class="sb-grp">Desempenho</div>
+      <div class="sb-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Estatísticas</div>
+      <div class="sb-item"><i class="ti ti-timeline" aria-hidden="true"></i>Carreira</div>
+      <div class="sb-item"><i class="ti ti-award" aria-hidden="true"></i>Conquistas</div>
+      <div class="sb-item"><i class="ti ti-video" aria-hidden="true"></i>Vídeos</div>
+      <div class="sb-grp">Gestão</div>
+      <div class="sb-item"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Transferências</div>
+      <div class="sb-item"><i class="ti ti-file-text" aria-hidden="true"></i>Contratos</div>
+      <div class="sb-item"><i class="ti ti-briefcase" aria-hidden="true"></i>Agentes</div>
+      <div class="sb-item"><i class="ti ti-folder" aria-hidden="true"></i>Documentos</div>
+      <div class="sb-item"><i class="ti ti-heart" aria-hidden="true"></i>Médico</div>
+      <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Configurações</div>
+    </div>
+    <div class="sb-ft">
+      <div class="sb-user">
+        <div class="sb-av" style="background:#eeedfe;color:#534ab7">MF</div>
+        <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Marco Ferreira</div><div style="font-size:10.5px;color:var(--text-muted)">Jogador</div></div>
+      </div>
+      <div class="sb-out"><i class="ti ti-logout" style="font-size:14px" aria-hidden="true"></i>Terminar sessão</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="tb">
+      <div class="tb-ctx"><i class="ti ti-building-stadium" style="font-size:13px;color:#185fa5" aria-hidden="true"></i>Sporting Clube</div>
+      <div class="tb-bc"><span>Jogador</span><i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i><span class="cur">Dashboard</span></div>
+      <div class="tb-r">
+        <div class="tb-sp"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Pesquisar...</div>
+        <div class="tb-nb" aria-label="Notificações"><i class="ti ti-bell" style="font-size:15px" aria-hidden="true"></i></div>
+        <div class="tb-up"><div class="tb-uav" style="background:#534ab7;border-radius:50%">MF</div><div><div class="tb-uname">Marco Ferreira</div><div class="tb-urole">Jogador</div></div><i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted)" aria-hidden="true"></i></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:44px;height:44px;border-radius:50%;background:#534ab7;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0">MF</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="ph-title">Marco Ferreira</div><div style="padding:2px 8px;border-radius:20px;background:#eeedfe;color:#3c3489;font-size:11.5px;font-weight:500">Avançado · #9</div></div>
+          <div class="ph-sub">Sporting Clube · Contrato até Jun 2027</div>
+        </div>
+      </div>
+      <div class="ph-acts">
+        <button class="btn-o"><i class="ti ti-share" style="font-size:13px" aria-hidden="true"></i>Partilhar perfil</button>
+        <button class="btn-p" style="background:#534ab7"><i class="ti ti-edit" style="font-size:13px" aria-hidden="true"></i>Editar perfil</button>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#eeedfe"><i class="ti ti-ball-football" style="color:#534ab7" aria-hidden="true"></i></div>Jogos</div><div class="kpi-val">12</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>Esta época</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e1f5ee"><i class="ti ti-tournament" style="color:#0f6e56" aria-hidden="true"></i></div>Golos</div><div class="kpi-val">4</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>+1 este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e6f1fb"><i class="ti ti-arrows-right" style="color:#185fa5" aria-hidden="true"></i></div>Assistências</div><div class="kpi-val">3</div><div class="kpi-tr neu"><i class="ti ti-minus" style="font-size:11px" aria-hidden="true"></i>Estável</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#faeeda"><i class="ti ti-square" style="color:#854f0b" aria-hidden="true"></i></div>Cartões</div><div class="kpi-val">2</div><div class="kpi-tr warn"><i class="ti ti-alert-triangle" style="font-size:11px" aria-hidden="true"></i>2 amarelos</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#fcebeb"><i class="ti ti-star" style="color:#a32d2d" aria-hidden="true"></i></div>Rating médio</div><div class="kpi-val" style="font-size:22px">7.4</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>Top 20%</div></div>
+    </div>
+    <div class="body">
+      <div class="col-m">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-chart-bar" aria-hidden="true"></i>Desempenho por área</div><a class="card-lnk">Ver estatísticas <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div style="padding:10px 14px">
+            <div class="stat-row"><div class="stat-lbl">Finalização</div><div class="stat-bar"><div class="stat-fill" style="width:78%;background:#534ab7"></div></div><div class="stat-val">78</div></div>
+            <div class="stat-row"><div class="stat-lbl">Velocidade</div><div class="stat-bar"><div class="stat-fill" style="width:85%;background:#534ab7"></div></div><div class="stat-val">85</div></div>
+            <div class="stat-row"><div class="stat-lbl">Passe</div><div class="stat-bar"><div class="stat-fill" style="width:65%;background:#534ab7"></div></div><div class="stat-val">65</div></div>
+            <div class="stat-row"><div class="stat-lbl">Físico</div><div class="stat-bar"><div class="stat-fill" style="width:72%;background:#534ab7"></div></div><div class="stat-val">72</div></div>
+            <div class="stat-row"><div class="stat-lbl">Drible</div><div class="stat-bar"><div class="stat-fill" style="width:81%;background:#534ab7"></div></div><div class="stat-val">81</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-timeline" aria-hidden="true"></i>Histórico de carreira</div><a class="card-lnk">Ver completo <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="car-it"><div class="car-logo" style="background:#185fa5">SC</div><div><div class="car-club">Sporting Clube</div><div class="car-period">2024 – Presente</div></div><div class="car-stats">4G · 3A</div></div>
+          <div class="car-it"><div class="car-logo" style="background:#0f6e56">BO</div><div><div class="car-club">Boavista FC</div><div class="car-period">2022 – 2024</div></div><div class="car-stats">12G · 7A</div></div>
+          <div class="car-it"><div class="car-logo" style="background:#854f0b">AC</div><div><div class="car-club">Académica</div><div class="car-period">2020 – 2022</div></div><div class="car-stats">8G · 4A</div></div>
+        </div>
+      </div>
+      <div class="col-s">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-zap" aria-hidden="true"></i>Ações rápidas</div></div>
+          <div class="qa">
+            <div class="qa-it"><div class="qa-ico" style="background:#eeedfe"><i class="ti ti-edit" style="color:#534ab7" aria-hidden="true"></i></div><div><div class="qa-nm">Editar perfil</div><div class="qa-ds">Actualizar dados</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#e6f1fb"><i class="ti ti-file-text" style="color:#185fa5" aria-hidden="true"></i></div><div><div class="qa-nm">Contratos</div><div class="qa-ds">Ver acordos</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#e1f5ee"><i class="ti ti-upload" style="color:#0f6e56" aria-hidden="true"></i></div><div><div class="qa-nm">Upload vídeo</div><div class="qa-ds">Adicionar clip</div></div></div>
+            <div class="qa-it"><div class="qa-ico" style="background:#faeeda"><i class="ti ti-briefcase" style="color:#854f0b" aria-hidden="true"></i></div><div><div class="qa-nm">Agentes</div><div class="qa-ds">Gerir representantes</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-activity" aria-hidden="true"></i>Atividade recente</div></div>
+          <div style="padding:8px 12px">
+            <div class="act-it"><div class="act-dot" style="background:#534ab7"></div><div><div class="act-t">Jogo disputado</div><div class="act-d">Sport 2–1 FC Porto · Rating 8.2</div><div class="act-ts">Há 2 horas</div></div></div>
+            <div class="act-it"><div class="act-dot" style="background:#0f6e56"></div><div><div class="act-t">Contrato renovado</div><div class="act-d">Sporting Clube · até Jun 2027</div><div class="act-ts">Há 3 dias</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════ EXECUTIVO ══════════════════════════════════════════ -->
+<div class="scene" id="scene-exec">
+<div class="shell">
+  <div class="sb">
+    <div class="sb-hdr">
+      <div class="sb-ent">
+        <div class="sb-logo" style="background:#0f6e56">ADM</div>
+        <div><div class="sb-nm">Vista executiva</div><div class="sb-tp">Superadmin</div></div>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-grp">Visão geral</div>
+      <div class="sb-item on" style="color:#0f6e56;background:#e1f5ee"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Executivo</div>
+      <div class="sb-grp">Entidades</div>
+      <div class="sb-item"><i class="ti ti-users" aria-hidden="true"></i>Organizações<span class="sb-badge" style="background:#e1f5ee;color:#085041">3</span></div>
+      <div class="sb-item"><i class="ti ti-building-stadium" aria-hidden="true"></i>Clubes</div>
+      <div class="sb-item"><i class="ti ti-trophy" aria-hidden="true"></i>Competições</div>
+      <div class="sb-item"><i class="ti ti-user" aria-hidden="true"></i>Jogadores</div>
+      <div class="sb-grp">Operações</div>
+      <div class="sb-item"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Transferências<span class="sb-badge" style="background:#fcebeb;color:#a32d2d">5</span></div>
+      <div class="sb-item"><i class="ti ti-link" aria-hidden="true"></i>Filiações<span class="sb-badge" style="background:#fcebeb;color:#a32d2d">2</span></div>
+      <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Configurações</div>
+    </div>
+    <div class="sb-ft">
+      <div class="sb-user">
+        <div class="sb-av" style="background:var(--bg-accent);color:var(--text-accent)">PF</div>
+        <div><div style="font-size:12px;font-weight:500;color:var(--text-primary)">Pedro Francisco</div><div style="font-size:10.5px;color:var(--text-muted)">Superadmin</div></div>
+      </div>
+      <div class="sb-out"><i class="ti ti-logout" style="font-size:14px" aria-hidden="true"></i>Terminar sessão</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="tb">
+      <div class="tb-ctx"><i class="ti ti-globe" style="font-size:13px;color:#0f6e56" aria-hidden="true"></i>Todas as organizações</div>
+      <div class="tb-bc"><span>Admin</span><i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i><span class="cur">Vista executiva</span></div>
+      <div class="tb-r">
+        <div class="tb-sp"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Pesquisar...</div>
+        <div class="tb-nb" aria-label="Notificações"><i class="ti ti-bell" style="font-size:15px" aria-hidden="true"></i><div class="tb-dot"></div></div>
+        <div class="tb-up"><div class="tb-uav" style="background:#0f6e56">PF</div><div><div class="tb-uname">Pedro Francisco</div><div class="tb-urole">Superadmin</div></div><i class="ti ti-chevron-down" style="font-size:11px;color:var(--text-muted)" aria-hidden="true"></i></div>
+      </div>
+    </div>
+    <div class="ph">
+      <div><div class="ph-title">Vista executiva</div><div class="ph-sub">Agregado de todas as organizações · actualizado agora</div></div>
+      <div class="ph-acts">
+        <button class="btn-o"><i class="ti ti-download" style="font-size:13px" aria-hidden="true"></i>Relatório</button>
+        <button class="btn-p" style="background:#0f6e56"><i class="ti ti-plus" style="font-size:13px" aria-hidden="true"></i>Nova organização</button>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e1f5ee"><i class="ti ti-users" style="color:#0f6e56" aria-hidden="true"></i></div>Organizações</div><div class="kpi-val">3</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>+1 este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#e6f1fb"><i class="ti ti-building-stadium" style="color:#185fa5" aria-hidden="true"></i></div>Clubes totais</div><div class="kpi-val">24</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>+3 este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#faeeda"><i class="ti ti-trophy" style="color:#854f0b" aria-hidden="true"></i></div>Competições activas</div><div class="kpi-val">8</div><div class="kpi-tr neu"><i class="ti ti-minus" style="font-size:11px" aria-hidden="true"></i>Estável</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#eeedfe"><i class="ti ti-user" style="color:#534ab7" aria-hidden="true"></i></div>Jogadores registados</div><div class="kpi-val">342</div><div class="kpi-tr up"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i>+12% este mês</div></div>
+      <div class="kpi"><div class="kpi-lbl"><div class="kpi-ic" style="background:#fcebeb"><i class="ti ti-arrows-exchange" style="color:#a32d2d" aria-hidden="true"></i></div>Transf. pendentes</div><div class="kpi-val">5</div><div class="kpi-tr warn"><i class="ti ti-clock" style="font-size:11px" aria-hidden="true"></i>Aguardam revisão</div></div>
+    </div>
+    <div class="body">
+      <div class="col-m">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-users" aria-hidden="true"></i>Organizações</div><a class="card-lnk">Ver todas <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">FC Sport</div><div style="font-size:11.5px;color:var(--text-secondary)">8 clubes · 3 competições</div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#e1f5ee;color:#085041">Activa</div></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Federação Regional</div><div style="font-size:11.5px;color:var(--text-secondary)">12 clubes · 4 competições</div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#e1f5ee;color:#085041">Activa</div></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Associação Distrital</div><div style="font-size:11.5px;color:var(--text-secondary)">4 clubes · 1 competição</div></div><div style="font-size:11px;padding:2px 7px;border-radius:20px;background:#faeeda;color:#633806">Setup</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-arrows-exchange" aria-hidden="true"></i>Transferências pendentes</div><a class="card-lnk">Ver todas <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i></a></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">João Lima → FC Porto</div><div style="font-size:11.5px;color:var(--text-secondary)">Sporting Clube · Aguarda aprovação da org</div></div><div class="match-status" style="background:#faeeda;color:#633806">Pendente</div></div>
+          <div class="match-it"><div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Rui Santos → Académica</div><div style="font-size:11.5px;color:var(--text-secondary)">Boavista FC · Em análise</div></div><div class="match-status" style="background:#faeeda;color:#633806">Pendente</div></div>
+        </div>
+      </div>
+      <div class="col-s">
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-chart-bar" aria-hidden="true"></i>Crescimento (30d)</div></div>
+          <div class="prog-wrap">
+            <div class="prog-row"><div class="prog-lbl">Jogadores</div><div class="prog-bar"><div class="prog-fill" style="width:72%;background:#534ab7"></div></div><div class="prog-val">+12%</div></div>
+            <div class="prog-row"><div class="prog-lbl">Clubes</div><div class="prog-bar"><div class="prog-fill" style="width:58%;background:#185fa5"></div></div><div class="prog-val">+8%</div></div>
+            <div class="prog-row"><div class="prog-lbl">Competições</div><div class="prog-bar"><div class="prog-fill" style="width:25%;background:#854f0b"></div></div><div class="prog-val">+2%</div></div>
+            <div class="prog-row"><div class="prog-lbl">Transferências</div><div class="prog-bar"><div class="prog-fill" style="width:45%;background:#a32d2d"></div></div><div class="prog-val">+5%</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-ttl"><i class="ti ti-activity" aria-hidden="true"></i>Atividade recente</div></div>
+          <div style="padding:8px 12px">
+            <div class="act-it"><div class="act-dot" style="background:#0f6e56"></div><div><div class="act-t">Nova organização</div><div class="act-d">Associação Distrital registada.</div><div class="act-ts">Há 1 dia</div></div></div>
+            <div class="act-it"><div class="act-dot" style="background:#e24b4a"></div><div><div class="act-t">Filiação pendente</div><div class="act-d">Sport FC solicitou filiação à Fed. Regional.</div><div class="act-ts">Há 2 dias</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════ ISSUES ══════════════════════════════════════════ -->
+<div class="scene" id="scene-issues" style="padding:14px;display:flex;flex-direction:column;gap:10px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:7px">
+        <div style="width:24px;height:24px;border-radius:6px;background:#185fa5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff">SC</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-primary)">Clube</div>
+        <div style="margin-left:auto;font-size:11px;padding:2px 7px;border-radius:20px;background:#fcebeb;color:#a32d2d;font-weight:500">5 críticos</div>
+      </div>
+      <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>ClubKpisCard</strong> não usa design system — padrão divergente</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>LineupManager</strong> — página órfã sem entrada na navegação</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>ClubCompetitionsView</strong> duplica CompetitionCard</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>ClubMembersList</strong> inline causa scroll excessivo</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Navegação sem separação operacional / administrativa</span></div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:7px">
+        <div style="width:24px;height:24px;border-radius:6px;background:#854f0b;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff">LN</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-primary)">Competição</div>
+        <div style="margin-left:auto;font-size:11px;padding:2px 7px;border-radius:20px;background:#fcebeb;color:#a32d2d;font-weight:500">4 críticos</div>
+      </div>
+      <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Dashboard no módulo errado — <strong>dashboards/</strong> vs <strong>competitions/</strong></span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>CompetitionAdminListPage</strong> duplica <strong>CompetitionListPage</strong></span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>5 páginas de jogo separadas — hierarquia 5 cliques de profundidade</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>CompetitionManagementFrame</strong> com routing interno não documentado</span></div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:7px">
+        <div style="width:24px;height:24px;border-radius:50%;background:#534ab7;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff">MF</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-primary)">Jogador</div>
+        <div style="margin-left:auto;font-size:11px;padding:2px 7px;border-radius:20px;background:#fcebeb;color:#a32d2d;font-weight:500">7 críticos ⚠</div>
+      </div>
+      <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Sem <strong>navigation.tsx</strong> — único módulo sem contrato de navegação</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Dois entry points para o mesmo jogador: Dashboard + Profile</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>PlayerSettingsPage</strong> + <strong>PlayerDashboardSettingsPage</strong> — duplicado</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>PlayerDashboardSections</strong> é monolítico — impede reutilização</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Tabs de perfil + Secções de dashboard — dois sistemas paralelos</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Onboarding completamente isolado do sistema principal</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Sem fila de KPI cards no dashboard — dados não aparecem no topo</span></div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:7px">
+        <div style="width:24px;height:24px;border-radius:6px;background:#0f6e56;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff">ADM</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-primary)">Executivo</div>
+        <div style="margin-left:auto;font-size:11px;padding:2px 7px;border-radius:20px;background:#faeeda;color:#633806;font-weight:500">3 críticos</div>
+      </div>
+      <div style="padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Overlap com <strong>OrganizationDashboardPage</strong> — âmbito não definido</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>DashboardPageSelector</strong> é uma página — devia ser guard de rota</span></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text-primary)"><i class="ti ti-alert-circle" style="font-size:14px;color:#a32d2d;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span><strong>useDashboardResolver</strong> acoplado a componente que será removido</span></div>
+        <div style="height:0.5px;background:var(--border);margin:2px 0"></div>
+        <div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#085041"><i class="ti ti-circle-check" style="font-size:14px;color:#0f6e56;flex-shrink:0;margin-top:1px" aria-hidden="true"></i><span>Dashboard executivo é o <strong>menos afectado</strong> — dados são simplesmente a agregação dos outros módulos</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px">
+    <div style="font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px"><i class="ti ti-list-check" style="font-size:15px;color:var(--text-muted)" aria-hidden="true"></i>Padrão unificado — o que todos os dashboards devem ter</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px">
+        <div style="font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:5px"><i class="ti ti-layout-navbar" style="font-size:13px" aria-hidden="true"></i>Page header</div>
+        <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5">Título da entidade + subtítulo + 1 CTA secondary + 1 CTA primary</div>
+      </div>
+      <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px">
+        <div style="font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:5px"><i class="ti ti-layout-columns" style="font-size:13px" aria-hidden="true"></i>KPI row (5 cards)</div>
+        <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5">Usando kpi-card.tsx · ícone colorido por entidade · trend em todos</div>
+      </div>
+      <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px">
+        <div style="font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:5px"><i class="ti ti-layout-sidebar-right" style="font-size:13px" aria-hidden="true"></i>Body 65/35</div>
+        <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5">Col. principal: 2 listas · Col. lateral: Quick actions + Activity feed</div>
+      </div>
+      <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px">
+        <div style="font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:6px;display:flex;align-items:center;gap:5px"><i class="ti ti-mood-empty" style="font-size:13px" aria-hidden="true"></i>Empty states</div>
+        <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5">Ícone + título + descrição + CTA outline (nunca tabela vazia com cabeçalhos)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function sw(id,el){
+  document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('scene-'+id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
