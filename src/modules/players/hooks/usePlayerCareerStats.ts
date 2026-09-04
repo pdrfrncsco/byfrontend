@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { getStoredAuthToken } from '@/lib/storage'
 import type { PlayerCareerEntry } from '../types'
 
 /**
@@ -15,7 +16,7 @@ export function usePlayerCareerStats(playerSlug: string, enabled = true) {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
           },
         }
       )
@@ -45,7 +46,7 @@ export function usePlayerRegistrations(playerSlug: string, enabled = true) {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
           },
         }
       )
@@ -75,7 +76,7 @@ export function usePlayerStatistics(playerSlug: string, enabled = true) {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
           },
         }
       )

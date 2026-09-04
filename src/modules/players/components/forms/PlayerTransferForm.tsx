@@ -26,6 +26,7 @@ import {
   FormField,
 } from '@/components/ui'
 import { AlertCircle, Loader2, Search, X } from 'lucide-react'
+import { getStoredAuthToken } from '@/lib/storage'
 import { transferRequestSchema, type TransferRequest } from '../../schemas/transfer.schema'
 import { getTransferTypeLabel } from '../../hooks/usePlayerTransfers'
 
@@ -77,7 +78,7 @@ export function PlayerTransferForm({
         `${apiUrl}/clubs/?search=${encodeURIComponent(searchQuery)}&limit=10`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
           },
         }
       )

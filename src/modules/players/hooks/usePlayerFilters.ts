@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
+import { getStoredAuthToken } from '@/lib/storage'
 import type { PlayerPosition } from '../types'
 
 export interface PlayerFilters {
@@ -148,7 +149,7 @@ export function useFilteredPlayers(filters: PlayerFilters, enabled = true) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          Authorization: `Bearer ${getStoredAuthToken() || ''}`,
         },
       })
 
