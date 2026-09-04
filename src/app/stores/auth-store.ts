@@ -113,11 +113,6 @@ export const useAuthStore = create<AuthStoreState>(set => ({
     }
   },
   logout: () => {
-    const refresh = getStoredRefreshToken()
-    if (refresh) {
-      authApi.logout(refresh).catch(err => console.warn('Logout request failed:', err))
-    }
-
     clearStoredAuthSession()
     set({ sourceUser: null, token: null, user: null, memberships: [], activeMembershipId: null, loading: false })
   },
