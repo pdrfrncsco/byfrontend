@@ -26,7 +26,7 @@ import {
   FormField,
 } from '@/components/ui'
 import { AlertCircle, Loader2, Search, X } from 'lucide-react'
-import { getStoredAuthToken } from '@/lib/storage'
+import apiClient from '@/lib/api-client'
 import { transferRequestSchema, type TransferRequest } from '../../schemas/transfer.schema'
 import { getTransferTypeLabel } from '../../hooks/usePlayerTransfers'
 
@@ -73,19 +73,10 @@ export function PlayerTransferForm({
     queryFn: async () => {
       if (!searchQuery || searchQuery.length < 2) return []
 
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-      const response = await fetch(
-        `${apiUrl}/clubs/?search=${encodeURIComponent(searchQuery)}&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) return []
-      const result = await response.json()
-      return result.results || []
+      const response = await apiClient.get<{ results?: Club[] }>('/clubs/', {
+        params: { search: searchQuery, limit: 10 },
+      })
+      return response.data.results || []
     },
     enabled: showClubSearch && searchQuery.length >= 2,
     staleTime: 1000 * 60 * 5,

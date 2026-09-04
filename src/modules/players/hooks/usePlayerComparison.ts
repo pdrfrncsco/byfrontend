@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getStoredAuthToken } from '@/lib/storage'
+import apiClient from '@/lib/api-client'
 import type { Player } from '../types'
 
 export interface PlayerComparisonData {
@@ -96,8 +96,6 @@ export function usePlayerComparison() {
  * Hook to fetch comparison data for selected players
  */
 export function useComparisonPlayers(playerIds: string[], enabled = true) {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useQuery({
     queryKey: ['players-comparison', playerIds],
     queryFn: async () => {
@@ -105,25 +103,8 @@ export function useComparisonPlayers(playerIds: string[], enabled = true) {
         return { results: [] }
       }
 
-      const requests = playerIds.map((id) =>
-        fetch(`${apiUrl}/players/${id}/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-          },
-        })
-      )
-
-      const responses = await Promise.all(requests)
-      const players = await Promise.all(
-        responses.map((res) => {
-          if (!res.ok) {
-            throw new Error(`Failed to fetch player: ${res.statusText}`)
-          }
-          return res.json()
-        })
-      )
+      const responses = await Promise.all(playerIds.map((id) => apiClient.get(`/players/${id}/`)))
+      const players = responses.map((response) => response.data)
 
       return {
         results: players.map((player) => transformPlayerToComparisonData(player)),

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getStoredAuthToken } from '@/lib/storage'
+import apiClient from '@/lib/api-client'
 import type { PlayerCareerEntry } from '../types'
 
 /**
@@ -10,22 +10,8 @@ export function usePlayerCareerStats(playerSlug: string, enabled = true) {
   return useQuery({
     queryKey: ['player-career-stats', playerSlug],
     queryFn: async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'}/players/${playerSlug}/career/`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch career stats: ${response.statusText}`)
-      }
-
-      return response.json() as Promise<PlayerCareerEntry[]>
+      const response = await apiClient.get<PlayerCareerEntry[]>(`/players/${playerSlug}/career/`)
+      return response.data
     },
     enabled: !!playerSlug && enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -40,22 +26,8 @@ export function usePlayerRegistrations(playerSlug: string, enabled = true) {
   return useQuery({
     queryKey: ['player-registrations', playerSlug],
     queryFn: async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'}/players/${playerSlug}/registrations/`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch registrations: ${response.statusText}`)
-      }
-
-      return response.json()
+      const response = await apiClient.get(`/players/${playerSlug}/registrations/`)
+      return response.data
     },
     enabled: !!playerSlug && enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -70,22 +42,8 @@ export function usePlayerStatistics(playerSlug: string, enabled = true) {
   return useQuery({
     queryKey: ['player-statistics', playerSlug],
     queryFn: async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'}/players/${playerSlug}/statistics/`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch statistics: ${response.statusText}`)
-      }
-
-      return response.json()
+      const response = await apiClient.get(`/players/${playerSlug}/statistics/`)
+      return response.data
     },
     enabled: !!playerSlug && enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes

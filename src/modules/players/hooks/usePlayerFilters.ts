@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { getStoredAuthToken } from '@/lib/storage'
+import apiClient from '@/lib/api-client'
 import type { PlayerPosition } from '../types'
 
 export interface PlayerFilters {
@@ -93,8 +93,6 @@ export function usePlayerFilters() {
  * Hook to fetch filtered players with pagination
  */
 export function useFilteredPlayers(filters: PlayerFilters, enabled = true) {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
-
   return useQuery({
     queryKey: ['players-filtered', filters],
     queryFn: async () => {
@@ -143,21 +141,8 @@ export function useFilteredPlayers(filters: PlayerFilters, enabled = true) {
         params.append('page_size', String(filters.pageSize))
       }
 
-      const url = `${apiUrl}/players/?${params.toString()}`
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getStoredAuthToken() || ''}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch players: ${response.statusText}`)
-      }
-
-      return response.json()
+      const response = await apiClient.get('/players/', { params })
+      return response.data
     },
     enabled: enabled && Object.values(filters).some((v) => v !== undefined),
     staleTime: 1000 * 60 * 5, // 5 minutes
