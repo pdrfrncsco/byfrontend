@@ -16,6 +16,7 @@ import {
   EmptyState,
   Input,
   NativeSelect,
+  ServerError,
   Skeleton,
 } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
@@ -31,10 +32,10 @@ export function ClubPlayerRegisterPage() {
   const [playerSearch, setPlayerSearch] = useState('')
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
 
-  const { data: club, isLoading: clubLoading } = useClubMe()
-  const { data: playersData, isLoading: playersLoading } = usePlayers({ page_size: 100, without_club: true })
+  const { data: club, isLoading: clubLoading, isError: clubError, refetch: refetchClub } = useClubMe()
+  const { data: playersData, isLoading: playersLoading, isError: playersError, refetch: refetchPlayers } = usePlayers({ page_size: 100, without_club: true })
   const registerMutation = useRegisterPlayer(selectedPlayer?.slug ?? '')
-  const { data: competitions = [], isLoading: competitionsLoading } = useClubCompetitions(club?.id)
+  const { data: competitions = [], isLoading: competitionsLoading, isError: competitionsError, refetch: refetchCompetitions } = useClubCompetitions(club?.id)
 
   const {
     register,
@@ -102,6 +103,14 @@ export function ClubPlayerRegisterPage() {
     )
   }
 
+  if (clubError) {
+    return (
+      <DashboardLayout title={t('players.register.title')} subtitle={t('players.register.subtitle')} dashboardType="club" sidebarLinks={sidebarLinks}>
+        <ServerError title={t('players.register.clubErrorTitle')} message={t('players.register.loadErrorDescription')} onRetry={() => refetchClub()} />
+      </DashboardLayout>
+    )
+  }
+
   if (!club) {
     return (
       <DashboardLayout title={t('players.register.title')} subtitle={t('players.register.subtitle')} dashboardType="club" sidebarLinks={sidebarLinks}>
@@ -135,7 +144,7 @@ export function ClubPlayerRegisterPage() {
           </CardHeader>
           <CardContent className="space-y-md">
             <div className="text-sm text-on-surface-variant mb-sm">
-              Este formulário permite registar um jogador que já existe na plataforma no seu clube. Não criaremos um novo perfil de jogador sem o consentimento do jogador.
+              {t('players.register.consentDescription')}
             </div>
             <div className="relative">
               <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-outline" />
@@ -148,7 +157,9 @@ export function ClubPlayerRegisterPage() {
               />
             </div>
 
-            {playersLoading ? (
+            {playersError ? (
+              <ServerError title={t('players.register.playersErrorTitle')} message={t('players.register.loadErrorDescription')} onRetry={() => refetchPlayers()} />
+            ) : playersLoading ? (
               <Skeleton className="h-40 w-full rounded-2xl" />
             ) : filteredPlayers.length === 0 ? (
               <EmptyState icon={Users} title={t('players.register.emptyTitle')} description={t('players.register.emptyDescription')} />
@@ -163,6 +174,7 @@ export function ClubPlayerRegisterPage() {
                       type="button"
                       onClick={() => !hasCurrentClub && setSelectedPlayer(player)}
                       disabled={hasCurrentClub}
+                      aria-pressed={selectedPlayer?.id === player.id}
                       className={`rounded-2xl border p-md text-left transition-colors ${
                         selectedPlayer?.id === player.id
                           ? 'border-primary bg-primary-container/15'
@@ -191,6 +203,14 @@ export function ClubPlayerRegisterPage() {
                 })}
               </div>
             )}
+            {!selectedPlayer && filteredPlayers.length > 0 && (
+              <p role="status" className="text-sm text-warning">{t('players.register.selectPlayerHint')}</p>
+            )}
+            {selectedPlayer && (
+              <div role="status" className="rounded-xl border border-primary/30 bg-primary-container/10 px-md py-sm text-sm text-on-surface">
+                <span className="font-semibold">{t('players.register.selectedPlayer')}:</span> {selectedPlayer.full_name}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -209,14 +229,15 @@ export function ClubPlayerRegisterPage() {
               <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
             </FormField>
             <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
-              <NativeSelect id="competition-id" {...register('competition_id')} disabled={competitionsLoading}>
-                <option value="">{competitionsLoading ? 'A carregar...' : 'Sem competição específica'}</option>
+              <NativeSelect id="competition-id" {...register('competition_id')} disabled={competitionsLoading || competitionsError}>
+                <option value="">{competitionsLoading ? t('players.register.loading') : t('players.register.noCompetition')}</option>
                 {competitions.map((competition) => (
                   <option key={competition.id} value={competition.id}>
                     {competition.name} ({competition.season})
                   </option>
                 ))}
               </NativeSelect>
+              {competitionsError && <p className="text-xs text-error"><button type="button" className="underline" onClick={() => refetchCompetitions()}>{t('players.register.retryCompetitions')}</button></p>}
             </FormField>
           </CardContent>
         </Card>
@@ -225,13 +246,13 @@ export function ClubPlayerRegisterPage() {
           <Button type="button" variant="secondary" onClick={() => navigate(ROUTES.DASHBOARD_CLUB)}>
             {t('players.common.cancel')}
           </Button>
-          <Button type="submit" loading={registerMutation.isPending} disabled={!selectedPlayer}>
+          <Button type="submit" loading={registerMutation.isPending} disabled={!selectedPlayer || !club}>
             {t('players.register.submit')}
           </Button>
         </div>
 
         {registerMutation.isError && (
-          <p className="text-sm text-error">{getErrorMessage(registerMutation.error)}</p>
+          <p role="alert" className="rounded-xl border border-error/30 bg-error-container/20 px-md py-sm text-sm text-error">{getErrorMessage(registerMutation.error)}</p>
         )}
       </form>
     </DashboardLayout>
