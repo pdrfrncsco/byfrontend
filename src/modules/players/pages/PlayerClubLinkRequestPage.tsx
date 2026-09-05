@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, ExternalLink, Handshake, LayoutDashboard, Search, Settings } from 'lucide-react'
+import { ArrowLeft, Handshake, Search } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -15,11 +15,12 @@ import {
   CardTitle,
   EmptyState,
   Input,
+  NativeSelect,
   Skeleton,
 } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
-import { useMyRegistrationRequests, usePlayerMe, useSubmitRegistrationRequest } from '../hooks'
+import { useAcceptRegistrationRequest, useClubCompetitions, useMyRegistrationRequests, usePlayerMe, useSubmitRegistrationRequest } from '../hooks'
 import { playerLinkRequestSchema, type PlayerLinkRequestFormData } from '../schemas'
 import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
@@ -28,6 +29,7 @@ import type { PlayerRegistrationRequest } from '../types'
 function RequestStatusBadge({ status }: { status: string }) {
   const normalized = status?.toLowerCase()
   if (normalized === 'approved') return <Badge variant="success">Aprovado</Badge>
+  if (normalized === 'invited') return <Badge variant="secondary">Convite</Badge>
   if (normalized === 'rejected') return <Badge variant="danger">Rejeitado</Badge>
   return <Badge variant="warning">Pendente</Badge>
 }
@@ -47,6 +49,7 @@ export function PlayerClubLinkRequestPage() {
   const { data: clubsData, isLoading: clubsLoading } = useClubs({ page_size: 100 })
   const { data: requests = [], isLoading: requestsLoading } = useMyRegistrationRequests()
   const submitMutation = useSubmitRegistrationRequest()
+  const acceptMutation = useAcceptRegistrationRequest()
 
   const {
     register,
@@ -89,6 +92,8 @@ export function PlayerClubLinkRequestPage() {
       },
     )
   }
+
+  const { data: competitions = [], isLoading: competitionsLoading } = useClubCompetitions(selectedClubId)
 
   if (playerLoading) {
     return (
@@ -163,7 +168,11 @@ export function PlayerClubLinkRequestPage() {
                       <button
                         key={club.id}
                         type="button"
-                        onClick={() => setValue('club_id', club.id, { shouldValidate: true })}
+                        onClick={() => {
+                          setValue('club_id', club.id, { shouldValidate: true })
+                          setValue('competition_id', '')
+                        }}
+                        aria-pressed={selectedClubId === club.id}
                         className={`rounded-2xl border p-md text-left transition-colors ${
                           selectedClubId === club.id
                             ? 'border-primary bg-primary-container/15'
@@ -192,7 +201,14 @@ export function PlayerClubLinkRequestPage() {
                   <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
                 </FormField>
                 <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
-                  <Input id="competition-id" {...register('competition_id')} placeholder={t('players.register.competitionPlaceholder')} />
+                  <NativeSelect id="competition-id" {...register('competition_id')} disabled={!selectedClubId || competitionsLoading}>
+                    <option value="">{competitionsLoading ? 'A carregar...' : 'Sem competição específica'}</option>
+                    {competitions.map((competition) => (
+                      <option key={competition.id} value={competition.id}>
+                        {competition.name} ({competition.season})
+                      </option>
+                    ))}
+                  </NativeSelect>
                 </FormField>
               </CardContent>
             </Card>
@@ -221,7 +237,7 @@ export function PlayerClubLinkRequestPage() {
                     key={request.id}
                     className="flex flex-col gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container p-md md:flex-row md:items-center md:justify-between"
                   >
-                    <div>
+                    <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-sm">
                         <p className="font-semibold text-on-surface">{request.club_name}</p>
                         <RequestStatusBadge status={request.status} />
@@ -234,9 +250,21 @@ export function PlayerClubLinkRequestPage() {
                         <p className="mt-1 text-xs text-on-surface-variant">{request.review_notes}</p>
                       )}
                     </div>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link to={`/clubs/${request.club_slug}`}>{t('players.linkRequest.viewClub')}</Link>
-                    </Button>
+                    <div className="flex gap-xs mt-sm md:mt-0">
+                      {['approved', 'invited'].includes(request.status?.toLowerCase()) && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => acceptMutation.mutate(request.id)}
+                          loading={acceptMutation.isPending}
+                        >
+                          {t('players.linkRequest.accept')}
+                        </Button>
+                      )}
+                      <Button asChild variant="ghost" size="sm">
+                        <Link to={`/clubs/${request.club_slug}`}>{t('players.linkRequest.viewClub')}</Link>
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

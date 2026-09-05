@@ -15,12 +15,13 @@ import {
   CardTitle,
   EmptyState,
   Input,
+  NativeSelect,
   Skeleton,
 } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
-import { usePlayers, useRegisterPlayer } from '../hooks'
+import { useClubCompetitions, usePlayers, useRegisterPlayer } from '../hooks'
 import { playerRegisterSchema, type PlayerRegisterFormData } from '../schemas'
 import type { Player } from '../types'
 
@@ -33,6 +34,7 @@ export function ClubPlayerRegisterPage() {
   const { data: club, isLoading: clubLoading } = useClubMe()
   const { data: playersData, isLoading: playersLoading } = usePlayers({ page_size: 100, without_club: true })
   const registerMutation = useRegisterPlayer(selectedPlayer?.slug ?? '')
+  const { data: competitions = [], isLoading: competitionsLoading } = useClubCompetitions(club?.id)
 
   const {
     register,
@@ -207,7 +209,14 @@ export function ClubPlayerRegisterPage() {
               <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
             </FormField>
             <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
-              <Input id="competition-id" {...register('competition_id')} placeholder={t('players.register.competitionPlaceholder')} />
+              <NativeSelect id="competition-id" {...register('competition_id')} disabled={competitionsLoading}>
+                <option value="">{competitionsLoading ? 'A carregar...' : 'Sem competição específica'}</option>
+                {competitions.map((competition) => (
+                  <option key={competition.id} value={competition.id}>
+                    {competition.name} ({competition.season})
+                  </option>
+                ))}
+              </NativeSelect>
             </FormField>
           </CardContent>
         </Card>

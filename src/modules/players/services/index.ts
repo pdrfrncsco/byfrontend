@@ -3,6 +3,7 @@
 import apiClient from '@/lib/api-client'
 import { API_ROUTES } from '@/constants/routes'
 import type { ApiResponse } from '@/types'
+import type { Competition } from '@/modules/competitions/types'
 import type {
   Player,
   PlayerDetail,
@@ -77,7 +78,7 @@ function unwrapData<T>(payload: Envelope<T>): T {
   return hasData<T>(payload) ? payload.data : payload
 }
 
-function unwrapList<T>(payload: PaginatedEnvelope<T> | Envelope<T[]>): T[] {
+export function unwrapList<T>(payload: PaginatedEnvelope<T> | Envelope<T[]>): T[] {
   const data = hasData<T[]>(payload) ? payload.data : payload
   if (Array.isArray(data)) return data
   if (data && typeof data === 'object' && 'results' in data) {
@@ -182,6 +183,11 @@ export async function listMyRegistrationRequests(): Promise<PlayerRegistrationRe
   return unwrapList(res.data)
 }
 
+export async function listClubCompetitions(clubId: string): Promise<Competition[]> {
+  const res = await apiClient.get(API_ROUTES.CLUBS.COMPETITIONS(clubId))
+  return unwrapList(res.data)
+}
+
 export async function submitRegistrationRequest(
   data: PlayerRegistrationRequestCreate
 ): Promise<PlayerRegistrationRequest> {
@@ -189,17 +195,18 @@ export async function submitRegistrationRequest(
   return unwrapData(res.data)
 }
 
-export async function listClubPlayerRegistrationRequests(): Promise<PlayerRegistrationRequest[]> {
-  const res = await apiClient.get(API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUESTS)
+export async function listClubPlayerRegistrationRequests(clubId: string): Promise<PlayerRegistrationRequest[]> {
+  const res = await apiClient.get(API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUESTS(clubId))
   return unwrapList(res.data)
 }
 
 export async function reviewClubPlayerRegistrationRequest(
+  clubId: string,
   requestId: string,
   data: PlayerRegistrationRequestReview
 ): Promise<PlayerRegistrationRequest> {
   const res = await apiClient.patch(
-    API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUEST_REVIEW(requestId),
+    API_ROUTES.CLUBS.PLAYER_REGISTRATION_REQUEST_REVIEW(clubId, requestId),
     data
   )
   return unwrapData(res.data)
@@ -711,6 +718,15 @@ export async function rejectMedicalDocument(
   const res = await apiClient.patch(
     API_ROUTES.PLAYERS.MEDICAL_DOCUMENT_REJECT(playerId, docId),
     data
+  )
+  return unwrapData(res.data)
+}
+
+export async function acceptRegistrationRequest(
+  requestId: string
+): Promise<PlayerRegistrationRequest> {
+  const res = await apiClient.post(
+    `${API_ROUTES.PLAYERS.ME_REGISTRATION_REQUESTS}${requestId}/accept/`
   )
   return unwrapData(res.data)
 }

@@ -7,6 +7,7 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, DataTable, EmptyState, Skeleton } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { useClubMe } from '@/modules/clubs/hooks'
 import { useClubPlayerRegistrationRequests, useReviewClubPlayerRegistrationRequest } from '../hooks'
 import type { PlayerRegistrationRequest } from '../types'
 
@@ -35,9 +36,13 @@ interface RowNotesState {
 export function ClubPlayerRegistrationRequestsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { data: requests, isLoading } = useClubPlayerRegistrationRequests()
-  const reviewRequest = useReviewClubPlayerRegistrationRequest()
+
+  const { data: currentClub, isLoading: isLoadingClub } = useClubMe()
+  const { data: requests, isLoading: isLoadingRequests } = useClubPlayerRegistrationRequests(currentClub?.id)
+  const reviewRequest = useReviewClubPlayerRegistrationRequest(currentClub?.id)
+
   const [rowNotes, setRowNotes] = useState<RowNotesState>({})
+  const isLoading = isLoadingClub || isLoadingRequests
 
   const sidebarLinks = getClubSidebarLinks()
 

@@ -152,12 +152,13 @@ export const API_ROUTES = {
     LIST: '/clubs/',
     ME: '/clubs/me/',
     ME_COMPETITIONS: '/clubs/me/competitions/',
+    COMPETITIONS: (clubId: string) => `/clubs/${clubId}/competitions/`,
     ME_MATCHES: '/clubs/me/matches/',
     ME_STANDINGS: '/clubs/me/standings/',
     LOGO: '/clubs/me/logo/',
-    PLAYER_REGISTRATION_REQUESTS: '/clubs/me/player-registration-requests/',
-    PLAYER_REGISTRATION_REQUEST_REVIEW: (requestId: string) =>
-      `/clubs/me/player-registration-requests/${requestId}/`,
+    PLAYER_REGISTRATION_REQUESTS: (clubId: string) => `/clubs/${clubId}/player-registration-requests/`,
+    PLAYER_REGISTRATION_REQUEST_REVIEW: (clubId: string, requestId: string) =>
+      `/clubs/${clubId}/player-registration-requests/${requestId}/`,
     CREATE: '/clubs/',
     ACTIVATE: (slug: string) => `/clubs/${slug}/activate/`,
     SUSPEND: (slug: string) => `/clubs/${slug}/suspend/`,
