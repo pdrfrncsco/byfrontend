@@ -24,7 +24,9 @@ function formatDate(dateString?: string | null): string {
 
 function StatusBadge({ status, t }: { status: string; t: (key: string) => string }) {
   const normalized = status?.toLowerCase()
+  if (normalized === 'accepted') return <Badge variant="success">{t('players.linkRequest.status.accepted') || 'Aceito'}</Badge>
   if (normalized === 'approved') return <Badge variant="success">{t('players.linkRequest.status.approved')}</Badge>
+  if (normalized === 'invited') return <Badge variant="secondary">{t('players.linkRequest.status.invited') || 'Convidado'}</Badge>
   if (normalized === 'rejected') return <Badge variant="danger">{t('players.linkRequest.status.rejected')}</Badge>
   return <Badge variant="warning">{t('players.linkRequest.status.pending')}</Badge>
 }

@@ -556,7 +556,7 @@ i18n
               summaryDescription: 'Confirme os dados antes de enviar. O pedido será encaminhado ao clube para revisão.',
               summaryClub: 'Clube',
               summaryCompetition: 'Competição',
-              status: { pending: 'Pendente', approved: 'Aprovado', rejected: 'Rejeitado', invited: 'Convite' },
+              status: { pending: 'Pendente', approved: 'Aprovado pelo Clube', rejected: 'Rejeitado', invited: 'Convite', accepted: 'Aceito' },
             },
             clubRequests: {
               sidebar: 'Pedidos de Vínculo',

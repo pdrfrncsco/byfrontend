@@ -28,8 +28,9 @@ import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
 import type { PlayerRegistrationRequest } from '../types'
 
-function RequestStatusBadge({ status, t }: { status: string; t: (key: string) => string }) {
+function RequestStatusBadge({ status, registration, t }: { status: string; registration?: unknown; t: (key: string) => string }) {
   const normalized = status?.toLowerCase()
+  if (normalized === 'accepted' || registration) return <Badge variant="success">{t('players.linkRequest.status.accepted') || 'Aceito'}</Badge>
   if (normalized === 'approved') return <Badge variant="success">{t('players.linkRequest.status.approved')}</Badge>
   if (normalized === 'invited') return <Badge variant="secondary">{t('players.linkRequest.status.invited')}</Badge>
   if (normalized === 'rejected') return <Badge variant="danger">{t('players.linkRequest.status.rejected')}</Badge>
@@ -294,7 +295,7 @@ export function PlayerClubLinkRequestPage() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-sm">
                         <p className="font-semibold text-on-surface">{request.club_name}</p>
-                        <RequestStatusBadge status={request.status} t={t} />
+                        <RequestStatusBadge status={request.status} registration={request.registration} t={t} />
                       </div>
                       <p className="mt-1 text-xs text-on-surface-variant">
                         {t('players.register.joinedDate')}: {formatDate(request.joined_date)} • {t('players.linkRequest.lastUpdated')}: {formatDate(request.updated_at || request.created_at)}
@@ -305,7 +306,7 @@ export function PlayerClubLinkRequestPage() {
                       )}
                     </div>
                     <div className="flex gap-xs mt-sm md:mt-0">
-                      {['approved', 'invited'].includes(request.status?.toLowerCase()) && (
+                      {['approved', 'invited'].includes(request.status?.toLowerCase()) && !request.registration && (
                         <Button
                           variant="primary"
                           size="sm"
