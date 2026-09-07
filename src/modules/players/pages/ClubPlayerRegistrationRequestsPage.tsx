@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type ColumnDef } from '@tanstack/react-table'
-import { ArrowLeft, CheckCircle, UserPlus, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Clock3, UserPlus, XCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
-import { Badge, Button, Card, DataTable, EmptyState, Skeleton } from '@/components/ui'
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, EmptyState, ErrorState, Skeleton } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe } from '@/modules/clubs/hooks'
 import { useClubPlayerRegistrationRequests, useReviewClubPlayerRegistrationRequest } from '../hooks'
@@ -33,15 +33,23 @@ interface RowNotesState {
   [id: string]: { open: boolean; notes: string; approve: boolean }
 }
 
+type RequestFilter = 'all' | 'pending' | 'approved' | 'rejected' | 'invited'
+
 export function ClubPlayerRegistrationRequestsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
   const { data: currentClub, isLoading: isLoadingClub } = useClubMe()
-  const { data: requests, isLoading: isLoadingRequests } = useClubPlayerRegistrationRequests(currentClub?.id)
+  const {
+    data: requests,
+    isLoading: isLoadingRequests,
+    isError: isRequestsError,
+    refetch: refetchRequests,
+  } = useClubPlayerRegistrationRequests(currentClub?.id)
   const reviewRequest = useReviewClubPlayerRegistrationRequest(currentClub?.id)
 
   const [rowNotes, setRowNotes] = useState<RowNotesState>({})
+  const [filter, setFilter] = useState<RequestFilter>('pending')
   const isLoading = isLoadingClub || isLoadingRequests
 
   const sidebarLinks = getClubSidebarLinks()
@@ -59,6 +67,7 @@ export function ClubPlayerRegistrationRequestsPage() {
 
   const handleReview = (id: string, approve: boolean) => {
     const notes = (rowNotes[id]?.notes ?? '').trim()
+    if (!approve && !notes) return
     reviewRequest.mutate(
       { id, data: { approve, review_notes: notes || undefined } },
       {
@@ -124,6 +133,7 @@ export function ClubPlayerRegistrationRequestsPage() {
           const isPending = status?.toLowerCase() === 'pending'
           const notesState = rowNotes[id]
           const isSubmitting = reviewRequest.isPending
+          const requiresReason = notesState?.approve === false
 
           if (!isPending) return null
 
@@ -154,10 +164,14 @@ export function ClubPlayerRegistrationRequestsPage() {
 
               {notesState?.open && (
                 <div className="mt-xs flex flex-col gap-xs rounded border border-outline-variant/30 bg-surface-container p-sm">
+                  <label className="text-xs font-semibold text-on-surface" htmlFor={`review-notes-${id}`}>
+                    {requiresReason ? t('players.clubRequests.rejectionReason') : t('players.clubRequests.reviewNotes')}
+                  </label>
                   <textarea
+                    id={`review-notes-${id}`}
                     className="w-full resize-none rounded border border-outline-variant/40 bg-surface-bright px-sm py-xs text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary"
                     rows={2}
-                    placeholder={t('players.clubRequests.notesPlaceholder')}
+                    placeholder={requiresReason ? t('players.clubRequests.rejectionReasonPlaceholder') : t('players.clubRequests.notesPlaceholder')}
                     value={notesState.notes}
                     onChange={(e) =>
                       setRowNotes((prev) => ({
@@ -172,6 +186,7 @@ export function ClubPlayerRegistrationRequestsPage() {
                       size="sm"
                       onClick={() => handleReview(id, notesState.approve)}
                       loading={isSubmitting}
+                      disabled={requiresReason && !notesState.notes.trim()}
                       className="text-xs"
                     >
                       {notesState.approve ? t('players.clubRequests.confirmApprove') : t('players.clubRequests.confirmReject')}
@@ -191,6 +206,7 @@ export function ClubPlayerRegistrationRequestsPage() {
                       {t('players.common.cancel')}
                     </Button>
                   </div>
+                  <p className="text-xs text-on-surface-variant">{t('players.clubRequests.reviewHint')}</p>
                 </div>
               )}
             </div>
@@ -202,6 +218,11 @@ export function ClubPlayerRegistrationRequestsPage() {
   )
 
   const requestRows = useMemo(() => (Array.isArray(requests) ? requests : []), [requests])
+  const pendingCount = requestRows.filter((request) => request.status.toLowerCase() === 'pending').length
+  const filteredRequests = useMemo(
+    () => (filter === 'all' ? requestRows : requestRows.filter((request) => request.status.toLowerCase() === filter)),
+    [filter, requestRows],
+  )
 
   return (
     <DashboardLayout
@@ -216,7 +237,7 @@ export function ClubPlayerRegistrationRequestsPage() {
         </Button>
       }
     >
-      <div className="animate-fade-in">
+      <div className="grid gap-lg animate-fade-in">
         {isLoading ? (
           <Card padding="none">
             <div className="divide-y divide-outline-variant/20">
@@ -228,11 +249,42 @@ export function ClubPlayerRegistrationRequestsPage() {
               ))}
             </div>
           </Card>
+        ) : isRequestsError ? (
+          <ErrorState
+            title={t('players.clubRequests.loadErrorTitle')}
+            message={t('players.clubRequests.loadErrorDescription')}
+            onRetry={() => refetchRequests()}
+          />
         ) : requestRows.length === 0 ? (
           <EmptyState icon={UserPlus} title={t('players.clubRequests.emptyTitle')} description={t('players.clubRequests.emptyDescription')} />
         ) : (
           <Card padding="none" className="overflow-hidden">
-            <DataTable columns={columns} data={requestRows} isLoading={false} emptyMessage={t('players.clubRequests.emptyDescription')} />
+            <CardHeader className="flex flex-col gap-md border-b border-outline-variant/20 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <CardTitle>{t('players.clubRequests.pending', { count: pendingCount })}</CardTitle>
+                <p className="mt-xs flex items-center gap-xs text-sm text-on-surface-variant">
+                  <Clock3 className="h-4 w-4" aria-hidden="true" />
+                  {t('players.clubRequests.pendingCount', { count: pendingCount })}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-xs" role="group" aria-label={t('players.clubRequests.filterLabel')}>
+                {(['pending', 'all', 'approved', 'rejected', 'invited'] as RequestFilter[]).map((value) => (
+                  <Button
+                    key={value}
+                    type="button"
+                    variant={filter === value ? 'primary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setFilter(value)}
+                    aria-pressed={filter === value}
+                  >
+                    {t(`players.clubRequests.${value}`)}
+                  </Button>
+                ))}
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <DataTable columns={columns} data={filteredRequests} isLoading={false} emptyMessage={t('players.clubRequests.emptyDescription')} />
+            </CardContent>
           </Card>
         )}
       </div>
