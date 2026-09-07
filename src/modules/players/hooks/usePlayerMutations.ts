@@ -1,6 +1,7 @@
 // Players module — React Query mutation hooks
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   // Core
   createPlayer,
@@ -139,6 +140,11 @@ export function useRegisterPlayer(slug: string) {
     onSuccess: () => {
       invalidatePlayerDetail(queryClient, slug)
       queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
+      toast.success('Convite enviado. O jogador deverá aceitar o vínculo.')
+    },
+    onError: (error: unknown) => {
+      const response = (error as { response?: { data?: { message?: string; detail?: string } } })?.response?.data
+      toast.error(response?.message || response?.detail || 'Não foi possível registar o jogador.')
     },
   })
 }

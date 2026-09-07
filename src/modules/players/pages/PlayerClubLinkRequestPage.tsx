@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { ArrowLeft, Handshake, Search } from 'lucide-react'
+import { ArrowLeft, CalendarDays, CheckCircle2, Handshake, Search } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -17,6 +17,7 @@ import {
   ErrorState,
   Input,
   NativeSelect,
+  ServerError,
   Skeleton,
 } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
@@ -27,12 +28,12 @@ import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
 import type { PlayerRegistrationRequest } from '../types'
 
-function RequestStatusBadge({ status }: { status: string }) {
+function RequestStatusBadge({ status, t }: { status: string; t: (key: string) => string }) {
   const normalized = status?.toLowerCase()
-  if (normalized === 'approved') return <Badge variant="success">Aprovado</Badge>
-  if (normalized === 'invited') return <Badge variant="secondary">Convite</Badge>
-  if (normalized === 'rejected') return <Badge variant="danger">Rejeitado</Badge>
-  return <Badge variant="warning">Pendente</Badge>
+  if (normalized === 'approved') return <Badge variant="success">{t('players.linkRequest.status.approved')}</Badge>
+  if (normalized === 'invited') return <Badge variant="secondary">{t('players.linkRequest.status.invited')}</Badge>
+  if (normalized === 'rejected') return <Badge variant="danger">{t('players.linkRequest.status.rejected')}</Badge>
+  return <Badge variant="warning">{t('players.linkRequest.status.pending')}</Badge>
 }
 
 function formatDate(value?: string | null) {
@@ -46,9 +47,15 @@ export function PlayerClubLinkRequestPage() {
   const navigate = useNavigate()
   const [clubSearch, setClubSearch] = useState('')
 
+<<<<<<< HEAD
   const { data: player, isLoading: playerLoading, isError: isPlayerError, refetch: refetchPlayer } = usePlayerMe()
   const { data: clubsData, isLoading: clubsLoading, isError: isClubsError, refetch: refetchClubs } = useClubs({ page_size: 100 })
   const { data: requests = [], isLoading: requestsLoading, isError: isRequestsError, refetch: refetchRequests } = useMyRegistrationRequests()
+=======
+  const { data: player, isLoading: playerLoading, isError: playerError, refetch: refetchPlayer } = usePlayerMe()
+  const { data: clubsData, isLoading: clubsLoading, isError: clubsError, refetch: refetchClubs } = useClubs({ page_size: 100 })
+  const { data: requests = [], isLoading: requestsLoading, isError: requestsError, refetch: refetchRequests } = useMyRegistrationRequests()
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
   const submitMutation = useSubmitRegistrationRequest()
   const acceptMutation = useAcceptRegistrationRequest()
 
@@ -79,6 +86,7 @@ export function PlayerClubLinkRequestPage() {
     const query = clubSearch.toLowerCase()
     return clubs.filter((club) => club.name.toLowerCase().includes(query))
   }, [clubsData, clubSearch])
+  const selectedClub = filteredClubs.find((club) => club.id === selectedClubId)
 
   const selectedClub = useMemo(
     () => (clubsData?.results ?? []).find((club) => club.id === selectedClubId),
@@ -99,12 +107,17 @@ export function PlayerClubLinkRequestPage() {
     )
   }
 
+<<<<<<< HEAD
   const {
     data: competitions = [],
     isLoading: competitionsLoading,
     isError: isCompetitionsError,
     refetch: refetchCompetitions,
   } = useClubCompetitions(selectedClubId)
+=======
+  const { data: competitions = [], isLoading: competitionsLoading } = useClubCompetitions(selectedClubId)
+  const selectedCompetition = competitions.find((competition) => competition.id === watch('competition_id'))
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
 
   if (playerLoading) {
     return (
@@ -114,7 +127,19 @@ export function PlayerClubLinkRequestPage() {
     )
   }
 
+<<<<<<< HEAD
   if (isPlayerError || !player) {
+=======
+  if (playerError) {
+    return (
+      <DashboardLayout title={t('players.linkRequest.title')} subtitle={t('players.linkRequest.subtitle')} dashboardType="player" sidebarLinks={sidebarLinks}>
+        <ServerError title={t('players.linkRequest.loadErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchPlayer()} />
+      </DashboardLayout>
+    )
+  }
+
+  if (!player) {
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
     return (
       <DashboardLayout title={t('players.linkRequest.title')} subtitle={t('players.dashboard.subtitle')} dashboardType="player" sidebarLinks={sidebarLinks}>
         <ErrorState
@@ -144,9 +169,15 @@ export function PlayerClubLinkRequestPage() {
           <Card variant="flat" padding="lg" className="border-warning/35 bg-warning-container/5">
             <div className="flex flex-col items-center justify-center text-center p-lg space-y-md">
               <Handshake className="h-12 w-12 text-warning" />
+<<<<<<< HEAD
               <h3 className="text-lg font-bold text-on-surface">{t('players.linkRequest.currentClubTitle')}</h3>
               <p className="text-sm text-on-surface-variant max-w-md">
                 {t('players.linkRequest.currentClubDescription', { club: player.current_club.name })}
+=======
+              <h3 className="text-lg font-bold text-on-surface">{t('players.linkRequest.alreadyLinkedTitle')}</h3>
+              <p className="text-sm text-on-surface-variant max-w-md">
+                {t('players.linkRequest.alreadyLinkedDescription', { club: player.current_club.name })}
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
               </p>
             </div>
           </Card>
@@ -168,7 +199,9 @@ export function PlayerClubLinkRequestPage() {
                   />
                 </div>
 
-                {clubsLoading ? (
+                {clubsError ? (
+                  <ServerError title={t('players.linkRequest.clubsErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchClubs()} />
+                ) : clubsLoading ? (
                   <Skeleton className="h-40 w-full rounded-2xl" />
                 ) : isClubsError ? (
                   <ErrorState
@@ -218,8 +251,13 @@ export function PlayerClubLinkRequestPage() {
                   <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
                 </FormField>
                 <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
+<<<<<<< HEAD
                   <NativeSelect id="competition-id" {...register('competition_id')} disabled={!selectedClubId || competitionsLoading || isCompetitionsError}>
                     <option value="">{competitionsLoading ? t('players.linkRequest.loadingCompetitions') : t('players.linkRequest.noCompetition')}</option>
+=======
+                  <NativeSelect id="competition-id" {...register('competition_id')} disabled={!selectedClubId || competitionsLoading}>
+                    <option value="">{competitionsLoading ? t('players.linkRequest.loading') : t('players.linkRequest.noCompetition')}</option>
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
                     {competitions.map((competition) => (
                       <option key={competition.id} value={competition.id}>
                         {competition.name} ({competition.season})
@@ -236,6 +274,7 @@ export function PlayerClubLinkRequestPage() {
             </Card>
 
             {selectedClub && (
+<<<<<<< HEAD
               <Card variant="flat" padding="none" className="border-primary/25 bg-primary-container/5">
                 <CardContent className="flex flex-col gap-xs py-md sm:flex-row sm:items-center sm:justify-between">
                   <div>
@@ -244,6 +283,21 @@ export function PlayerClubLinkRequestPage() {
                   </div>
                   <p className="text-sm text-on-surface-variant">{selectedClub.city || selectedClub.country || '—'}</p>
                 </CardContent>
+=======
+              <Card variant="flat" padding="lg" className="border-primary/25 bg-primary-container/10">
+                <div className="flex items-start gap-md">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                  <div className="min-w-0 space-y-xs">
+                    <h3 className="font-semibold text-on-surface">{t('players.linkRequest.summaryTitle')}</h3>
+                    <p className="text-sm text-on-surface-variant">{t('players.linkRequest.summaryDescription')}</p>
+                    <dl className="grid gap-sm pt-sm text-sm sm:grid-cols-3">
+                      <div><dt className="text-xs text-on-surface-variant">{t('players.linkRequest.summaryClub')}</dt><dd className="font-semibold text-on-surface">{selectedClub.name}</dd></div>
+                      <div><dt className="text-xs text-on-surface-variant">{t('players.linkRequest.summaryCompetition')}</dt><dd className="font-semibold text-on-surface">{selectedCompetition?.name ?? t('players.linkRequest.noCompetition')}</dd></div>
+                      <div><dt className="text-xs text-on-surface-variant">{t('players.register.joinedDate')}</dt><dd className="flex items-center gap-xs font-semibold text-on-surface"><CalendarDays className="h-4 w-4" aria-hidden="true" />{formatDate(watch('joined_date'))}</dd></div>
+                    </dl>
+                  </div>
+                </div>
+>>>>>>> 527d0e955359a4bdb06cd228b44c18a3f3d82506
               </Card>
             )}
 
@@ -260,7 +314,9 @@ export function PlayerClubLinkRequestPage() {
             <CardTitle>{t('players.linkRequest.myRequestsTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
-            {requestsLoading ? (
+            {requestsError ? (
+              <ServerError title={t('players.linkRequest.requestsErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchRequests()} />
+            ) : requestsLoading ? (
               <Skeleton className="h-32 w-full rounded-2xl" />
             ) : isRequestsError ? (
               <ErrorState
@@ -281,10 +337,10 @@ export function PlayerClubLinkRequestPage() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-sm">
                         <p className="font-semibold text-on-surface">{request.club_name}</p>
-                        <RequestStatusBadge status={request.status} />
+                        <RequestStatusBadge status={request.status} t={t} />
                       </div>
                       <p className="mt-1 text-xs text-on-surface-variant">
-                        {t('players.register.joinedDate')}: {formatDate(request.joined_date)}
+                        {t('players.register.joinedDate')}: {formatDate(request.joined_date)} • {t('players.linkRequest.lastUpdated')}: {formatDate(request.updated_at || request.created_at)}
                         {request.shirt_number ? ` • #${request.shirt_number}` : ''}
                       </p>
                       {request.review_notes && (
