@@ -133,14 +133,21 @@ export function useUpdatePlayer(slug: string) {
   })
 }
 
-export function useRegisterPlayer(slug: string) {
+export function useRegisterPlayer(slug?: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: PlayerRegisterPayload) => registerPlayer(slug, data),
-    onSuccess: () => {
-      invalidatePlayerDetail(queryClient, slug)
+    mutationFn: (data: PlayerRegisterPayload & { playerSlug?: string }) => {
+      const targetSlug = data.playerSlug || slug
+      if (!targetSlug) {
+        throw new Error('Selecione um jogador válido.')
+      }
+      return registerPlayer(targetSlug, data)
+    },
+    onSuccess: (_, variables) => {
+      const targetSlug = variables.playerSlug || slug
+      if (targetSlug) invalidatePlayerDetail(queryClient, targetSlug)
       queryClient.invalidateQueries({ queryKey: playerKeys.lists() })
-      toast.success('Convite enviado. O jogador deverá aceitar o vínculo.')
+      toast.success('Convite enviado com sucesso. O jogador deverá aceitar o vínculo.')
     },
     onError: (error: unknown) => {
       const response = (error as { response?: { data?: { message?: string; detail?: string } } })?.response?.data

@@ -310,7 +310,7 @@ export function PlayerClubLinkRequestPage() {
                           variant="primary"
                           size="sm"
                           onClick={() => acceptMutation.mutate(request.id)}
-                          loading={acceptMutation.isPending}
+                          loading={acceptMutation.isPending && acceptMutation.variables === request.id}
                         >
                           {t('players.linkRequest.accept')}
                         </Button>
