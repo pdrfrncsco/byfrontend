@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
@@ -16,6 +16,7 @@ export function PlayerOnboardingFootballPage() {
   const updatePlayer = useUpdatePlayerMe()
   const completeStep = useCompleteOnboardingStep()
   const { draftData: wizardData, updateData, markStepCompleted } = usePlayerWizard()
+  const hasPopulated = useRef(false)
 
   const form = useForm<PlayerFootballStepFormData>({
     resolver: zodResolver(playerFootballStepSchema),
@@ -28,14 +29,15 @@ export function PlayerOnboardingFootballPage() {
   })
 
   useEffect(() => {
-    if (!data?.player) return
+    if (!data?.player || hasPopulated.current) return
+    hasPopulated.current = true
     form.reset({
       primary_position: wizardData.primary_position || data.player.primary_position || undefined,
       foot: wizardData.foot || data.player.foot || undefined,
       height_cm: wizardData.height_cm ? Number(wizardData.height_cm) : (data.player.height_cm ?? undefined),
       weight_kg: wizardData.weight_kg ? Number(wizardData.weight_kg) : (data.player.weight_kg ?? undefined),
     })
-  }, [data?.player, form, wizardData])
+  }, [data?.player, form])
 
   useAutoSave<PlayerFootballStepFormData>(
     form.watch(),

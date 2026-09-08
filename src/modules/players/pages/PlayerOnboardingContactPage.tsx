@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { Input, Label } from '@/components/ui'
@@ -16,6 +16,8 @@ export function PlayerOnboardingContactPage() {
   const update = useUpdatePlayerContact(slug)
   const complete = useCompleteOnboardingStep()
   const { draftData: wizardData, updateData, markStepCompleted } = usePlayerWizard()
+  const hasPopulated = useRef(false)
+
   const form = useForm<PlayerContactUpdate>({
     defaultValues: {
       primary_email: wizardData.email || '',
@@ -24,21 +26,21 @@ export function PlayerOnboardingContactPage() {
   })
 
   useEffect(() => {
-    if (contact) {
-      form.reset({
-        primary_email: wizardData.email || contact.primary_email || undefined,
-        secondary_email: contact.secondary_email || undefined,
-        mobile_phone: wizardData.phone || contact.mobile_phone || undefined,
-        secondary_phone: contact.secondary_phone || undefined,
-        country_code: contact.country_code || undefined,
-        address: contact.address || undefined,
-        city: contact.city || undefined,
-        province: contact.province || undefined,
-        postal_code: contact.postal_code || undefined,
-        country: contact.country || undefined,
-      })
-    }
-  }, [contact, form, wizardData])
+    if (!contact || hasPopulated.current) return
+    hasPopulated.current = true
+    form.reset({
+      primary_email: wizardData.email || contact.primary_email || undefined,
+      secondary_email: contact.secondary_email || undefined,
+      mobile_phone: wizardData.phone || contact.mobile_phone || undefined,
+      secondary_phone: contact.secondary_phone || undefined,
+      country_code: contact.country_code || undefined,
+      address: contact.address || undefined,
+      city: contact.city || undefined,
+      province: contact.province || undefined,
+      postal_code: contact.postal_code || undefined,
+      country: contact.country || undefined,
+    })
+  }, [contact, form])
 
   useAutoSave<PlayerContactUpdate>(
     form.watch(),

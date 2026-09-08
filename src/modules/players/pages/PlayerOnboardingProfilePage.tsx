@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
@@ -16,6 +16,7 @@ export function PlayerOnboardingProfilePage() {
   const updatePlayer = useUpdatePlayerMe()
   const completeStep = useCompleteOnboardingStep()
   const { draftData: wizardData, updateData, markStepCompleted } = usePlayerWizard()
+  const hasPopulated = useRef(false)
 
   const form = useForm<PlayerProfileStepFormData>({
     resolver: zodResolver(playerProfileStepSchema),
@@ -29,7 +30,8 @@ export function PlayerOnboardingProfilePage() {
   })
 
   useEffect(() => {
-    if (!data?.player) return
+    if (!data?.player || hasPopulated.current) return
+    hasPopulated.current = true
     form.reset({
       first_name: wizardData.first_name || data.player.first_name || '',
       last_name: wizardData.last_name || data.player.last_name || '',
@@ -37,7 +39,7 @@ export function PlayerOnboardingProfilePage() {
       nationality: wizardData.nationality || data.player.nationality || '',
       bio: wizardData.bio || data.player.bio || '',
     })
-  }, [data?.player, form, wizardData])
+  }, [data?.player, form])
 
   useAutoSave<PlayerProfileStepFormData>(
     form.watch(),

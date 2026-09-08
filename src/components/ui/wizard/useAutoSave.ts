@@ -4,30 +4,33 @@ import { useDebounce } from '@/hooks/useDebounce'
 export function useAutoSave<TData>(
   data: Partial<TData>,
   isDirty: boolean,
-  onSave: (data: Partial<TData>) => Promise<void>,
+  onSave: (data: Partial<TData>) => Promise<void> | void,
   delay: number = 1000
 ) {
   const debouncedData = useDebounce(data, delay)
   const isInitialMount = useRef(true)
+  const onSaveRef = useRef(onSave)
 
   useEffect(() => {
-    // Skip saving on initial mount
+    onSaveRef.current = onSave
+  }, [onSave])
+
+  useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false
       return
     }
 
     if (isDirty) {
-      // Create a local async function so we can await the save
       const saveToApi = async () => {
         try {
-          await onSave(debouncedData);
+          await onSaveRef.current(debouncedData)
         } catch (error) {
-          console.error("Auto-save failed:", error);
+          console.error('Auto-save failed:', error)
         }
       }
       
-      saveToApi();
+      saveToApi()
     }
-  }, [debouncedData, isDirty, onSave])
+  }, [debouncedData, isDirty])
 }
