@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, ArrowLeft } from 'lucide-react'
-import { Button, Input, Label, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
+import { Input, Label } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { usePlayerContact, usePlayerOnboardingStatus, useUpdatePlayerContact, useCompleteOnboardingStep, usePlayerWizard } from '../hooks'
 import type { PlayerContactUpdate } from '../types'
@@ -66,68 +65,58 @@ export function PlayerOnboardingContactPage() {
   return (
     <PlayerOnboardingLayout
       step={4}
+      isSaving={update.isPending || complete.isPending}
       onNext={form.handleSubmit(onSubmit)}
       onBack={() => navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)}
       onSaveDraft={() => updateData({ email: form.getValues().primary_email, phone: form.getValues().mobile_phone })}
     >
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold">Contactos</CardTitle>
-          <CardDescription>Estes dados serão usados para comunicações e notificações oficiais.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-md" noValidate>
-            {isLoading ? (
-              <p className="text-sm text-muted-foreground">A carregar contactos...</p>
-            ) : (
-              <div className="grid gap-md md:grid-cols-2">
-                <div className="space-y-xs">
-                  <Label htmlFor="primary_email">Email principal</Label>
-                  <Input id="primary_email" type="email" {...form.register('primary_email')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="mobile_phone">Telemóvel</Label>
-                  <Input id="mobile_phone" type="tel" {...form.register('mobile_phone')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="secondary_email">Email secundário</Label>
-                  <Input id="secondary_email" type="email" {...form.register('secondary_email')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="secondary_phone">Telefone secundário</Label>
-                  <Input id="secondary_phone" type="tel" {...form.register('secondary_phone')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="address">Morada</Label>
-                  <Input id="address" {...form.register('address')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="city">Cidade</Label>
-                  <Input id="city" {...form.register('city')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="province">Província</Label>
-                  <Input id="province" {...form.register('province')} />
-                </div>
-                <div className="space-y-xs">
-                  <Label htmlFor="country">País (ISO-3)</Label>
-                  <Input id="country" maxLength={3} {...form.register('country')} />
-                </div>
+      <div className="space-y-lg">
+        <div>
+          <h2 className="text-xl font-bold text-on-surface">Contactos</h2>
+          <p className="mt-xs text-sm text-on-surface-variant">Estes dados serão usados para comunicações e notificações oficiais.</p>
+        </div>
+
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-md" noValidate>
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">A carregar contactos...</p>
+          ) : (
+            <div className="grid gap-md md:grid-cols-2">
+              <div className="space-y-xs">
+                <Label htmlFor="primary_email">Email principal</Label>
+                <Input id="primary_email" type="email" {...form.register('primary_email')} />
               </div>
-            )}
-            <div className="flex justify-between pt-md">
-              <Button type="button" variant="outline" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_FOOTBALL)}>
-                <ArrowLeft className="mr-xs h-4 w-4" />
-                Voltar
-              </Button>
-              <Button type="submit" loading={update.isPending || complete.isPending}>
-                Continuar
-                <ArrowRight className="ml-xs h-4 w-4" />
-              </Button>
+              <div className="space-y-xs">
+                <Label htmlFor="mobile_phone">Telemóvel</Label>
+                <Input id="mobile_phone" type="tel" {...form.register('mobile_phone')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="secondary_email">Email secundário</Label>
+                <Input id="secondary_email" type="email" {...form.register('secondary_email')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="secondary_phone">Telefone secundário</Label>
+                <Input id="secondary_phone" type="tel" {...form.register('secondary_phone')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="address">Morada</Label>
+                <Input id="address" {...form.register('address')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="city">Cidade</Label>
+                <Input id="city" {...form.register('city')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="province">Província</Label>
+                <Input id="province" {...form.register('province')} />
+              </div>
+              <div className="space-y-xs">
+                <Label htmlFor="country">País (ISO-3)</Label>
+                <Input id="country" maxLength={3} {...form.register('country')} />
+              </div>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          )}
+        </form>
+      </div>
     </PlayerOnboardingLayout>
   )
 }

@@ -2,8 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { Button, Input, Label, NativeSelect, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
+import { Input, Label, NativeSelect } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
 import { ALL_POSITIONS } from '../constants'
 import { playerFootballStepSchema, type PlayerFootballStepFormData } from '../schemas/player-onboarding.schema'
@@ -62,84 +61,73 @@ export function PlayerOnboardingFootballPage() {
   return (
     <PlayerOnboardingLayout
       step={3}
+      isSaving={updatePlayer.isPending}
       onNext={form.handleSubmit(onSubmit)}
       onBack={() => navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)}
       onSaveDraft={() => updateData(form.getValues())}
     >
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold">Perfil futebolístico</CardTitle>
-          <CardDescription>
+      <div className="space-y-lg">
+        <div>
+          <h2 className="text-xl font-bold text-on-surface">Perfil futebolístico</h2>
+          <p className="mt-xs text-sm text-on-surface-variant">
             Estes dados ajudam clubes e organizadores a validar o seu perfil desportivo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-md" noValidate>
-            <div className="grid gap-md md:grid-cols-2">
-              <div className="space-y-xs">
-                <Label htmlFor="primary_position">Posição principal</Label>
-                <NativeSelect
-                  id="primary_position"
-                  {...form.register('primary_position')}
-                >
-                  <option value="">Selecionar posição</option>
-                  {ALL_POSITIONS.filter(position => position.value !== 'multiple').map(position => (
-                    <option key={position.value} value={position.value}>
-                      {position.label} - {position.fullLabel}
-                    </option>
-                  ))}
-                </NativeSelect>
-                {form.formState.errors.primary_position && (
-                  <p className="text-xs text-destructive">{form.formState.errors.primary_position.message}</p>
-                )}
-              </div>
+          </p>
+        </div>
 
-              <div className="space-y-xs">
-                <Label htmlFor="foot">Pé preferido</Label>
-                <NativeSelect id="foot" {...form.register('foot')}>
-                  <option value="">Selecionar</option>
-                  <option value="right">Direito</option>
-                  <option value="left">Esquerdo</option>
-                  <option value="both">Ambos</option>
-                </NativeSelect>
-              </div>
-
-              <div className="space-y-xs">
-                <Label htmlFor="height_cm">Altura (cm)</Label>
-                <Input id="height_cm" type="number" min={100} max={250} {...form.register('height_cm')} />
-                {form.formState.errors.height_cm && (
-                  <p className="text-xs text-destructive">{form.formState.errors.height_cm.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-xs">
-                <Label htmlFor="weight_kg">Peso (kg)</Label>
-                <Input id="weight_kg" type="number" min={30} max={200} {...form.register('weight_kg')} />
-                {form.formState.errors.weight_kg && (
-                  <p className="text-xs text-destructive">{form.formState.errors.weight_kg.message}</p>
-                )}
-              </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-md" noValidate>
+          <div className="grid gap-md md:grid-cols-2">
+            <div className="space-y-xs">
+              <Label htmlFor="primary_position">Posição principal</Label>
+              <NativeSelect
+                id="primary_position"
+                {...form.register('primary_position')}
+              >
+                <option value="">Selecionar posição</option>
+                {ALL_POSITIONS.filter(position => position.value !== 'multiple').map(position => (
+                  <option key={position.value} value={position.value}>
+                    {position.label} - {position.fullLabel}
+                  </option>
+                ))}
+              </NativeSelect>
+              {form.formState.errors.primary_position && (
+                <p className="text-xs text-destructive">{form.formState.errors.primary_position.message}</p>
+              )}
             </div>
 
-            {updatePlayer.isError && (
-              <p role="alert" className="rounded-md bg-destructive/10 p-sm text-sm text-destructive">
-                Não foi possível guardar o perfil futebolístico. Verifique os dados e tente novamente.
-              </p>
-            )}
-
-            <div className="flex justify-between pt-md">
-              <Button type="button" variant="outline" onClick={() => navigate(ROUTES.ONBOARDING_PLAYER_PROFILE)}>
-                <ArrowLeft className="mr-xs h-4 w-4" />
-                Voltar
-              </Button>
-              <Button type="submit" loading={updatePlayer.isPending}>
-                Continuar
-                <ArrowRight className="ml-xs h-4 w-4" />
-              </Button>
+            <div className="space-y-xs">
+              <Label htmlFor="foot">Pé preferido</Label>
+              <NativeSelect id="foot" {...form.register('foot')}>
+                <option value="">Selecionar</option>
+                <option value="right">Direito</option>
+                <option value="left">Esquerdo</option>
+                <option value="both">Ambos</option>
+              </NativeSelect>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+
+            <div className="space-y-xs">
+              <Label htmlFor="height_cm">Altura (cm)</Label>
+              <Input id="height_cm" type="number" min={100} max={250} {...form.register('height_cm')} />
+              {form.formState.errors.height_cm && (
+                <p className="text-xs text-destructive">{form.formState.errors.height_cm.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-xs">
+              <Label htmlFor="weight_kg">Peso (kg)</Label>
+              <Input id="weight_kg" type="number" min={30} max={200} {...form.register('weight_kg')} />
+              {form.formState.errors.weight_kg && (
+                <p className="text-xs text-destructive">{form.formState.errors.weight_kg.message}</p>
+              )}
+            </div>
+          </div>
+
+          {updatePlayer.isError && (
+            <p role="alert" className="rounded-md bg-destructive/10 p-sm text-sm text-destructive">
+              Não foi possível guardar o perfil futebolístico. Verifique os dados e tente novamente.
+            </p>
+          )}
+        </form>
+      </div>
     </PlayerOnboardingLayout>
   )
 }

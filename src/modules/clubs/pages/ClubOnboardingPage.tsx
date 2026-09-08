@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router-dom'
-import { Building2, CheckCircle2, Send, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Building2, CheckCircle2 } from 'lucide-react'
 import { AuthLayout } from '@/app/layouts'
-import { Button, Input, NativeSelect, Textarea, Card, CardContent, CardHeader, CardTitle, CardDescription, Label } from '@/components/ui'
+import { Button, Input, NativeSelect, Textarea, Card, Label } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { ROUTES } from '@/constants/routes'
 import { useSeo } from '@/hooks/useSeo'
@@ -165,6 +165,7 @@ export default function ClubOnboardingPage() {
       completedSteps={completedSteps}
       canGoBack={currentStepIndex > 0}
       isLastStep={currentStepIndex === steps.length - 1}
+      isSaving={submitRequest.isPending}
       onBack={() => setStep(Math.max(0, currentStepIndex - 1))}
       onNext={() => {
         if (currentStepIndex === 0) form1.handleSubmit(handleNextStep1)()
@@ -175,169 +176,121 @@ export default function ClubOnboardingPage() {
     >
       {/* STEP 1: Institutional */}
       {currentStepIndex === 0 && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Dados Institucionais</CardTitle>
-            <CardDescription>Identifique o clube com as informações básicas de fundação.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={form1.handleSubmit(handleNextStep1)} className="space-y-md" noValidate>
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField label="Nome do clube" htmlFor="name" error={form1.formState.errors.name?.message} required>
-                  <Input id="name" {...form1.register('name')} />
-                </FormField>
+        <div className="space-y-lg">
+          <div>
+            <h2 className="text-xl font-bold text-on-surface">Dados Institucionais</h2>
+            <p className="mt-xs text-sm text-on-surface-variant">Identifique o clube com as informações básicas de fundação.</p>
+          </div>
+          <form onSubmit={form1.handleSubmit(handleNextStep1)} className="space-y-md" noValidate>
+            <div className="grid gap-md md:grid-cols-2">
+              <FormField label="Nome do clube" htmlFor="name" error={form1.formState.errors.name?.message} required>
+                <Input id="name" {...form1.register('name')} />
+              </FormField>
 
-                <FormField label="Nome curto" htmlFor="short_name">
-                  <Input id="short_name" {...form1.register('short_name')} />
-                </FormField>
+              <FormField label="Nome curto" htmlFor="short_name">
+                <Input id="short_name" {...form1.register('short_name')} />
+              </FormField>
 
-                <FormField label="Ano de fundação" htmlFor="founded_year">
-                  <Input id="founded_year" type="number" min={1800} max={2100} {...form1.register('founded_year')} />
-                </FormField>
+              <FormField label="Ano de fundação" htmlFor="founded_year">
+                <Input id="founded_year" type="number" min={1800} max={2100} {...form1.register('founded_year')} />
+              </FormField>
 
-                <FormField label="País" htmlFor="country">
-                  <Input id="country" {...form1.register('country')} />
-                </FormField>
+              <FormField label="País" htmlFor="country">
+                <Input id="country" {...form1.register('country')} />
+              </FormField>
 
-                <FormField label="Cidade" htmlFor="city">
-                  <Input id="city" {...form1.register('city')} />
-                </FormField>
-              </div>
-
-              <div className="flex justify-end pt-md">
-                <Button type="submit">
-                  Continuar
-                  <ArrowRight className="ml-xs h-4 w-4" />
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+              <FormField label="Cidade" htmlFor="city">
+                <Input id="city" {...form1.register('city')} />
+              </FormField>
+            </div>
+          </form>
+        </div>
       )}
 
       {/* STEP 2: Facilities */}
       {currentStepIndex === 1 && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Instalações e Estádio</CardTitle>
-            <CardDescription>Informe o local de jogos e capacidade do estádio do clube.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={form2.handleSubmit(handleNextStep2)} className="space-y-md" noValidate>
-              <div className="grid gap-md md:grid-cols-2">
-                <FormField label="Nome do Estádio" htmlFor="stadium_name">
-                  <Input id="stadium_name" {...form2.register('stadium_name')} />
-                </FormField>
+        <div className="space-y-lg">
+          <div>
+            <h2 className="text-xl font-bold text-on-surface">Instalações e Estádio</h2>
+            <p className="mt-xs text-sm text-on-surface-variant">Informe o local de jogos e capacidade do estádio do clube.</p>
+          </div>
+          <form onSubmit={form2.handleSubmit(handleNextStep2)} className="space-y-md" noValidate>
+            <div className="grid gap-md md:grid-cols-2">
+              <FormField label="Nome do Estádio" htmlFor="stadium_name">
+                <Input id="stadium_name" {...form2.register('stadium_name')} />
+              </FormField>
 
-                <FormField label="Capacidade do Estádio" htmlFor="stadium_capacity">
-                  <Input id="stadium_capacity" type="number" min={0} {...form2.register('stadium_capacity')} />
-                </FormField>
-              </div>
-
-              <div className="flex justify-between pt-md">
-                <Button type="button" variant="outline" onClick={() => setStep(0)}>
-                  <ArrowLeft className="mr-xs h-4 w-4" />
-                  Voltar
-                </Button>
-                <Button type="submit">
-                  Continuar
-                  <ArrowRight className="ml-xs h-4 w-4" />
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+              <FormField label="Capacidade do Estádio" htmlFor="stadium_capacity">
+                <Input id="stadium_capacity" type="number" min={0} {...form2.register('stadium_capacity')} />
+              </FormField>
+            </div>
+          </form>
+        </div>
       )}
 
       {/* STEP 3: Identity & Contacts */}
       {currentStepIndex === 2 && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Identidade Visual & Contactos</CardTitle>
-            <CardDescription>Personalize as cores e informe os meios oficiais de contacto.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={form3.handleSubmit(handleNextStep3)} className="space-y-md" noValidate>
-              <div className="grid gap-md md:grid-cols-2">
-                <div className="grid grid-cols-2 gap-sm">
-                  <FormField label="Cor primária" htmlFor="primary_color">
-                    <Input id="primary_color" type="color" {...form3.register('primary_color')} />
-                  </FormField>
-                  <FormField label="Cor secundária" htmlFor="secondary_color">
-                    <Input id="secondary_color" type="color" {...form3.register('secondary_color')} />
-                  </FormField>
-                </div>
-
-                <FormField label="Email institucional" htmlFor="email" error={form3.formState.errors.email?.message}>
-                  <Input id="email" type="email" {...form3.register('email')} />
+        <div className="space-y-lg">
+          <div>
+            <h2 className="text-xl font-bold text-on-surface">Identidade Visual & Contactos</h2>
+            <p className="mt-xs text-sm text-on-surface-variant">Personalize as cores e informe os meios oficiais de contacto.</p>
+          </div>
+          <form onSubmit={form3.handleSubmit(handleNextStep3)} className="space-y-md" noValidate>
+            <div className="grid gap-md md:grid-cols-2">
+              <div className="grid grid-cols-2 gap-sm">
+                <FormField label="Cor primária" htmlFor="primary_color">
+                  <Input id="primary_color" type="color" {...form3.register('primary_color')} />
                 </FormField>
-
-                <FormField label="Telefone" htmlFor="phone">
-                  <Input id="phone" {...form3.register('phone')} />
-                </FormField>
-
-                <FormField label="Website" htmlFor="website" error={form3.formState.errors.website?.message}>
-                  <Input id="website" type="url" {...form3.register('website')} />
+                <FormField label="Cor secundária" htmlFor="secondary_color">
+                  <Input id="secondary_color" type="color" {...form3.register('secondary_color')} />
                 </FormField>
               </div>
 
-              <div className="space-y-xs">
-                <Label htmlFor="description">Descrição / História do Clube</Label>
-                <Textarea id="description" rows={4} {...form3.register('description')} />
-              </div>
+              <FormField label="Email institucional" htmlFor="email" error={form3.formState.errors.email?.message}>
+                <Input id="email" type="email" {...form3.register('email')} />
+              </FormField>
 
-              <div className="flex justify-between pt-md">
-                <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                  <ArrowLeft className="mr-xs h-4 w-4" />
-                  Voltar
-                </Button>
-                <Button type="submit">
-                  Continuar
-                  <ArrowRight className="ml-xs h-4 w-4" />
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+              <FormField label="Telefone" htmlFor="phone">
+                <Input id="phone" {...form3.register('phone')} />
+              </FormField>
+
+              <FormField label="Website" htmlFor="website" error={form3.formState.errors.website?.message}>
+                <Input id="website" type="url" {...form3.register('website')} />
+              </FormField>
+            </div>
+
+            <div className="space-y-xs">
+              <Label htmlFor="description">Descrição / História do Clube</Label>
+              <Textarea id="description" rows={4} {...form3.register('description')} />
+            </div>
+          </form>
+        </div>
       )}
 
       {/* STEP 4: Affiliation & Submission */}
       {currentStepIndex === 3 && (
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold">Afiliação à Organização</CardTitle>
-            <CardDescription>Escolha a associação ou liga que irá validar o registo do clube.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={form4.handleSubmit(handleSubmitFinal)} className="space-y-md" noValidate>
-              <FormField label="Organização de Destino" htmlFor="organization_slug" error={form4.formState.errors.organization_slug?.message} required>
-                <NativeSelect id="organization_slug" {...form4.register('organization_slug')} disabled={loadingOrgs}>
-                  <option value="">{loadingOrgs ? 'A carregar organizações...' : 'Selecionar organização'}</option>
-                  {organizations.map((org) => (
-                    <option key={org.id} value={org.slug}>
-                      {org.name}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </FormField>
+        <div className="space-y-lg">
+          <div>
+            <h2 className="text-xl font-bold text-on-surface">Afiliação à Organização</h2>
+            <p className="mt-xs text-sm text-on-surface-variant">Escolha a associação ou liga que irá validar o registo do clube.</p>
+          </div>
+          <form onSubmit={form4.handleSubmit(handleSubmitFinal)} className="space-y-md" noValidate>
+            <FormField label="Organização de Destino" htmlFor="organization_slug" error={form4.formState.errors.organization_slug?.message} required>
+              <NativeSelect id="organization_slug" {...form4.register('organization_slug')} disabled={loadingOrgs}>
+                <option value="">{loadingOrgs ? 'A carregar organizações...' : 'Selecionar organização'}</option>
+                {organizations.map((org) => (
+                  <option key={org.id} value={org.slug}>
+                    {org.name}
+                  </option>
+                ))}
+              </NativeSelect>
+            </FormField>
 
-              <div className="rounded-lg border border-border bg-muted/40 p-md text-sm text-muted-foreground">
-                Ao submeter, o pedido ficará pendente de aprovação pelos administradores da organização selecionada.
-              </div>
-
-              <div className="flex justify-between pt-md">
-                <Button type="button" variant="outline" onClick={() => setStep(2)}>
-                  <ArrowLeft className="mr-xs h-4 w-4" />
-                  Voltar
-                </Button>
-                <Button type="submit" loading={submitRequest.isPending}>
-                  <Send className="mr-xs h-4 w-4" />
-                  Submeter Pedido
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+            <div className="rounded-lg border border-border bg-muted/40 p-md text-sm text-muted-foreground">
+              Ao submeter, o pedido ficará pendente de aprovação pelos administradores da organização selecionada.
+            </div>
+          </form>
+        </div>
       )}
     </WizardShell>
   )

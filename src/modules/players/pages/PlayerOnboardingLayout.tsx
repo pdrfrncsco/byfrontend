@@ -12,6 +12,7 @@ interface PlayerOnboardingLayoutProps {
   canGoBack?: boolean
   canGoForward?: boolean
   isLastStep?: boolean
+  isSaving?: boolean
 }
 
 export function PlayerOnboardingLayout({
@@ -23,9 +24,10 @@ export function PlayerOnboardingLayout({
   canGoBack = true,
   canGoForward = true,
   isLastStep = false,
+  isSaving,
 }: PlayerOnboardingLayoutProps) {
   const { t } = useTranslation()
-  const { completedSteps, isSaving, lastSavedAt } = usePlayerWizard()
+  const { completedSteps, isSaving: storeIsSaving, lastSavedAt } = usePlayerWizard()
 
   const wizardSteps: WizardStep[] = [
     { id: 'account', label: t('playerOnboarding.steps.account', 'Conta') },
@@ -45,7 +47,7 @@ export function PlayerOnboardingLayout({
       steps={wizardSteps}
       currentStepIndex={step - 1}
       completedSteps={completedSteps}
-      isSaving={isSaving}
+      isSaving={isSaving ?? storeIsSaving}
       lastSavedAt={lastSavedAt}
       canGoBack={canGoBack}
       canGoForward={canGoForward}
