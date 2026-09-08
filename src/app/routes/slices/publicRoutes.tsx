@@ -7,17 +7,17 @@ import { ProtectedRoute } from '../ProtectedRoute'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 
 // Lazy loaded pages
-const LandingPage = lazy(() => import('@/modules/shared/pages/LandingPage').then(m => ({ default: m.LandingPage || m.default })))
-const ExplorePage = lazy(() => import('@/modules/shared/pages/ExplorePage').then(m => ({ default: m.ExplorePage || m.default })))
-const LoginPage = lazy(() => import('@/modules/shared/pages/LoginPage').then(m => ({ default: m.LoginPage || m.default })))
-const RegisterPage = lazy(() => import('@/modules/shared/pages/RegisterPage').then(m => ({ default: m.RegisterPage || m.default })))
-const RegisterProfilePage = lazy(() => import('@/modules/shared/pages/RegisterProfilePage').then(m => ({ default: m.RegisterProfilePage || m.default })))
-const RegisterOrganizationPage = lazy(() => import('@/modules/shared/pages/RegisterOrganizationPage').then(m => ({ default: m.RegisterOrganizationPage || m.default })))
-const ForgotPasswordPage = lazy(() => import('@/modules/shared/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage || m.default })))
-const ResetPasswordPage = lazy(() => import('@/modules/shared/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage || m.default })))
-const ProfilePage = lazy(() => import('@/modules/shared/pages/ProfilePage').then(m => ({ default: m.ProfilePage || m.default })))
-const NotFoundPage = lazy(() => import('@/modules/shared/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage || m.default })))
-const NotificationsPage = lazy(() => import('@/modules/notifications/pages/NotificationsPage').then(m => ({ default: m.NotificationsPage || m.default })))
+const LandingPage = lazy(() => import('@/modules/shared/pages/LandingPage').then(m => ({ default: m.LandingPage })))
+const ExplorePage = lazy(() => import('@/modules/shared/pages/ExplorePage').then(m => ({ default: m.ExplorePage })))
+const LoginPage = lazy(() => import('@/modules/shared/pages/LoginPage').then(m => ({ default: m.LoginPage })))
+const RegisterPage = lazy(() => import('@/modules/shared/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
+const RegisterProfilePage = lazy(() => import('@/modules/shared/pages/RegisterProfilePage').then(m => ({ default: m.RegisterProfilePage })))
+const RegisterOrganizationPage = lazy(() => import('@/modules/shared/pages/RegisterOrganizationPage').then(m => ({ default: m.RegisterOrganizationPage })))
+const ForgotPasswordPage = lazy(() => import('@/modules/shared/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
+const ResetPasswordPage = lazy(() => import('@/modules/shared/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
+const ProfilePage = lazy(() => import('@/modules/shared/pages/ProfilePage').then(m => ({ default: m.ProfilePage })))
+const NotFoundPage = lazy(() => import('@/modules/shared/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })))
+const NotificationsPage = lazy(() => import('@/modules/notifications/pages/NotificationsPage').then(m => ({ default: m.NotificationsPage })))
 
 function RouteFallback() {
   return (
