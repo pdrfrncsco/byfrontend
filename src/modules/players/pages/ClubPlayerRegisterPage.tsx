@@ -84,9 +84,10 @@ export function ClubPlayerRegisterPage() {
 
     registerMutation.mutate(
       {
+        playerSlug: selectedPlayer.slug,
         club_id: club.id,
         joined_date: data.joined_date,
-        shirt_number: data.shirt_number || undefined,
+        shirt_number: data.shirt_number ? Number(data.shirt_number) : undefined,
         competition_id: data.competition_id || undefined,
       },
       {

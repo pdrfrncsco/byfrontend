@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type ColumnDef } from '@tanstack/react-table'
-import { ArrowLeft, CheckCircle, Filter, UserPlus, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Clock3, Filter, UserPlus, XCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
-import { Badge, Button, Card, DataTable, EmptyState, NativeSelect, ServerError, Skeleton } from '@/components/ui'
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, DataTable, EmptyState, NativeSelect, ServerError, Skeleton } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe } from '@/modules/clubs/hooks'
 import { useClubPlayerRegistrationRequests, useReviewClubPlayerRegistrationRequest } from '../hooks'
@@ -24,7 +24,9 @@ function formatDate(dateString?: string | null): string {
 
 function StatusBadge({ status, t }: { status: string; t: (key: string) => string }) {
   const normalized = status?.toLowerCase()
+  if (normalized === 'accepted') return <Badge variant="success">{t('players.linkRequest.status.accepted') || 'Aceito'}</Badge>
   if (normalized === 'approved') return <Badge variant="success">{t('players.linkRequest.status.approved')}</Badge>
+  if (normalized === 'invited') return <Badge variant="secondary">{t('players.linkRequest.status.invited') || 'Convidado'}</Badge>
   if (normalized === 'rejected') return <Badge variant="danger">{t('players.linkRequest.status.rejected')}</Badge>
   return <Badge variant="warning">{t('players.linkRequest.status.pending')}</Badge>
 }
@@ -33,16 +35,23 @@ interface RowNotesState {
   [id: string]: { open: boolean; notes: string; approve: boolean }
 }
 
+type RequestFilter = 'all' | 'pending' | 'approved' | 'rejected'
+
 export function ClubPlayerRegistrationRequestsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const { data: currentClub, isLoading: isLoadingClub, isError: clubError, refetch: refetchClub } = useClubMe()
-  const { data: requests, isLoading: isLoadingRequests, isError: requestsError, refetch: refetchRequests } = useClubPlayerRegistrationRequests(currentClub?.id)
+  const { data: currentClub, isLoading: isLoadingClub, isError: isClubError, refetch: refetchClub } = useClubMe()
+  const {
+    data: requests,
+    isLoading: isLoadingRequests,
+    isError: isRequestsError,
+    refetch: refetchRequests,
+  } = useClubPlayerRegistrationRequests(currentClub?.id)
   const reviewRequest = useReviewClubPlayerRegistrationRequest(currentClub?.id)
 
   const [rowNotes, setRowNotes] = useState<RowNotesState>({})
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending')
+  const [statusFilter, setStatusFilter] = useState<RequestFilter>('pending')
   const isLoading = isLoadingClub || isLoadingRequests
 
   const sidebarLinks = getClubSidebarLinks()
@@ -126,6 +135,7 @@ export function ClubPlayerRegistrationRequestsPage() {
           const isPending = status?.toLowerCase() === 'pending'
           const notesState = rowNotes[id]
           const isSubmitting = reviewRequest.isPending && reviewRequest.variables?.id === id
+          const requiresReason = notesState?.approve === false
 
           if (!isPending) return null
 
@@ -165,7 +175,7 @@ export function ClubPlayerRegistrationRequestsPage() {
                     aria-required={!notesState.approve}
                     className="w-full resize-none rounded border border-outline-variant/40 bg-surface-bright px-sm py-xs text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary"
                     rows={2}
-                    placeholder={t('players.clubRequests.notesPlaceholder')}
+                    placeholder={requiresReason ? t('players.clubRequests.rejectionReasonPlaceholder') : t('players.clubRequests.notesPlaceholder')}
                     value={notesState.notes}
                     onChange={(e) =>
                       setRowNotes((prev) => ({
@@ -179,7 +189,7 @@ export function ClubPlayerRegistrationRequestsPage() {
                       variant="primary"
                       size="sm"
                       onClick={() => handleReview(id, notesState.approve)}
-                      disabled={!notesState.approve && !notesState.notes.trim()}
+                      disabled={requiresReason && !notesState.notes.trim()}
                       loading={isSubmitting}
                       className="text-xs"
                     >
@@ -200,6 +210,7 @@ export function ClubPlayerRegistrationRequestsPage() {
                       {t('players.common.cancel')}
                     </Button>
                   </div>
+                  <p className="text-xs text-on-surface-variant">{t('players.clubRequests.reviewHint')}</p>
                 </div>
               )}
             </div>
@@ -207,10 +218,11 @@ export function ClubPlayerRegistrationRequestsPage() {
         },
       },
     ],
-    [rowNotes, reviewRequest.isPending, t],
+    [rowNotes, reviewRequest.isPending, reviewRequest.variables, t],
   )
 
   const requestRows = useMemo(() => (Array.isArray(requests) ? requests : []), [requests])
+
   const filteredRows = useMemo(() => {
     const rows = statusFilter === 'all' ? requestRows : requestRows.filter((request) => request.status?.toLowerCase() === statusFilter)
     return [...rows].sort((a, b) => {
@@ -219,6 +231,7 @@ export function ClubPlayerRegistrationRequestsPage() {
       return new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
     })
   }, [requestRows, statusFilter])
+
   const pendingCount = requestRows.filter((request) => request.status?.toLowerCase() === 'pending').length
 
   return (
@@ -234,7 +247,7 @@ export function ClubPlayerRegistrationRequestsPage() {
         </Button>
       }
     >
-      <div className="animate-fade-in">
+      <div className="grid gap-lg animate-fade-in">
         {isLoading ? (
           <Card padding="none">
             <div className="divide-y divide-outline-variant/20">
@@ -246,9 +259,9 @@ export function ClubPlayerRegistrationRequestsPage() {
               ))}
             </div>
           </Card>
-        ) : clubError ? (
+        ) : isClubError ? (
           <ServerError title={t('players.clubRequests.clubErrorTitle')} message={t('players.clubRequests.loadErrorDescription')} onRetry={() => refetchClub()} />
-        ) : requestsError ? (
+        ) : isRequestsError ? (
           <ServerError title={t('players.clubRequests.loadErrorTitle')} message={t('players.clubRequests.loadErrorDescription')} onRetry={() => refetchRequests()} />
         ) : requestRows.length === 0 ? (
           <EmptyState icon={UserPlus} title={t('players.clubRequests.emptyTitle')} description={t('players.clubRequests.emptyDescription')} />

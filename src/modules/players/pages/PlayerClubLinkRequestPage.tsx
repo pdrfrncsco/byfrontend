@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
   EmptyState,
+  ErrorState,
   Input,
   NativeSelect,
   ServerError,
@@ -27,8 +28,9 @@ import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
 import type { PlayerRegistrationRequest } from '../types'
 
-function RequestStatusBadge({ status, t }: { status: string; t: (key: string) => string }) {
+function RequestStatusBadge({ status, registration, t }: { status: string; registration?: unknown; t: (key: string) => string }) {
   const normalized = status?.toLowerCase()
+  if (normalized === 'accepted' || registration) return <Badge variant="success">{t('players.linkRequest.status.accepted') || 'Aceito'}</Badge>
   if (normalized === 'approved') return <Badge variant="success">{t('players.linkRequest.status.approved')}</Badge>
   if (normalized === 'invited') return <Badge variant="secondary">{t('players.linkRequest.status.invited')}</Badge>
   if (normalized === 'rejected') return <Badge variant="danger">{t('players.linkRequest.status.rejected')}</Badge>
@@ -46,9 +48,9 @@ export function PlayerClubLinkRequestPage() {
   const navigate = useNavigate()
   const [clubSearch, setClubSearch] = useState('')
 
-  const { data: player, isLoading: playerLoading, isError: playerError, refetch: refetchPlayer } = usePlayerMe()
-  const { data: clubsData, isLoading: clubsLoading, isError: clubsError, refetch: refetchClubs } = useClubs({ page_size: 100 })
-  const { data: requests = [], isLoading: requestsLoading, isError: requestsError, refetch: refetchRequests } = useMyRegistrationRequests()
+  const { data: player, isLoading: playerLoading, isError: isPlayerError, refetch: refetchPlayer } = usePlayerMe()
+  const { data: clubsData, isLoading: clubsLoading, isError: isClubsError, refetch: refetchClubs } = useClubs({ page_size: 100 })
+  const { data: requests = [], isLoading: requestsLoading, isError: isRequestsError, refetch: refetchRequests } = useMyRegistrationRequests()
   const submitMutation = useSubmitRegistrationRequest()
   const acceptMutation = useAcceptRegistrationRequest()
 
@@ -79,7 +81,11 @@ export function PlayerClubLinkRequestPage() {
     const query = clubSearch.toLowerCase()
     return clubs.filter((club) => club.name.toLowerCase().includes(query))
   }, [clubsData, clubSearch])
-  const selectedClub = filteredClubs.find((club) => club.id === selectedClubId)
+
+  const selectedClub = useMemo(
+    () => filteredClubs.find((club) => club.id === selectedClubId),
+    [filteredClubs, selectedClubId],
+  )
 
   const onSubmit = (data: PlayerLinkRequestFormData) => {
     submitMutation.mutate(
@@ -95,8 +101,17 @@ export function PlayerClubLinkRequestPage() {
     )
   }
 
-  const { data: competitions = [], isLoading: competitionsLoading } = useClubCompetitions(selectedClubId)
-  const selectedCompetition = competitions.find((competition) => competition.id === watch('competition_id'))
+  const {
+    data: competitions = [],
+    isLoading: competitionsLoading,
+    isError: isCompetitionsError,
+    refetch: refetchCompetitions,
+  } = useClubCompetitions(selectedClubId)
+
+  const selectedCompetition = useMemo(
+    () => competitions.find((competition) => competition.id === watch('competition_id')),
+    [competitions, watch('competition_id')],
+  )
 
   if (playerLoading) {
     return (
@@ -106,7 +121,7 @@ export function PlayerClubLinkRequestPage() {
     )
   }
 
-  if (playerError) {
+  if (isPlayerError) {
     return (
       <DashboardLayout title={t('players.linkRequest.title')} subtitle={t('players.linkRequest.subtitle')} dashboardType="player" sidebarLinks={sidebarLinks}>
         <ServerError title={t('players.linkRequest.loadErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchPlayer()} />
@@ -117,11 +132,10 @@ export function PlayerClubLinkRequestPage() {
   if (!player) {
     return (
       <DashboardLayout title={t('players.linkRequest.title')} subtitle={t('players.dashboard.subtitle')} dashboardType="player" sidebarLinks={sidebarLinks}>
-        <EmptyState
-          icon={Handshake}
-          title={t('players.dashboard.notFoundTitle')}
-          description={t('players.dashboard.notFoundDescription')}
-          action={{ label: t('players.dashboard.explorePlayers'), onClick: () => navigate(ROUTES.PLAYERS), variant: 'secondary' }}
+        <ErrorState
+          title={t('players.linkRequest.loadErrorTitle')}
+          message={t('players.linkRequest.loadErrorDescription')}
+          onRetry={() => refetchPlayer()}
         />
       </DashboardLayout>
     )
@@ -145,9 +159,9 @@ export function PlayerClubLinkRequestPage() {
           <Card variant="flat" padding="lg" className="border-warning/35 bg-warning-container/5">
             <div className="flex flex-col items-center justify-center text-center p-lg space-y-md">
               <Handshake className="h-12 w-12 text-warning" />
-              <h3 className="text-lg font-bold text-on-surface">{t('players.linkRequest.alreadyLinkedTitle')}</h3>
+              <h3 className="text-lg font-bold text-on-surface">{t('players.linkRequest.currentClubTitle')}</h3>
               <p className="text-sm text-on-surface-variant max-w-md">
-                {t('players.linkRequest.alreadyLinkedDescription', { club: player.current_club.name })}
+                {t('players.linkRequest.currentClubDescription', { club: player.current_club.name })}
               </p>
             </div>
           </Card>
@@ -169,10 +183,10 @@ export function PlayerClubLinkRequestPage() {
                   />
                 </div>
 
-                {clubsError ? (
-                  <ServerError title={t('players.linkRequest.clubsErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchClubs()} />
-                ) : clubsLoading ? (
+                {clubsLoading ? (
                   <Skeleton className="h-40 w-full rounded-2xl" />
+                ) : isClubsError ? (
+                  <ServerError title={t('players.linkRequest.clubsErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchClubs()} />
                 ) : filteredClubs.length === 0 ? (
                   <EmptyState icon={Handshake} title={t('players.linkRequest.noClubsTitle')} description={t('players.linkRequest.noClubsDescription')} />
                 ) : (
@@ -214,14 +228,19 @@ export function PlayerClubLinkRequestPage() {
                   <Input id="shirt-number" type="number" min={1} max={99} {...register('shirt_number')} />
                 </FormField>
                 <FormField label={t('players.register.competitionId')} htmlFor="competition-id" error={errors.competition_id?.message}>
-                  <NativeSelect id="competition-id" {...register('competition_id')} disabled={!selectedClubId || competitionsLoading}>
-                    <option value="">{competitionsLoading ? t('players.linkRequest.loading') : t('players.linkRequest.noCompetition')}</option>
+                  <NativeSelect id="competition-id" {...register('competition_id')} disabled={!selectedClubId || competitionsLoading || isCompetitionsError}>
+                    <option value="">{competitionsLoading ? t('players.linkRequest.loadingCompetitions') : t('players.linkRequest.noCompetition')}</option>
                     {competitions.map((competition) => (
                       <option key={competition.id} value={competition.id}>
                         {competition.name} ({competition.season})
                       </option>
                     ))}
                   </NativeSelect>
+                  {isCompetitionsError && (
+                    <Button type="button" variant="link" size="sm" onClick={() => refetchCompetitions()}>
+                      {t('players.linkRequest.retry')}
+                    </Button>
+                  )}
                 </FormField>
               </CardContent>
             </Card>
@@ -256,10 +275,14 @@ export function PlayerClubLinkRequestPage() {
             <CardTitle>{t('players.linkRequest.myRequestsTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
-            {requestsError ? (
-              <ServerError title={t('players.linkRequest.requestsErrorTitle')} message={t('players.linkRequest.loadErrorDescription')} onRetry={() => refetchRequests()} />
-            ) : requestsLoading ? (
+            {requestsLoading ? (
               <Skeleton className="h-32 w-full rounded-2xl" />
+            ) : isRequestsError ? (
+              <ServerError
+                title={t('players.linkRequest.requestsErrorTitle')}
+                message={t('players.linkRequest.loadErrorDescription')}
+                onRetry={() => refetchRequests()}
+              />
             ) : requests.length === 0 ? (
               <EmptyState icon={Handshake} title={t('players.linkRequest.noRequestsTitle')} description={t('players.linkRequest.noRequestsDescription')} />
             ) : (
@@ -272,7 +295,7 @@ export function PlayerClubLinkRequestPage() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-sm">
                         <p className="font-semibold text-on-surface">{request.club_name}</p>
-                        <RequestStatusBadge status={request.status} t={t} />
+                        <RequestStatusBadge status={request.status} registration={request.registration} t={t} />
                       </div>
                       <p className="mt-1 text-xs text-on-surface-variant">
                         {t('players.register.joinedDate')}: {formatDate(request.joined_date)} • {t('players.linkRequest.lastUpdated')}: {formatDate(request.updated_at || request.created_at)}
@@ -283,12 +306,12 @@ export function PlayerClubLinkRequestPage() {
                       )}
                     </div>
                     <div className="flex gap-xs mt-sm md:mt-0">
-                      {['approved', 'invited'].includes(request.status?.toLowerCase()) && (
+                      {['approved', 'invited'].includes(request.status?.toLowerCase()) && !request.registration && (
                         <Button
                           variant="primary"
                           size="sm"
                           onClick={() => acceptMutation.mutate(request.id)}
-                          loading={acceptMutation.isPending}
+                          loading={acceptMutation.isPending && acceptMutation.variables === request.id}
                         >
                           {t('players.linkRequest.accept')}
                         </Button>
