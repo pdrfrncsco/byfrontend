@@ -1,4 +1,7 @@
-module.exports = {
+import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
+
+const config: Config = {
   darkMode: 'class',
   content: [
     './index.html',
@@ -7,58 +10,64 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Material Design 3 Colors from Landing Page Design
-        'surface-container-highest': '#26364a',
-        'tertiary': '#e9c349',
-        'surface-bright': '#2a3a4f',
-        'on-error-container': '#ffdad6',
+        // Dynamic Theme System Colors (bound to index.css CSS Custom Properties)
+        'background': 'var(--background)',
+        'surface': 'var(--surface)',
+        'surface-container': 'var(--surface-container)',
+        'surface-container-low': 'var(--surface-container-low)',
+        'surface-container-high': 'var(--surface-container-high)',
+        'surface-container-highest': 'var(--surface-container-highest)',
+        'surface-container-lowest': 'var(--surface-container-lowest)',
+        'surface-bright': 'var(--surface-container-high)',
+        'surface-dim': 'var(--surface)',
+        'surface-variant': 'var(--surface-container)',
+        'on-surface': 'var(--on-surface)',
+        'on-background': 'var(--on-surface)',
+        'on-surface-variant': 'var(--on-surface-variant)',
+        'outline': 'var(--outline)',
+        'outline-variant': 'var(--outline-variant)',
+        'card': 'var(--bg-card)',
+        'card-border': 'var(--bg-card-border)',
+
+        // Brand & Accent Colors
         'primary': '#94d3c1',
-        'on-tertiary-fixed-variant': '#574500',
         'surface-tint': '#94d3c1',
-        'surface-container-lowest': '#000f21',
-        'on-secondary-container': '#adb4ce',
-        'surface-container-high': '#1b2b3f',
         'inverse-primary': '#29695b',
-        'secondary-container': '#3f465c',
-        'outline': '#89938f',
-        'error': '#ffb4ab',
-        'surface': '#031427',
-        'surface-variant': '#26364a',
-        'tertiary-container': '#cca730',
-        'on-surface': '#d3e4fe',
-        'surface-container': '#102034',
-        'outline-variant': '#3f4945',
         'on-primary-fixed': '#00201a',
-        'tertiary-fixed-dim': '#e9c349',
-        'surface-dim': '#031427',
         'on-primary-container': '#7ebdac',
-        'secondary-fixed': '#dae2fd',
-        'on-background': '#d3e4fe',
-        'inverse-on-surface': '#213145',
-        'inverse-surface': '#d3e4fe',
-        'on-tertiary': '#3c2f00',
         'on-primary-fixed-variant': '#065043',
         'primary-container': '#004d40',
-        'on-secondary-fixed-variant': '#3f465c',
-        'on-error': '#690005',
         'primary-fixed-dim': '#94d3c1',
-        'on-tertiary-fixed': '#241a00',
-        'on-secondary-fixed': '#131b2e',
-        'background': '#031427',
-        'on-secondary': '#283044',
-        'error-container': '#93000a',
-        'surface-container-low': '#0b1c30',
-        'secondary': '#bec6e0',
-        'tertiary-fixed': '#ffe088',
-        'on-primary': '#00382e',
-        'secondary-fixed-dim': '#bec6e0',
-        'on-surface-variant': '#bfc9c4',
         'primary-fixed': '#afefdd',
+        'on-primary': '#00382e',
+
+        'tertiary': '#e9c349',
+        'tertiary-container': '#cca730',
+        'tertiary-fixed-dim': '#e9c349',
+        'tertiary-fixed': '#ffe088',
+        'on-tertiary': '#3c2f00',
+        'on-tertiary-fixed': '#241a00',
+        'on-tertiary-fixed-variant': '#574500',
         'on-tertiary-container': '#4f3e00',
-        'on-primary-fixed': '#00201a',
-        'primary': '#94d3c1',
-        'on-primary-fixed': '#00201a',
-        // Warning — usado em ResetPasswordPage (força da password)
+
+        'secondary': '#bec6e0',
+        'secondary-container': '#3f465c',
+        'secondary-fixed': '#dae2fd',
+        'secondary-fixed-dim': '#bec6e0',
+        'on-secondary': '#283044',
+        'on-secondary-container': '#adb4ce',
+        'on-secondary-fixed': '#131b2e',
+        'on-secondary-fixed-variant': '#3f465c',
+
+        'error': '#ffb4ab',
+        'error-container': '#93000a',
+        'on-error': '#690005',
+        'on-error-container': '#ffdad6',
+
+        'inverse-on-surface': '#213145',
+        'inverse-surface': '#d3e4fe',
+
+        // Warning
         'warning': 'var(--color-warning, #f59e0b)',
         'on-warning': 'var(--color-on-warning, #000)',
       },
@@ -100,8 +109,7 @@ module.exports = {
     },
   },
   plugins: [
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('tailwindcss/plugin')(function ({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
         '.scrollbar-hide': {
           '-ms-overflow-style': 'none',
@@ -110,7 +118,9 @@ module.exports = {
             display: 'none',
           },
         },
-      });
+      })
     }),
   ],
 }
+
+export default config

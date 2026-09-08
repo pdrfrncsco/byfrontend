@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers'
 import { ROUTES } from '@/constants'
 import { Button } from '@/components/ui/button'
-import { Trophy, Shield, Building2, UserSearch, ChevronDown, Menu, X, ArrowRight, Sparkles } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { Trophy, Shield, Building2, UserSearch, ChevronDown, Menu, X, ArrowRight } from 'lucide-react'
 
 export type PublicHeaderVariant = 'landing' | 'explore' | 'minimal'
 
@@ -128,9 +129,12 @@ export function PublicHeader({ variant = 'landing', onNavClick }: PublicHeaderPr
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-md md:px-xl">
           <Logo minimal />
-          <Button asChild variant="ghost" size="sm">
-            <Link to={ROUTES.HOME}>Voltar à homepage</Link>
-          </Button>
+          <div className="flex items-center gap-xs">
+            <ThemeToggle />
+            <Button asChild variant="ghost" size="sm">
+              <Link to={ROUTES.HOME}>Voltar à homepage</Link>
+            </Button>
+          </div>
         </nav>
       </header>
     )
@@ -231,21 +235,24 @@ export function PublicHeader({ variant = 'landing', onNavClick }: PublicHeaderPr
           </Link>
         </div>
 
-        {/* Auth CTA */}
-        <div className="hidden md:block">
+        {/* Auth CTA & Theme Toggle */}
+        <div className="hidden md:flex items-center gap-xs">
+          <ThemeToggle />
           <AuthActions />
         </div>
 
         {/* Mobile menu trigger */}
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
-          onClick={() => setMobileOpen(v => !v)}
-          className="md:hidden"
-        >
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </Button>
+        <div className="flex items-center gap-xs md:hidden">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+            onClick={() => setMobileOpen(v => !v)}
+          >
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+        </div>
 
         {/* Mobile menu drawer */}
         {mobileOpen && (
@@ -288,7 +295,7 @@ export function PublicHeader({ variant = 'landing', onNavClick }: PublicHeaderPr
               ))}
             </div>
 
-            <div className="mt-md pt-md border-t border-border">
+            <div className="mt-md pt-md border-t border-border flex items-center justify-between">
               <AuthActions />
             </div>
           </div>

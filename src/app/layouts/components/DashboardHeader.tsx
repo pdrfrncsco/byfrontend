@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Menu, Globe } from 'lucide-react'
 import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
 import { NotificationsDropdown } from '@/modules/notifications/components/NotificationsDropdown'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { DashboardBreadcrumb } from './DashboardBreadcrumb'
 import { GlobalSearch } from './GlobalSearch'
 
@@ -47,7 +48,10 @@ export function DashboardHeader({
         <DashboardBreadcrumb />
       </div>
 
-      <div className="flex items-center gap-lg">
+      <div className="flex items-center gap-md sm:gap-lg">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+
         {/* Notifications Bell */}
         <div className="relative">
           <NotificationBell onToggle={toggleNotifications} />

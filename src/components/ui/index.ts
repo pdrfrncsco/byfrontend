@@ -67,4 +67,6 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tool
 export { NativeSelect, nativeSelectVariants, type NativeSelectProps } from './native-select'
 export { KpiCard, type KpiCardProps } from './kpi-card'
 export { PageSkeleton } from './page-skeleton'
+export { ThemeToggle } from './ThemeToggle'
+
 
