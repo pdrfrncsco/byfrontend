@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react'
+import { Search, X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface SearchToolbarProps {
   value: string
@@ -8,22 +11,36 @@ interface SearchToolbarProps {
   actions?: ReactNode
 }
 
-export function SearchToolbar({ value, onChange, placeholder = 'Pesquisar...', filters, actions }: SearchToolbarProps) {
+export function SearchToolbar({ value, onChange, placeholder = 'Pesquisar clubes, competições ou atletas...', filters, actions }: SearchToolbarProps) {
   return (
-    <div className="flex flex-col gap-sm rounded-[1.5rem] border border-outline-variant/80 bg-surface-container-low p-sm shadow-[0_20px_40px_-30px_rgba(15,23,42,0.3)] md:flex-row md:items-center">
-      <label className="relative min-w-0 flex-1">
-        <span className="pointer-events-none absolute left-md top-1/2 -translate-y-1/2 text-lg text-primary" aria-hidden="true">⌕</span>
-        <span className="sr-only">{placeholder}</span>
-        <input
-          type="search"
-          value={value}
-          onChange={event => onChange(event.target.value)}
-          placeholder={placeholder}
-          className="h-12 w-full rounded-xl border border-outline-variant/80 bg-surface-container-high pl-2xl pr-md text-sm text-on-surface outline-none placeholder:text-on-surface-variant transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
-        />
-      </label>
-      {filters && <div className="flex flex-wrap items-center gap-sm">{filters}</div>}
-      {actions && <div className="flex items-center gap-sm">{actions}</div>}
+    <div className="flex flex-col gap-md rounded-2xl border border-border bg-card p-md shadow-sm">
+      <div className="flex flex-col md:flex-row gap-sm items-center justify-between">
+        <div className="relative w-full flex-1">
+          <Search className="pointer-events-none absolute left-md top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
+            className="h-11 pl-10 pr-10 text-sm bg-background border-border"
+          />
+          {value && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onChange('')}
+              className="absolute right-xs top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {actions && <div className="flex items-center gap-xs w-full md:w-auto">{actions}</div>}
+      </div>
+
+      {filters && <div className="flex flex-wrap items-center gap-xs pt-xs border-t border-border">{filters}</div>}
     </div>
   )
 }

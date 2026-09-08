@@ -31,43 +31,46 @@ export function DetailHeroCard({
 }: DetailHeroCardProps) {
   return (
     <Card
-      variant="flat"
-      padding="none"
       className={cn(
-        'overflow-hidden rounded-[2rem] border border-outline-variant/80 bg-surface-container-low shadow-[0_22px_48px_-32px_rgba(15,17,23,0.28)]',
-        className,
+        'relative overflow-hidden rounded-3xl border border-border bg-gradient-to-r from-card via-card to-muted/50 p-0 shadow-lg',
+        className
       )}
     >
+      {/* Background glow overlay */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+
       <CardContent
         className={cn(
-          'grid gap-lg p-lg backdrop-blur md:grid-cols-[auto_1fr_auto] md:items-center md:p-xl',
-          backgroundClassName,
+          'relative z-10 grid gap-md p-lg md:grid-cols-[auto_1fr_auto] md:items-center md:p-xl',
+          backgroundClassName
         )}
       >
         {visual ? <div className="flex-shrink-0">{visual}</div> : null}
 
-        <div className="space-y-md">
+        <div className="space-y-sm">
           {eyebrow ? (
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/25 bg-primary-container/20 px-md py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            <div className="inline-flex items-center gap-xs rounded-full border border-primary/30 bg-primary/10 px-md py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
               {eyebrow}
             </div>
           ) : null}
 
-          <div className="space-y-sm">
-            <h1 className="font-display-lg text-[2.25rem] leading-[0.96] tracking-[-0.05em] text-on-surface md:text-[3.1rem]">{title}</h1>
-            {description ? <p className="max-w-3xl text-base leading-relaxed text-on-surface-variant md:text-[1.05rem]">{description}</p> : null}
+          <div className="space-y-xs">
+            <h1 className="font-display-lg text-3xl font-black tracking-tight text-foreground md:text-4xl lg:text-5xl">
+              {title}
+            </h1>
+            {description ? <p className="max-w-3xl text-sm md:text-base text-muted-foreground leading-relaxed">{description}</p> : null}
           </div>
 
           {chips.length > 0 ? (
-            <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
+            <div className="flex flex-wrap gap-xs pt-xs text-xs">
               {chips.map((chip, index) => {
                 const ChipIcon = chip.icon
                 return (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-2 rounded-full border border-outline-variant/60 bg-surface-container-high px-md py-1.5 text-sm font-medium shadow-[0_1px_0_rgba(15,23,42,0.02)]"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-md py-1 font-semibold text-foreground"
                   >
-                    {ChipIcon ? <ChipIcon className="h-4 w-4 text-primary" /> : null}
+                    {ChipIcon ? <ChipIcon className="h-3.5 w-3.5 text-primary" /> : null}
                     {chip.label}
                   </span>
                 )
@@ -76,7 +79,7 @@ export function DetailHeroCard({
           ) : null}
         </div>
 
-        {actions ? <div className="flex flex-wrap justify-start gap-sm md:justify-end">{actions}</div> : null}
+        {actions ? <div className="flex flex-wrap justify-start gap-xs md:justify-end">{actions}</div> : null}
       </CardContent>
     </Card>
   )

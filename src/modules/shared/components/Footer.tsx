@@ -1,151 +1,165 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants'
+import { Trophy, Send, CheckCircle2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export function Footer() {
   const year = new Date().getFullYear()
   const { t } = useTranslation()
+  const [subscribed, setSubscribed] = useState(false)
+  const [email, setEmail] = useState('')
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email.trim()) {
+      setSubscribed(true)
+      setEmail('')
+    }
+  }
 
   return (
-    <footer className="bg-surface-container-low border-t border-outline-variant py-xl">
-      <div className="max-w-container-max mx-auto px-gutter">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 gap-lg mb-xl md:grid-cols-5">
-          {/* Brand */}
-          <div>
-            <span className="font-display-lg text-headline-lg-mobile text-primary tracking-widest">BOLAYETU</span>
-            <p className="font-body-md text-on-surface-variant mt-md">
-              Ecossistema unificado para o futebol africano com tecnologia de elite.
+    <footer className="border-t border-border bg-card/60 text-foreground">
+      <div className="mx-auto max-w-7xl px-md py-xl md:px-xl">
+        <div className="grid grid-cols-1 gap-xl md:grid-cols-4 lg:grid-cols-5">
+          {/* Brand Col */}
+          <div className="space-y-md lg:col-span-2">
+            <Link to={ROUTES.HOME} className="flex items-center gap-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-on-primary-fixed shadow-md">
+                <Trophy className="h-5 w-5" />
+              </div>
+              <span className="font-display-lg text-xl font-black tracking-wider text-foreground">
+                BOLA<span className="text-primary">YETU</span>
+              </span>
+            </Link>
+            <p className="max-w-sm text-sm text-muted-foreground leading-relaxed">
+              Plataforma tecnológica de gestão desportiva, inteligência de jogos e acompanhamento de atletas para o futebol africano.
             </p>
-            {/* <div className="flex gap-sm mt-lg">
-              <a
-                href="#"
-                aria-label={t('footer.social.github', 'GitHub')}
-                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">github</span>
-              </a>
-              <a
-                href="#"
-                aria-label={t('footer.social.twitter', 'Twitter')}
-                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">twitter</span>
-              </a>
-              <a
-                href="#"
-                aria-label={t('footer.social.website', 'Website')}
-                className="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-sm"
-              >
-                <span className="material-symbols-outlined" aria-hidden="true">language</span>
-              </a>
-            </div> */}
+            {/* Newsletter */}
+            <div className="space-y-xs pt-xs">
+              <p className="text-xs font-bold uppercase tracking-wider text-foreground">Subscrever Novidades</p>
+              {subscribed ? (
+                <div className="flex items-center gap-xs text-xs font-semibold text-primary">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Obrigado! Ficará a par das atualizações.
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex max-w-sm gap-xs">
+                  <Input
+                    type="email"
+                    placeholder="email.oficial@clube.co.ao"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-9 text-xs"
+                  />
+                  <Button type="submit" size="sm" className="h-9 px-md">
+                    <Send className="h-3.5 w-3.5" />
+                  </Button>
+                </form>
+              )}
+            </div>
           </div>
 
-          {/* Explorar */}
-          <div>
-            <h4 className="font-title-md text-on-surface mb-md">Explorar</h4>
-            <ul className="space-y-sm">
-              <li><Link to={ROUTES.PUBLIC_EXPLORE} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Ver tudo em destaque</Link></li>
-              <li><Link to={ROUTES.COMPETITIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Competições</Link></li>
-              <li><Link to={ROUTES.CLUBS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Clubes</Link></li>
-              <li><Link to={ROUTES.ORGANIZATIONS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Organizações</Link></li>
-              <li><Link to={ROUTES.PLAYERS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">Jogadores</Link></li>
-            </ul>
-          </div>
-
-          {/* Product */}
-          <div>
-            <h4 className="font-title-md text-on-surface mb-md">{t('footer.product')}</h4>
-            <ul className="space-y-sm">
+          {/* Product Col */}
+          <div className="space-y-sm">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Produto</h4>
+            <ul className="space-y-xs text-sm text-muted-foreground">
               <li>
-                <a href="#features" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.features')}
+                <a href="#features" className="hover:text-primary transition-colors">
+                  Funcionalidades
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.pricing')}
+                <a href="#how-it-works" className="hover:text-primary transition-colors">
+                  Gestão de Torneios
                 </a>
               </li>
               <li>
-                <a href="#faq" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.docs')}
+                <a href="#pricing" className="hover:text-primary transition-colors">
+                  Planos e Preços
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.roadmap')}
+                <a href="#faq" className="hover:text-primary transition-colors">
+                  Perguntas Frequentes
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Empresa */}
-          <div>
-            <h4 className="font-title-md text-on-surface mb-md">{t('footer.company')}</h4>
-            <ul className="space-y-sm">
+          {/* Ecosystem Col */}
+          <div className="space-y-sm">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Ecossistema</h4>
+            <ul className="space-y-xs text-sm text-muted-foreground">
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.about')}
-                </a>
-              </li>
-              <li>
-                <Link to={ROUTES.NEWS} className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.blog')}
+                <Link to={ROUTES.PUBLIC_EXPLORE} className="hover:text-primary transition-colors">
+                  Diretório Público
                 </Link>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.contact')}
-                </a>
+                <Link to={ROUTES.COMPETITIONS} className="hover:text-primary transition-colors">
+                  Competições Ativas
+                </Link>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.careers')}
-                </a>
+                <Link to={ROUTES.CLUBS} className="hover:text-primary transition-colors">
+                  Clubes e Academias
+                </Link>
+              </li>
+              <li>
+                <Link to={ROUTES.PLAYERS} className="hover:text-primary transition-colors">
+                  Base de Atletas
+                </Link>
+              </li>
+              <li>
+                <Link to={ROUTES.NEWS} className="hover:text-primary transition-colors">
+                  Notícias & Imprensa
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Legal */}
-          <div>
-            <h4 className="font-title-md text-on-surface mb-md">{t('footer.legal')}</h4>
-            <ul className="space-y-sm">
+          {/* Legal & Compliance Col */}
+          <div className="space-y-sm">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Legal & Conformidade</h4>
+            <ul className="space-y-xs text-sm text-muted-foreground">
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.privacy')}
+                <a href="#" className="hover:text-primary transition-colors">
+                  Termos de Uso
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.terms')}
+                <a href="#" className="hover:text-primary transition-colors">
+                  Política de Privacidade
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.cookies')}
+                <a href="#" className="hover:text-primary transition-colors">
+                  Proteção de Dados (RGPD)
                 </a>
               </li>
               <li>
-                <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-                  {t('footer.security')}
+                <a href="#" className="hover:text-primary transition-colors">
+                  Regulamento de Transferências
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Footer */}
-        <div className="border-t border-outline-variant pt-lg flex flex-col md:flex-row justify-between items-center">
-          <p className="font-body-md text-on-surface-variant">© {year} BolaYetu. Todos os direitos reservados.</p>
-          <div className="flex gap-md mt-md md:mt-0">
-            <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-              {t('footer.status')}
+        {/* Bottom Bar */}
+        <div className="mt-xl flex flex-col items-center justify-between gap-md border-t border-border pt-md text-xs text-muted-foreground sm:flex-row">
+          <p>© {year} BolaYetu Sports Tech. Todos os direitos reservados.</p>
+          <div className="flex gap-md">
+            <a href="#" className="hover:text-primary transition-colors">
+              Estado dos Serviços
             </a>
-            <span className="text-outline-variant">•</span>
-            <a href="#" className="font-body-md text-on-surface-variant hover:text-primary transition-colors">
-              {t('footer.support')}
+            <span>•</span>
+            <a href="#" className="hover:text-primary transition-colors">
+              Suporte Técnico
             </a>
           </div>
         </div>

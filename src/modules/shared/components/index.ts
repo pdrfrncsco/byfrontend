@@ -1,6 +1,4 @@
-export { Navigation } from './Navigation'
-export type { PublicHeaderVariant } from './Navigation'
-export { PublicHeader } from './PublicHeader'
+export { PublicHeader, type PublicHeaderVariant } from './PublicHeader'
 export { DetailHeroCard } from './DetailHeroCard'
 export { PublicDetailPageShell } from './PublicDetailPageShell'
 export { PublicListHero } from './PublicListHero'
