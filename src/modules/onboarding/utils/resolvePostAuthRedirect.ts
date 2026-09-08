@@ -7,7 +7,11 @@ import type { User } from '@/types'
  * Decide where to send the user immediately after login/register.
  */
 export async function resolvePostAuthRedirect(user?: User): Promise<string> {
-  if (user?.profile_type === 'player' || user?.profileType === 'player' || user?.roles?.includes('player')) {
+  const roles = user?.roles ?? []
+  const isPlayer = user?.profile_type === 'player' || user?.profileType === 'player' || roles.includes('player')
+  const isClubAdmin = roles.includes('club_admin') || roles.includes('club_manager')
+
+  if (isPlayer) {
     try {
       const status = await getPlayerOnboardingStatus()
       if (status.onboarding_required) {
@@ -30,6 +34,10 @@ export async function resolvePostAuthRedirect(user?: User): Promise<string> {
     } catch {
       return ROUTES.DASHBOARD_PLAYER
     }
+  }
+
+  if (isClubAdmin) {
+    return ROUTES.CLUB_ONBOARDING
   }
 
   try {

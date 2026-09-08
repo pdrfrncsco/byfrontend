@@ -6,3 +6,5 @@ export * from './medical.schema'
 export * from './contact.schema'
 export * from './identity.schema'
 export * from './agent.schema'
+export * from './player-onboarding.schema'
+

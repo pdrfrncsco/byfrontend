@@ -1,47 +1,55 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { WizardShell, type WizardStep } from '@/components/ui/wizard'
+import { useOrganizationWizard } from '../hooks/useOrganizationWizard'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   children: React.ReactNode
-  step?: number
+  onBack?: () => void
+  onNext?: () => void
+  onSaveDraft?: () => void
+  canGoBack?: boolean
+  canGoForward?: boolean
+  isLastStep?: boolean
 }
 
-export default function OnboardingLayout({ children, step = 1 }: Props) {
-  const steps = [
-    { label: 'Informação', path: '/onboarding' },
-    { label: 'Branding', path: '/onboarding/branding' },
-    { label: 'Competição', path: '/onboarding/competition' },
-    { label: 'Revisão', path: '/onboarding/review' },
+export default function OnboardingLayout({ 
+  children,
+  onBack,
+  onNext,
+  onSaveDraft,
+  canGoBack,
+  canGoForward,
+  isLastStep
+}: Props) {
+  const { t } = useTranslation()
+  const { currentStepIndex, completedSteps, isSaving, lastSavedAt } = useOrganizationWizard()
+
+  const wizardSteps: WizardStep[] = [
+    { id: 'organization', label: t('onboarding.organization.stepLabel', 'Informação') },
+    { id: 'branding', label: t('onboarding.branding.stepLabel', 'Identidade') },
+    { id: 'competition', label: t('onboarding.competition.stepLabel', 'Competição') },
+    { id: 'review', label: t('onboarding.review.stepLabel', 'Revisão') },
   ]
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body-md">
-      <div className="max-w-6xl mx-auto p-lg">
-        <div className="mb-lg">
-          <h1 className="font-display-lg text-display-lg text-on-surface">Setup Wizard</h1>
-          <p className="text-on-surface-variant">Passo {step} de {steps.length}</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-lg">
-          <aside className="hidden md:block md:col-span-1 bg-surface-container-high glass-card p-md rounded-xl">
-            <nav className="flex flex-col gap-sm">
-              {steps.map((s, idx) => (
-                <Link
-                  key={s.label}
-                  to={s.path}
-                  className={`px-md py-sm rounded-lg ${idx + 1 === step ? 'bg-primary text-on-primary font-bold' : 'text-on-surface-variant'}`}
-                >
-                  {s.label}
-                </Link>
-              ))}
-            </nav>
-          </aside>
-
-          <main className="md:col-span-3 space-y-lg">
-            {children}
-          </main>
-        </div>
-      </div>
-    </div>
+    <WizardShell
+      title={t('onboarding.title', 'Setup da Organização')}
+      subtitle={t('onboarding.subtitle', 'Configure os dados base para a sua entidade.')}
+      steps={wizardSteps}
+      currentStepIndex={currentStepIndex}
+      completedSteps={completedSteps}
+      isSaving={isSaving}
+      lastSavedAt={lastSavedAt}
+      canGoBack={canGoBack}
+      canGoForward={canGoForward}
+      isLastStep={isLastStep}
+      onBack={onBack}
+      onNext={onNext}
+      onSaveDraft={onSaveDraft}
+    >
+      {children}
+    </WizardShell>
   )
 }

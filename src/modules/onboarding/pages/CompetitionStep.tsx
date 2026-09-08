@@ -1,314 +1,184 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Trophy, Users, ListOrdered, ArrowLeft, ArrowRight } from 'lucide-react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
 import OnboardingLayout from './OnboardingLayout'
+import { useOrganizationWizard } from '../hooks/useOrganizationWizard'
+import { useAutoSave } from '@/components/ui/wizard'
+import { competitionStepSchema } from '../schemas/onboarding.schemas'
 import { onboardingRoutes } from '../routes'
-import {
-  useCompetitions,
-  useCreateCompetition,
-  useUpdateCompetition,
-} from '@/modules/competitions'
-import type { CompetitionType } from '@/modules/competitions'
 
-const TYPE_LABELS: Record<CompetitionType, string> = {
-  league: 'Sistema de Liga',
-  tournament: 'Sistema de Torneio',
-  cup: 'Sistema de Taça',
-}
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 
-const TYPE_DESCRIPTIONS: Record<CompetitionType, string> = {
-  league: 'Pontos corridos, ida e volta',
-  tournament: 'Grupos e eliminatórias',
-  cup: 'Eliminatória direta',
-}
-
-function buildSeasonOptions(): string[] {
-  const now = new Date()
-  const startYear = now.getMonth() >= 6 ? now.getFullYear() : now.getFullYear() - 1
-  const seasons: string[] = []
-  for (let i = -1; i <= 2; i++) {
-    const y = startYear + i
-    seasons.push(`${y}/${String(y + 1).slice(-2)}`)
-  }
-  return seasons
-}
+type CompetitionFormValues = z.infer<typeof competitionStepSchema>
 
 export default function CompetitionStep() {
-  const { data: competitions, isLoading } = useCompetitions()
-  const createCompetition = useCreateCompetition()
-  const updateCompetition = useUpdateCompetition()
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { draftData, updateData, setStep, markStepCompleted } = useOrganizationWizard()
 
-  const seasonOptions = useMemo(() => buildSeasonOptions(), [])
-  const defaultSeason = seasonOptions[1] ?? seasonOptions[0] ?? '2025/26'
-
-  const [competitionId, setCompetitionId] = useState<string | null>(null)
-  const [form, setForm] = useState({
-    name: '',
-    competition_type: 'league' as CompetitionType,
-    season: defaultSeason,
-    modality: 'futebol_11',
+  const form = useForm<CompetitionFormValues>({
+    resolver: zodResolver(competitionStepSchema),
+    defaultValues: {
+      name: draftData.competition?.name || '',
+      competition_type: draftData.competition?.competition_type || 'league',
+      modality: draftData.competition?.modality || 'futebol_11',
+      season: draftData.competition?.season || new Date().getFullYear().toString(),
+    },
+    mode: 'onChange'
   })
-  const [saving, setSaving] = useState(false)
-  const [initialized, setInitialized] = useState(false)
-  const saveTimeout = useRef<number | null>(null)
 
   useEffect(() => {
-    if (!competitions || initialized) return
-    const draft = competitions.find(c => c.status === 'draft') ?? competitions[0]
-    if (draft) {
-      setCompetitionId(draft.id)
-      setForm({
-        name: draft.name,
-        competition_type: draft.competition_type,
-        season: draft.season,
-        modality: (draft as any).modality || 'futebol_11',
-      })
+    setStep(2) // Step 3 in UI, index 2
+  }, [setStep])
+
+  const watchedValues = form.watch()
+  const isDirty = form.formState.isDirty
+
+  useAutoSave(
+    { competition: watchedValues },
+    isDirty,
+    async (data) => {
+      updateData(data)
     }
-    setInitialized(true)
-  }, [competitions, initialized])
+  )
 
-  useEffect(() => {
-    if (!initialized) return
-    if (!form.name.trim()) return
-
-    if (saveTimeout.current) window.clearTimeout(saveTimeout.current)
-    saveTimeout.current = window.setTimeout(async () => {
-      setSaving(true)
-      try {
-        const payload = {
-          name: form.name.trim(),
-          competition_type: form.competition_type,
-          season: form.season,
-          modality: form.modality,
-          status: 'draft' as const,
-        }
-
-        if (competitionId) {
-          try {
-            await updateCompetition.mutateAsync({ id: competitionId, data: payload as any })
-          } catch (err: any) {
-            // Se a competição não existir no backend (404), recria via POST
-            if (err?.response?.status === 404) {
-              const created = await createCompetition.mutateAsync(payload as any)
-              setCompetitionId(created.id)
-            } else {
-              throw err
-            }
-          }
-        } else {
-          const created = await createCompetition.mutateAsync(payload as any)
-          setCompetitionId(created.id)
-        }
-      } catch (e) {
-        console.error('Competition autosave failed', e)
-      } finally {
-        setSaving(false)
-      }
-    }, 800)
-
-    return () => {
-      if (saveTimeout.current) window.clearTimeout(saveTimeout.current)
+  const onNext = async () => {
+    const isValid = await form.trigger()
+    if (isValid) {
+      updateData({ competition: form.getValues() })
+      markStepCompleted('competition')
+      navigate(onboardingRoutes.review)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, initialized])
-
-  function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
   }
 
-  const previewTitle = form.name.trim() || 'Configura para Vencer'
-  const typeLabel = TYPE_LABELS[form.competition_type]
-  const typeDescription = TYPE_DESCRIPTIONS[form.competition_type]
-
-  if (isLoading) {
-    return (
-      <OnboardingLayout step={3}>
-        <div>Carregando...</div>
-      </OnboardingLayout>
-    )
+  const onSkip = () => {
+    markStepCompleted('competition')
+    navigate(onboardingRoutes.review)
   }
+
+  const onBack = () => navigate(onboardingRoutes.branding)
 
   return (
-    <OnboardingLayout step={3}>
-      <div className="mb-lg flex flex-col md:flex-row md:items-center justify-between gap-md">
-        <div>
-          <h2 className="font-display-lg text-display-lg text-primary mb-xs">Competição Inicial (Opcional)</h2>
-          <p className="text-on-surface-variant max-w-2xl">
-            Configure sua primeira competição durante o onboarding ou pule esta etapa e crie competições mais tarde.
-          </p>
-        </div>
-        <Link
-          to={onboardingRoutes.review}
-          className="self-start md:self-auto text-label-md text-on-surface-variant hover:text-primary underline px-md py-sm transition-colors"
-        >
-          Pular esta etapa →
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
-        <div className="lg:col-span-7">
-          <section className="glass-card p-lg rounded-xl">
-            <h3 className="font-title-md text-title-md text-on-surface mb-lg flex items-center gap-sm">
-              <Trophy className="w-5 h-5 text-primary" />
-              Criar Primeira Competição
-            </h3>
-
-            <form className="space-y-lg" onSubmit={e => e.preventDefault()}>
-              <div className="flex flex-col gap-xs">
-                <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                  Nome da Competição
-                </label>
-                <input
-                  name="name"
-                  value={form.name}
-                  onChange={onChange}
-                  placeholder="Ex: Liga Nacional de Elite"
-                  className="form-inset-input rounded-lg px-md py-sm"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-                <div className="flex flex-col gap-xs">
-                  <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                    Tipo
-                  </label>
-                  <select
-                    name="competition_type"
-                    value={form.competition_type}
-                    onChange={onChange}
-                    className="form-inset-input rounded-lg px-md py-sm w-full"
-                  >
-                    <option value="league">Liga</option>
-                    <option value="tournament">Torneio</option>
-                    <option value="cup">Taça</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-xs">
-                  <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                    Modalidade
-                  </label>
-                  <select
-                    name="modality"
-                    value={form.modality}
-                    onChange={onChange}
-                    className="form-inset-input rounded-lg px-md py-sm w-full"
-                  >
-                    <option value="futebol_11">Futebol 11</option>
-                    <option value="futebol_7">Futebol 7</option>
-                    <option value="futsal">Futsal</option>
-                    <option value="praia">Futebol de Praia</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-xs">
-                  <label className="font-label-sm text-on-surface-variant uppercase tracking-wider">
-                    Época
-                  </label>
-                  <select
-                    name="season"
-                    value={form.season}
-                    onChange={onChange}
-                    className="form-inset-input rounded-lg px-md py-sm w-full"
-                  >
-                    {seasonOptions.map(season => (
-                      <option key={season} value={season}>{season}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-md flex items-center gap-md">
-                <Link
-                  to={onboardingRoutes.branding}
-                  className="flex-1 px-lg py-md border border-outline text-on-surface font-title-md hover:bg-white/5 transition-all rounded-lg flex items-center justify-center gap-sm"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Voltar
-                </Link>
-                <Link
-                  to={onboardingRoutes.review}
-                  className="flex-1 px-lg py-md font-title-md bg-primary text-on-primary hover:brightness-110 transition-all rounded-lg flex items-center justify-center gap-sm"
-                >
-                  Continuar
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="text-right">
-                <span className="text-label-sm text-on-surface-variant">
-                  {saving ? 'A gravar...' : competitionId ? 'Guardado' : form.name.trim() ? 'A guardar...' : 'Pode preencher agora ou criar depois'}
-                </span>
-              </div>
-            </form>
-          </section>
-        </div>
-
-        <aside className="lg:col-span-5 space-y-md">
-          <div className="glass-card p-md rounded-xl border border-primary/20">
-            <h4 className="font-label-sm text-primary uppercase mb-md">Visualização de Estrutura</h4>
-
-            <div className="space-y-sm">
-              <div className="flex items-center gap-md">
-                <div className="w-8 h-8 rounded-full bg-surface-container-highest border border-outline/10 flex items-center justify-center text-primary">
-                  <Users className="w-4 h-4" />
-                </div>
-                <div className="flex-1 h-[2px] bg-outline/10" />
-                <div className="w-24 p-xs bg-surface-container-lowest border border-outline/10 rounded text-center">
-                  <span className="font-data-tabular text-label-sm">Equipas</span>
-                </div>
-              </div>
-
-              <div className="ml-4 border-l-2 border-outline/10 pl-md py-xs space-y-sm">
-                <div className="flex items-center gap-sm p-sm bg-primary/5 rounded border border-primary/10">
-                  <ListOrdered className="w-4 h-4 text-primary shrink-0" />
-                  <div>
-                    <div className="font-label-sm text-primary">{typeLabel}</div>
-                    <div className="text-[10px] text-on-surface-variant">{typeDescription}</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-sm">
-                  <div className="p-xs bg-surface-container-high rounded border border-white/5 flex flex-col items-center justify-center">
-                    <span className="font-data-tabular text-primary">
-                      {form.competition_type === 'league' ? '20' : form.competition_type === 'tournament' ? '16' : '32'}
-                    </span>
-                    <span className="text-[9px] uppercase text-on-surface-variant">Clubes</span>
-                  </div>
-                  <div className="p-xs bg-surface-container-high rounded border border-white/5 flex flex-col items-center justify-center">
-                    <span className="font-data-tabular text-primary">
-                      {form.competition_type === 'league' ? '380' : form.competition_type === 'tournament' ? '48' : '31'}
-                    </span>
-                    <span className="text-[9px] uppercase text-on-surface-variant">Jogos</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-md">
-                <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary-fixed-dim">
-                  <Trophy className="w-4 h-4" />
-                </div>
-                <div className="flex-1 h-[2px] bg-primary/20" />
-                <div className="w-24 p-xs bg-primary-container/20 border border-primary/20 rounded text-center">
-                  <span className="font-data-tabular text-label-sm text-primary">Troféu</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="glass-card p-md rounded-xl border border-outline/10">
-            <div className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface leading-tight mb-xs">
-              {previewTitle}
-            </div>
-            <div className="text-on-surface-variant text-label-sm">
-              {form.season} · {TYPE_LABELS[form.competition_type].replace('Sistema de ', '')}
-            </div>
-            <p className="text-on-surface-variant text-label-sm mt-sm">
-              Dados precisos geram performance de elite.
+    <OnboardingLayout
+      canGoBack={true}
+      canGoForward={form.formState.isValid || !watchedValues.name} // allow forward if empty or valid
+      onNext={onNext}
+      onBack={onBack}
+    >
+      <div className="space-y-lg">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+          <div>
+            <h2 className="font-title-lg text-title-lg text-primary">{t('onboarding.competition.title', 'Competição Inicial')}</h2>
+            <p className="text-on-surface-variant text-body-md mt-xs max-w-2xl">
+              {t('onboarding.competition.subtitle', 'Configure a sua primeira competição agora ou pule esta etapa para fazê-lo mais tarde.')}
             </p>
           </div>
-        </aside>
+          <Button variant="ghost" onClick={onSkip} className="text-primary hover:bg-primary/10">
+            {t('onboarding.competition.skip', 'Pular etapa')}
+          </Button>
+        </div>
+
+        <Form {...form}>
+          <form className="space-y-md" onSubmit={e => e.preventDefault()}>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('onboarding.competition.name', 'Nome da Competição')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('onboarding.competition.namePlaceholder', 'Ex: Liga Nacional')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+              <FormField
+                control={form.control}
+                name="competition_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('onboarding.competition.type', 'Tipo')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="league">Liga</SelectItem>
+                        <SelectItem value="tournament">Torneio</SelectItem>
+                        <SelectItem value="cup">Taça</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="modality"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('onboarding.competition.modality', 'Modalidade')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="futebol_11">Futebol 11</SelectItem>
+                        <SelectItem value="futebol_7">Futebol 7</SelectItem>
+                        <SelectItem value="futsal">Futsal</SelectItem>
+                        <SelectItem value="praia">Futebol de Praia</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="season"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('onboarding.competition.season', 'Época')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 5 }).map((_, i) => {
+                          const year = new Date().getFullYear() + i;
+                          return (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </form>
+        </Form>
       </div>
     </OnboardingLayout>
   )

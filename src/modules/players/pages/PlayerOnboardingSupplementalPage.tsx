@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, ArrowLeft, Info } from 'lucide-react'
-import { Button } from '@/components/ui'
+import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { useCompleteOnboardingStep } from '../hooks'
+import { useCompleteOnboardingStep, usePlayerWizard } from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 type SupplementalKind = 'guardian' | 'club'
@@ -15,21 +15,44 @@ const content: Record<SupplementalKind, { title: string; description: string; st
 export function PlayerOnboardingSupplementalPage({ kind }: { kind: SupplementalKind }) {
   const navigate = useNavigate()
   const complete = useCompleteOnboardingStep()
+  const { markStepCompleted } = usePlayerWizard()
   const item = content[kind]
   const previous = kind === 'guardian' ? ROUTES.ONBOARDING_PLAYER_IDENTITY : ROUTES.ONBOARDING_PLAYER_GUARDIAN
 
   const onContinue = async () => {
+    markStepCompleted(kind)
     await complete.mutateAsync(kind)
     navigate(item.next)
   }
 
   return (
-    <PlayerOnboardingLayout step={item.step}>
-      <div className="space-y-lg">
-        <div><h2 className="text-xl font-semibold text-on-surface">{item.title}</h2><p className="mt-xs text-sm text-on-surface-variant">{item.description}</p></div>
-        <div className="flex items-start gap-md rounded-lg border border-primary/30 bg-primary-container/10 p-md text-sm text-on-surface-variant"><Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" /><p>Este passo pode ser concluído agora e complementado mais tarde nas definições do jogador.</p></div>
-        <div className="flex justify-between gap-sm"><Button type="button" variant="secondary" onClick={() => navigate(previous)}><ArrowLeft className="h-4 w-4" />Voltar</Button><Button type="button" onClick={onContinue} loading={complete.isPending}>{item.nextLabel}<ArrowRight className="h-4 w-4" /></Button></div>
-      </div>
+    <PlayerOnboardingLayout
+      step={item.step}
+      onNext={onContinue}
+      onBack={() => navigate(previous)}
+    >
+      <Card className="border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">{item.title}</CardTitle>
+          <CardDescription>{item.description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-md">
+          <div className="flex items-start gap-md rounded-lg border border-primary/30 bg-primary/10 p-md text-sm text-foreground">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+            <p>Este passo pode ser concluído agora e complementado mais tarde nas definições do jogador.</p>
+          </div>
+          <div className="flex justify-between pt-md">
+            <Button type="button" variant="outline" onClick={() => navigate(previous)}>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              Voltar
+            </Button>
+            <Button type="button" onClick={onContinue} loading={complete.isPending}>
+              {item.nextLabel}
+              <ArrowRight className="ml-xs h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </PlayerOnboardingLayout>
   )
 }

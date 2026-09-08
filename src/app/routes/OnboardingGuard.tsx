@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/app/providers'
 import { useOnboardingStatus } from '@/modules/organizations'
 import { ROUTES } from '@/constants/routes'
+import { PageSkeleton } from '@/components/ui/page-skeleton'
 
 interface OnboardingGuardProps {
   children: ReactNode
@@ -27,11 +28,7 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const { data, isLoading, isError } = useOnboardingStatus(Boolean(deservesOnboardingCheck))
 
   if (authLoading || (deservesOnboardingCheck && isLoading)) {
-    return (
-      <div className="min-h-screen bg-background text-on-surface flex items-center justify-center">
-        A carregar...
-      </div>
-    )
+    return <PageSkeleton />
   }
 
   if (!isAuthenticated) {

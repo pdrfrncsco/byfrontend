@@ -26,3 +26,5 @@ export * from './usePlayerCompliance'
 
 // Re-export with specific names to avoid ambiguity
 export { usePlayerSearch as usePlayerSearchQuery } from './usePlayerQueries'
+export * from './usePlayerWizard'
+

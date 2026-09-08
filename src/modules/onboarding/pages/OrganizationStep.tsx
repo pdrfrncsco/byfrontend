@@ -1,113 +1,151 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
 import OnboardingLayout from './OnboardingLayout'
-import { useOrganizationMe, useUpdateOrganization } from '@/modules/organizations'
+import { useOrganizationWizard } from '../hooks/useOrganizationWizard'
+import { useAutoSave } from '@/components/ui/wizard'
+import { organizationStepSchema } from '../schemas/onboarding.schemas'
+import { onboardingRoutes } from '../routes'
 
-const COUNTRY_LABELS: Record<string, string> = {
-  AO: 'Angola',
-  MZ: 'Moçambique',
-  PT: 'Portugal',
-  BR: 'Brasil',
-}
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 
-const COUNTRY_CODES: Record<string, string> = {
-  Angola: 'AO',
-  Moçambique: 'MZ',
-  Portugal: 'PT',
-  Brasil: 'BR',
-}
-
-function resolveCountryCode(country?: string | null): string {
-  if (!country) return ''
-  if (COUNTRY_CODES[country]) return COUNTRY_CODES[country]
-  const entry = Object.entries(COUNTRY_LABELS).find(([, label]) => label === country)
-  return entry?.[0] ?? country
-}
+type OrganizationFormValues = z.infer<typeof organizationStepSchema>
 
 export default function OrganizationStep() {
-  const { data: org, isLoading } = useOrganizationMe()
-  const updateOrg = useUpdateOrganization()
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { draftData, updateData, setStep, markStepCompleted } = useOrganizationWizard()
 
-  const [form, setForm] = useState({
-    name: '',
-    country: '',
-    city: '',
+  const form = useForm<OrganizationFormValues>({
+    resolver: zodResolver(organizationStepSchema),
+    defaultValues: {
+      name: draftData.organization?.name || '',
+      type: draftData.organization?.type || '',
+      location: draftData.organization?.location || '',
+      slug: draftData.organization?.slug || '',
+    },
+    mode: 'onChange'
   })
-  const [initialized, setInitialized] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const saveTimeout = useRef<number | null>(null)
 
+  // Set step to 0 when this component mounts (Organization is step 0)
   useEffect(() => {
-    if (!org || initialized) return
-    setForm({
-      name: org.name || '',
-      country: resolveCountryCode(org.country),
-      city: org.city || '',
-    })
-    setInitialized(true)
-  }, [org, initialized])
+    setStep(0)
+  }, [setStep])
 
-  useEffect(() => {
-    if (!initialized || !org) return
-    if (!form.name.trim()) return
+  // Watch form values and auto-save
+  const watchedValues = form.watch()
+  const isDirty = form.formState.isDirty
 
-    if (saveTimeout.current) window.clearTimeout(saveTimeout.current)
-    saveTimeout.current = window.setTimeout(async () => {
-      setSaving(true)
-      try {
-        await updateOrg.mutateAsync({
-          name: form.name.trim(),
-          country: COUNTRY_LABELS[form.country] || form.country,
-          city: form.city.trim() || undefined,
-        })
-      } catch (e) {
-        console.error('Autosave failed', e)
-      } finally {
-        setSaving(false)
-      }
-    }, 800)
-
-    return () => {
-      if (saveTimeout.current) window.clearTimeout(saveTimeout.current)
+  useAutoSave(
+    { organization: watchedValues },
+    isDirty,
+    async (data) => {
+      // simulate API call or call real API
+      updateData(data)
     }
-  }, [form, initialized, org, updateOrg])
+  )
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+  const onNext = async () => {
+    const isValid = await form.trigger()
+    if (isValid) {
+      updateData({ organization: form.getValues() })
+      markStepCompleted('organization')
+      navigate(onboardingRoutes.branding)
+    }
   }
 
-  if (isLoading) return <OnboardingLayout step={1}><div>Carregando...</div></OnboardingLayout>
-
   return (
-    <OnboardingLayout step={1}>
-      <div className="glass-card p-lg rounded-xl">
-        <h2 className="font-title-md text-title-md text-primary mb-md">Informação da Organização</h2>
-        <form className="grid grid-cols-1 md:grid-cols-4 gap-md" onSubmit={e => e.preventDefault()}>
-          <div className="md:col-span-4 flex flex-col gap-xs">
-            <label className="font-label-sm text-on-surface-variant">Nome da Organização</label>
-            <input name="name" value={form.name} onChange={onChange} className="form-inset-input rounded-lg px-md py-sm" />
-          </div>
+    <OnboardingLayout
+      canGoBack={false}
+      canGoForward={form.formState.isValid}
+      onNext={onNext}
+    >
+      <div className="space-y-lg">
+        <div>
+          <h2 className="font-title-lg text-title-lg text-primary">{t('onboarding.organization.title', 'Informação da Organização')}</h2>
+          <p className="text-on-surface-variant text-body-md mt-xs">
+            {t('onboarding.organization.subtitle', 'Configure os detalhes básicos da sua entidade.')}
+          </p>
+        </div>
 
-          <div className="md:col-span-4 mt-md">
-            <label className="font-label-sm text-on-surface-variant">País</label>
-            <select name="country" value={form.country} onChange={onChange} className="form-inset-input rounded-lg px-md py-sm w-full">
-              <option value="">Selecionar país</option>
-              <option value="AO">Angola</option>
-              <option value="MZ">Moçambique</option>
-              <option value="PT">Portugal</option>
-              <option value="BR">Brasil</option>
-            </select>
-          </div>
+        <Form {...form}>
+          <form className="space-y-md" onSubmit={e => e.preventDefault()}>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('onboarding.organization.name', 'Nome Oficial')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('onboarding.organization.namePlaceholder', 'Ex: Associação de Futebol')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="md:col-span-4 flex flex-col gap-xs mt-md">
-            <label className="font-label-sm text-on-surface-variant">Cidade</label>
-            <input name="city" value={form.city} onChange={onChange} className="form-inset-input rounded-lg px-md py-sm" />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('onboarding.organization.type', 'Tipo de Entidade')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('onboarding.organization.typePlaceholder', 'Selecione')} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="federation">{t('onboarding.organization.types.federation', 'Federação')}</SelectItem>
+                        <SelectItem value="association">{t('onboarding.organization.types.association', 'Associação')}</SelectItem>
+                        <SelectItem value="league">{t('onboarding.organization.types.league', 'Liga')}</SelectItem>
+                        <SelectItem value="club">{t('onboarding.organization.types.club', 'Clube / Academia')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="md:col-span-4 mt-md flex justify-end items-center gap-sm">
-            <span className="text-label-sm text-on-surface-variant">{saving ? 'A gravar...' : 'Guardado'}</span>
-          </div>
-        </form>
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('onboarding.organization.location', 'Sede/Localização')}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t('onboarding.organization.locationPlaceholder', 'País, Cidade')} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('onboarding.organization.slug', 'URL / Slug (Opcional)')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('onboarding.organization.slugPlaceholder', 'ex: associacao-futebol')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
       </div>
     </OnboardingLayout>
   )
