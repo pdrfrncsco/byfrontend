@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils'
 const cardVariants = cva('rounded-xl border border-outline-variant/30 transition-all duration-300', {
   variants: {
     variant: {
-      glass: 'glass-card',
-      flat: 'bg-surface-container shadow-sm',
-      outline: 'bg-transparent',
+      glass: 'bg-surface/75 backdrop-blur-md border border-outline-variant/50 shadow-md hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg relative overflow-hidden',
+      flat: 'bg-surface-container shadow-sm border border-outline-variant/30',
+      outline: 'bg-transparent border border-outline-variant/30',
     },
     padding: {
       none: '!p-0',

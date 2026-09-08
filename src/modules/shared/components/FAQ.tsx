@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next'
 export function FAQ() {
   const { t } = useTranslation()
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
-  const faqs = t('landing.faq.items', { returnObjects: true }) as Array<{
-    question: string
-    answer: string
-  }>
+  const tResult = t('landing.faq.items', { returnObjects: true })
+  const faqs = Array.isArray(tResult) ? tResult : [
+    { question: 'Como posso registar a minha organização?', answer: 'Aceda à página de registo e preencha o formulário.' },
+    { question: 'Quais os custos associados?', answer: 'O registo base é gratuito. Consulte os nossos planos para mais funcionalidades.' }
+  ]
 
   return (
     <section className="py-xl max-w-container-max mx-auto px-gutter">
@@ -27,7 +28,7 @@ export function FAQ() {
           return (
             <div
               key={idx}
-              className="glass-panel rounded-xl overflow-hidden border-outline-variant border transition-all hover:border-primary/40"
+              className="bg-surface/75 backdrop-blur-md rounded-xl overflow-hidden border-outline-variant border transition-all hover:border-primary/40"
             >
               <button
                 type="button"

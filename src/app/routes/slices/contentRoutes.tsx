@@ -6,11 +6,16 @@ import { clubRoutes } from '@/modules/clubs/routes'
 import { competitionRoutes } from '@/modules/competitions/routes'
 import { organizationRoutes } from '@/modules/organizations/routes'
 import { playerRoutes } from '@/modules/players/routes'
-import { PlayerListPage, PlayerDetailPage } from '@/modules/players'
-import { CompetitionListPage, CompetitionDetailPage } from '@/modules/competitions'
-import { OrganizationListPage, OrganizationDetailPage } from '@/modules/organizations'
-import MediaManagerPage from '@/modules/media_manager/pages/MediaManagerPage'
 import { ROUTES } from '@/constants/routes'
+
+// Lazy loaded components for public routes and media
+const PlayerListPage = lazy(() => import('@/modules/players').then(m => ({ default: m.PlayerListPage })))
+const PlayerDetailPage = lazy(() => import('@/modules/players').then(m => ({ default: m.PlayerDetailPage })))
+const CompetitionListPage = lazy(() => import('@/modules/competitions').then(m => ({ default: m.CompetitionListPage })))
+const CompetitionDetailPage = lazy(() => import('@/modules/competitions').then(m => ({ default: m.CompetitionDetailPage })))
+const OrganizationListPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationListPage })))
+const OrganizationDetailPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationDetailPage })))
+const MediaManagerPage = lazy(() => import('@/modules/media_manager/pages/MediaManagerPage'))
 
 const ClubListPage = lazy(() => import('@/modules/clubs/pages/ClubListPage'))
 const ClubDetailPage = lazy(() => import('@/modules/clubs/pages/ClubDetailPage'))
@@ -79,8 +84,8 @@ export function contentRouteElements() {
   return (
     <>
       {/* Organizations (public) */}
-      <Route path={organizationRoutes.list} element={<PublicLayout variant="explore"><OrganizationListPage /></PublicLayout>} />
-      <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><OrganizationDetailPage /></PublicLayout>} />
+      <Route path={organizationRoutes.list} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationListPage /></Suspense></PublicLayout>} />
+      <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationDetailPage /></Suspense></PublicLayout>} />
 
       {/* Digital Asset Management */}
       <Route path={ROUTES.DASHBOARD_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><MediaManagerPage ownerType="organization" ownerId={undefined} /></Suspense></ProtectedRoute>} />
@@ -98,8 +103,8 @@ export function contentRouteElements() {
       />
 
       {/* Players */}
-      <Route path={playerRoutes.list} element={<PublicLayout variant="explore"><PlayerListPage /></PublicLayout>} />
-      <Route path={playerRoutes.detail(':slug')} element={<PublicLayout variant="explore"><PlayerDetailPage /></PublicLayout>} />
+      <Route path={playerRoutes.list} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><PlayerListPage /></Suspense></PublicLayout>} />
+      <Route path={playerRoutes.detail(':slug')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><PlayerDetailPage /></Suspense></PublicLayout>} />
       <Route
         path={playerRoutes.create}
         element={
@@ -118,8 +123,8 @@ export function contentRouteElements() {
       />
 
       {/* Competitions (public browse) */}
-      <Route path={competitionRoutes.list} element={<PublicLayout variant="explore"><CompetitionListPage /></PublicLayout>} />
-      <Route path={competitionRoutes.detail(':id')} element={<PublicLayout variant="explore"><CompetitionDetailPage /></PublicLayout>} />
+      <Route path={competitionRoutes.list} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><CompetitionListPage /></Suspense></PublicLayout>} />
+      <Route path={competitionRoutes.detail(':id')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><CompetitionDetailPage /></Suspense></PublicLayout>} />
       <Route
         path={competitionRoutes.rankings(':id')}
         element={<Suspense fallback={<RouteFallback />}><CompetitionRankingsPage /></Suspense>}

@@ -298,32 +298,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
-/* Premium Card Design with Glassmorphism */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--bg-card-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  padding: 1.75rem;
-  transition: var(--transition-smooth);
-  position: relative;
-  overflow: hidden;
-}
 
-.glass-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(var(--color-primary-rgb), 0.3);
-  box-shadow: var(--shadow-lg), 0 0 25px rgba(var(--color-primary-rgb), 0.1);
-}
-
-/* Landing page glass panel & hero backdrop (teal-tinted, dark surface) */
-.glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--bg-card-border);
-}
 .hero-gradient {
   background: radial-gradient(circle at 50% 50%, rgba(var(--color-primary-rgb), 0.18) 0%, rgba(0, 0, 0, 0) 40%), linear-gradient(180deg, var(--bg-app), rgba(var(--color-primary-rgb), 0.1));
 }
@@ -389,54 +364,6 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--dashboard-avatar);
 }
 
-/* Premium Buttons & Hover effects */
-.btn-primary {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: linear-gradient(135deg, var(--color-primary), rgba(var(--color-primary-rgb), 0.8));
-  color: white;
-  border: none;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.4);
-  transition: var(--transition-smooth);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.6);
-  filter: brightness(1.1);
-}
-
-.btn-secondary {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--text-muted);
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-}
-
-.btn-secondary:hover {
-  background: rgba(var(--color-primary-rgb), 0.05);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  transform: translateY(-1px);
-}
 
 /* Badge values */
 .badge {

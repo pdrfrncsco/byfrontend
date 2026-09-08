@@ -10,20 +10,22 @@ import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { transferRoutes } from '@/modules/transfers/routes'
 import { onboardingRoutes } from '@/modules/onboarding/routes'
 import { ROUTES } from '@/constants/routes'
-import {
-  DashboardPageSelector,
-} from '@/modules/dashboards'
-import { CompetitionDashboardPage } from '@/modules/competitions/pages/CompetitionDashboardPage'
-import {
-  OrganizationDashboardPage,
-  OrganizationSettingsPage,
-  OrganizationMembersPage,
-  OrganizationAffiliationsPage,
-  OrganizationClubsPage,
-  OrganizationPlayersPage,
-  OrganizationCompetitionsPage,
-} from '@/modules/organizations'
-import { OrganizationStep, BrandingStep, CompetitionStep, ReviewStep } from '@/modules/onboarding'
+// Lazy loaded pages for dashboards and organizations
+const DashboardPageSelector = lazy(() => import('@/modules/dashboards').then(m => ({ default: m.DashboardPageSelector })))
+const CompetitionDashboardPage = lazy(() => import('@/modules/competitions/pages/CompetitionDashboardPage').then(m => ({ default: m.CompetitionDashboardPage })))
+
+const OrganizationDashboardPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationDashboardPage })))
+const OrganizationSettingsPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationSettingsPage })))
+const OrganizationMembersPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationMembersPage })))
+const OrganizationAffiliationsPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationAffiliationsPage })))
+const OrganizationClubsPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationClubsPage })))
+const OrganizationPlayersPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationPlayersPage })))
+const OrganizationCompetitionsPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationCompetitionsPage })))
+
+const OrganizationStep = lazy(() => import('@/modules/onboarding').then(m => ({ default: m.OrganizationStep })))
+const BrandingStep = lazy(() => import('@/modules/onboarding').then(m => ({ default: m.BrandingStep })))
+const CompetitionStep = lazy(() => import('@/modules/onboarding').then(m => ({ default: m.CompetitionStep })))
+const ReviewStep = lazy(() => import('@/modules/onboarding').then(m => ({ default: m.ReviewStep })))
 
 const ClubDashboardPage = lazy(() => import('@/modules/clubs/pages/ClubDashboardPage'))
 const ClubSettingsPage = lazy(() => import('@/modules/clubs/pages/ClubSettingsPage'))
@@ -116,7 +118,7 @@ export function dashboardRouteElements() {
       {/* Dashboards */}
       <Route
         path={dashboardRoutes.root}
-        element={<ProtectedRoute><DashboardPageSelector /></ProtectedRoute>}
+        element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><DashboardPageSelector /></Suspense></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.executive}
@@ -124,7 +126,7 @@ export function dashboardRouteElements() {
       />
       <Route
         path={dashboardRoutes.competition}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}><CompetitionDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}><Suspense fallback={<RouteFallback />}><CompetitionDashboardPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={dashboardRoutes.club}
@@ -193,31 +195,31 @@ export function dashboardRouteElements() {
       {/* Organization management */}
       <Route
         path={organizationRoutes.dashboard}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationDashboardPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationDashboardPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.clubs}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationClubsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationClubsPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.players}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationPlayersPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationPlayersPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.competitions}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationCompetitionsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationCompetitionsPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.settings}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationSettingsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationSettingsPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.members}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationMembersPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationMembersPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.affiliations}
-        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><OrganizationAffiliationsPage /></ProtectedRoute>}
+        element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationAffiliationsPage /></Suspense></ProtectedRoute>}
       />
       <Route
         path={organizationRoutes.lineups}
@@ -399,19 +401,19 @@ export function dashboardRouteElements() {
       {/* Onboarding */}
       <Route
         path={onboardingRoutes.root}
-        element={<ProtectedRoute><OnboardingGuard><OrganizationStep /></OnboardingGuard></ProtectedRoute>}
+        element={<ProtectedRoute><OnboardingGuard><Suspense fallback={<RouteFallback />}><OrganizationStep /></Suspense></OnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.branding}
-        element={<ProtectedRoute><OnboardingGuard><BrandingStep /></OnboardingGuard></ProtectedRoute>}
+        element={<ProtectedRoute><OnboardingGuard><Suspense fallback={<RouteFallback />}><BrandingStep /></Suspense></OnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.competition}
-        element={<ProtectedRoute><OnboardingGuard><CompetitionStep /></OnboardingGuard></ProtectedRoute>}
+        element={<ProtectedRoute><OnboardingGuard><Suspense fallback={<RouteFallback />}><CompetitionStep /></Suspense></OnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.review}
-        element={<ProtectedRoute><OnboardingGuard><ReviewStep /></OnboardingGuard></ProtectedRoute>}
+        element={<ProtectedRoute><OnboardingGuard><Suspense fallback={<RouteFallback />}><ReviewStep /></Suspense></OnboardingGuard></ProtectedRoute>}
       />
       <Route
         path={onboardingRoutes.player}

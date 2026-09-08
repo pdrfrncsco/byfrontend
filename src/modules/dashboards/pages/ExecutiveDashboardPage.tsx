@@ -13,25 +13,7 @@ import {
   DollarSign,
   Clock
 } from 'lucide-react'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import { Bar } from 'react-chartjs-2'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import { GoalsChartWidget } from '../components/GoalsChartWidget'
 
 export function ExecutiveDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
@@ -95,76 +77,7 @@ export function ExecutiveDashboardPage() {
     players_this_month: 0
   }
 
-  const chartData = {
-    labels: data?.goals_evolution[0]?.data.map(d => d.period) || [],
-    datasets: data?.goals_evolution.map((evol, idx) => ({
-      label: evol.tournament_name,
-      data: evol.data.map(d => d.goals),
-      backgroundColor: idx === 0 ? '#94d3c1' : idx === 1 ? '#e9c349' : '#1B4D3E',
-      borderColor: idx === 0 ? '#94d3c1' : idx === 1 ? '#e9c349' : '#1B4D3E',
-      borderWidth: 1,
-      borderRadius: 4,
-    })) || [],
-  }
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top' as const,
-        labels: {
-          color: '#bfc9c4',
-          font: {
-            family: 'Inter, sans-serif',
-            size: 10,
-            weight: 'bold' as const,
-          },
-        },
-      },
-      tooltip: {
-        backgroundColor: '#102034',
-        titleColor: '#bfc9c4',
-        bodyColor: '#ffffff',
-        borderColor: '#26364a',
-        borderWidth: 1,
-        titleFont: {
-          family: 'Inter, sans-serif',
-          weight: 'bold' as const,
-        },
-        bodyFont: {
-          family: 'Inter, sans-serif',
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: '#bfc9c4',
-          font: {
-            family: 'Inter, sans-serif',
-            size: 9,
-          },
-        },
-      },
-      y: {
-        grid: {
-          color: 'rgba(38, 54, 74, 0.3)',
-        },
-        ticks: {
-          color: '#bfc9c4',
-          font: {
-            family: 'Inter, sans-serif',
-            size: 9,
-          },
-        },
-      },
-    },
-  }
 
   return (
     <DashboardLayout
@@ -286,7 +199,7 @@ export function ExecutiveDashboardPage() {
             <h4 className="font-display text-base font-bold">Métricas de Golos por Torneio</h4>
           </div>
           <div className="flex-1 p-md relative h-56 mt-2">
-            <Bar data={chartData} options={chartOptions} />
+            <GoalsChartWidget goalsEvolution={data?.goals_evolution || []} />
           </div>
         </section>
       </div>
