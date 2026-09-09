@@ -137,12 +137,17 @@ export function ClubSettingsForm({
                     role="logo"
                     accept="image"
                     autoAttach={true}
-                    onSelected={(url) => setSelectedLogoUrl(url)}
+                    onSelected={(url) => {
+                      setSelectedLogoUrl(url)
+                    }}
                     trigger={<Button variant="outline" size="sm">Selecionar logo</Button>}
                   />
                   <p className="text-[10px] text-outline">JPEG, PNG, WebP ou SVG</p>
                 </div>
               </div>
+              {selectedLogoUrl && (
+                <p className="mt-xs text-xs text-primary font-medium">✓ Logo atualizado com sucesso</p>
+              )}
             </Card>
 
             <Card variant="glass" padding="md">

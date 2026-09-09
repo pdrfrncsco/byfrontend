@@ -138,7 +138,7 @@ export function PlayerSettingsPage() {
         <PlayerAvatarUpload
           slug={slug}
           ownerId={player.id}
-          avatarUrl={avatar || player.avatar}
+          avatarUrl={avatar || player.profile_photo_url || player.avatar}
           initials={initials}
           accentColor={positionColor}
           onUploaded={(url) => setValue('avatar', url, { shouldDirty: true })}

@@ -84,6 +84,13 @@ export function MediaAssetPicker({
         ownerType,
         category: role,
       })
+      if (autoAttach) {
+        try {
+          await attachMutation.mutateAsync({ assetId: newAsset.id, ownerType, ownerId, role })
+        } catch {
+          // Ignore if asset was automatically attached on upload
+        }
+      }
       const url = await getMediaAssetUrl(newAsset)
       onSelected?.(url, newAsset)
       setOpen(false)
