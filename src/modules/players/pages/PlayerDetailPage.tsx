@@ -15,6 +15,7 @@ import {
   PlayerStatisticsTab,
   PlayerVideosTab,
 } from '../components'
+import { MediaGalleryTab } from '@/modules/media_manager/components'
 import { usePlayer } from '../hooks'
 import { useSeo } from '@/hooks/useSeo'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
@@ -169,6 +170,12 @@ export function PlayerDetailPage() {
             >
               {t('players.detail.tabs.achievements')}
             </TabsTrigger>
+            <TabsTrigger 
+              value="gallery" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Galeria
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent 
@@ -211,6 +218,19 @@ export function PlayerDetailPage() {
             className="animate-in fade-in slide-in-from-bottom-2 duration-500"
           >
             <PlayerAchievementsTab slug={slug} fallbackAchievements={player.achievements ?? []} />
+          </TabsContent>
+
+          <TabsContent 
+            value="gallery" 
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <MediaGalleryTab
+              ownerType="player"
+              ownerId={player.id}
+              title={`Galeria de Fotos • ${player.full_name}`}
+              emptyTitle="Sem fotos na galeria"
+              emptyDescription="Este jogador ainda não adicionou fotos públicas à sua galeria."
+            />
           </TabsContent>
           </Tabs>
         </main>

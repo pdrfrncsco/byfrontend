@@ -166,7 +166,17 @@ export function PlayerVideosSection({ slug, ownerId }: PlayerVideosSectionProps)
                 htmlFor="video-file"
                 error={errors.video?.message}
               >
-                <MediaAssetPicker ownerType="player" ownerId={ownerId} role="video" accept="video" onSelected={(_, asset) => setSelectedAsset(asset)} trigger={<Button type="button" variant="outline"><Video className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
+                <MediaAssetPicker
+                  ownerType="player"
+                  ownerId={ownerId}
+                  role="video"
+                  accept="video"
+                  onSelected={(_, asset) => {
+                    setSelectedAsset(asset)
+                    setValue('media_asset', asset.id, { shouldDirty: true, shouldValidate: true })
+                  }}
+                  trigger={<Button type="button" variant="outline"><Video className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+                />
                 <p className="text-xs text-on-surface-variant">
                   {selectedAsset?.name || (watchedFile instanceof File ? watchedFile.name : 'Escolha um vídeo já carregado na Biblioteca de Media.')}
                 </p>

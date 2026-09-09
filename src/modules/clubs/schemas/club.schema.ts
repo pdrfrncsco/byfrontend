@@ -45,7 +45,7 @@ export const clubDocumentSchema = z.object({
   description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').optional().or(z.literal('')),
   is_public: z.boolean(),
   valid_until: z.string().optional().or(z.literal('')),
-  document: z.custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.').optional(),
+  document: z.custom<File | string | undefined>((value) => value === undefined || typeof value === 'string' || value instanceof File, 'Selecione um ficheiro válido.').optional(),
 })
 
 export type ClubDocumentFormData = z.infer<typeof clubDocumentSchema>
@@ -60,7 +60,7 @@ export const clubSponsorSchema = z.object({
   is_active: z.boolean(),
   sort_order: z.union([z.coerce.number().int().min(0), z.literal('')]).optional(),
   logo: z
-    .custom<File | undefined>((value) => value === undefined || value instanceof File, 'Selecione um ficheiro válido.')
+    .custom<File | string | undefined>((value) => value === undefined || typeof value === 'string' || value instanceof File, 'Selecione um ficheiro válido.')
     .optional(),
 })
 

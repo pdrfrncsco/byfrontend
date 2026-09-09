@@ -136,6 +136,7 @@ export function ClubSettingsForm({
                     ownerId={club.id}
                     role="logo"
                     accept="image"
+                    autoAttach={true}
                     onSelected={(url) => setSelectedLogoUrl(url)}
                     trigger={<Button variant="outline" size="sm">Selecionar logo</Button>}
                   />

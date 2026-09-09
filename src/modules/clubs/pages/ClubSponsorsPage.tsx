@@ -245,8 +245,18 @@ export default function ClubSponsorsPage() {
                   <Textarea id="description" rows={4} {...register('description')} />
                 </FormField>
                 <FormField label="Logo" htmlFor="logo" error={errors.logo?.message as string | undefined}>
-                  <MediaAssetPicker ownerType="club" ownerId={club.id} role="sponsor_logo" accept="image" onSelected={(_, asset) => setSelectedLogo(asset)} trigger={<Button type="button" variant="outline"><ImageUp className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
-                  <p className="text-[10px] text-outline">{selectedLogo?.name || (watchedLogo ? watchedLogo.name : 'Escolha um logo já carregado na Biblioteca de Media')}</p>
+                  <MediaAssetPicker
+                    ownerType="club"
+                    ownerId={club.id}
+                    role="sponsor_logo"
+                    accept="image"
+                    onSelected={(_, asset) => {
+                      setSelectedLogo(asset)
+                      setValue('logo', asset.id as unknown as File, { shouldDirty: true, shouldValidate: true })
+                    }}
+                    trigger={<Button type="button" variant="outline"><ImageUp className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+                  />
+                  <p className="text-[10px] text-outline">{selectedLogo?.name || (watchedLogo instanceof File ? watchedLogo.name : 'Escolha um logo já carregado na Biblioteca de Media')}</p>
                 </FormField>
                 <div className="flex items-center gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container px-md py-3">
                   <input id="is_active" type="checkbox" {...register('is_active')} className="h-4 w-4 rounded border-outline-variant text-primary" />
@@ -255,7 +265,7 @@ export default function ClubSponsorsPage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap gap-sm">
-                  <Button type="submit" loading={createMutation.isPending} disabled={!isDirty}>
+                  <Button type="submit" loading={createMutation.isPending} disabled={!isDirty && !selectedLogo}>
                     Guardar patrocinador
                   </Button>
                   <div className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container px-md py-2 text-xs text-on-surface-variant">

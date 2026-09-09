@@ -46,6 +46,7 @@ export function PlayerIdentityDocumentsSection({ slug, ownerId }: { slug: string
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<PlayerIdentityDocumentFormData>({
     resolver: zodResolver(playerIdentityDocumentSchema),
@@ -90,7 +91,7 @@ export function PlayerIdentityDocumentsSection({ slug, ownerId }: { slug: string
       expiry_date: values.expiry_date || undefined,
       document_front: values.document_front,
       document_back: values.document_back,
-      asset: frontAsset?.id,
+      asset: frontAsset?.id || values.asset,
     })
   }
 
@@ -147,14 +148,33 @@ export function PlayerIdentityDocumentsSection({ slug, ownerId }: { slug: string
             </div>
 
             <FormFieldSimple label="Frente do documento" htmlFor="identity-document-front" error={errors.document_front?.message} required>
-              <MediaAssetPicker ownerType="player" ownerId={ownerId} role="document" accept="document" onSelected={(_, asset) => setFrontAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
+              <MediaAssetPicker
+                ownerType="player"
+                ownerId={ownerId}
+                role="document"
+                accept="document"
+                onSelected={(_, asset) => {
+                  setFrontAsset(asset)
+                  setValue('asset', asset.id, { shouldDirty: true, shouldValidate: true })
+                }}
+                trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+              />
               <p className="mt-xs text-xs text-on-surface-variant">
                 {frontAsset?.name || (frontFile instanceof File ? frontFile.name : 'Selecione a frente do documento')}
               </p>
             </FormFieldSimple>
 
             <FormFieldSimple label="Verso do documento" htmlFor="identity-document-back" error={errors.document_back?.message}>
-              <MediaAssetPicker ownerType="player" ownerId={ownerId} role="document" accept="document" onSelected={(_, asset) => setBackAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
+              <MediaAssetPicker
+                ownerType="player"
+                ownerId={ownerId}
+                role="document"
+                accept="document"
+                onSelected={(_, asset) => {
+                  setBackAsset(asset)
+                }}
+                trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+              />
               <p className="mt-xs text-xs text-on-surface-variant">
                 {backAsset?.name || (backFile instanceof File ? backFile.name : 'Opcional')}
               </p>

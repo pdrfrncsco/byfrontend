@@ -15,7 +15,15 @@ function unwrap<T>(payload: ApiResponse<T> | T): T {
   return payload
 }
 
-export async function listMediaAssets(params?: { q?: string; asset_type?: string; category?: string; page?: number; page_size?: number }) {
+export async function listMediaAssets(params?: {
+  q?: string
+  asset_type?: string
+  category?: string
+  page?: number
+  page_size?: number
+  owner_type?: string
+  owner_id?: string
+}) {
   const response = await apiClient.get<MediaAssetListResponse | ApiResponse<MediaAssetListResponse>>(
     API_ROUTES.MEDIA.LIST,
     { params },

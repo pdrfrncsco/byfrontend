@@ -23,6 +23,7 @@ import {
   useClubPublicMatches,
   useClubPublicStandings,
 } from '@/modules/clubs/hooks/useClubs'
+import { MediaGalleryTab } from '@/modules/media_manager/components'
 
 // Helper function to detect UUID format
 function isUUID(str: string): boolean {
@@ -258,6 +259,12 @@ export default function ClubDetailPage() {
             >
               Patrocinadores
             </TabsTrigger>
+            <TabsTrigger 
+              value="gallery" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Galeria
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent
@@ -409,6 +416,19 @@ export default function ClubDetailPage() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent
+            value="gallery"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            <MediaGalleryTab
+              ownerType="club"
+              ownerId={club.id}
+              title={`Galeria de Fotos • ${club.name}`}
+              emptyTitle="Sem fotos na galeria"
+              emptyDescription="Este clube ainda não publicou fotos na galeria pública."
+            />
           </TabsContent>
           </Tabs>
         </section>

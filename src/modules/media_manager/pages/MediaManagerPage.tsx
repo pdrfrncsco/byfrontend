@@ -52,6 +52,7 @@ export function MediaManagerPage({
     ...(query ? { q: query } : {}),
     ...(filterCategory ? { category: filterCategory } : {}),
     ...(assetType ? { asset_type: assetType } : {}),
+    ...(ownerType !== 'organization' && resolvedOwnerId ? { owner_type: ownerType, owner_id: resolvedOwnerId } : {}),
     page,
     page_size: 24,
   }

@@ -106,8 +106,8 @@ export const playerDocumentSchema = z
     is_private: z.boolean(),
 
     document: z
-      .custom<File | undefined>(
-        (value) => value === undefined || value instanceof File,
+      .custom<File | string | undefined>(
+        (value) => value === undefined || typeof value === 'string' || value instanceof File,
         'Selecione um ficheiro válido.'
       )
       .optional(),

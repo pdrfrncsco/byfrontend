@@ -52,6 +52,7 @@ export function PlayerDocumentsSection({ slug, ownerId }: PlayerDocumentsSection
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<PlayerDocumentFormData>({
     resolver: zodResolver(playerDocumentSchema),
@@ -170,14 +171,17 @@ export function PlayerDocumentsSection({ slug, ownerId }: PlayerDocumentsSection
               error={errors.document?.message}
               required
             >
-              <MediaAssetPicker
-                ownerType="player"
-                ownerId={ownerId}
-                role="document"
-                accept="document"
-                onSelected={(_, asset) => setSelectedAsset(asset)}
-                trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
-              />
+                <MediaAssetPicker
+                  ownerType="player"
+                  ownerId={ownerId}
+                  role="document"
+                  accept="document"
+                  onSelected={(_, asset) => {
+                    setSelectedAsset(asset)
+                    setValue('document', asset.id, { shouldDirty: true, shouldValidate: true })
+                  }}
+                  trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+                />
               <p className="text-xs text-on-surface-variant">
                 {selectedAsset?.name || (watchedFile instanceof File ? watchedFile.name : 'Escolha um documento já carregado na Biblioteca de Media.')}
               </p>

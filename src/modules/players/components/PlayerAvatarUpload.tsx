@@ -38,6 +38,7 @@ export function PlayerAvatarUpload({
         ownerId={ownerId}
         role="avatar"
         accept="image"
+        autoAttach={true}
         onSelected={(url) => onUploaded?.(url)}
         trigger={<Button type="button" variant="secondary" size="sm"><Upload className="h-4 w-4" />Selecionar avatar</Button>}
       />

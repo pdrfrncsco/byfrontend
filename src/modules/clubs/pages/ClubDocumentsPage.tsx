@@ -236,8 +236,18 @@ export default function ClubDocumentsPage() {
                   <Textarea id="description" rows={4} {...register('description')} />
                 </FormField>
                 <FormField label="Ficheiro" htmlFor="document" error={errors.document?.message as string | undefined} required>
-                  <MediaAssetPicker ownerType="club" ownerId={club.id} role="document" accept="document" onSelected={(_, asset) => setSelectedAsset(asset)} trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>} />
-                  <p className="text-[10px] text-outline">{selectedAsset?.name || (watchedFile ? watchedFile.name : 'Escolha um documento já carregado na Biblioteca de Media')}</p>
+                  <MediaAssetPicker
+                    ownerType="club"
+                    ownerId={club.id}
+                    role="document"
+                    accept="document"
+                    onSelected={(_, asset) => {
+                      setSelectedAsset(asset)
+                      setValue('document', asset.id as unknown as File, { shouldDirty: true, shouldValidate: true })
+                    }}
+                    trigger={<Button type="button" variant="outline"><Upload className="h-4 w-4" />Selecionar da Biblioteca</Button>}
+                  />
+                  <p className="text-[10px] text-outline">{selectedAsset?.name || (watchedFile instanceof File ? watchedFile.name : 'Escolha um documento já carregado na Biblioteca de Media')}</p>
                 </FormField>
                 <div className="flex items-center gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container px-md py-3">
                   <input id="is_public" type="checkbox" {...register('is_public')} className="h-4 w-4 rounded border-outline-variant text-primary" />
@@ -246,7 +256,7 @@ export default function ClubDocumentsPage() {
                   </label>
                 </div>
                 <div className="flex flex-wrap gap-sm">
-                  <Button type="submit" loading={createMutation.isPending} disabled={!isDirty}>
+                  <Button type="submit" loading={createMutation.isPending} disabled={!isDirty && !selectedAsset}>
                     Publicar documento
                   </Button>
                   <div className="inline-flex items-center gap-2 rounded-full border border-outline-variant/20 bg-surface-container px-md py-2 text-xs text-on-surface-variant">
