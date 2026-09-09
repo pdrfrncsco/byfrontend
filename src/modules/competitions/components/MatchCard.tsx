@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { competitionRoutes } from '../routes'
 import { ArrowUpRight, Calendar, MapPin } from 'lucide-react'
 import type { Match } from '../types'
 import { getMatchClockInfo } from '../utils/match-clock'
@@ -142,9 +143,15 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
     </div>
   )
 
+  const location = useLocation()
+  const isDashboard = location.pathname.startsWith('/dashboard')
+  const detailUrl = isDashboard
+    ? competitionRoutes.adminMatchDetail(competitionId, match.id)
+    : competitionRoutes.matchDetail(competitionId, match.id)
+
   if (showLink) {
     return (
-      <Link to={`/competitions/${competitionId}/matches/${match.id}`} className="block">
+      <Link to={detailUrl} className="block">
         {card}
       </Link>
     )

@@ -5,55 +5,185 @@ import type { TacticalPlayer } from '../components/tactical/TacticalField'
 // Home team plays Left -> Right (x: 0.05 to 0.45)
 // Away team plays Right -> Left (x: 0.95 to 0.55)
 
-const FORMATION_LAYOUTS: Record<string, { gk: { x: number; y: number }; lines: { count: number; x: number }[] }> = {
+export const FORMATION_LAYOUTS: Record<
+  string,
+  { gk: { x: number; y: number }; lines: { count: number; x: number; role?: 'DEF' | 'MID' | 'FWD' }[] }
+> = {
   '4-4-2': {
     gk: { x: 0.05, y: 0.5 },
     lines: [
-      { count: 4, x: 0.18 }, // DEF: LB, CB, CB, RB
-      { count: 4, x: 0.32 }, // MID: LM, CM, CM, RM
-      { count: 2, x: 0.44 }, // FWD: ST, ST
+      { count: 4, x: 0.18, role: 'DEF' },
+      { count: 4, x: 0.32, role: 'MID' },
+      { count: 2, x: 0.44, role: 'FWD' },
     ],
   },
   '4-3-3': {
     gk: { x: 0.05, y: 0.5 },
     lines: [
-      { count: 4, x: 0.18 }, // DEF
-      { count: 3, x: 0.32 }, // MID
-      { count: 3, x: 0.44 }, // FWD
+      { count: 4, x: 0.18, role: 'DEF' },
+      { count: 3, x: 0.32, role: 'MID' },
+      { count: 3, x: 0.44, role: 'FWD' },
     ],
   },
   '4-2-3-1': {
     gk: { x: 0.05, y: 0.5 },
     lines: [
-      { count: 4, x: 0.16 }, // DEF
-      { count: 2, x: 0.27 }, // DM
-      { count: 3, x: 0.37 }, // AM
-      { count: 1, x: 0.45 }, // ST
+      { count: 4, x: 0.16, role: 'DEF' },
+      { count: 2, x: 0.27, role: 'MID' },
+      { count: 3, x: 0.37, role: 'MID' },
+      { count: 1, x: 0.45, role: 'FWD' },
     ],
   },
   '3-5-2': {
     gk: { x: 0.05, y: 0.5 },
     lines: [
-      { count: 3, x: 0.18 }, // DEF
-      { count: 5, x: 0.32 }, // MID
-      { count: 2, x: 0.44 }, // FWD
+      { count: 3, x: 0.18, role: 'DEF' },
+      { count: 5, x: 0.32, role: 'MID' },
+      { count: 2, x: 0.44, role: 'FWD' },
     ],
   },
   '5-3-2': {
     gk: { x: 0.05, y: 0.5 },
     lines: [
-      { count: 5, x: 0.16 }, // DEF
-      { count: 3, x: 0.32 }, // MID
-      { count: 2, x: 0.44 }, // FWD
+      { count: 5, x: 0.16, role: 'DEF' },
+      { count: 3, x: 0.32, role: 'MID' },
+      { count: 2, x: 0.44, role: 'FWD' },
+    ],
+  },
+  '3-4-3': {
+    gk: { x: 0.05, y: 0.5 },
+    lines: [
+      { count: 3, x: 0.18, role: 'DEF' },
+      { count: 4, x: 0.32, role: 'MID' },
+      { count: 3, x: 0.44, role: 'FWD' },
+    ],
+  },
+  '4-1-4-1': {
+    gk: { x: 0.05, y: 0.5 },
+    lines: [
+      { count: 4, x: 0.16, role: 'DEF' },
+      { count: 1, x: 0.25, role: 'MID' },
+      { count: 4, x: 0.36, role: 'MID' },
+      { count: 1, x: 0.45, role: 'FWD' },
+    ],
+  },
+  '4-5-1': {
+    gk: { x: 0.05, y: 0.5 },
+    lines: [
+      { count: 4, x: 0.18, role: 'DEF' },
+      { count: 5, x: 0.32, role: 'MID' },
+      { count: 1, x: 0.44, role: 'FWD' },
+    ],
+  },
+  '5-4-1': {
+    gk: { x: 0.05, y: 0.5 },
+    lines: [
+      { count: 5, x: 0.16, role: 'DEF' },
+      { count: 4, x: 0.32, role: 'MID' },
+      { count: 1, x: 0.44, role: 'FWD' },
     ],
   },
 }
 
-function getFormationLayout(formationStr?: string) {
+export const SUPPORTED_FORMATIONS = Object.keys(FORMATION_LAYOUTS)
+
+export function categorizePlayerPosition(pos?: string): 'GK' | 'DEF' | 'MID' | 'FWD' {
+  if (!pos) return 'MID'
+  const p = pos.trim().toLowerCase()
+  if (p === 'gk' || p === 'gr' || p.includes('guarda') || p.includes('keeper')) return 'GK'
+  if (['cb', 'lb', 'rb', 'lwb', 'rwb', 'df', 'def'].some(d => p.includes(d))) return 'DEF'
+  if (['cm', 'cdm', 'cam', 'lm', 'rm', 'mf', 'mid'].some(m => p.includes(m))) return 'MID'
+  if (['st', 'cf', 'fw', 'fwd', 'lw', 'rw'].some(f => p.includes(f))) return 'FWD'
+  return 'MID'
+}
+
+export interface FormationValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+  gkCount: number
+  defCount: number
+  midCount: number
+  fwdCount: number
+  totalStarters: number
+}
+
+export function validateTacticalFormation(
+  starters: LineupPlayer[] = [],
+  formationStr: string = '4-3-3'
+): FormationValidationResult {
+  let gkCount = 0
+  let defCount = 0
+  let midCount = 0
+  let fwdCount = 0
+
+  starters.forEach(p => {
+    if (p.is_goalkeeper || categorizePlayerPosition(p.position) === 'GK') {
+      gkCount++
+    } else {
+      const cat = categorizePlayerPosition(p.position)
+      if (cat === 'DEF') defCount++
+      else if (cat === 'MID') midCount++
+      else if (cat === 'FWD') fwdCount++
+    }
+  })
+
+  const totalStarters = starters.length
+  const errors: string[] = []
+  const warnings: string[] = []
+
+  // Check goalkeeper requirement
+  if (gkCount === 0) {
+    errors.push('A equipa titular precisa de exatamente 1 guarda-redes (nenhum selecionado).')
+  } else if (gkCount > 1) {
+    errors.push(`A equipa titular não pode ter mais de 1 guarda-redes (${gkCount} selecionados).`)
+  }
+
+  // Check total starters
+  if (totalStarters !== 11) {
+    warnings.push(`A equipa titular tem ${totalStarters} jogadores (o padrão regulamentar é 11).`)
+  }
+
+  // Check formation line distribution
+  const layout = FORMATION_LAYOUTS[formationStr]
+  if (layout) {
+    let targetDef = 0
+    let targetMid = 0
+    let targetFwd = 0
+
+    layout.lines.forEach(line => {
+      if (line.role === 'DEF') targetDef += line.count
+      else if (line.role === 'MID') targetMid += line.count
+      else if (line.role === 'FWD') targetFwd += line.count
+    })
+
+    if (targetDef > 0 && defCount !== targetDef) {
+      warnings.push(`Formação ${formationStr} prevê ${targetDef} defesas (atualmente: ${defCount}).`)
+    }
+    if (targetMid > 0 && midCount !== targetMid) {
+      warnings.push(`Formação ${formationStr} prevê ${targetMid} médios (atualmente: ${midCount}).`)
+    }
+    if (targetFwd > 0 && fwdCount !== targetFwd) {
+      warnings.push(`Formação ${formationStr} prevê ${targetFwd} avançados (atualmente: ${fwdCount}).`)
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    gkCount,
+    defCount,
+    midCount,
+    fwdCount,
+    totalStarters,
+  }
+}
+
+export function getFormationLayout(formationStr?: string) {
   if (formationStr && FORMATION_LAYOUTS[formationStr]) {
     return FORMATION_LAYOUTS[formationStr]
   }
-  // Default to 4-3-3 if unknown
   return FORMATION_LAYOUTS['4-3-3']
 }
 
@@ -65,68 +195,93 @@ export function generateTacticalPositions(
   if (!starters || starters.length === 0) return []
 
   const layout = getFormationLayout(formationStr)
-  
-  // Separate GK and field players
-  const gk = starters.find((p) => p.is_goalkeeper || p.position === 'GK')
-  const fieldPlayers = starters.filter((p) => p !== gk)
+
+  // Classify players into positional pools
+  const gks: LineupPlayer[] = []
+  const defs: LineupPlayer[] = []
+  const mids: LineupPlayer[] = []
+  const fwds: LineupPlayer[] = []
+
+  starters.forEach(p => {
+    if (p.is_goalkeeper || categorizePlayerPosition(p.position) === 'GK') {
+      gks.push(p)
+    } else {
+      const cat = categorizePlayerPosition(p.position)
+      if (cat === 'DEF') defs.push(p)
+      else if (cat === 'MID') mids.push(p)
+      else fwds.push(p)
+    }
+  })
 
   const tacticalPlayers: TacticalPlayer[] = []
 
-  // 1. Goalkeeper
-  if (gk) {
+  // 1. Goalkeeper(s)
+  gks.forEach((gk, i) => {
     const gkX = isHomeTeam ? layout.gk.x : 1 - layout.gk.x
-    const gkY = layout.gk.y
+    const gkY = gks.length === 1 ? layout.gk.y : 0.35 + i * 0.3
     tacticalPlayers.push({
-      id: gk.id || gk.playerId || gk.player_id || 'gk',
+      id: gk.id || gk.playerId || gk.player_id || `gk-${i}`,
       number: gk.shirt_number || gk.playerNumber || 1,
       name: gk.playerName || gk.player?.full_name || 'Guarda-redes',
       x: gkX,
       y: gkY,
     })
-  }
+  })
 
-  // 2. Field players distributed into formation lines
-  let playerIdx = 0
+  // 2. Field lines based on layout roles
+  const remainingFieldPlayers = [...defs, ...mids, ...fwds]
+  let fieldIdx = 0
+
   for (const line of layout.lines) {
-    const linePlayers = fieldPlayers.slice(playerIdx, playerIdx + line.count)
-    playerIdx += line.count
+    let pool: LineupPlayer[] = []
+    if (line.role === 'DEF') {
+      pool = defs.splice(0, line.count)
+    } else if (line.role === 'MID') {
+      pool = mids.splice(0, line.count)
+    } else if (line.role === 'FWD') {
+      pool = fwds.splice(0, line.count)
+    }
 
-    const count = linePlayers.length
+    // If pool has fewer players than line needs, borrow from remaining
+    while (pool.length < line.count && (defs.length > 0 || mids.length > 0 || fwds.length > 0)) {
+      const next = defs.shift() || mids.shift() || fwds.shift()
+      if (next) pool.push(next)
+    }
+
+    const count = pool.length
     if (count === 0) continue
 
-    // Calculate Y coordinates evenly spaced between 0.15 and 0.85
     const stepY = count > 1 ? 0.7 / (count + 1) : 0.35
     const startY = 0.15
 
-    linePlayers.forEach((player, i) => {
+    pool.forEach((player, i) => {
       const normX = isHomeTeam ? line.x : 1 - line.x
       const normY = startY + stepY * (i + 1)
 
       tacticalPlayers.push({
-        id: player.id || player.playerId || player.player_id || `player-${playerIdx + i}`,
-        number: player.shirt_number || player.playerNumber || playerIdx + i + 2,
+        id: player.id || player.playerId || player.player_id || `player-${fieldIdx + i}`,
+        number: player.shirt_number || player.playerNumber || fieldIdx + i + 2,
         name: player.playerName || player.player?.full_name || 'Jogador',
         x: normX,
         y: normY,
       })
     })
+    fieldIdx += count
   }
 
-  // Handle any remaining field players beyond formation lines
-  while (playerIdx < fieldPlayers.length) {
-    const player = fieldPlayers[playerIdx]
+  // Any remaining unplaced players
+  const leftover = [...defs, ...mids, ...fwds]
+  leftover.forEach((player, i) => {
     const normX = isHomeTeam ? 0.35 : 0.65
-    const normY = 0.5
-
+    const normY = 0.2 + i * 0.15
     tacticalPlayers.push({
-      id: player.id || player.playerId || player.player_id || `extra-${playerIdx}`,
-      number: player.shirt_number || player.playerNumber || playerIdx + 2,
+      id: player.id || player.playerId || player.player_id || `extra-${i}`,
+      number: player.shirt_number || player.playerNumber || fieldIdx + i + 2,
       name: player.playerName || player.player?.full_name || 'Jogador',
       x: normX,
       y: normY,
     })
-    playerIdx++
-  }
+  })
 
   return tacticalPlayers
 }

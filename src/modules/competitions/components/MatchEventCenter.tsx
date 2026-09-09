@@ -38,10 +38,8 @@ const EVENT_COLORS: Record<string, string> = {
   substitution_out: '#4338ca',
 }
 
-function getPlayers(lineup: any): SelectablePlayer[] {
-  const players = lineup?.starters ?? lineup?.lineup_players ?? []
-  const substitutes = lineup?.substitutes ?? []
-  return [...players, ...substitutes].map((player: any) => ({
+function formatPlayerList(rawList: any[] = []): SelectablePlayer[] {
+  return (rawList || []).map((player: any) => ({
     id: String(player.player_id ?? player.playerId ?? player.player?.id ?? player.id),
     name: player.player_name ?? player.playerName ?? player.player?.full_name ?? 'Jogador',
     number: player.shirt_number ?? player.playerNumber ?? player.player?.shirt_number,
@@ -59,18 +57,31 @@ export function MatchEventCenter({ competitionId, match, events, canOperate, can
   const [minute, setMinute] = useState(String(match.current_minute ?? 0))
   const [notes, setNotes] = useState('')
 
-  const players = useMemo(() => {
+  const { starters, substitutes, allPlayers } = useMemo(() => {
     const lineup = (lineups as any[]).find(item => String(item.club ?? item.club_id) === String(clubId))
-    return getPlayers(lineup)
+    const sRaw = lineup?.starters ?? lineup?.lineup_players?.filter((p: any) => String(p.status).toLowerCase() === 'starter') ?? []
+    const bRaw = lineup?.substitutes ?? lineup?.lineup_players?.filter((p: any) => String(p.status).toLowerCase() === 'substitute') ?? []
+    const s = formatPlayerList(sRaw)
+    const b = formatPlayerList(bRaw)
+    return {
+      starters: s,
+      substitutes: b,
+      allPlayers: [...s, ...b],
+    }
   }, [lineups, clubId])
-  const selectedPlayer = players.find(player => player.id === playerId)
+
   const isSubstitution = eventType === 'substitution_in' || eventType === 'substitution_out'
+  const selectablePlayers = isSubstitution ? substitutes : allPlayers
+  const selectedPlayer = allPlayers.find(player => player.id === playerId)
+  const selectedPlayerOff = starters.find(player => player.id === playerOffId)
   const canAdd = canOperate && (match.status === 'live' || match.status === 'halftime')
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
     const minuteValue = Number(minute)
-    if (!canAdd || !playerId || !Number.isInteger(minuteValue) || minuteValue < 0 || minuteValue > 130) return
+    if (!canAdd || !playerId || !Number.isInteger(minuteValue) || minuteValue < 0 || minuteValue > 135) return
+    if (isSubstitution && !playerOffId) return
+
     addEvent.mutate({
       event_type: eventType,
       minute: minuteValue,
@@ -122,11 +133,33 @@ export function MatchEventCenter({ competitionId, match, events, canOperate, can
             <option value={match.home_club}>{match.home_club_name}</option><option value={match.away_club}>{match.away_club_name}</option>
           </NativeSelect>
           <NativeSelect required value={playerId} onChange={event => setPlayerId(event.target.value)} disabled={!canAdd || loadingLineups}>
-            <option value="">{loadingLineups ? 'A carregar jogadores...' : 'Seleccionar jogador'}</option>{players.map(player => <option key={player.id} value={player.id}>{player.number ? `#${player.number} ` : ''}{player.name}</option>)}
+            <option value="">{loadingLineups ? 'A carregar jogadores...' : isSubstitution ? 'Jogador que entra (suplente)' : 'Seleccionar jogador'}</option>
+            {selectablePlayers.map(player => (
+              <option key={player.id} value={player.id}>
+                {player.number ? `#${player.number} ` : ''}{player.name}
+              </option>
+            ))}
           </NativeSelect>
-          {isSubstitution && <NativeSelect required value={playerOffId} onChange={event => setPlayerOffId(event.target.value)} disabled={!canAdd || loadingLineups}><option value="">Jogador que sai</option>{players.filter(player => player.id !== playerId).map(player => <option key={player.id} value={player.id}>{player.number ? `#${player.number} ` : ''}{player.name}</option>)}</NativeSelect>}
-          {selectedPlayer && <div className="rounded-lg bg-primary/10 px-sm py-xs text-xs text-primary">Jogador seleccionado: <strong>{selectedPlayer.name}</strong></div>}
-          <input required type="number" min="0" max="130" value={minute} onChange={event => setMinute(event.target.value)} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface" placeholder="Minuto" />
+          {isSubstitution && (
+            <NativeSelect required value={playerOffId} onChange={event => setPlayerOffId(event.target.value)} disabled={!canAdd || loadingLineups}>
+              <option value="">Jogador que sai (titular)</option>
+              {starters.filter(player => player.id !== playerId).map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.number ? `#${player.number} ` : ''}{player.name}
+                </option>
+              ))}
+            </NativeSelect>
+          )}
+          {selectedPlayer && (
+            <div className="rounded-lg bg-primary/10 px-sm py-xs text-xs text-primary">
+              {isSubstitution ? (
+                <>Entra: <strong>{selectedPlayer.name}</strong> {selectedPlayerOff ? <>• Sai: <strong>{selectedPlayerOff.name}</strong></> : null}</>
+              ) : (
+                <>Jogador seleccionado: <strong>{selectedPlayer.name}</strong></>
+              )}
+            </div>
+          )}
+          <input required type="number" min="0" max="135" value={minute} onChange={event => setMinute(event.target.value)} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface" placeholder="Minuto (0–135)" />
           <textarea value={notes} onChange={event => setNotes(event.target.value)} disabled={!canAdd} className="min-h-20 w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface" placeholder="Observação opcional" />
           <Button type="submit" variant="primary" className="w-full" disabled={!canAdd || addEvent.isPending || !playerId}>{addEvent.isPending ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : 'Guardar evento'}</Button>
           {!canAdd && <p className="text-xs text-on-surface-variant">O registo só está disponível durante a partida ao vivo.</p>}

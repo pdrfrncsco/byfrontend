@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import { Calendar, Activity, Filter, ArrowLeft } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
@@ -12,7 +12,6 @@ import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
 import { MatchCard } from '../components'
 import { useSeo } from '@/hooks/useSeo'
-import type { ReactNode } from 'react'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
 
@@ -50,6 +49,19 @@ export function MatchCenterPage() {
     finishedMatches,
     isLoading: loadingMatches,
   } = useMatchCenter({ competitionId, status: statusFilter ?? undefined })
+
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    if (statusFilter === null && matches.length > 0) {
+      setStatusCounts({
+        live: matches.filter(m => ['live', 'halftime'].includes(m.status)).length,
+        scheduled: matches.filter(m => ['scheduled', 'pre_match'].includes(m.status)).length,
+        finished: matches.filter(m => ['finished', 'archived', 'walkover', 'cancelled', 'postponed'].includes(m.status)).length,
+        total: matches.length,
+      })
+    }
+  }, [matches, statusFilter])
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
@@ -203,9 +215,19 @@ export function MatchCenterPage() {
           const isActive = 
             (statusFilter === null && filter.id === null) ||
             (filter.id !== null && statusFilter?.every(s => filter.id?.includes(s)))
-          const count = filter.id
-            ? matches.filter(m => filter.id?.includes(m.status)).length
-            : matches.length
+          
+          let count = matches.length
+          if (filter.id) {
+            if (filter.id.includes('live')) {
+              count = statusFilter ? (statusCounts.live ?? matches.filter(m => filter.id?.includes(m.status)).length) : matches.filter(m => filter.id?.includes(m.status)).length
+            } else if (filter.id.includes('scheduled')) {
+              count = statusFilter ? (statusCounts.scheduled ?? matches.filter(m => filter.id?.includes(m.status)).length) : matches.filter(m => filter.id?.includes(m.status)).length
+            } else {
+              count = statusFilter ? (statusCounts.finished ?? matches.filter(m => filter.id?.includes(m.status)).length) : matches.filter(m => filter.id?.includes(m.status)).length
+            }
+          } else {
+            count = statusFilter ? (statusCounts.total ?? matches.length) : matches.length
+          }
 
           const Icon = filter.icon
 

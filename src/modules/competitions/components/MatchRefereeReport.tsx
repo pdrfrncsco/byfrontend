@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, CheckCircle2, FileText, Loader2, Lock, Upload } from 'lucide-react'
 import { Button, Card, Textarea } from '@/components/ui'
 import type { Match } from '../types'
@@ -50,13 +50,29 @@ export function MatchRefereeReport({
     home_score: report?.home_score ?? match.home_score ?? 0,
     away_score: report?.away_score ?? match.away_score ?? 0,
     match_duration: report?.match_duration ?? 90,
-    incidents: report?.incidents ?? '',
-    notes: report?.notes ?? '',
+    incidents: report?.incidents ?? (report?.data?.incidents ?? ''),
+    notes: report?.notes ?? (report?.data?.notes ?? ''),
   })
   const [signatureConfirmed, setSignatureConfirmed] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [documentUrl, setDocumentUrl] = useState<string>(report?.document_url ?? '')
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (report) {
+      setForm(prev => ({
+        ...prev,
+        home_score: report.home_score ?? match.home_score ?? 0,
+        away_score: report.away_score ?? match.away_score ?? 0,
+        match_duration: report.match_duration ?? 90,
+        incidents: report.incidents ?? (report.data?.incidents ?? ''),
+        notes: report.notes ?? (report.data?.notes ?? ''),
+      }))
+      if (report.document_url) {
+        setDocumentUrl(report.document_url)
+      }
+    }
+  }, [report, match.home_score, match.away_score])
   const workflowIndex = getWorkflowIndex(report?.status)
   const isLocked = workflowIndex >= 2
 
