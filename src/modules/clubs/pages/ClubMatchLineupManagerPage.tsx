@@ -27,6 +27,7 @@ import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubMeMatches, useClubSquad } from '@/modules/clubs/hooks/useClubs'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { matchApi } from '@/modules/competitions/services/match.api'
+import { categorizePlayerPosition } from '@/modules/competitions/utils/tactical.utils'
 import type { LineupPlayer } from '@/modules/competitions/types'
 import { toast } from 'sonner'
 import { ROUTES } from '@/constants/routes'
@@ -107,8 +108,10 @@ const FORMATION_SCHEMAS: Record<string, number[]> = {
 
 function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onPromote }: { starters: CallupPlayer[]; formation?: string; draggedPlayerId?: string | null; onPromote?: (playerId: string) => void }) {
   const fieldRows = useMemo(() => {
-    const gk = starters.find((p) => p.is_goalkeeper || (p.positionSpecific || p.position || '').toUpperCase().includes('GK'))
-    const fieldPlayers = starters.filter((p) => p !== gk)
+    const allGks = starters.filter((p) => p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK')
+    const primaryGk = allGks[0]
+    const extraGks = allGks.slice(1)
+    const fieldPlayers = starters.filter((p) => !allGks.includes(p))
 
     const schema = FORMATION_SCHEMAS[formation] || [4, 3, 3]
     const rows: CallupPlayer[][] = []
@@ -124,7 +127,7 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
       rows[rows.length - 1] = [...(rows[rows.length - 1] || []), ...fieldPlayers.slice(currentIdx)]
     }
 
-    return { gk, rows }
+    return { primaryGk, extraGks, rows }
   }, [starters, formation])
 
   const handleDrop = (event: React.DragEvent) => {
@@ -147,13 +150,28 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
 
         <div className="absolute inset-0 flex flex-col items-center justify-between py-md">
           {/* Goalkeeper */}
-          <div className="flex justify-center">
-            {fieldRows.gk ? (
-              <PlayerBadgeOnField player={fieldRows.gk} />
-            ) : (
-              <div className="h-9 w-9 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center text-[10px] text-on-surface-variant">
-                GK
-              </div>
+          <div className="flex flex-col items-center justify-center gap-xs">
+            <div className="flex justify-center gap-sm">
+              {fieldRows.primaryGk ? (
+                <PlayerBadgeOnField player={fieldRows.primaryGk} />
+              ) : (
+                <div className="h-9 w-9 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center text-[10px] text-on-surface-variant">
+                  GK
+                </div>
+              )}
+              {fieldRows.extraGks.map((extraGk) => (
+                <div key={extraGk.playerId || extraGk.id} className="relative">
+                  <PlayerBadgeOnField player={extraGk} />
+                  <span className="absolute -top-1 -left-1 rounded-full bg-rose-600 px-1 text-[8px] font-bold text-white shadow">
+                    GR+
+                  </span>
+                </div>
+              ))}
+            </div>
+            {fieldRows.extraGks.length > 0 && (
+              <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[9px] font-bold text-rose-300 border border-rose-500/30">
+                Aviso: {fieldRows.extraGks.length + 1} guarda-redes titulares
+              </span>
             )}
           </div>
 
@@ -241,12 +259,9 @@ export default function ClubMatchLineupManagerPage() {
       const isCalledUp = isStarter || Boolean(existingSub)
 
       // Map position
-      let pos: 'GK' | 'DF' | 'MF' | 'FW' = 'MF'
-      const posUpper = (member.position || '').toUpperCase()
-      if (posUpper.includes('GK') || posUpper.includes('GR')) pos = 'GK'
-      else if (['CB', 'LB', 'RB', 'DF'].some((k) => posUpper.includes(k))) pos = 'DF'
-      else if (['CM', 'CDM', 'CAM', 'MF'].some((k) => posUpper.includes(k))) pos = 'MF'
-      else if (['ST', 'CF', 'LW', 'RW', 'FW'].some((k) => posUpper.includes(k))) pos = 'FW'
+      const posCat = categorizePlayerPosition(member.position)
+      const isGK = posCat === 'GK' || Boolean(existingStarter?.is_goalkeeper) || Boolean(existingSub?.is_goalkeeper)
+      const pos = isGK ? 'GK' : posCat
 
       return {
         id: memberId,          // ClubMember UUID — usado como chave de UI
@@ -258,7 +273,7 @@ export default function ClubMatchLineupManagerPage() {
         eligible: !member.is_suspended,
         eligibilityWarning: member.is_suspended ? 'Jogador suspenso' : undefined,
         avatarUrl: member.avatar_url || member.avatar,
-        is_goalkeeper: pos === 'GK',
+        is_goalkeeper: isGK,
         is_captain: existingStarter?.is_captain || existingSub?.is_captain || false,
         isCalledUp,
         isStarter,
@@ -285,11 +300,22 @@ export default function ClubMatchLineupManagerPage() {
   const starters = useMemo(() => playersList.filter((p) => p.isCalledUp && p.isStarter), [playersList])
   const substitutes = useMemo(() => playersList.filter((p) => p.isCalledUp && !p.isStarter), [playersList])
   const uncalled = useMemo(() => playersList.filter((p) => !p.isCalledUp), [playersList])
-  const hasGoalkeeper = starters.some((player) => player.position === 'GK' || player.is_goalkeeper)
+  const gkCount = starters.filter(
+    (player) => player.position === 'GK' || player.is_goalkeeper || categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
+  ).length
+  const hasGoalkeeper = gkCount === 1
   const hasCaptain = starters.some((player) => player.is_captain)
   const lineupChecks = [
     { label: `${starters.length}/${REQUIRED_STARTERS} titulares`, complete: starters.length === REQUIRED_STARTERS },
-    { label: hasGoalkeeper ? 'Guarda-redes definido' : 'Guarda-redes em falta', complete: hasGoalkeeper },
+    {
+      label:
+        gkCount === 1
+          ? '1 Guarda-redes definido'
+          : gkCount === 0
+          ? 'Guarda-redes em falta'
+          : `${gkCount} guarda-redes (máximo 1 permitido)`,
+      complete: gkCount === 1,
+    },
     { label: `${substitutes.length}/${MAX_SUBSTITUTES} suplentes`, complete: substitutes.length <= MAX_SUBSTITUTES },
     { label: hasCaptain ? 'Capitão definido' : 'Capitão em falta', complete: hasCaptain },
   ]
@@ -308,9 +334,14 @@ export default function ClubMatchLineupManagerPage() {
         throw new Error(`São permitidos no máximo ${MAX_SUBSTITUTES} suplentes no banco de reservas (atual: ${substitutes.length}).`)
       }
 
-      const hasGK = starters.some((p) => p.position === 'GK' || p.is_goalkeeper)
-      if (!hasGK) {
-        throw new Error('O onze inicial deve incluir um Guarda-redes (GK).')
+      const gks = starters.filter(
+        (p) => p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+      )
+      if (gks.length === 0) {
+        throw new Error('O onze inicial deve incluir 1 Guarda-redes (GK).')
+      }
+      if (gks.length > 1) {
+        throw new Error(`O onze inicial só pode ter 1 guarda-redes (atual: ${gks.length}). Remova os guarda-redes excedentes.`)
       }
 
       if (!hasCaptain) {
@@ -320,22 +351,28 @@ export default function ClubMatchLineupManagerPage() {
       const payload = {
         formation,
         players: [
-          ...starters.map((p) => ({
-            player_id: p.playerId,
-            status: 'starter' as const,
-            position: p.positionSpecific || p.position,
-            shirt_number: p.playerNumber,
-            is_captain: p.is_captain,
-            is_goalkeeper: p.position === 'GK' || p.is_goalkeeper,
-          })),
-          ...substitutes.map((p) => ({
-            player_id: p.playerId,
-            status: 'substitute' as const,
-            position: p.positionSpecific || p.position,
-            shirt_number: p.playerNumber,
-            is_captain: p.is_captain,
-            is_goalkeeper: p.position === 'GK' || p.is_goalkeeper,
-          })),
+          ...starters.map((p) => {
+            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+            return {
+              player_id: p.playerId,
+              status: 'starter' as const,
+              position: p.positionSpecific || p.position,
+              shirt_number: p.playerNumber,
+              is_captain: p.is_captain,
+              is_goalkeeper: isGk,
+            }
+          }),
+          ...substitutes.map((p) => {
+            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+            return {
+              player_id: p.playerId,
+              status: 'substitute' as const,
+              position: p.positionSpecific || p.position,
+              shirt_number: p.playerNumber,
+              is_captain: p.is_captain,
+              is_goalkeeper: isGk,
+            }
+          }),
         ],
       }
 
@@ -371,30 +408,48 @@ export default function ClubMatchLineupManagerPage() {
   }
 
   const toggleStarter = (pId: string) => {
+    const player = playersList.find((item) => item.playerId === pId)
+    if (!player) return
+    const willBeStarter = !player.isStarter
+
+    if (willBeStarter) {
+      if (starters.length >= REQUIRED_STARTERS) {
+        toast.error(`O onze inicial já tem ${REQUIRED_STARTERS} jogadores.`)
+        return
+      }
+      const isPlayerGk =
+        player.is_goalkeeper ||
+        player.position === 'GK' ||
+        categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
+      const hasExistingGk = starters.some(
+        (p) =>
+          p.playerId !== pId &&
+          (p.is_goalkeeper ||
+            p.position === 'GK' ||
+            categorizePlayerPosition(p.positionSpecific || p.position) === 'GK')
+      )
+      if (isPlayerGk && hasExistingGk) {
+        toast.error('Já existe um guarda-redes no onze titular. Remova o titular antes de adicionar outro.')
+        return
+      }
+    }
+
     setCallupState((prev) => {
       const current = prev[pId]
-      const defaultP = initializedPlayers.find((p) => p.playerId === pId)
-      const currentStarter = current ? current.isStarter : defaultP?.isStarter ?? false
       return {
         ...prev,
         [pId]: {
           isCalledUp: true,
-          isStarter: !currentStarter,
-          position: current?.position || defaultP?.position || 'MF',
-          number: current?.number || defaultP?.playerNumber || 0,
-          isCaptain: current?.isCaptain || false,
+          isStarter: willBeStarter,
+          position: current?.position || player.position,
+          number: current?.number || player.playerNumber || 0,
+          isCaptain: current?.isCaptain || player.is_captain || false,
         },
       }
     })
   }
 
   const promoteSubstitute = (pId: string) => {
-    if (starters.length >= REQUIRED_STARTERS) {
-      toast.error(`O onze inicial já tem ${REQUIRED_STARTERS} jogadores.`)
-      return
-    }
-    const player = substitutes.find((item) => item.playerId === pId)
-    if (!player) return
     toggleStarter(pId)
     setDraggedSubstituteId(null)
   }
@@ -578,8 +633,8 @@ export default function ClubMatchLineupManagerPage() {
                   </div>
                   <div className="flex justify-between border-b border-outline-variant/10 py-1">
                     <span>Guarda-Redes no 11:</span>
-                    <span className={`font-bold ${starters.some((p) => p.position === 'GK') ? 'text-emerald-600' : 'text-error'}`}>
-                      {starters.some((p) => p.position === 'GK') ? '✅ Sim' : '❌ Não'}
+                    <span className={`font-bold ${gkCount === 1 ? 'text-emerald-600' : 'text-error'}`}>
+                      {gkCount === 1 ? '✅ 1 (Correto)' : gkCount === 0 ? '❌ 0 (Em falta)' : `❌ ${gkCount} (Máximo 1)`}
                     </span>
                   </div>
                   <div className="flex justify-between py-1">

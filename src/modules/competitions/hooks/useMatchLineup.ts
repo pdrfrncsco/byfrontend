@@ -5,6 +5,7 @@ import { matchApi } from '../services/match.api'
 import { getClubSquad } from '@/modules/clubs/services'
 import { MATCH_QUERY_KEYS } from './useMatchCenter'
 import type { MatchLineup, LineupPlayer } from '../types'
+import { categorizePlayerPosition, toLineupPosition } from '../utils/tactical.utils'
 import { toast } from 'sonner'
 
 // ─── Validation ──────────────────────────────────────────────────────────────
@@ -26,11 +27,17 @@ function validateLineup(lineup: Partial<MatchLineup>): ValidationResult {
     errors.push(`O onze inicial deve ter exactamente 11 jogadores (tem ${starters.length}).`)
   }
 
-  const hasGK = starters.some(
-    (p) => p.position === 'GK' || p.is_goalkeeper === true
-  )
-  if (!hasGK) {
+  const gkCount = starters.filter(
+    (p) =>
+      p.position === 'GK' ||
+      p.is_goalkeeper === true ||
+      categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+  ).length
+
+  if (gkCount === 0) {
     errors.push('O onze inicial deve incluir um guarda-redes.')
+  } else if (gkCount > 1) {
+    errors.push(`A equipa titular não pode ter mais de 1 guarda-redes (tem ${gkCount}).`)
   }
 
   if (substitutes.length > 7) {
@@ -84,19 +91,9 @@ export interface UseMatchLineupReturn {
 // ─── Helper to map squad player to lineup player ─────────────────────────────
 
 function mapSquadPlayerToLineupPlayer(player: any): LineupPlayer {
-  // Map position from backend to frontend format
-  let position: 'GK' | 'DF' | 'MF' | 'FW' = 'MF'
-  const posUpper = (player.position || '').toUpperCase()
-  
-  if (posUpper.includes('GK') || posUpper.includes('GR') || posUpper === 'GOALKEEPER') {
-    position = 'GK'
-  } else if (['CB', 'LB', 'RB', 'LWB', 'RWB', 'DF', 'DEF'].some(p => posUpper.includes(p))) {
-    position = 'DF'
-  } else if (['CM', 'CDM', 'CAM', 'LM', 'RM', 'MF', 'MID'].some(p => posUpper.includes(p))) {
-    position = 'MF'
-  } else if (['ST', 'CF', 'LW', 'RW', 'FW', 'ATT', 'FWD'].some(p => posUpper.includes(p))) {
-    position = 'FW'
-  }
+  const cat = categorizePlayerPosition(player.position)
+  const isGK = cat === 'GK' || player.is_goalkeeper === true
+  const position = isGK ? 'GK' : toLineupPosition(player.position)
 
   return {
     id: player.id,
@@ -124,7 +121,7 @@ function mapSquadPlayerToLineupPlayer(player: any): LineupPlayer {
     shirt_number: player.jersey_number || player.shirt_number || 0,
     status: 'substitute' as const,
     is_captain: player.is_captain || false,
-    is_goalkeeper: position === 'GK',
+    is_goalkeeper: isGK,
   }
 }
 
@@ -237,7 +234,10 @@ export function useMatchLineup({
           position: p.positionSpecific || p.position,
           shirt_number: p.playerNumber || p.shirt_number || 0,
           is_captain: p.is_captain ?? false,
-          is_goalkeeper: p.position === 'GK' || (p.is_goalkeeper ?? false),
+          is_goalkeeper:
+            p.position === 'GK' ||
+            (p.is_goalkeeper ?? false) ||
+            categorizePlayerPosition(p.positionSpecific || p.position) === 'GK',
           formation_position: p.formation_position,
         })),
         ...(draft.substitutes ?? []).map((p) => ({
@@ -246,7 +246,10 @@ export function useMatchLineup({
           position: p.positionSpecific || p.position,
           shirt_number: p.playerNumber || p.shirt_number || 0,
           is_captain: false,
-          is_goalkeeper: p.position === 'GK' || (p.is_goalkeeper ?? false),
+          is_goalkeeper:
+            p.position === 'GK' ||
+            (p.is_goalkeeper ?? false) ||
+            categorizePlayerPosition(p.positionSpecific || p.position) === 'GK',
           formation_position: undefined,
         })),
       ]

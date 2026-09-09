@@ -25,6 +25,7 @@ import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { matchApi } from '../services/match.api'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { MatchLineupGrid } from '../components'
+import { toast } from 'sonner'
 import {
   SUPPORTED_FORMATIONS,
   validateTacticalFormation,
@@ -374,6 +375,12 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
   const [activePlayerId, setActivePlayerId] = useState<string | null>(null)
   const statusConfig = LINEUP_STATUS_CONFIG[String(lineup.status).toLowerCase()] || LINEUP_STATUS_CONFIG.draft
   const playerId = (player: LineupPlayer) => player.id || player.player_id || player.playerId
+
+  const validation = useMemo(
+    () => validateTacticalFormation(starterPlayers, selectedFormation),
+    [starterPlayers, selectedFormation]
+  )
+
   const movePlayer = (target: 'starter' | 'substitute', targetId?: string) => {
     if (!draggedPlayer || !editable) return
     const sourcePlayers = draggedPlayer.source === 'starter' ? starterPlayers : substitutePlayers
@@ -392,9 +399,18 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
   }
   const save = async () => {
     if (!onSave) return
+    if (!validation.isValid) {
+      toast.error(validation.errors[0] || 'A escalação possui inconsistências.')
+      return
+    }
     setIsSaving(true)
-    try { await onSave(lineup.club, selectedFormation, starterPlayers, substitutePlayers) }
-    finally { setIsSaving(false) }
+    try {
+      await onSave(lineup.club, selectedFormation, starterPlayers, substitutePlayers)
+    } catch (err: any) {
+      toast.error(err?.message || 'Erro ao guardar escalação.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -500,7 +516,14 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
       {/* Empty state */}
       {editable && onSave && (
         <div className="flex justify-end">
-          <Button type="button" variant="primary" size="sm" onClick={() => void save()} disabled={isSaving}>
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            onClick={() => void save()}
+            disabled={isSaving || !validation.isValid}
+            title={!validation.isValid ? validation.errors[0] || 'Escalação inválida' : 'Guardar escalação'}
+          >
             {isSaving ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : <Check className="mr-xs h-4 w-4" />}
             Guardar escalação
           </Button>
@@ -554,16 +577,37 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
 
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
   const saveLineup = async (teamId: string, formation: string, starters: LineupPlayer[], substitutes: LineupPlayer[]) => {
-    const players = [...starters.map(player => ({ ...player, status: 'starter' as const })), ...substitutes.map(player => ({ ...player, status: 'substitute' as const }))].map(player => ({
-      player_id: player.playerId || player.player_id || player.player?.id || player.id,
-      status: player.status,
-      position: player.positionSpecific || player.position,
-      shirt_number: player.playerNumber || player.shirt_number || 0,
-      is_captain: player.is_captain ?? false,
-      is_goalkeeper: player.position === 'GK' || player.is_goalkeeper,
-      formation_position: player.formation_position,
-    }))
+    const gkCount = starters.filter(
+      (p) => p.is_goalkeeper || p.position === 'GK' || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+    ).length
+    if (gkCount === 0) {
+      toast.error('O onze titular deve ter 1 guarda-redes.')
+      throw new Error('O onze titular deve ter 1 guarda-redes.')
+    }
+    if (gkCount > 1) {
+      toast.error(`O onze titular só pode ter 1 guarda-redes (atual: ${gkCount}). Remova os guarda-redes excedentes.`)
+      throw new Error(`O onze titular só pode ter 1 guarda-redes (atual: ${gkCount}).`)
+    }
+    const players = [
+      ...starters.map((player) => ({ ...player, status: 'starter' as const })),
+      ...substitutes.map((player) => ({ ...player, status: 'substitute' as const })),
+    ].map((player) => {
+      const isGk =
+        player.position === 'GK' ||
+        player.is_goalkeeper ||
+        categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
+      return {
+        player_id: player.playerId || player.player_id || player.player?.id || player.id,
+        status: player.status,
+        position: player.positionSpecific || player.position,
+        shirt_number: player.playerNumber || player.shirt_number || 0,
+        is_captain: player.is_captain ?? false,
+        is_goalkeeper: isGk,
+        formation_position: player.formation_position,
+      }
+    })
     await matchApi.submitLineup(matchIdValue, teamId, { formation, players })
+    toast.success('Escalação guardada com sucesso!')
   }
 
   if (loadingComp || loadingMatches) {

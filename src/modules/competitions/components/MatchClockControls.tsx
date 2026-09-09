@@ -140,7 +140,8 @@ export function MatchClockControls({
 
   const handlePenaltiesClick = () => {
     if (match.current_period === 'extra_time' || match.current_period === 'second_half') {
-      return executeAction('start_penalties')
+      void executeAction('start_penalties')
+      return
     }
     setHomePenalties('')
     setAwayPenalties('')

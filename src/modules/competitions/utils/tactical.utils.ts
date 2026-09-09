@@ -87,14 +87,68 @@ export const FORMATION_LAYOUTS: Record<
 
 export const SUPPORTED_FORMATIONS = Object.keys(FORMATION_LAYOUTS)
 
+const GK_CODES = new Set(['gk', 'gr', 'golo', 'goalkeeper', 'porteiro'])
+const DEF_CODES = new Set(['cb', 'dc', 'lb', 'le', 'rb', 'ld', 'lwb', 'rwb', 'df', 'def'])
+const MID_CODES = new Set(['cm', 'mc', 'cdm', 'mdf', 'cam', 'mco', 'mo', 'lm', 'me', 'rm', 'md', 'mf', 'mid'])
+const FWD_CODES = new Set(['st', 'pl', 'cf', 'ac', 'fw', 'fwd', 'att', 'lw', 'ee', 'rw', 'ed'])
+
 export function categorizePlayerPosition(pos?: string): 'GK' | 'DEF' | 'MID' | 'FWD' {
   if (!pos) return 'MID'
   const p = pos.trim().toLowerCase()
-  if (p === 'gk' || p === 'gr' || p.includes('guarda') || p.includes('keeper')) return 'GK'
-  if (['cb', 'lb', 'rb', 'lwb', 'rwb', 'df', 'def'].some(d => p.includes(d))) return 'DEF'
-  if (['cm', 'cdm', 'cam', 'lm', 'rm', 'mf', 'mid'].some(m => p.includes(m))) return 'MID'
-  if (['st', 'cf', 'fw', 'fwd', 'lw', 'rw'].some(f => p.includes(f))) return 'FWD'
+
+  // 1. Direct exact match on known codes
+  if (GK_CODES.has(p)) return 'GK'
+  if (DEF_CODES.has(p)) return 'DEF'
+  if (MID_CODES.has(p)) return 'MID'
+  if (FWD_CODES.has(p)) return 'FWD'
+
+  // 2. Goalkeeper descriptive strings
+  if (p.includes('guarda') || p.includes('keeper') || p.includes('goleiro')) return 'GK'
+
+  // 3. Defence descriptive strings
+  if (
+    p.includes('defesa') ||
+    p.includes('lateral') ||
+    p.includes('zagueiro') ||
+    p.includes('ala') ||
+    p.includes('central')
+  ) {
+    return 'DEF'
+  }
+
+  // 4. Forward / Attack descriptive strings
+  if (
+    p.includes('avançad') ||
+    p.includes('avancad') ||
+    p.includes('atacante') ||
+    p.includes('ponta') ||
+    p.includes('extremo') ||
+    p.includes('striker') ||
+    p.includes('forward')
+  ) {
+    return 'FWD'
+  }
+
+  // 5. Midfield descriptive strings
+  if (
+    p.includes('médio') ||
+    p.includes('medio') ||
+    p.includes('meio') ||
+    p.includes('volante') ||
+    p.includes('midfield')
+  ) {
+    return 'MID'
+  }
+
   return 'MID'
+}
+
+export function toLineupPosition(pos?: string): 'GK' | 'DF' | 'MF' | 'FW' {
+  const cat = categorizePlayerPosition(pos)
+  if (cat === 'DEF') return 'DF'
+  if (cat === 'MID') return 'MF'
+  if (cat === 'FWD') return 'FW'
+  return 'GK'
 }
 
 export interface FormationValidationResult {
@@ -118,10 +172,11 @@ export function validateTacticalFormation(
   let fwdCount = 0
 
   starters.forEach(p => {
-    if (p.is_goalkeeper || categorizePlayerPosition(p.position) === 'GK') {
+    const rawPos = p.positionSpecific || p.position
+    if (p.is_goalkeeper || categorizePlayerPosition(rawPos) === 'GK') {
       gkCount++
     } else {
-      const cat = categorizePlayerPosition(p.position)
+      const cat = categorizePlayerPosition(rawPos)
       if (cat === 'DEF') defCount++
       else if (cat === 'MID') midCount++
       else if (cat === 'FWD') fwdCount++
@@ -203,10 +258,11 @@ export function generateTacticalPositions(
   const fwds: LineupPlayer[] = []
 
   starters.forEach(p => {
-    if (p.is_goalkeeper || categorizePlayerPosition(p.position) === 'GK') {
+    const rawPos = p.positionSpecific || p.position
+    if (p.is_goalkeeper || categorizePlayerPosition(rawPos) === 'GK') {
       gks.push(p)
     } else {
-      const cat = categorizePlayerPosition(p.position)
+      const cat = categorizePlayerPosition(rawPos)
       if (cat === 'DEF') defs.push(p)
       else if (cat === 'MID') mids.push(p)
       else fwds.push(p)

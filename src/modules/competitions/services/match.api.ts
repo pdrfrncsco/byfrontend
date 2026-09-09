@@ -2,6 +2,7 @@
 
 import client from '@/lib/api-client'
 import { lineupApi } from './lineup.api'
+import { categorizePlayerPosition } from '../utils/tactical.utils'
 import type { ApiResponse } from '@/types'
 import type {
   Match,
@@ -131,18 +132,11 @@ export function mapMatchEventFromBackend(data: any): MatchEvent {
 export function mapLineupPlayerFromBackend(data: any): LineupPlayer {
   if (!data) return data
 
-  // Determine position: prefer lineup position over player's primary position
-  let position: 'GK' | 'DF' | 'MF' | 'FW' = 'MF'
-  const posUpper = (data.position || data.player?.position || '').toUpperCase()
-  if (data.is_goalkeeper || posUpper === 'GK' || posUpper === 'GOLO' || posUpper.includes('GK')) {
-    position = 'GK'
-  } else if (['CB', 'LB', 'RB', 'DF', 'LWB', 'RWB'].some(k => posUpper.includes(k))) {
-    position = 'DF'
-  } else if (['CM', 'CDM', 'CAM', 'LM', 'RM', 'MF'].some(k => posUpper.includes(k))) {
-    position = 'MF'
-  } else if (['ST', 'CF', 'LW', 'RW', 'FW'].some(k => posUpper.includes(k))) {
-    position = 'FW'
-  }
+  // Determine position using robust categorization
+  const rawPos = data.position || data.player?.position || ''
+  const cat = categorizePlayerPosition(rawPos)
+  const isGK = Boolean(data.is_goalkeeper || cat === 'GK')
+  const position: 'GK' | 'DF' | 'MF' | 'FW' = isGK ? 'GK' : cat === 'DEF' ? 'DF' : cat === 'FWD' ? 'FW' : 'MF'
 
   return {
     playerId: data.player_id || data.player?.id || '',
@@ -153,7 +147,7 @@ export function mapLineupPlayerFromBackend(data: any): LineupPlayer {
     eligible: data.eligible !== undefined ? data.eligible : true,
     eligibilityWarning: data.eligibility_warning || undefined,
     avatarUrl: data.player?.avatar || undefined,
-    is_goalkeeper: data.is_goalkeeper || position === 'GK',
+    is_goalkeeper: isGK,
     is_captain: data.is_captain || false,
     shirt_number: data.shirt_number,
     status: data.status,
