@@ -46,8 +46,6 @@ export default function ClubSquadPage() {
   const { data: publicSquad, isLoading: publicSquadLoading } = useClubSquad(slug)
   const { data: publicStaff, isLoading: publicStaffLoading } = useClubStaff(slug)
 
-  console.log('ClubSquadPage', { club, slug, members, membersLoading, publicSquad, publicStaff })
-
   const { players, staff } = useMemo(() => {
     const memberList = Array.isArray(members) ? members : []
     const fromMembersPlayers = memberList.filter((member) => member.is_active !== false && member.role === 'player')

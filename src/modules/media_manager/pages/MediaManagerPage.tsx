@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, FileImage, FolderOpen, Info, Loader2, Search, Trash2, UploadCloud, X } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Button, Card, EmptyState, Input, Skeleton } from '@/components/ui'
+import { Button, Card, EmptyState, Input, NativeSelect, Skeleton } from '@/components/ui'
 import { useTenant } from '@/app/providers/TenantProvider'
 import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
 import { getMediaAssetUrl } from '../services'
@@ -109,19 +109,19 @@ export function MediaManagerPage({
             <Input value={query} onChange={event => setQuery(event.target.value)} placeholder="Pesquisar por nome" className="pl-10" aria-label="Pesquisar assets" />
           </div>
           <label className="flex items-center gap-sm text-sm text-on-surface-variant">Upload como
-            <select value={uploadCategory} onChange={event => setUploadCategory(event.target.value)} className="rounded-md border border-outline-variant/40 bg-surface px-sm py-2 text-sm text-on-surface">
+            <NativeSelect value={uploadCategory} onChange={event => setUploadCategory(event.target.value)} className="h-9 w-auto text-sm">
               <option value="gallery">Galeria</option><option value="logo">Logótipo</option><option value="banner">Banner</option><option value="document">Documento</option><option value="report">Relatório</option>
-            </select>
+            </NativeSelect>
           </label>
           <label className="flex items-center gap-sm text-sm text-on-surface-variant">Tipo
-            <select value={assetType} onChange={event => setAssetType(event.target.value)} className="rounded-md border border-outline-variant/40 bg-surface px-sm py-2 text-sm text-on-surface">
+            <NativeSelect value={assetType} onChange={event => setAssetType(event.target.value)} className="h-9 w-auto text-sm">
               <option value="">Todos</option><option value="image">Imagem</option><option value="video">Vídeo</option><option value="document">Documento</option><option value="audio">Áudio</option><option value="pdf">PDF</option>
-            </select>
+            </NativeSelect>
           </label>
           <label className="flex items-center gap-sm text-sm text-on-surface-variant">Categoria
-            <select value={filterCategory} onChange={event => setFilterCategory(event.target.value)} className="rounded-md border border-outline-variant/40 bg-surface px-sm py-2 text-sm text-on-surface">
+            <NativeSelect value={filterCategory} onChange={event => setFilterCategory(event.target.value)} className="h-9 w-auto text-sm">
               <option value="">Todas</option><option value="gallery">Galeria</option><option value="logo">Logótipo</option><option value="banner">Banner</option><option value="document">Documento</option><option value="report">Relatório</option>
-            </select>
+            </NativeSelect>
           </label>
         </Card>
         {error && <p role="alert" className="rounded-md border border-error/30 bg-error-container/30 px-md py-sm text-sm text-error">{error}</p>}

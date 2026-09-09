@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ExternalLink, Handshake, LayoutDashboard, Save, Settings } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { Button, Card, CardContent, Input, Textarea, Badge, NativeSelect } from '@/components/ui'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { FormField } from '@/components/ui/form-field'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -191,10 +191,9 @@ export function PlayerDashboardSettingsPage() {
                     <Input id="nationality" {...register('nationality')} />
                   </FormField>
                   <FormField label={t('players.form.primaryPosition')} htmlFor="primary_position" error={errors.primary_position?.message}>
-                    <select
+                    <NativeSelect
                       id="primary_position"
                       {...register('primary_position')}
-                      className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                     >
                       <option value="">{t('players.form.select')}</option>
                       {ALL_POSITIONS.map((pos) => (
@@ -202,7 +201,7 @@ export function PlayerDashboardSettingsPage() {
                           {pos.fullLabel}
                         </option>
                       ))}
-                    </select>
+                    </NativeSelect>
                   </FormField>
                 </div>
 

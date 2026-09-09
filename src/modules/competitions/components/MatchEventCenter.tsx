@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Activity, Clock3, Goal, Loader2, ShieldAlert, Trash2, UserRound } from 'lucide-react'
-import { Button, Card } from '@/components/ui'
+import { Button, Card, NativeSelect } from '@/components/ui'
 import { useAddMatchEvent, useDeleteMatchEvent, useLineups } from '../hooks'
 import type { EventType, Match, MatchEvent } from '../types'
 
@@ -115,16 +115,16 @@ export function MatchEventCenter({ competitionId, match, events, canOperate, can
       {canOperate && <Card variant="flat" padding="lg">
         <form onSubmit={submit} className="space-y-md">
           <div><h3 className="font-semibold text-on-surface">Registar evento</h3><p className="mt-xs text-xs text-on-surface-variant">Seleccione a equipa e o jogador envolvidos.</p></div>
-          <select value={eventType} onChange={event => { setEventType(event.target.value as EventType); setPlayerId(''); setPlayerOffId('') }} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface">
+          <NativeSelect value={eventType} onChange={event => { setEventType(event.target.value as EventType); setPlayerId(''); setPlayerOffId('') }} disabled={!canAdd}>
             {EVENT_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
-          <select value={clubId} onChange={event => { setClubId(event.target.value); setPlayerId(''); setPlayerOffId('') }} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface">
+          </NativeSelect>
+          <NativeSelect value={clubId} onChange={event => { setClubId(event.target.value); setPlayerId(''); setPlayerOffId('') }} disabled={!canAdd}>
             <option value={match.home_club}>{match.home_club_name}</option><option value={match.away_club}>{match.away_club_name}</option>
-          </select>
-          <select required value={playerId} onChange={event => setPlayerId(event.target.value)} disabled={!canAdd || loadingLineups} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface">
+          </NativeSelect>
+          <NativeSelect required value={playerId} onChange={event => setPlayerId(event.target.value)} disabled={!canAdd || loadingLineups}>
             <option value="">{loadingLineups ? 'A carregar jogadores...' : 'Seleccionar jogador'}</option>{players.map(player => <option key={player.id} value={player.id}>{player.number ? `#${player.number} ` : ''}{player.name}</option>)}
-          </select>
-          {isSubstitution && <select required value={playerOffId} onChange={event => setPlayerOffId(event.target.value)} disabled={!canAdd || loadingLineups} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface"><option value="">Jogador que sai</option>{players.filter(player => player.id !== playerId).map(player => <option key={player.id} value={player.id}>{player.number ? `#${player.number} ` : ''}{player.name}</option>)}</select>}
+          </NativeSelect>
+          {isSubstitution && <NativeSelect required value={playerOffId} onChange={event => setPlayerOffId(event.target.value)} disabled={!canAdd || loadingLineups}><option value="">Jogador que sai</option>{players.filter(player => player.id !== playerId).map(player => <option key={player.id} value={player.id}>{player.number ? `#${player.number} ` : ''}{player.name}</option>)}</NativeSelect>}
           {selectedPlayer && <div className="rounded-lg bg-primary/10 px-sm py-xs text-xs text-primary">Jogador seleccionado: <strong>{selectedPlayer.name}</strong></div>}
           <input required type="number" min="0" max="130" value={minute} onChange={event => setMinute(event.target.value)} disabled={!canAdd} className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface" placeholder="Minuto" />
           <textarea value={notes} onChange={event => setNotes(event.target.value)} disabled={!canAdd} className="min-h-20 w-full rounded-lg border border-outline-variant/30 bg-surface-container-high px-md py-sm text-sm text-on-surface" placeholder="Observação opcional" />

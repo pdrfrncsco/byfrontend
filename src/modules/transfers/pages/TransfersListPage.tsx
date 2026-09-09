@@ -24,6 +24,7 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
 import { useTransfers } from '../hooks'
 import { transferRoutes } from '../routes'
@@ -61,15 +62,8 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
   const detailPath = (id: string) => (isClubScope ? transferRoutes.clubDetail(id) : transferRoutes.detail(id))
   const backPath = isClubScope ? ROUTES.DASHBOARD_CLUB : ROUTES.DASHBOARD_ORGANIZATION
 
-  const sidebarLinks = isClubScope
-    ? getClubSidebarLinks()
-    : [
-        { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
-        { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
-        { label: 'Clubes', href: ROUTES.CLUBS, icon: <Shield className="h-4 w-4" /> },
-        { label: 'Competições', href: ROUTES.COMPETITIONS, icon: <Trophy className="h-4 w-4" /> },
-        { label: 'Configurações', href: ROUTES.ORGANIZATION_SETTINGS, icon: <Settings className="h-4 w-4" /> },
-      ]
+  const sidebarLinks = isClubScope ? getClubSidebarLinks() : undefined
+  const sidebarSections = !isClubScope ? getOrganizationSidebarSections('overview') : undefined
 
   const rows = useMemo(() => {
     const list = transfersData?.results ?? []
@@ -174,8 +168,9 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       <DashboardLayout
         title="Transferências do Clube"
         subtitle="Carregando movimentos..."
-        dashboardType="club"
+        dashboardType={isClubScope ? 'club' : 'organization'}
         sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
           <Skeleton className="h-36 w-full rounded-[2rem]" />
@@ -191,6 +186,7 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       subtitle={subtitle}
       dashboardType={isClubScope ? 'club' : 'organization'}
       sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <div className="flex gap-sm">
           <Button asChild variant="secondary" size="sm">

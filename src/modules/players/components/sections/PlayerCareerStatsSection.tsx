@@ -1,23 +1,17 @@
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { LineChart, BarChart, Activity, Target, Users } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
-import type { PlayerCareerEntry } from '../../types'
+import { useMemo } from 'react'
+import { LineChart as LineChartIcon, BarChart as BarChartIcon, Activity, Target, Users } from 'lucide-react'
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
   Legend,
-  ChartOptions,
-} from 'chart.js'
-import { Line, Bar } from 'react-chartjs-2'
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend)
+} from 'recharts'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui'
+import type { PlayerCareerEntry } from '../../types'
 
 interface PlayerCareerStatsSectionProps {
   career: PlayerCareerEntry[]
@@ -25,9 +19,6 @@ interface PlayerCareerStatsSectionProps {
 }
 
 export function PlayerCareerStatsSection({ career = [], isLoading = false }: PlayerCareerStatsSectionProps) {
-  const { t } = useTranslation()
-  const [selectedClub, setSelectedClub] = useState<string | null>(null)
-
   // Calculate statistics
   const stats = useMemo(() => {
     if (!career || career.length === 0) {
@@ -62,142 +53,6 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
       ),
     }
   }, [career])
-
-  // Chart options
-  const lineChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          usePointStyle: true,
-          padding: 15,
-          font: { size: 12 },
-        },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        padding: 12,
-        titleFont: { size: 14 },
-        bodyFont: { size: 12 },
-        displayColors: true,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Estatísticas',
-        },
-      },
-    },
-  }
-
-  const barChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: true,
-    indexAxis: 'x' as const,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top' as const,
-        labels: {
-          usePointStyle: true,
-          padding: 15,
-          font: { size: 12 },
-        },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        padding: 12,
-        titleFont: { size: 14 },
-        bodyFont: { size: 12 },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  }
-
-  // Goals by Club Chart
-  const goalsChartData = {
-    labels: stats.clubs,
-    datasets: [
-      {
-        label: 'Golos',
-        data: stats.clubs.map((club) => stats.byClub[club]?.goals || 0),
-        backgroundColor: 'rgba(34, 197, 94, 0.7)',
-        borderColor: 'rgba(34, 197, 94, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-      },
-    ],
-  }
-
-  // Assists by Club Chart
-  const assistsChartData = {
-    labels: stats.clubs,
-    datasets: [
-      {
-        label: 'Assistências',
-        data: stats.clubs.map((club) => stats.byClub[club]?.assists || 0),
-        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-      },
-    ],
-  }
-
-  // Matches by Club Chart
-  const matchesChartData = {
-    labels: stats.clubs,
-    datasets: [
-      {
-        label: 'Partidas',
-        data: stats.clubs.map((club) => stats.byClub[club]?.matches || 0),
-        backgroundColor: 'rgba(168, 85, 247, 0.7)',
-        borderColor: 'rgba(168, 85, 247, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-      },
-    ],
-  }
-
-  // Combined statistics chart
-  const combinedChartData = {
-    labels: stats.clubs,
-    datasets: [
-      {
-        label: 'Partidas',
-        data: stats.clubs.map((club) => stats.byClub[club]?.matches || 0),
-        backgroundColor: 'rgba(168, 85, 247, 0.5)',
-        borderColor: 'rgba(168, 85, 247, 1)',
-        borderWidth: 2,
-        yAxisID: 'y',
-      },
-      {
-        label: 'Golos',
-        data: stats.clubs.map((club) => stats.byClub[club]?.goals || 0),
-        backgroundColor: 'rgba(34, 197, 94, 0.5)',
-        borderColor: 'rgba(34, 197, 94, 1)',
-        borderWidth: 2,
-        yAxisID: 'y1',
-      },
-      {
-        label: 'Assistências',
-        data: stats.clubs.map((club) => stats.byClub[club]?.assists || 0),
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 2,
-        yAxisID: 'y1',
-      },
-    ],
-  }
 
   if (isLoading) {
     return (
@@ -252,7 +107,7 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
 
         <Card variant="flat" padding="none">
           <CardContent className="space-y-xs p-lg">
-            <BarChart className="h-5 w-5 text-blue-400" />
+            <BarChartIcon className="h-5 w-5 text-blue-400" />
             <p className="text-xs uppercase tracking-wide text-on-surface-variant">Média Golos/Jogo</p>
             <p className="text-3xl font-bold text-on-surface">{stats.averageGoalsPerMatch}</p>
           </CardContent>
@@ -260,7 +115,7 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
 
         <Card variant="flat" padding="none">
           <CardContent className="space-y-xs p-lg">
-            <LineChart className="h-5 w-5 text-pink-400" />
+            <LineChartIcon className="h-5 w-5 text-pink-400" />
             <p className="text-xs uppercase tracking-wide text-on-surface-variant">Média Assist./Jogo</p>
             <p className="text-3xl font-bold text-on-surface">{stats.averageAssistsPerMatch}</p>
           </CardContent>
@@ -316,7 +171,25 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
           </CardHeader>
           <CardContent>
             <div className="h-80">
-              <Bar data={goalsChartData} options={barChartOptions} />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={career} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(38, 54, 74, 0.3)" vertical={false} />
+                  <XAxis dataKey="club" stroke="#bfc9c4" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#bfc9c4" fontSize={11} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#102034',
+                      borderColor: '#26364a',
+                      borderRadius: '0.5rem',
+                      color: '#bfc9c4',
+                      fontSize: '12px',
+                    }}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px', color: '#bfc9c4' }} />
+                  <Bar dataKey="goals" name="Golos" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -331,7 +204,25 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
           </CardHeader>
           <CardContent>
             <div className="h-80">
-              <Bar data={assistsChartData} options={barChartOptions} />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={career} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(38, 54, 74, 0.3)" vertical={false} />
+                  <XAxis dataKey="club" stroke="#bfc9c4" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#bfc9c4" fontSize={11} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#102034',
+                      borderColor: '#26364a',
+                      borderRadius: '0.5rem',
+                      color: '#bfc9c4',
+                      fontSize: '12px',
+                    }}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px', color: '#bfc9c4' }} />
+                  <Bar dataKey="assists" name="Assistências" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -340,7 +231,7 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-md">
-              <LineChart className="h-5 w-5" />
+              <LineChartIcon className="h-5 w-5" />
               Estatísticas Combinadas por Clube
             </CardTitle>
             <CardDescription>
@@ -349,7 +240,27 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
           </CardHeader>
           <CardContent>
             <div className="h-96">
-              <Line data={combinedChartData} options={lineChartOptions} />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={career} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(38, 54, 74, 0.3)" vertical={false} />
+                  <XAxis dataKey="club" stroke="#bfc9c4" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#bfc9c4" fontSize={11} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#102034',
+                      borderColor: '#26364a',
+                      borderRadius: '0.5rem',
+                      color: '#bfc9c4',
+                      fontSize: '12px',
+                    }}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px', color: '#bfc9c4' }} />
+                  <Bar dataKey="matches" name="Partidas" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="goals" name="Golos" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="assists" name="Assistências" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -367,7 +278,25 @@ export function PlayerCareerStatsSection({ career = [], isLoading = false }: Pla
           </CardHeader>
           <CardContent>
             <div className="h-80">
-              <Bar data={matchesChartData} options={barChartOptions} />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={career} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(38, 54, 74, 0.3)" vertical={false} />
+                  <XAxis dataKey="club" stroke="#bfc9c4" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#bfc9c4" fontSize={11} tickLine={false} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#102034',
+                      borderColor: '#26364a',
+                      borderRadius: '0.5rem',
+                      color: '#bfc9c4',
+                      fontSize: '12px',
+                    }}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px', color: '#bfc9c4' }} />
+                  <Bar dataKey="matches" name="Partidas" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>

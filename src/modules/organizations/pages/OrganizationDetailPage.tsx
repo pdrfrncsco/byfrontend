@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Bell,
   BellOff,
+  Building2,
   CheckCircle2,
   Gamepad2,
   Globe,
@@ -31,11 +32,13 @@ import {
   usePublicOrganizationDetail,
   useOrganizationKpis,
   useOrganizationHistory,
+  useOrganizationClubs,
   useSubscribeOrganization,
   useUnsubscribeOrganization,
 } from '../hooks'
 import {
   OrganizationHistoryTable,
+  AffiliationRequestModal,
 } from '../components'
 import { organizationRoutes } from '../routes'
 import { DetailHeroCard, PublicDetailPageShell } from '@/modules/shared/components'
@@ -69,6 +72,8 @@ export function OrganizationDetailPage() {
 
   const { data: kpis } = useOrganizationKpis(slug)
   const { data: history } = useOrganizationHistory(slug)
+  const { data: clubs = [], isLoading: isLoadingClubs } = useOrganizationClubs(slug)
+  const [isAffiliationModalOpen, setIsAffiliationModalOpen] = useState(false)
 
   const subscribeMutation = useSubscribeOrganization()
   const unsubscribeMutation = useUnsubscribeOrganization()
@@ -154,6 +159,14 @@ export function OrganizationDetailPage() {
                   <span>Voltar às Organizações</span>
                 </Link>
               </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsAffiliationModalOpen(true)}
+              >
+                <Building2 className="h-4 w-4" />
+                <span>Solicitar Filiação</span>
+              </Button>
               {isSubscribed ? (
                 <Button
                   variant="outline"
@@ -183,6 +196,12 @@ export function OrganizationDetailPage() {
               className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
             >
               Resumo Geral
+            </TabsTrigger>
+            <TabsTrigger 
+              value="clubs" 
+              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
+            >
+              Clubes Afiliados ({clubs.length})
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
@@ -301,6 +320,86 @@ export function OrganizationDetailPage() {
           </TabsContent>
 
           <TabsContent 
+            value="clubs"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+          >
+            {isLoadingClubs ? (
+              <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map(item => (
+                  <Card key={item} padding="md" className="space-y-sm">
+                    <div className="h-12 w-12 rounded-xl bg-surface-container-high animate-pulse" />
+                    <div className="h-4 w-3/4 rounded bg-surface-container-high animate-pulse" />
+                    <div className="h-3 w-1/2 rounded bg-surface-container-high animate-pulse" />
+                  </Card>
+                ))}
+              </div>
+            ) : clubs.length === 0 ? (
+              <Card padding="lg" className="py-16 text-center shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
+                <Building2 className="mx-auto mb-md h-12 w-12 text-outline opacity-40" aria-hidden="true" />
+                <h4 className="mb-xs font-title-md text-base text-on-surface">Nenhum Clube Afiliado</h4>
+                <p className="mx-auto max-w-sm text-sm text-on-surface-variant mb-lg">
+                  Esta organização ainda não possui clubes afiliados registados publicamente.
+                </p>
+                <Button variant="primary" size="sm" onClick={() => setIsAffiliationModalOpen(true)}>
+                  <Building2 className="h-4 w-4 mr-1.5" />
+                  <span>Solicitar Filiação do seu Clube</span>
+                </Button>
+              </Card>
+            ) : (
+              <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+                {clubs.map((club) => {
+                  const clubInitial = club.name.charAt(0) || 'C'
+                  return (
+                    <Card
+                      key={club.id}
+                      padding="md"
+                      className="group flex flex-col justify-between hover:border-primary/50 transition-all duration-200 shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]"
+                    >
+                      <div className="flex items-start gap-md">
+                        {club.logo_url ? (
+                          <img
+                            src={club.logo_url}
+                            alt={club.name}
+                            className="h-12 w-12 rounded-xl border border-outline-variant/30 object-cover shrink-0"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-outline-variant/30 font-bold text-lg text-white"
+                            style={{ backgroundColor: club.primary_color || '#1B4D3E' }}
+                          >
+                            {clubInitial}
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
+                            {club.name}
+                          </h4>
+                          {club.short_name && (
+                            <p className="text-xs text-primary font-medium">{club.short_name}</p>
+                          )}
+                          <p className="text-xs text-on-surface-variant mt-1 truncate">
+                            {club.city || 'Angola'}
+                            {club.stadium_name ? ` · ${club.stadium_name}` : ''}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-md pt-md border-t border-outline-variant/20 flex items-center justify-between">
+                        <span className="text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                          {club.status_label || 'Afiliado'}
+                        </span>
+                        <Button variant="ghost" size="sm" asChild className="h-8 text-xs text-primary">
+                          <Link to={`/clubs/${club.slug}`}>Ver Clube</Link>
+                        </Button>
+                      </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent 
             value="history"
             className="animate-in fade-in slide-in-from-bottom-2 duration-500"
           >
@@ -318,6 +417,13 @@ export function OrganizationDetailPage() {
           </TabsContent>
           </Tabs>
         </main>
+
+        <AffiliationRequestModal
+          organizationSlug={organization.slug}
+          organizationName={organization.name}
+          isOpen={isAffiliationModalOpen}
+          onClose={() => setIsAffiliationModalOpen(false)}
+        />
     </PublicDetailPageShell>
   )
 }

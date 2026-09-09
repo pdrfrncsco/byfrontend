@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
+import { ROUTES } from '@/constants/routes'
 
 const SEGMENT_LABELS: Record<string, string> = {
   dashboard: 'Painel',
@@ -31,7 +32,7 @@ export function DashboardBreadcrumb() {
 
   return (
     <nav className="hidden md:flex items-center gap-sm text-xs text-on-surface-variant">
-      <Link to="/" className="hover:text-primary transition-colors">Início</Link>
+      <Link to={ROUTES.DASHBOARD} className="hover:text-primary transition-colors">Início</Link>
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join('/')}`
         const isLast = index === pathnames.length - 1

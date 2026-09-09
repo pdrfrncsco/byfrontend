@@ -23,5 +23,3 @@ export * from './TopScorersTable'
 export * from './CompetitionHeader'
 export * from './CompetitionFormatRouter'
 export * from './formats'
-export * from './CompetitionManagementFrame'
-

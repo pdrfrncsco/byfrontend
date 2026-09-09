@@ -11,8 +11,14 @@ import {
   type ProfileUpdateFormData,
   type ChangePasswordFormData,
 } from '@/modules/auth/schemas'
-import { User, Save, Lock, Shield, ChevronRight, Moon, Sun } from 'lucide-react'
+import { User, Save, Lock, Shield, Moon, Sun } from 'lucide-react'
 import { useTheme } from '@/app/providers'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { useDashboardResolver } from '@/modules/dashboards/hooks/useDashboardResolver'
+import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getPlayerSidebarLinks } from '@/modules/players/constants/navigation'
+import { getCompetitionSidebarLinks } from '@/modules/competitions/constants'
 
 type Tab = 'profile' | 'security' | 'memberships'
 
@@ -21,6 +27,16 @@ export function ProfilePage() {
   const { user, logout: authLogout, memberships, activeMembershipId, setActiveMembership } = useAuth()
   const { theme, setTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<Tab>('profile')
+
+  const { resolvedType } = useDashboardResolver()
+  const sidebarSections = resolvedType === 'organization' ? getOrganizationSidebarSections('overview') : undefined
+  const sidebarLinks = resolvedType === 'club'
+    ? getClubSidebarLinks()
+    : resolvedType === 'player'
+    ? getPlayerSidebarLinks()
+    : resolvedType === 'competition'
+    ? getCompetitionSidebarLinks()
+    : undefined
 
   const updateProfileMutation = useUpdateProfile()
   const changePasswordMutation = useChangePassword()
@@ -90,28 +106,14 @@ export function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[var(--profile-bg)] text-[var(--profile-text)]">
-      {/* Background */}
-      <div className="glow-bg">
-        <div className="glow-circle glow-1" />
-        <div className="glow-circle glow-2" />
-      </div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-30 h-16 flex items-center px-lg bg-[var(--profile-surface)] border-b border-[var(--profile-border)] backdrop-blur-xl">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors text-sm group"
-        >
-          <ChevronRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
-          Dashboard
-        </button>
-        <h1 className="ml-auto font-display-lg text-lg text-primary uppercase tracking-wider">
-          Perfil
-        </h1>
-      </header>
-
-      <div className="max-w-3xl mx-auto p-lg space-y-lg">
+    <DashboardLayout
+      title="Perfil do Utilizador"
+      subtitle="Gerencie as suas informações de perfil, credenciais e organizações"
+      dashboardType={resolvedType}
+      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
+    >
+      <div className="max-w-4xl space-y-lg">
         {/* User Avatar Card */}
         <div className="rounded-xl p-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] flex items-center gap-lg">
           <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center border-2 border-primary shrink-0">
@@ -417,6 +419,6 @@ export function ProfilePage() {
           </div>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

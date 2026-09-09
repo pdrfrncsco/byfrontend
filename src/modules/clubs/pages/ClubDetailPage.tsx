@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSeo } from '@/hooks/useSeo'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Building2, ExternalLink, FileText, MapPin, Trophy, Users } from 'lucide-react'
@@ -90,7 +90,7 @@ export default function ClubDetailPage() {
   const standings = standingsQuery.data ?? []
 
   // Redirect to slug if UUID was detected and club data is loaded
-  useMemo(() => {
+  useEffect(() => {
     if (shouldFetchByUuid && club?.slug && club.slug !== clubSlug) {
       navigate(`/clubs/${club.slug}`, { replace: true })
     }

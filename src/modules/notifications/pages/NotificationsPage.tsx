@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
 import { Bell, CheckCheck, Loader2, RefreshCw } from 'lucide-react'
+import { DashboardLayout } from '@/app/layouts/DashboardLayout'
+import { Button } from '@/components/ui'
+import { useDashboardResolver } from '@/modules/dashboards/hooks/useDashboardResolver'
+import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
+import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getPlayerSidebarLinks } from '@/modules/players/constants/navigation'
+import { getCompetitionSidebarLinks } from '@/modules/competitions/constants'
 import { useNotificationsList, useMarkRead } from '../hooks/useNotifications'
 import { useNotificationStream } from '../hooks/useNotificationStream'
 import type { Notification } from '../types'
@@ -39,42 +46,50 @@ export const NotificationsPage: React.FC = () => {
   const items: Notification[] = notifications ?? []
   const unreadCount = items.filter(n => n.status === 'pending').length
 
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Bell className="w-6 h-6 text-primary" />
-            Notificações
-          </h1>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Actualizações em tempo real sobre a sua actividade na plataforma
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {/* Live indicator */}
-          <div className="flex items-center gap-1.5 text-xs text-emerald-400">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            Em tempo real
-          </div>
-          <button
-            onClick={() => refetch()}
-            disabled={isRefetching}
-            className="flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors px-3 py-1.5 rounded-lg hover:bg-surface-container-high border border-outline-variant"
-            aria-label="Actualizar notificações"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefetching ? 'animate-spin' : ''}`} />
-            Actualizar
-          </button>
-        </div>
-      </div>
+  const { resolvedType } = useDashboardResolver()
+  const sidebarSections = resolvedType === 'organization' ? getOrganizationSidebarSections('overview') : undefined
+  const sidebarLinks = resolvedType === 'club'
+    ? getClubSidebarLinks()
+    : resolvedType === 'player'
+    ? getPlayerSidebarLinks()
+    : resolvedType === 'competition'
+    ? getCompetitionSidebarLinks()
+    : undefined
 
-      {/* Filter + stats bar */}
-      <div className="flex items-center justify-between mb-4">
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 text-xs text-emerald-400">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+        </span>
+        Em tempo real
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => refetch()}
+        disabled={isRefetching}
+        aria-label="Actualizar notificações"
+      >
+        <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isRefetching ? 'animate-spin' : ''}`} />
+        <span>Actualizar</span>
+      </Button>
+    </div>
+  )
+
+  return (
+    <DashboardLayout
+      title="Notificações"
+      subtitle="Actualizações em tempo real sobre a sua actividade na plataforma"
+      dashboardType={resolvedType}
+      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
+      headerActions={headerActions}
+    >
+      <div className="max-w-4xl space-y-md">
+        {/* Filter + stats bar */}
+        <div className="flex items-center justify-between">
         <div className="flex gap-1 bg-surface-container p-1 rounded-lg">
           {(['all', 'unread'] as const).map(f => (
             <button
@@ -178,5 +193,6 @@ export const NotificationsPage: React.FC = () => {
         })}
       </div>
     </div>
+    </DashboardLayout>
   )
 }

@@ -58,13 +58,14 @@ function hasRequiredRole(userRoles: string[], requiredRoles: string[]): boolean 
 
 function ArchiveMatchButton({ matchId, onArchived }: { matchId: string; onArchived?: () => void }) {
   const [isArchiving, setIsArchiving] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const handleArchive = async () => {
-    if (!window.confirm('Arquivar esta partida? O resultado ficará disponível apenas como histórico imutável.')) return
     try {
       setIsArchiving(true)
       await matchApi.transition(matchId, 'archived')
       toast.success('Partida arquivada.')
+      setConfirmOpen(false)
       onArchived?.()
     } catch (err: any) {
       toast.error('Não foi possível arquivar a partida: ' + (err?.message || String(err)))
@@ -74,30 +75,69 @@ function ArchiveMatchButton({ matchId, onArchived }: { matchId: string; onArchiv
   }
 
   return (
-    <Button variant="secondary" size="sm" onClick={handleArchive} disabled={isArchiving}>
-      {isArchiving ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : null}
-      Arquivar partida
-    </Button>
+    <>
+      <Button variant="secondary" size="sm" onClick={() => setConfirmOpen(true)} disabled={isArchiving}>
+        Arquivar partida
+      </Button>
+
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-md" role="dialog" aria-modal="true">
+          <div className="relative w-full max-w-md rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="font-display text-lg font-bold text-on-surface">Arquivar Partida</h3>
+            <p className="mt-sm text-sm text-on-surface-variant">
+              Tem a certeza de que deseja arquivar esta partida? O resultado ficará disponível apenas como histórico imutável.
+            </p>
+            <div className="mt-lg flex items-center justify-end gap-sm">
+              <Button variant="outline" size="sm" onClick={() => setConfirmOpen(false)} disabled={isArchiving}>
+                Cancelar
+              </Button>
+              <Button variant="danger" size="sm" onClick={handleArchive} loading={isArchiving}>
+                Confirmar Arquivo
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
 // Small start-match button component (keeps page code focused)
-function StartMatchButton({ competitionId, matchId, currentStatus, onStarted }: { competitionId: string; matchId: string; currentStatus: 'scheduled' | 'pre_match'; onStarted?: () => void }) {
+function StartMatchButton({
+  competitionId: _competitionId,
+  matchId,
+  currentStatus,
+  onStarted,
+}: {
+  competitionId: string
+  matchId: string
+  currentStatus: 'scheduled' | 'pre_match'
+  onStarted?: () => void
+}) {
   const [isStarting, setIsStarting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  const isScheduled = currentStatus === 'scheduled'
+  const nextStatus = isScheduled ? 'pre_match' : 'live'
+  const dialogTitle = isScheduled ? 'Abrir Pré-Jogo' : 'Iniciar Partida ao Vivo'
+  const dialogMessage = isScheduled
+    ? 'Deseja abrir o pré-jogo e libertar a preparação das escalações para os clubes?'
+    : 'Confirma iniciar a partida? Esta ação mudará o estado para "live" e libertará o registo de eventos em tempo real.'
+
   const handleStart = async () => {
-    const nextStatus = currentStatus === 'scheduled' ? 'pre_match' : 'live'
-    const ok = window.confirm(
-      currentStatus === 'scheduled'
-        ? 'Abrir o pré-jogo e liberar a preparação das escalações?'
-        : 'Confirma iniciar a partida? Esta ação mudará o estado para "live" e liberará o registo de eventos.',
-    )
-    if (!ok) return
     try {
       setIsStarting(true)
-      await matchApi.transition(matchId, nextStatus, nextStatus === 'live'
-        ? { currentPeriod: 'first_half', currentMinute: 0 }
-        : undefined)
-      toast.success(nextStatus === 'live' ? 'Partida iniciada. Eventos ao vivo podem agora ser registados.' : 'Pré-jogo aberto para submissão das escalações.')
+      await matchApi.transition(
+        matchId,
+        nextStatus,
+        nextStatus === 'live' ? { currentPeriod: 'first_half', currentMinute: 0 } : undefined
+      )
+      toast.success(
+        nextStatus === 'live'
+          ? 'Partida iniciada. Eventos ao vivo podem agora ser registados.'
+          : 'Pré-jogo aberto para submissão das escalações.'
+      )
+      setConfirmOpen(false)
       onStarted?.()
     } catch (err: any) {
       console.error(err)
@@ -108,9 +148,35 @@ function StartMatchButton({ competitionId, matchId, currentStatus, onStarted }: 
   }
 
   return (
-    <Button variant="primary" size="sm" onClick={handleStart} disabled={isStarting}>
-      {isStarting ? <Loader2 className="mr-xs h-4 w-4 animate-spin" /> : currentStatus === 'scheduled' ? 'Abrir pré-jogo' : 'Iniciar partida'}
-    </Button>
+    <>
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={() => setConfirmOpen(true)}
+        disabled={isStarting}
+      >
+        {isScheduled ? 'Abrir pré-jogo' : 'Iniciar partida'}
+      </Button>
+
+      {confirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-md" role="dialog" aria-modal="true">
+          <div className="relative w-full max-w-md rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="font-display text-lg font-bold text-on-surface">{dialogTitle}</h3>
+            <p className="mt-sm text-sm text-on-surface-variant leading-relaxed">
+              {dialogMessage}
+            </p>
+            <div className="mt-lg flex items-center justify-end gap-sm">
+              <Button variant="outline" size="sm" onClick={() => setConfirmOpen(false)} disabled={isStarting}>
+                Cancelar
+              </Button>
+              <Button variant="primary" size="sm" onClick={handleStart} loading={isStarting}>
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 

@@ -49,7 +49,13 @@ export function DashboardMobileMenu({
   const location = useLocation()
   const { user } = useAuth()
   const { tenant } = useTenant()
-  const activeHref = getActiveSidebarHref(location, sidebarLinks)
+  const allLinks = React.useMemo(() => {
+    if (sidebarSections && sidebarSections.length > 0) {
+      return [...sidebarLinks, ...sidebarSections.flatMap((s) => s.links)]
+    }
+    return sidebarLinks
+  }, [sidebarSections, sidebarLinks])
+  const activeHref = getActiveSidebarHref(location, allLinks)
 
   if (!isOpen) return null
 

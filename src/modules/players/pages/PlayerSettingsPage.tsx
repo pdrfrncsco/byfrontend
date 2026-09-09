@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Save, Loader2, AlertCircle } from 'lucide-react'
-import { Button, Card, CardContent, Input, Textarea, Badge } from '@/components/ui'
+import { Button, Card, CardContent, Input, Textarea, Badge, NativeSelect } from '@/components/ui'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { FormField } from '@/components/ui/form-field'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,6 +16,9 @@ import {
   PlayerVideosSection,
   PlayerAchievementsSection,
   PlayerAvatarUpload,
+  PlayerIdentityDocumentsSection,
+  PlayerContactSettingsPanel,
+  PlayerPrivacySettingsPanel,
 } from '../components'
 import { ALL_POSITIONS, POSITION_COLOR, STATUS_COLOR } from '../constants'
 
@@ -165,6 +168,9 @@ export function PlayerSettingsPage() {
       <Tabs defaultValue="profile">
         <TabsList className="flex flex-wrap gap-sm rounded-2xl border border-outline-variant/20 bg-surface-container/70 p-sm">
           <TabsTrigger value="profile">{t('players.settings.tabs.profile')}</TabsTrigger>
+          <TabsTrigger value="identity">Identidade</TabsTrigger>
+          <TabsTrigger value="contact">Contacto</TabsTrigger>
+          <TabsTrigger value="privacy">Privacidade</TabsTrigger>
           <TabsTrigger value="documents">{t('players.settings.tabs.documents')}</TabsTrigger>
           <TabsTrigger value="videos">{t('players.settings.tabs.videos')}</TabsTrigger>
           <TabsTrigger value="achievements">{t('players.settings.tabs.achievements')}</TabsTrigger>
@@ -243,10 +249,9 @@ export function PlayerSettingsPage() {
                   htmlFor="primary_position"
                   error={errors.primary_position?.message}
                 >
-                  <select
+                  <NativeSelect
                     id="primary_position"
                     {...register('primary_position')}
-                    className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
                     <option value="">{t('players.form.selectPosition')}</option>
                     {ALL_POSITIONS.map((pos) => (
@@ -254,7 +259,7 @@ export function PlayerSettingsPage() {
                         {pos.fullLabel} ({pos.label})
                       </option>
                     ))}
-                  </select>
+                  </NativeSelect>
                 </FormField>
 
                 <FormField
@@ -262,16 +267,15 @@ export function PlayerSettingsPage() {
                   htmlFor="foot"
                   error={errors.foot?.message}
                 >
-                  <select
+                  <NativeSelect
                     id="foot"
                     {...register('foot')}
-                    className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
                     <option value="">{t('players.form.select')}</option>
                     <option value="left">{t('players.form.footLeft')}</option>
                     <option value="right">{t('players.form.footRight')}</option>
                     <option value="both">{t('players.form.footBoth')}</option>
-                  </select>
+                  </NativeSelect>
                 </FormField>
 
                 <FormField
@@ -279,17 +283,16 @@ export function PlayerSettingsPage() {
                   htmlFor="status"
                   error={errors.status?.message}
                 >
-                  <select
+                  <NativeSelect
                     id="status"
                     {...register('status')}
-                    className="flex h-10 w-full rounded-lg border border-outline-variant bg-surface-container px-md py-sm text-sm text-on-surface focus:border-primary focus:outline-none"
                   >
                     <option value="">Selecione</option>
                     <option value="active">Ativo</option>
                     <option value="retired">Reformado</option>
                     <option value="banned">Banido</option>
                     <option value="inactive">Inativo</option>
-                  </select>
+                  </NativeSelect>
                 </FormField>
               </div>
 
@@ -396,6 +399,18 @@ export function PlayerSettingsPage() {
           </form>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        <TabsContent value="identity">
+          <PlayerIdentityDocumentsSection slug={slug ?? ''} ownerId={player.id} />
+        </TabsContent>
+
+        <TabsContent value="contact">
+          <PlayerContactSettingsPanel slug={slug ?? ''} />
+        </TabsContent>
+
+        <TabsContent value="privacy">
+          <PlayerPrivacySettingsPanel slug={slug ?? ''} />
         </TabsContent>
 
         <TabsContent value="documents">

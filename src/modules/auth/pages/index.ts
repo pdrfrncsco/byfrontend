@@ -1,0 +1,5 @@
+export { LoginPage } from '@/modules/shared/pages/LoginPage'
+export { RegisterPage } from '@/modules/shared/pages/RegisterPage'
+export { RegisterProfilePage } from '@/modules/shared/pages/RegisterProfilePage'
+export { ForgotPasswordPage } from '@/modules/shared/pages/ForgotPasswordPage'
+export { ResetPasswordPage } from '@/modules/shared/pages/ResetPasswordPage'
