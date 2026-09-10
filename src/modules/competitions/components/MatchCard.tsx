@@ -6,6 +6,7 @@ import { getMatchClockInfo } from '../utils/match-clock'
 import { MatchCountdown } from './MatchCountdown'
 import { MatchScoreboard } from './MatchScoreboard'
 import { MatchStatusBadge } from './MatchStatusBadge'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface MatchCardProps {
   match: Match
@@ -25,8 +26,8 @@ interface MatchCardProps {
 export function MatchCard({ match, competitionId, showLink = false, compact = false }: MatchCardProps) {
   const homeName = match.homeTeamName || match.home_club_name
   const awayName = match.awayTeamName || match.away_club_name
-  const homeLogo = match.homeTeamLogo || match.home_club_logo
-  const awayLogo = match.awayTeamLogo || match.away_club_logo
+  const homeLogo = resolveMediaUrl(match.homeTeamLogo || match.home_club_logo)
+  const awayLogo = resolveMediaUrl(match.awayTeamLogo || match.away_club_logo)
   const scheduledAt = match.scheduledAt || match.match_date
   const roundNumber = match.roundNumber ?? match.round_number
   const clockInfo = getMatchClockInfo(match)

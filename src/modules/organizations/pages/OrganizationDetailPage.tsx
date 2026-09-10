@@ -28,6 +28,7 @@ import {
   KpiCard,
   PageSkeleton,
 } from '@/components/ui'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import {
   usePublicOrganizationDetail,
   useOrganizationKpis,
@@ -356,20 +357,15 @@ export function OrganizationDetailPage() {
                       className="group flex flex-col justify-between hover:border-primary/50 transition-all duration-200 shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]"
                     >
                       <div className="flex items-start gap-md">
-                        {club.logo_url ? (
-                          <img
-                            src={club.logo_url}
-                            alt={club.name}
-                            className="h-12 w-12 rounded-xl border border-outline-variant/30 object-cover shrink-0"
-                          />
-                        ) : (
-                          <div
-                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-outline-variant/30 font-bold text-lg text-white"
-                            style={{ backgroundColor: club.primary_color || '#1B4D3E' }}
-                          >
-                            {clubInitial}
-                          </div>
-                        )}
+                        <ClubLogo
+                          name={club.name}
+                          logoUrl={club.logo_url}
+                          shortName={club.short_name}
+                          primaryColor={club.primary_color}
+                          size="md"
+                          shape="rounded"
+                          className="border border-outline-variant/30 shrink-0"
+                        />
                         <div className="min-w-0 flex-1">
                           <h4 className="font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
                             {club.name}

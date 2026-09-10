@@ -12,6 +12,8 @@ import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { DetailHeroCard, PublicDetailPageShell } from '@/modules/shared/components'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
+import { resolveMediaUrl } from '@/lib/media'
 import {
   useClub,
   useClubKpis,
@@ -164,13 +166,15 @@ export default function ClubDetailPage() {
           title={club.name}
           description={club.description || 'Perfil público do clube com plantel, staff, documentos e patrocinadores.'}
           visual={
-            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.5rem] border border-outline-variant/20 bg-surface-container-high text-2xl font-bold text-primary shadow-[0_16px_28px_rgba(15,23,42,0.12)]">
-              {club.logo_url ? (
-                <img src={club.logo_url} alt={`${club.name} logo`} className="h-full w-full object-cover" />
-              ) : (
-                initials
-              )}
-            </div>
+            <ClubLogo
+              name={club.name}
+              logoUrl={club.logo_url}
+              shortName={club.short_name}
+              primaryColor={club.primary_color}
+              size="xl"
+              shape="squircle"
+              className="border border-outline-variant/20 bg-surface-container-high shadow-[0_16px_28px_rgba(15,23,42,0.12)]"
+            />
           }
           chips={[
             { icon: MapPin, label: [club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível' },
@@ -394,7 +398,7 @@ export default function ClubDetailPage() {
                       <div className="flex items-center gap-md">
                         <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-surface-container-high text-sm font-bold text-primary">
                           {sponsor.logo_url ? (
-                            <img src={sponsor.logo_url} alt={sponsor.name} className="h-full w-full object-cover" />
+                            <img src={resolveMediaUrl(sponsor.logo_url)} alt={sponsor.name} className="h-full w-full object-cover" />
                           ) : (
                             sponsor.name.slice(0, 2).toUpperCase()
                           )}

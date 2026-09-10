@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import { useOrganizationMe, useOrganizationTournaments } from '@/modules/organizations/hooks'
 import { competitionApi } from '../services/competition.api'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import type { Match } from '../types'
 import { MatchCard } from '../components'
 
@@ -115,13 +116,12 @@ export function CompetitionMatchesPage() {
         header: 'Casa',
         cell: ({ row }) => (
           <div className="flex items-center gap-sm">
-            {row.original.home_club_logo ? (
-              <img src={row.original.home_club_logo} alt={row.original.home_club_name} className="h-8 w-8 rounded-full object-cover" />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-sm">
-                {row.original.home_club_name.slice(0, 2).toUpperCase()}
-              </div>
-            )}
+            <ClubLogo
+              name={row.original.home_club_name}
+              logoUrl={row.original.home_club_logo}
+              size="sm"
+              shape="circle"
+            />
             <span className="text-sm font-medium">{row.original.home_club_name}</span>
           </div>
         ),
@@ -146,13 +146,12 @@ export function CompetitionMatchesPage() {
         header: 'Fora',
         cell: ({ row }) => (
           <div className="flex items-center gap-sm">
-            {row.original.away_club_logo ? (
-              <img src={row.original.away_club_logo} alt={row.original.away_club_name} className="h-8 w-8 rounded-full object-cover" />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-sm">
-                {row.original.away_club_name.slice(0, 2).toUpperCase()}
-              </div>
-            )}
+            <ClubLogo
+              name={row.original.away_club_name}
+              logoUrl={row.original.away_club_logo}
+              size="sm"
+              shape="circle"
+            />
             <span className="text-sm font-medium">{row.original.away_club_name}</span>
           </div>
         ),

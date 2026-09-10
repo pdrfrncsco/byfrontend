@@ -142,10 +142,28 @@ export function useUploadClubLogo() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: clubKeys.details() })
       queryClient.invalidateQueries({ queryKey: clubKeys.me() })
+      queryClient.invalidateQueries({ queryKey: clubKeys.lists() })
       toast.success('Logo atualizado com sucesso.')
     },
     onError: (error: unknown) => {
       const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao fazer upload do logo.'
+      toast.error(message)
+    },
+  })
+}
+
+export function useRemoveClubLogo() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => service.removeClubLogo(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: clubKeys.details() })
+      queryClient.invalidateQueries({ queryKey: clubKeys.me() })
+      queryClient.invalidateQueries({ queryKey: clubKeys.lists() })
+      toast.success('Logo removido com sucesso.')
+    },
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Erro ao remover logo.'
       toast.error(message)
     },
   })

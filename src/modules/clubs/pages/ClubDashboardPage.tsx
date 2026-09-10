@@ -10,6 +10,7 @@ import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { useClubDocuments, useClubKpis, useClubMe, useClubMembers, useClubSponsors, useTransfers } from '@/modules/clubs/hooks/useClubs'
 
@@ -132,13 +133,15 @@ export default function ClubDashboardPage() {
               Gestão central do clube
             </div>
             <div className="flex items-start gap-md">
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-primary text-2xl font-bold text-on-primary shadow-lg">
-                {club.logo_url ? (
-                  <img src={club.logo_url} alt={`${club.name} logo`} className="h-full w-full object-cover" />
-                ) : (
-                  clubInitials
-                )}
-              </div>
+              <ClubLogo
+                name={club.name}
+                logoUrl={club.logo_url}
+                shortName={club.short_name}
+                primaryColor={club.primary_color}
+                size="xl"
+                shape="squircle"
+                className="shadow-lg"
+              />
               <div className="space-y-sm">
                 <div className="flex flex-wrap items-center gap-sm">
                   <h1 className="font-title-lg text-3xl text-on-surface">{club.name}</h1>

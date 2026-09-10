@@ -28,6 +28,7 @@ import { ArrowLeftRight, ArrowRight, Building2, CheckCircle2, Link as LinkIcon, 
 import TransferItem from '../components/TransferItem'
 import { useTransfers } from '@/modules/transfers'
 import { toast } from 'sonner'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import type { OrganizationClub } from '../types'
 import { getOrganizationSidebarSections } from '../constants/navigation'
 
@@ -196,13 +197,13 @@ export default function OrganizationDashboardPage() {
         header: 'Clube',
         cell: ({ row }) => (
           <div className="flex items-center gap-sm">
-            {row.original.logo_url ? (
-              <img src={row.original.logo_url} alt={row.original.name} className="h-7 w-7 rounded-full object-cover ring-1 ring-outline-variant/30 shadow-sm" />
-            ) : (
-              <div className="h-7 w-7 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-[10px] ring-1 ring-outline-variant/30">
-                {row.original.name.slice(0, 2).toUpperCase()}
-              </div>
-            )}
+            <ClubLogo
+              name={row.original.name}
+              logoUrl={row.original.logo_url}
+              size="xs"
+              shape="circle"
+              className="ring-1 ring-outline-variant/30"
+            />
             <span className="font-bold text-on-surface">{row.original.name}</span>
           </div>
         ),

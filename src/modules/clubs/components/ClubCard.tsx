@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import type { Club } from '@/modules/clubs/types'
 import { ArrowUpRight, ShieldCheck, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ClubLogo } from './ClubLogo'
 
 export function ClubCard({ club }: { club: Club }) {
   const initials = (club.short_name || club.name || '?').slice(0, 2).toUpperCase()
@@ -33,19 +34,15 @@ export function ClubCard({ club }: { club: Club }) {
       />
       <CardContent className="p-lg">
         <div className="flex items-start gap-md">
-          <div
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline-variant/20 text-sm font-bold text-on-primary shadow-sm"
-            style={{
-              background: club.primary_color || 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-container)))',
-              boxShadow: club.primary_color ? `0 10px 30px ${club.primary_color}33` : undefined,
-            }}
-          >
-            {club.logo_url ? (
-              <img src={club.logo_url} alt={`${club.name} logo`} className="h-full w-full rounded-2xl object-cover" />
-            ) : (
-              initials
-            )}
-          </div>
+          <ClubLogo
+            name={club.name}
+            logoUrl={club.logo_url}
+            shortName={club.short_name}
+            primaryColor={club.primary_color}
+            size="lg"
+            shape="squircle"
+            className="border border-outline-variant/20 shadow-sm"
+          />
 
           <div className="min-w-0 flex-1 space-y-sm">
             <div className="flex items-center justify-between gap-sm">

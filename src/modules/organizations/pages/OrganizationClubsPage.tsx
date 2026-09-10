@@ -4,10 +4,11 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Card, DataTable, Skeleton, EmptyState, Button } from '@/components/ui'
 import { useOrganizationClubs, useOrganizationMe, useOnboardingStatus } from '../hooks'
-import { Shield, PlusCircle } from 'lucide-react'
 import type { OrganizationClub } from '../types'
 import { Link } from 'react-router-dom'
+import { Shield, PlusCircle } from 'lucide-react'
 import { getOrganizationSidebarSections } from '../constants/navigation'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 export function OrganizationClubsPage() {
   const { data: org } = useOrganizationMe()
@@ -24,13 +25,12 @@ export function OrganizationClubsPage() {
         header: 'Clube',
         cell: ({ row }) => (
           <div className="flex items-center gap-sm">
-            {row.original.logo_url ? (
-              <img src={row.original.logo_url} alt={row.original.name} className="h-8 w-8 rounded-full object-cover" />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-primary-container text-primary font-bold flex items-center justify-center text-sm">
-                {row.original.name.slice(0, 2).toUpperCase()}
-              </div>
-            )}
+            <ClubLogo
+              name={row.original.name}
+              logoUrl={row.original.logo_url}
+              size="sm"
+              shape="circle"
+            />
             <span className="font-semibold text-on-surface">{row.original.name}</span>
           </div>
         ),

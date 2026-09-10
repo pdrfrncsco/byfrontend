@@ -5,7 +5,8 @@ import { Palette, Globe } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { clubSettingsSchema, type ClubSettingsFormData } from '../schemas'
-import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import { ClubLogo } from './ClubLogo'
+import { ClubLogoUploadCard } from './ClubLogoUploadCard'
 
 interface ClubSettingsFormProps {
   club: any
@@ -100,13 +101,15 @@ export function ClubSettingsForm({
             />
             <div className="p-lg">
               <div className="-mt-16 flex items-end gap-md">
-                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border-4 border-surface-container-high bg-surface-container text-2xl font-bold text-primary shadow-lg">
-                  {(selectedLogoUrl || club.logo_url) ? (
-                    <img src={selectedLogoUrl || club.logo_url || ''} alt={club.name} className="h-full w-full object-cover" />
-                  ) : (
-                    logoLetter
-                  )}
-                </div>
+                <ClubLogo
+                  name={name || club.name}
+                  logoUrl={selectedLogoUrl !== null ? selectedLogoUrl : club.logo_url}
+                  shortName={club.short_name}
+                  primaryColor={primaryColor || '#1B4D3E'}
+                  size="xl"
+                  shape="squircle"
+                  className="border-4 border-surface-container-high bg-surface-container shadow-lg"
+                />
                 <div className="pb-sm">
                   <h3 className="text-xl font-semibold text-on-surface">{name || club.name}</h3>
                   <p className="text-sm text-on-surface-variant">{club.tenant_name || club.tenant_slug || 'Sem organização'}</p>
@@ -123,39 +126,20 @@ export function ClubSettingsForm({
             </div>
           </div>
 
-          <div className="grid gap-md sm:grid-cols-2">
-            <Card variant="glass" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Logo</p>
-              <div className="mt-sm flex items-center gap-md">
-                <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-primary text-lg font-bold text-on-primary">
-                  {selectedLogoUrl || club.logo_url ? <img src={selectedLogoUrl || club.logo_url || ''} alt={club.name} className="h-full w-full object-cover" /> : logoLetter}
-                </div>
-                <div className="space-y-xs">
-                  <MediaAssetPicker
-                    ownerType="club"
-                    ownerId={club.id}
-                    role="logo"
-                    accept="image"
-                    autoAttach={true}
-                    onSelected={(url) => {
-                      setSelectedLogoUrl(url)
-                    }}
-                    trigger={<Button variant="outline" size="sm">Selecionar logo</Button>}
-                  />
-                  <p className="text-[10px] text-outline">JPEG, PNG, WebP ou SVG</p>
-                </div>
-              </div>
-              {selectedLogoUrl && (
-                <p className="mt-xs text-xs text-primary font-medium">✓ Logo atualizado com sucesso</p>
-              )}
-            </Card>
+          <ClubLogoUploadCard
+            clubId={club.id}
+            clubName={name || club.name}
+            shortName={club.short_name}
+            currentLogoUrl={selectedLogoUrl !== null ? selectedLogoUrl : club.logo_url}
+            primaryColor={primaryColor || '#1B4D3E'}
+            onLogoChange={(newUrl) => setSelectedLogoUrl(newUrl)}
+          />
 
-            <Card variant="glass" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Estado público</p>
-              <p className="mt-sm text-lg font-semibold text-on-surface">{isPublic ? 'Publicado' : 'Privado'}</p>
-              <p className="text-sm text-on-surface-variant">Os visitantes verão o perfil público apenas quando esta opção estiver ativa.</p>
-            </Card>
-          </div>
+          <Card variant="glass" padding="md">
+            <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Estado público</p>
+            <p className="mt-sm text-lg font-semibold text-on-surface">{isPublic ? 'Publicado' : 'Privado'}</p>
+            <p className="text-sm text-on-surface-variant">Os visitantes verão o perfil público apenas quando esta opção estiver ativa.</p>
+          </Card>
         </CardContent>
       </Card>
 

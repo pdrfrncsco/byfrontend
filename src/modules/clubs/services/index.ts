@@ -161,6 +161,11 @@ export async function uploadClubLogo(file: File): Promise<Club> {
   return unwrapData(res.data)
 }
 
+export async function removeClubLogo(): Promise<Club> {
+  const res = await apiClient.delete<Envelope<Club>>(API_ROUTES.CLUBS.LOGO)
+  return unwrapData(res.data)
+}
+
 export async function activateClub(slug: string): Promise<Club> {
   const res = await apiClient.post<Envelope<Club>>(API_ROUTES.CLUBS.ACTIVATE(slug))
   return unwrapData(res.data)
