@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface PlayerAvatarUploadProps {
   slug?: string
@@ -21,14 +23,26 @@ export function PlayerAvatarUpload({
   onUploaded,
 }: PlayerAvatarUploadProps) {
   const { t } = useTranslation()
+  const [imgError, setImgError] = useState(false)
+  const resolvedUrl = resolveMediaUrl(avatarUrl)
+
+  useEffect(() => {
+    setImgError(false)
+  }, [avatarUrl])
+
   return (
     <div className="space-y-sm">
       <div
         className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-outline-variant/20 text-2xl font-bold text-on-primary shadow-lg"
         style={{ background: accentColor }}
       >
-        {avatarUrl ? (
-          <img src={avatarUrl} alt={t('players.avatar.alt')} className="h-full w-full object-cover" />
+        {resolvedUrl && !imgError ? (
+          <img
+            src={resolvedUrl}
+            alt={t('players.avatar.alt')}
+            className="h-full w-full object-cover"
+            onError={() => setImgError(true)}
+          />
         ) : (
           initials
         )}

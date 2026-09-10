@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Activity, Calendar, MapPin, Ruler, Star, Target, Trophy, User, Weight } from 'lucide-react'
+import { resolveMediaUrl } from '@/lib/media'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -60,6 +62,12 @@ export function PlayerDetailPage() {
   const { t } = useTranslation()
   const { slug = '' } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const [imgError, setImgError] = useState(false)
+
+  useEffect(() => {
+    setImgError(false)
+  }, [slug])
+
   const { data: player, isLoading, isError, refetch } = usePlayer(slug)
   useSeo({
     title: player?.full_name ? `${player.full_name} — Jogador` : 'Perfil do jogador',
@@ -94,6 +102,7 @@ export function PlayerDetailPage() {
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#6b7280'
   const statusColor = STATUS_COLOR[player.status] ?? '#6b7280'
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
+  const avatarUrl = resolveMediaUrl(player.avatar || player.profile_photo_url)
 
   return (
     <PublicDetailPageShell breadcrumb={<PlayerBreadcrumb current={player.full_name} />}>
@@ -106,8 +115,13 @@ export function PlayerDetailPage() {
               className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.5rem] border-2 text-2xl font-bold text-on-primary shadow-[0_16px_28px_rgba(15,23,42,0.12)]"
               style={{ borderColor: positionColor, background: positionColor }}
             >
-              {player.avatar ? (
-                <img src={player.avatar} alt={player.full_name} className="h-full w-full object-cover" />
+              {avatarUrl && !imgError ? (
+                <img
+                  src={avatarUrl}
+                  alt={player.full_name}
+                  className="h-full w-full object-cover"
+                  onError={() => setImgError(true)}
+                />
               ) : (
                 initials
               )}

@@ -13,5 +13,11 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true, // Listen on all addresses for Docker compatibility
+    proxy: {
+      '/media': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
   },
 });

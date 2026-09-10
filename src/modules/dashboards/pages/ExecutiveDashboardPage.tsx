@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { dashboardRoutes } from '@/modules/dashboards/routes'
+import { resolveMediaUrl } from '@/lib/media'
 import { useDashboardOverview } from '../hooks/useDashboard'
 import { 
   Network, 
@@ -251,8 +252,8 @@ export function ExecutiveDashboardPage() {
                 to={`/players/${scorer.slug}`}
                 className="flex items-center gap-md p-1.5 hover:bg-[#1b2b3f]/20 rounded-lg transition-all text-xs block"
               >
-                {scorer.avatar ? (
-                  <img src={scorer.avatar} alt={scorer.name} className="w-8 h-8 rounded-full object-cover" />
+                {resolveMediaUrl(scorer.avatar) ? (
+                  <img src={resolveMediaUrl(scorer.avatar)} alt={scorer.name} className="w-8 h-8 rounded-full object-cover" />
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
                     {scorer.name.split(' ').map(n => n[0]).join('')}

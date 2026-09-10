@@ -7,6 +7,7 @@ import { useOrganizationMe, useOrganizationPlayers, useOnboardingStatus } from '
 import { Shield, UserCheck, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { getOrganizationSidebarSections } from '../constants/navigation'
+import { resolveMediaUrl } from '@/lib/media'
 
 export interface OrganizationPlayerRow {
   id: string
@@ -40,7 +41,8 @@ export function OrganizationPlayersPage() {
         header: 'Atleta',
         cell: ({ row }) => {
           const name = row.original.full_name || row.original.name || 'Atleta'
-          const photo = row.original.photo_url || row.original.avatar_url
+          const rawPhoto = row.original.photo_url || row.original.avatar_url || (row.original as any).avatar
+          const photo = resolveMediaUrl(rawPhoto)
           const playerSlug = row.original.slug
 
           return (

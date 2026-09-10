@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { resolveMediaUrl } from '@/lib/media'
 import {
   Activity,
   Award,
@@ -32,7 +34,12 @@ import { POSITION_COLOR } from '../constants'
 export function PlayerDashboardPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [imgError, setImgError] = useState(false)
   const { data: player, isLoading, isError } = usePlayerMe()
+
+  useEffect(() => {
+    setImgError(false)
+  }, [player?.id])
 
   const sidebarLinks = getPlayerSidebarLinks(player?.slug)
 
@@ -80,6 +87,7 @@ export function PlayerDashboardPage() {
 
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#94d3c1'
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
+  const avatarUrl = resolveMediaUrl(player.avatar || player.profile_photo_url)
 
   return (
     <DashboardLayout
@@ -103,8 +111,13 @@ export function PlayerDashboardPage() {
               className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl text-3xl font-bold text-on-primary shadow-lg"
               style={{ background: positionColor }}
             >
-              {player.avatar ? (
-                <img src={player.avatar} alt={player.full_name} className="h-full w-full object-cover" />
+              {avatarUrl && !imgError ? (
+                <img
+                  src={avatarUrl}
+                  alt={player.full_name}
+                  className="h-full w-full object-cover"
+                  onError={() => setImgError(true)}
+                />
               ) : (
                 initials
               )}

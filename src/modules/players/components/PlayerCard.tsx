@@ -1,7 +1,8 @@
-import type { CSSProperties } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowUpRight, Trophy, Target, User, MapPin, Shield } from 'lucide-react'
+import { resolveMediaUrl } from '@/lib/media'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Player } from '../types'
@@ -21,6 +22,9 @@ export function PlayerCard({ player }: PlayerCardProps) {
     '--player-accent': positionColor,
     '--player-accent-soft': `${positionColor}22`,
   } as CSSProperties & Record<string, string>
+
+  const [imgError, setImgError] = useState(false)
+  const avatarUrl = resolveMediaUrl(player.avatar || player.profile_photo_url)
 
   return (
     <Card
@@ -43,8 +47,13 @@ export function PlayerCard({ player }: PlayerCardProps) {
               boxShadow: `0 10px 30px ${positionColor}33`,
             }}
           >
-            {player.profile_photo_url || player.avatar ? (
-              <img src={player.profile_photo_url || player.avatar || ''} alt={player.full_name} className="h-full w-full rounded-2xl object-cover" />
+            {avatarUrl && !imgError ? (
+              <img
+                src={avatarUrl}
+                alt={player.full_name}
+                className="h-full w-full rounded-2xl object-cover"
+                onError={() => setImgError(true)}
+              />
             ) : (
               initials
             )}

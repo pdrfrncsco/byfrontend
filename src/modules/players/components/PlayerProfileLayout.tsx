@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import type { PlayerDetail } from '../types'
 import { PlayerLinkStatusBadge } from './PlayerLinkStatusBadge'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface PlayerProfileLayoutProps {
   player: PlayerDetail
@@ -17,6 +18,8 @@ export function PlayerProfileLayout({
   headerActions,
 }: PlayerProfileLayoutProps) {
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
+  const [imgError, setImgError] = useState(false)
+  const avatarUrl = resolveMediaUrl(player.avatar || player.profile_photo_url)
 
   return (
     <div className="space-y-lg">
@@ -27,8 +30,13 @@ export function PlayerProfileLayout({
           <div className="flex flex-col gap-md sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-md">
               <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl border-4 border-background bg-primary text-2xl font-bold text-on-primary shadow-lg">
-                {player.avatar ? (
-                  <img src={player.avatar} alt={player.full_name} className="h-full w-full rounded-xl object-cover" />
+                {avatarUrl && !imgError ? (
+                  <img
+                    src={avatarUrl}
+                    alt={player.full_name}
+                    className="h-full w-full rounded-xl object-cover"
+                    onError={() => setImgError(true)}
+                  />
                 ) : (
                   initials
                 )}

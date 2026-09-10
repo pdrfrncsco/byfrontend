@@ -60,7 +60,7 @@ export function PlayerDashboardSettingsPage() {
         weight_kg: player.weight_kg || undefined,
         foot: player.foot || undefined,
         bio: player.bio || '',
-        avatar: player.avatar || '',
+        avatar: player.avatar || player.profile_photo_url || '',
         is_public: player.is_public,
         status: player.status || undefined,
       })
