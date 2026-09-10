@@ -5,3 +5,6 @@ export { ClubSettingsForm } from './ClubSettingsForm'
 export { ClubCompetitionsView } from './ClubCompetitionsView'
 export { ClubLogo } from './ClubLogo'
 export { ClubLogoUploadCard } from './ClubLogoUploadCard'
+export { ClubSquadPlayerCard } from './ClubSquadPlayerCard'
+export { ClubPlayerPreviewModal } from './ClubPlayerPreviewModal'
+

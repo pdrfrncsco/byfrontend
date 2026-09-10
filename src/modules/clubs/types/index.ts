@@ -62,7 +62,10 @@ export interface ClubMember {
   jersey_number?: number | null
   position?: string | null
   position_label?: string
+  avatar?: string | null
   is_active?: boolean
+  status?: string
+  status_label?: string
   joined_at?: string | null
   left_at?: string | null
   created_at?: string
@@ -85,10 +88,24 @@ export interface ClubKpis {
 export interface ClubSquadMember {
   id: string
   player_id?: string | null
+  player_slug?: string | null
   display_name: string
   jersey_number?: number | null
   position?: string | null
   position_label?: string | null
+  avatar?: string | null
+  status?: string
+  status_label?: string
+  nationality?: string | null
+  date_of_birth?: string | null
+  height_cm?: number | null
+  weight_kg?: number | null
+  foot?: string | null
+  matches_played?: number
+  goals?: number
+  assists?: number
+  yellow_cards?: number
+  red_cards?: number
   joined_at?: string | null
 }
 
@@ -97,6 +114,7 @@ export interface ClubStaffMember {
   display_name: string
   role?: string | null
   role_label?: string | null
+  avatar?: string | null
   joined_at?: string | null
 }
 
