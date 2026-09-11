@@ -502,6 +502,7 @@ export const ptAO = {
       "noRequestsDescription": "Ainda não enviou nenhum pedido de vínculo a um clube.",
       "lastUpdated": "Última atualização",
       "accept": "Aceitar vínculo",
+      "decline": "Recusar convite",
       "viewClub": "Ver clube",
       "sidebar": "Vínculo ao Clube",
       "retry": "Tentar novamente",

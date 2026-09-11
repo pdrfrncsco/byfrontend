@@ -501,6 +501,7 @@ export const en = {
       "noRequestsDescription": "You have not submitted any club link requests yet.",
       "lastUpdated": "Last updated",
       "accept": "Accept link",
+      "decline": "Decline invite",
       "viewClub": "View club",
       "sidebar": "Club Link",
       "retry": "Try again",

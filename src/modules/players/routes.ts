@@ -2,6 +2,7 @@ import { ROUTES } from '@/constants'
 
 export const playerRoutes = {
   list: ROUTES.PLAYERS,
+  comparison: ROUTES.PLAYER_COMPARISON,
   detail: (slug: string) => ROUTES.PLAYER_DETAIL(slug),
   create: ROUTES.PLAYER_CREATE,
   edit: (slug: string) => ROUTES.PLAYER_EDIT(slug),

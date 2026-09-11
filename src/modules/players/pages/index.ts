@@ -19,3 +19,4 @@ export {
   PlayerOnboardingClubPage,
 } from './PlayerOnboardingSupplementalPage'
 export { PlayerOnboardingCompletePage } from './onboarding/PlayerOnboardingCompletePage'
+export { PlayerComparisonPage } from './PlayerComparisonPage'

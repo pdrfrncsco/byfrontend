@@ -34,6 +34,7 @@ export { PlayerTransferSection } from './sections/PlayerTransferSection'
 export { PlayerMedicalSection } from './sections/PlayerMedicalSection'
 export { PlayerNationalTeamPerformanceSection } from './sections/PlayerNationalTeamPerformanceSection'
 export { PlayerComplianceSection } from './sections/PlayerComplianceSection'
+export { PlayerTrainingHistorySection } from './sections/PlayerTrainingHistorySection'
 
 // Filters
 export { PlayerFilterPanel } from './filters/PlayerFilterPanel'

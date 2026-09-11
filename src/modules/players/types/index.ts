@@ -213,6 +213,45 @@ export interface EmergencyContactCreate {
   country?: string
 }
 
+
+export interface LegalGuardianCreate {
+  name: string
+  relationship: string
+  document_number?: string
+  phone: string
+  email?: string
+  address?: string
+  consent_status?: 'pending' | 'given' | 'revoked'
+  consent_document?: string
+}
+
+export interface PlayerInvitePayload {
+  email: string
+  first_name?: string
+  last_name?: string
+  club?: string
+}
+
+export interface PlayerInvite {
+  id: string
+  email: string
+  first_name: string
+  last_name: string
+  token: string
+  club: string | null
+  status: string
+  expires_at: string
+  created_at: string
+}
+
+export interface RedeemInviteResponse {
+  email?: string
+  first_name?: string
+  last_name?: string
+  token?: string
+  player?: PlayerDetail
+}
+
 export type IdentityDocumentType =
   | 'national_id'
   | 'passport'
@@ -267,16 +306,19 @@ export type GuardianConsentStatus = 'pending' | 'given' | 'revoked'
 
 export interface LegalGuardian {
   id: string
-  player: string
+  player?: string
   name: string
   relationship: string
-  document_number: string | null
+  document_number?: string | null
   phone: string
-  email: string | null
-  address: string | null
+  email?: string | null
+  address?: string | null
   consent_status: GuardianConsentStatus
-  consent_document_url: string | null
-  consent_given_at: string | null
+  consent_document?: string | null
+  consent_document_url?: string | null
+  consent_given_at?: string | null
+  created_at?: string
+  updated_at?: string
 }
 
 // ─── Phase 1: Privacy ─────────────────────────────────────────────────────────

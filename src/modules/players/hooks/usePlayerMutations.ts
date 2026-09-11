@@ -59,6 +59,12 @@ import {
   createPlayerMedicalDocument,
   verifyMedicalDocument,
   rejectMedicalDocument,
+  // Guardians & Invites
+  createPlayerGuardian,
+  updatePlayerGuardian,
+  deletePlayerGuardian,
+  invitePlayer,
+  redeemPlayerInvite,
 } from '../services'
 import { playerKeys } from './usePlayerQueries'
 import type {
@@ -74,6 +80,8 @@ import type {
   PlayerContactUpdate,
   PlayerPrivacySettingsUpdate,
   EmergencyContactCreate,
+  LegalGuardianCreate,
+  PlayerInvitePayload,
   PlayerIdentityDocumentCreate,
   PlayerIdentityDocumentUpdate,
   PlayerFootballProfile,
@@ -588,6 +596,96 @@ export function useRejectMedicalDocumentMutation(playerId: string, docId: string
     mutationFn: (data: MedicalDocumentReject) => rejectMedicalDocument(playerId, docId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: playerKeys.medicalDocuments(playerId) })
+    },
+  })
+}
+
+// ─── Legal Guardian Mutations ─────────────────────────────────────────────────
+
+export function useCreatePlayerGuardian(slug: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: LegalGuardianCreate) => createPlayerGuardian(slug, data),
+    onSuccess: () => {
+      toast.success('Responsável legal associado com sucesso.')
+      queryClient.invalidateQueries({ queryKey: playerKeys.guardians(slug) })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao associar responsável legal.'
+      toast.error(message)
+    },
+  })
+}
+
+export function useUpdatePlayerGuardian(slug: string, guardianId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Partial<LegalGuardianCreate>) =>
+      updatePlayerGuardian(slug, guardianId, data),
+    onSuccess: () => {
+      toast.success('Responsável legal atualizado.')
+      queryClient.invalidateQueries({ queryKey: playerKeys.guardians(slug) })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao atualizar responsável legal.'
+      toast.error(message)
+    },
+  })
+}
+
+export function useDeletePlayerGuardian(slug: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (guardianId: string) => deletePlayerGuardian(slug, guardianId),
+    onSuccess: () => {
+      toast.success('Responsável legal removido.')
+      queryClient.invalidateQueries({ queryKey: playerKeys.guardians(slug) })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao remover responsável legal.'
+      toast.error(message)
+    },
+  })
+}
+
+// ─── Invite Mutations ─────────────────────────────────────────────────────────
+
+export function useInvitePlayer() {
+  return useMutation({
+    mutationFn: (data: PlayerInvitePayload) => invitePlayer(data),
+    onSuccess: () => {
+      toast.success('Convite enviado com sucesso.')
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { detail?: string; message?: string } } })?.response?.data
+          ?.detail ||
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao enviar convite.'
+      toast.error(message)
+    },
+  })
+}
+
+export function useRedeemPlayerInvite() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (token: string) => redeemPlayerInvite(token),
+    onSuccess: () => {
+      toast.success('Convite resgatado com sucesso.')
+      queryClient.invalidateQueries({ queryKey: playerKeys.all })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Convite inválido ou expirado.'
+      toast.error(message)
     },
   })
 }

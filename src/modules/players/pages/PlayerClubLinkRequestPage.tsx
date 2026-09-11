@@ -22,7 +22,7 @@ import {
 } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
-import { useAcceptRegistrationRequest, useClubCompetitions, useMyRegistrationRequests, usePlayerMe, useSubmitRegistrationRequest } from '../hooks'
+import { useAcceptRegistrationRequest, useClubCompetitions, useDeclineRegistrationRequest, useMyRegistrationRequests, usePlayerMe, useSubmitRegistrationRequest } from '../hooks'
 import { playerLinkRequestSchema, type PlayerLinkRequestFormData } from '../schemas'
 import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
@@ -53,6 +53,7 @@ export function PlayerClubLinkRequestPage() {
   const { data: requests = [], isLoading: requestsLoading, isError: isRequestsError, refetch: refetchRequests } = useMyRegistrationRequests()
   const submitMutation = useSubmitRegistrationRequest()
   const acceptMutation = useAcceptRegistrationRequest()
+  const declineMutation = useDeclineRegistrationRequest()
 
   const {
     register,
@@ -307,14 +308,24 @@ export function PlayerClubLinkRequestPage() {
                     </div>
                     <div className="flex gap-xs mt-sm md:mt-0">
                       {['approved', 'invited'].includes(request.status?.toLowerCase()) && !request.registration && (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => acceptMutation.mutate(request.id)}
-                          loading={acceptMutation.isPending && acceptMutation.variables === request.id}
-                        >
-                          {t('players.linkRequest.accept')}
-                        </Button>
+                        <>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => acceptMutation.mutate(request.id)}
+                            loading={acceptMutation.isPending && acceptMutation.variables === request.id}
+                          >
+                            {t('players.linkRequest.accept')}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => declineMutation.mutate({ requestId: request.id })}
+                            loading={declineMutation.isPending && declineMutation.variables?.requestId === request.id}
+                          >
+                            {t('players.linkRequest.decline')}
+                          </Button>
+                        </>
                       )}
                       <Button asChild variant="ghost" size="sm">
                         <Link to={`/clubs/${request.club_slug}`}>{t('players.linkRequest.viewClub')}</Link>

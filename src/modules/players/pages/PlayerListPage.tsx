@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { SlidersHorizontal } from 'lucide-react'
+import { Scale, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { ErrorState, EmptyState } from '@/components/ui/empty-state'
@@ -13,6 +13,7 @@ import { SportListLayout } from '@/modules/shared/components/sport'
 import { PlayerCardCompact } from '../components'
 import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
+import { playerRoutes } from '../routes'
 import type { Player, PlayerPosition } from '../types'
 
 export function PlayerListPage() {
@@ -81,16 +82,24 @@ export function PlayerListPage() {
             onChange={setSearchQuery}
             placeholder={t('players.list.searchPlaceholder')}
             actions={
-              <Button
-                id="players-filter-toggle"
-                variant={showFilters ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setShowFilters(value => !value)}
-                aria-expanded={showFilters}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                {t('players.list.filters')}{activeFilters > 0 ? ` (${activeFilters})` : ''}
-              </Button>
+              <div className="flex items-center gap-xs">
+                <Button asChild variant="outline" size="sm">
+                  <Link to={playerRoutes.comparison}>
+                    <Scale className="h-4 w-4" />
+                    Comparar
+                  </Link>
+                </Button>
+                <Button
+                  id="players-filter-toggle"
+                  variant={showFilters ? 'primary' : 'secondary'}
+                  size="sm"
+                  onClick={() => setShowFilters(value => !value)}
+                  aria-expanded={showFilters}
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  {t('players.list.filters')}{activeFilters > 0 ? ` (${activeFilters})` : ''}
+                </Button>
+              </div>
             }
           />
 

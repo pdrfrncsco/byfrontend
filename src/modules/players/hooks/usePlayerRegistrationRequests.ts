@@ -6,6 +6,7 @@ import {
   listClubCompetitions,
   listMyRegistrationRequests,
   acceptRegistrationRequest,
+  declineRegistrationRequest,
   reviewClubPlayerRegistrationRequest,
   submitRegistrationRequest,
 } from '../services'
@@ -106,6 +107,25 @@ export function useAcceptRegistrationRequest() {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         'Erro ao aceitar o vínculo.'
+      toast.error(message)
+    },
+  })
+}
+
+export function useDeclineRegistrationRequest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ requestId, reviewNotes }: { requestId: string; reviewNotes?: string }) =>
+      declineRegistrationRequest(requestId, reviewNotes),
+    onSuccess: () => {
+      toast.success('Convite de vínculo recusado.')
+      queryClient.invalidateQueries({ queryKey: registrationRequestKeys.mine() })
+      queryClient.invalidateQueries({ queryKey: playerKeys.me() })
+    },
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Erro ao recusar o convite.'
       toast.error(message)
     },
   })

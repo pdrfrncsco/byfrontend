@@ -36,6 +36,11 @@ import type {
   PlayerContactUpdate,
   EmergencyContact,
   EmergencyContactCreate,
+  LegalGuardian,
+  LegalGuardianCreate,
+  PlayerInvitePayload,
+  PlayerInvite,
+  RedeemInviteResponse,
   PlayerIdentityDocument,
   PlayerIdentityDocumentCreate,
   PlayerIdentityDocumentUpdate,
@@ -390,6 +395,10 @@ export async function getPlayerSeasonStatistics(
   return unwrapList(res.data)
 }
 
+export async function rebuildPlayerStatistics(slug: string): Promise<void> {
+  await apiClient.post(API_ROUTES.PLAYERS.STATISTICS(slug))
+}
+
 export async function getPlayerFootballProfile(slug: string): Promise<PlayerFootballProfile> {
   const res = await apiClient.get(API_ROUTES.PLAYERS.FOOTBALL_PROFILE(slug))
   return unwrapData(res.data)
@@ -449,6 +458,37 @@ export async function deletePlayerEmergencyContact(
   contactId: string
 ): Promise<void> {
   await apiClient.delete(`${API_ROUTES.PLAYERS.EMERGENCY_CONTACTS(slug)}${contactId}/`)
+}
+
+// ─── Phase 1: Legal Guardians ─────────────────────────────────────────────────
+
+export async function listPlayerGuardians(slug: string): Promise<LegalGuardian[]> {
+  const res = await apiClient.get(API_ROUTES.PLAYERS.GUARDIANS(slug))
+  return unwrapList(res.data)
+}
+
+export async function createPlayerGuardian(
+  slug: string,
+  data: LegalGuardianCreate
+): Promise<LegalGuardian> {
+  const res = await apiClient.post(API_ROUTES.PLAYERS.GUARDIANS(slug), data)
+  return unwrapData(res.data)
+}
+
+export async function updatePlayerGuardian(
+  slug: string,
+  guardianId: string,
+  data: Partial<LegalGuardianCreate>
+): Promise<LegalGuardian> {
+  const res = await apiClient.patch(API_ROUTES.PLAYERS.GUARDIAN_DETAIL(slug, guardianId), data)
+  return unwrapData(res.data)
+}
+
+export async function deletePlayerGuardian(
+  slug: string,
+  guardianId: string
+): Promise<void> {
+  await apiClient.delete(API_ROUTES.PLAYERS.GUARDIAN_DETAIL(slug, guardianId))
 }
 
 // ─── Phase 1: Identity Documents ─────────────────────────────────────────────
@@ -728,5 +768,28 @@ export async function acceptRegistrationRequest(
   const res = await apiClient.post(
     `${API_ROUTES.PLAYERS.ME_REGISTRATION_REQUESTS}${requestId}/accept/`
   )
+  return unwrapData(res.data)
+}
+
+export async function declineRegistrationRequest(
+  requestId: string,
+  reviewNotes?: string
+): Promise<PlayerRegistrationRequest> {
+  const res = await apiClient.post(
+    `${API_ROUTES.PLAYERS.ME_REGISTRATION_REQUESTS}${requestId}/decline/`,
+    { review_notes: reviewNotes }
+  )
+  return unwrapData(res.data)
+}
+
+// ─── Invites ──────────────────────────────────────────────────────────────────
+
+export async function invitePlayer(data: PlayerInvitePayload): Promise<PlayerInvite> {
+  const res = await apiClient.post(API_ROUTES.PLAYERS.INVITE, data)
+  return unwrapData(res.data)
+}
+
+export async function redeemPlayerInvite(token: string): Promise<RedeemInviteResponse> {
+  const res = await apiClient.post(API_ROUTES.PLAYERS.INVITE_REDEEM, { token })
   return unwrapData(res.data)
 }

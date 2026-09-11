@@ -10,6 +10,7 @@ import { ROUTES } from '@/constants/routes'
 
 // Lazy loaded components for public routes and media
 const PlayerListPage = lazy(() => import('@/modules/players').then(m => ({ default: m.PlayerListPage })))
+const PlayerComparisonPage = lazy(() => import('@/modules/players').then(m => ({ default: m.PlayerComparisonPage })))
 const PlayerDetailPage = lazy(() => import('@/modules/players').then(m => ({ default: m.PlayerDetailPage })))
 const CompetitionListPage = lazy(() => import('@/modules/competitions').then(m => ({ default: m.CompetitionListPage })))
 const CompetitionDetailPage = lazy(() => import('@/modules/competitions').then(m => ({ default: m.CompetitionDetailPage })))
@@ -106,6 +107,7 @@ export function contentRouteElements() {
 
       {/* Players */}
       <Route path={playerRoutes.list} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><PlayerListPage /></Suspense></PublicLayout>} />
+      <Route path={playerRoutes.comparison} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><PlayerComparisonPage /></Suspense></PublicLayout>} />
       <Route path={playerRoutes.detail(':slug')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><PlayerDetailPage /></Suspense></PublicLayout>} />
       <Route
         path={playerRoutes.create}

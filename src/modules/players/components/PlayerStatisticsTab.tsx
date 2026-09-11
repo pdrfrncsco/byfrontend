@@ -63,7 +63,7 @@ export function PlayerStatisticsTab({ slug }: { slug: string }) {
       <Card variant="flat" padding="none">
         <CardHeader><CardTitle>Desempenho por época</CardTitle></CardHeader>
         <CardContent className="space-y-sm">
-          {data.map((item) => (
+          {data.map((item: PlayerSeasonStatistics) => (
             <div key={item.id} className="flex flex-col gap-md rounded-2xl border border-outline-variant/20 bg-surface-container p-md md:flex-row md:items-center md:justify-between">
               <div className="space-y-xs">
                 <div className="flex flex-wrap items-center gap-sm">
