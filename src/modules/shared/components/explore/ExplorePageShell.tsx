@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants'
+import { ChevronRight } from 'lucide-react'
 
 interface ExploreBreadcrumb {
   label: string
@@ -27,35 +28,51 @@ export function ExplorePageShell({
   hero,
 }: ExplorePageShellProps) {
   return (
-    <main className="relative mx-auto w-full max-w-container-max px-gutter pb-2xl pt-xl md:pt-2xl">
-      <div className="pointer-events-none absolute -left-24 top-8 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 top-24 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
-
+    <main className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       <div className="relative z-10">
-        <nav aria-label="Breadcrumb" className="mb-md flex flex-wrap items-center gap-xs text-sm text-on-surface-variant">
-          <Link to={ROUTES.PUBLIC_EXPLORE} className="font-medium text-on-surface-variant transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm">
+        <nav aria-label="Breadcrumb" className="mb-4 flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-on-surface-variant">
+          <Link
+            to={ROUTES.PUBLIC_EXPLORE}
+            className="font-medium transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm"
+          >
             Explorar
           </Link>
           {breadcrumbs.map((breadcrumb, index) => (
-            <span key={`${breadcrumb.label}-${index}`} className="inline-flex items-center gap-xs">
-              <span aria-hidden="true" className="text-on-surface-variant/70">/</span>
+            <span key={`${breadcrumb.label}-${index}`} className="inline-flex items-center gap-1.5">
+              <ChevronRight className="h-3.5 w-3.5 text-on-surface-variant/50" aria-hidden="true" />
               {breadcrumb.href ? (
-                <Link to={breadcrumb.href} className="font-medium text-on-surface-variant transition-colors hover:text-primary">{breadcrumb.label}</Link>
+                <Link to={breadcrumb.href} className="font-medium text-on-surface-variant transition-colors hover:text-primary">
+                  {breadcrumb.label}
+                </Link>
               ) : (
-                <span aria-current="page" className="font-medium text-on-surface">{breadcrumb.label}</span>
+                <span aria-current="page" className="font-medium text-on-surface">
+                  {breadcrumb.label}
+                </span>
               )}
             </span>
           ))}
         </nav>
 
         {hero ?? (
-          <header className="mb-2xl flex flex-col gap-lg rounded-[2rem] border border-outline-variant/60 bg-surface-container-low/80 p-lg shadow-[0_22px_48px_-32px_rgba(15,17,23,0.28)] backdrop-blur-sm md:flex-row md:items-end md:justify-between md:p-xl">
-            <div className="max-w-4xl">
-              {eyebrow && <p className="mb-sm text-[11px] font-bold uppercase tracking-[0.18em] text-primary">{eyebrow}</p>}
-              <h1 className="max-w-4xl font-display-lg text-[2.6rem] leading-[0.92] tracking-[-0.05em] text-on-surface md:text-[5rem]">{title}</h1>
-              {description && <p className="mt-md max-w-3xl text-base leading-relaxed text-on-surface-variant md:text-[1.125rem]">{description}</p>}
+          <header className="mb-8 flex flex-col gap-4 rounded-2xl border border-outline-variant/20 bg-surface-container p-6 sm:p-8 shadow-sm md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              {eyebrow && (
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-primary">
+                  {eyebrow}
+                </p>
+              )}
+              {title && (
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-on-surface">
+                  {title}
+                </h1>
+              )}
+              {description && (
+                <p className="mt-2 text-sm sm:text-base leading-relaxed text-on-surface-variant">
+                  {description}
+                </p>
+              )}
             </div>
-            {actions && <div className="flex shrink-0 flex-wrap items-center gap-sm">{actions}</div>}
+            {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
           </header>
         )}
 

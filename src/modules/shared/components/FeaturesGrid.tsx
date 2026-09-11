@@ -1,107 +1,111 @@
-import { useTranslation } from 'react-i18next'
-import { Trophy, UserCheck, ShieldAlert, Newspaper, Flame, CheckCircle, BarChart3, Activity } from 'lucide-react'
+import { Trophy, UserCheck, ShieldAlert, CheckCircle, BarChart3, Activity, Users, FileSpreadsheet, LayoutTemplate } from 'lucide-react'
 
 export function FeaturesGrid() {
-  const { t } = useTranslation()
-
   return (
-    <section id="features" className="py-24 max-w-7xl mx-auto px-md md:px-xl">
+    <section id="features" className="py-20 md:py-28 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-xl space-y-sm">
-        <span className="text-xs font-bold uppercase tracking-wider text-primary">Plataforma Completa</span>
-        <h2 className="font-display-lg text-3xl sm:text-5xl font-black text-foreground tracking-tight">
-          Tudo o que a sua Organização precisa num só lugar
+      <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider">
+          <LayoutTemplate className="h-3.5 w-3.5" />
+          <span>Solução Desportiva Integral</span>
+        </div>
+        <h2 className="font-display-lg text-3xl sm:text-4xl md:text-5xl font-black text-on-surface tracking-tight">
+          Tudo o que o Futebol Precisa num Único Ecossistema
         </h2>
-        <p className="text-muted-foreground text-base sm:text-lg">
-          Ferramentas concebidas para modernizar a gestão do futebol, acelerar o recrutamento e conectar o ecossistema.
+        <p className="text-on-surface-variant text-sm sm:text-base leading-relaxed">
+          Desenvolvido a pensar na realidade do desporto africano: robusto, intuitivo e com dados oficiais em tempo real para federações, clubes, adeptos e olheiros.
         </p>
       </div>
 
       {/* Bento Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-        {/* Card 1: Large - Torneios */}
-        <div className="md:col-span-2 rounded-2xl border border-border/80 bg-card p-lg space-y-md shadow-sm hover:border-primary/50 transition-all group">
-          <div className="flex items-center gap-sm">
-            <div className="p-sm rounded-xl bg-primary/10 text-primary">
-              <Trophy className="h-6 w-6" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Card 1: Large - Centro de Jogos SofaScore */}
+        <div className="md:col-span-2 rounded-2xl border border-outline-variant/20 bg-surface-container p-6 sm:p-8 space-y-5 shadow-xs hover:border-primary/40 transition-all group">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-primary/10 text-primary border border-primary/20">
+              <Activity className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="font-bold text-xl text-foreground">Gestão de Torneios & Tabela ao Vivo</h3>
-              <p className="text-xs text-muted-foreground">Classificação automática, jornadas e resultados em tempo real.</p>
+              <h3 className="font-bold text-xl text-on-surface group-hover:text-primary transition-colors">
+                Centro de Jogos ao Vivo estilo SofaScore
+              </h3>
+              <p className="text-xs text-on-surface-variant">Súmula eletrónica oficial, cronómetro e eventos minuto a minuto.</p>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Configure formatos de fase de grupos, eliminatórias e pontos corridos. O sistema gera automaticamente os calendários e atualiza pontuações instantly.
+          <p className="text-sm text-on-surface-variant leading-relaxed">
+            Acompanhe golos, substituições, cartões e estatísticas de jogo em direto com relógio sincronizado. A nossa central de jogos fornece uma experiência idêntica às maiores plataformas globais de desporto.
           </p>
 
-          {/* Interactive Preview */}
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-md space-y-xs font-mono text-xs">
-            <div className="flex justify-between items-center bg-card p-sm rounded-lg border border-border/40">
-              <span className="font-bold">1. Petro de Luanda</span>
-              <span className="text-primary font-bold">18J · 44 PTS</span>
+          {/* Interactive Preview Bar */}
+          <div className="rounded-xl border border-outline-variant/15 bg-surface-container-high/60 p-4 space-y-2 font-mono text-xs">
+            <div className="flex justify-between items-center bg-surface-container p-2.5 rounded-lg border border-outline-variant/10">
+              <span className="font-bold text-on-surface flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+                Girabola · 2T 74'
+              </span>
+              <span className="text-primary font-bold">Petro de Luanda 2 - 1 1º de Agosto</span>
             </div>
-            <div className="flex justify-between items-center bg-card p-sm rounded-lg border border-border/40 opacity-80">
-              <span>2. Sagrada Esperança</span>
-              <span className="font-bold">18J · 41 PTS</span>
-            </div>
-            <div className="flex justify-between items-center bg-card p-sm rounded-lg border border-border/40 opacity-60">
-              <span>3. 1º de Agosto</span>
-              <span className="font-bold">18J · 39 PTS</span>
+            <div className="flex justify-between items-center text-[11px] text-on-surface-variant px-1">
+              <span>⚽ Mateus Gondo 23', 61'</span>
+              <span>⚽ Zito Luvumbo 45'</span>
             </div>
           </div>
         </div>
 
-        {/* Card 2: Medium - Perfil Atletas */}
-        <div className="rounded-2xl border border-border/80 bg-card p-lg space-y-md shadow-sm hover:border-primary/50 transition-all flex flex-col justify-between">
-          <div className="space-y-sm">
-            <div className="p-sm rounded-xl bg-primary/10 text-primary w-fit">
-              <UserCheck className="h-6 w-6" />
+        {/* Card 2: Medium - Campo Tático e Escalações */}
+        <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-6 sm:p-8 space-y-5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 w-fit">
+              <Users className="h-6 w-6" />
             </div>
-            <h3 className="font-bold text-xl text-foreground">Perfil de Atletas & Olheirismo</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Fichas completas com histórico de jogos, estatísticas biométricas, contratos e relatórios para agentes e equipas técnicas.
+            <h3 className="font-bold text-xl text-on-surface">Escalações em Campo Tático Único</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              Visualização simultânea dos dois plantéis frente a frente no mesmo relvado regulamentar SVG, com formações, fotos, titulares e suplentes em colunas paralelas.
             </p>
           </div>
 
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-sm text-xs font-semibold text-primary flex items-center gap-xs">
-            <CheckCircle className="h-4 w-4" /> Cartão Digital Verificado
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs font-semibold text-emerald-500 flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 shrink-0" /> Formações 4-3-3, 4-4-2 e 3-5-2
           </div>
         </div>
 
         {/* Card 3: Small - Arbitragem & Súmulas */}
-        <div className="rounded-2xl border border-border/80 bg-card p-lg space-y-md shadow-sm hover:border-primary/50 transition-all">
-          <div className="p-sm rounded-xl bg-amber-500/10 text-amber-500 w-fit">
+        <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-6 sm:p-8 space-y-4 shadow-xs hover:border-primary/40 transition-all">
+          <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 w-fit">
             <ShieldAlert className="h-6 w-6" />
           </div>
-          <h3 className="font-bold text-xl text-foreground">Súmulas Eletrónicas</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Emissão digital de relatórios de jogo com registo instantâneo de golos, substituições e cartões emitidos pelos árbitros.
+          <h3 className="font-bold text-xl text-on-surface">Súmulas Digitais & Arbitragem</h3>
+          <p className="text-sm text-on-surface-variant leading-relaxed">
+            Emissão oficial de relatórios de jogo com registo instantâneo pelos árbitros, controlo de suspensões e assinaturas eletrónicas após o apito final.
           </p>
         </div>
 
-        {/* Card 4: Large - Transferências e Mídia */}
-        <div className="md:col-span-2 rounded-2xl border border-border/80 bg-card p-lg space-y-md shadow-sm hover:border-primary/50 transition-all">
-          <div className="flex items-center gap-sm">
-            <div className="p-sm rounded-xl bg-emerald-500/10 text-emerald-500">
-              <Activity className="h-6 w-6" />
+        {/* Card 4: Large - Gestão de Torneios e Classificações */}
+        <div className="md:col-span-2 rounded-2xl border border-outline-variant/20 bg-surface-container p-6 sm:p-8 space-y-5 shadow-xs hover:border-primary/40 transition-all">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-sky-500/10 text-sky-500 border border-sky-500/20">
+              <Trophy className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="font-bold text-xl text-foreground">Mercado de Transferências & Vínculos</h3>
-              <p className="text-xs text-muted-foreground">Validação oficial de afiliações entre atletas e clubes.</p>
+              <h3 className="font-bold text-xl text-on-surface">Gestão de Provas, Sorteios & Tabelas</h3>
+              <p className="text-xs text-on-surface-variant">Classificação automática com critérios de desempate da FAF/FIFA.</p>
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Submeta e acompanhe pedidos de vínculo desportivo de forma transparente com histórico contratual e rastreabilidade total.
+          <p className="text-sm text-on-surface-variant leading-relaxed">
+            Configure campeonatos em pontos corridos, fases de grupos e eliminatórias da Taça. O motor da BolaYetu calcula pontuações, saldo de golos e confrontos diretos automaticamente.
           </p>
 
-          <div className="grid grid-cols-2 gap-sm text-xs font-semibold pt-xs">
-            <div className="rounded-lg border border-border p-sm bg-muted/20 flex items-center gap-xs">
-              <BarChart3 className="h-4 w-4 text-primary" /> Relatórios de Carreira
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-semibold pt-1">
+            <div className="rounded-xl border border-outline-variant/15 p-3 bg-surface-container-high/40 flex items-center gap-2 text-on-surface">
+              <FileSpreadsheet className="h-4 w-4 text-sky-500 shrink-0" /> Sorteios Automáticos
             </div>
-            <div className="rounded-lg border border-border p-sm bg-muted/20 flex items-center gap-xs">
-              <Flame className="h-4 w-4 text-amber-500" /> Mercado em Tempo Real
+            <div className="rounded-xl border border-outline-variant/15 p-3 bg-surface-container-high/40 flex items-center gap-2 text-on-surface">
+              <BarChart3 className="h-4 w-4 text-primary shrink-0" /> Tabelas em Tempo Real
+            </div>
+            <div className="rounded-xl border border-outline-variant/15 p-3 bg-surface-container-high/40 flex items-center gap-2 text-on-surface">
+              <UserCheck className="h-4 w-4 text-emerald-500 shrink-0" /> Controlo de Suspensões
             </div>
           </div>
         </div>
