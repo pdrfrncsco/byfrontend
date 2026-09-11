@@ -1,23 +1,28 @@
 import { useEffect, useState } from 'react'
-import { Trophy } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
 import { useCompetitionsPaginated } from '../hooks/useCompetitions'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
-import { EmptyState } from '@/components/ui/empty-state'
+import { EmptyState, ErrorState } from '@/components/ui/empty-state'
 import { CompetitionCard } from '../components/CompetitionCard'
-import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { SearchToolbar } from '@/modules/shared/components'
+import { SportListLayout } from '@/modules/shared/components/sport'
 import type { CompetitionStatus, CompetitionType } from '../types'
 
 const PAGE_SIZE_OPTIONS = [6, 9, 12, 18]
 
 export function CompetitionListPage() {
-  useSeo({ title: 'Competições', description: 'Explore campeonatos, taças e torneios de futebol em Angola e África.', path: '/competitions' })
+  useSeo({
+    title: 'Competições',
+    description: 'Explore campeonatos, taças e torneios de futebol em Angola e África.',
+    path: '/competitions',
+  })
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | CompetitionStatus>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | CompetitionType>('all')
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(9)
+  const [pageSize, setPageSize] = useState(12)
   const debouncedSearch = useDebounce(search, 300)
 
   useEffect(() => {
@@ -35,10 +40,7 @@ export function CompetitionListPage() {
   const competitions = data?.results ?? []
   const total = data?.count ?? 0
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
-  const hasNext = Boolean(data?.next)
-  const hasPrev = Boolean(data?.previous) || page > 1
   const hasFilters = debouncedSearch.trim() !== '' || statusFilter !== 'all' || typeFilter !== 'all'
-  const competitionLabel = total === 1 ? 'competição' : 'competições'
 
   const handleClearFilters = () => {
     setSearch('')
@@ -48,34 +50,26 @@ export function CompetitionListPage() {
   }
 
   return (
-    <ExplorePageShell
-      breadcrumbs={[{ label: 'Competições' }]}
-      hero={
-        <PublicListHero
-          badge="Explorar competições"
-          title="Descubra campeonatos, taças e torneios"
-          description="Encontre competições, acompanhe o calendário e consulte os resultados do futebol no ecossistema BolaYetu."
-          stats={[{ label: 'Calendário público' }, { label: 'Resultados em direto' }, { label: 'Competições oficiais' }]}
-          insightTitle="Match center e tabela"
-          insightDescription="Acompanhe o estado das provas, classificações e eventos do calendário competitivo."
-          metrics={[
-            { label: 'Competições', value: total },
-            { label: 'Página', value: `${page}/${totalPages}` },
-            { label: 'Estado', value: statusFilter === 'all' ? 'Todas' : statusFilter },
-          ]}
-        />
+    <SportListLayout
+      breadcrumb={
+        <div className="flex items-center gap-xs">
+          <Link to="/" className="hover:text-primary">Início</Link>
+          <span aria-hidden="true">/</span>
+          <span className="text-on-surface font-medium">Competições</span>
+        </div>
       }
-    >
-      <ExploreSection title="Todas as competições" description="Pesquise e refine os resultados para encontrar a competição certa.">
-        <div className="space-y-lg">
+      title="Competições"
+      count={total}
+      filters={
+        <div className="space-y-sm">
           <SearchToolbar
             value={search}
             onChange={setSearch}
             placeholder="Pesquisar por nome..."
             filters={
-              <>
-                <label className="flex items-center gap-sm text-sm text-on-surface-variant">
-                  <span className="sr-only">Filtrar por estado</span>
+              <div className="flex flex-wrap items-center gap-sm">
+                <label className="flex items-center gap-xs text-xs text-on-surface-variant">
+                  <span className="sr-only">Estado:</span>
                   <NativeSelect value={statusFilter} onChange={event => setStatusFilter(event.target.value as typeof statusFilter)}>
                     <option value="all">Todos os estados</option>
                     <option value="active">Em curso</option>
@@ -83,8 +77,8 @@ export function CompetitionListPage() {
                     <option value="completed">Concluída</option>
                   </NativeSelect>
                 </label>
-                <label className="flex items-center gap-sm text-sm text-on-surface-variant">
-                  <span className="sr-only">Filtrar por tipo</span>
+                <label className="flex items-center gap-xs text-xs text-on-surface-variant">
+                  <span className="sr-only">Tipo:</span>
                   <NativeSelect value={typeFilter} onChange={event => setTypeFilter(event.target.value as typeof typeFilter)}>
                     <option value="all">Todos os tipos</option>
                     <option value="league">Campeonato</option>
@@ -92,51 +86,72 @@ export function CompetitionListPage() {
                     <option value="cup">Taça</option>
                   </NativeSelect>
                 </label>
-              </>
+              </div>
             }
             actions={hasFilters ? <Button variant="ghost" size="sm" onClick={handleClearFilters}>Limpar</Button> : undefined}
           />
 
-          <div className="flex flex-col gap-sm sm:flex-row sm:items-center sm:justify-between">
-            <ResultCount count={total} label={`${competitionLabel} encontradas`} />
-            <label className="flex items-center gap-sm text-sm text-on-surface-variant">
-              <span>Por página</span>
+          <div className="flex items-center justify-between text-xs text-on-surface-variant pt-1">
+            <span>{total} {total === 1 ? 'competição encontrada' : 'competições encontradas'}</span>
+            <label className="flex items-center gap-2">
+              <span>Por página:</span>
               <NativeSelect value={String(pageSize)} onChange={event => setPageSize(Number(event.target.value))}>
                 {PAGE_SIZE_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
               </NativeSelect>
             </label>
           </div>
-
-          {isLoading ? (
-            <PageSkeleton variant="list" />
-          ) : isError ? (
-            <div role="alert" className="rounded-xl border border-error/30 bg-error-container/30 p-xl text-center">
-              <p className="text-on-surface-variant">Não foi possível carregar as competições.</p>
-              <Button variant="secondary" size="sm" className="mt-md" onClick={() => refetch()}>Tentar novamente</Button>
-            </div>
-          ) : competitions.length === 0 ? (
-            <EmptyState
-              icon={Trophy}
-              title="Sem competições"
-              description={hasFilters ? 'Nenhuma competição corresponde aos filtros aplicados. Ajuste a pesquisa ou limpe os filtros.' : 'Ainda não existe nenhuma competição registada.'}
-              action={hasFilters ? { label: 'Limpar filtros', onClick: handleClearFilters } : undefined}
-            />
-          ) : (
-            <>
-              <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-busy={isFetching}>
-                {competitions.map(competition => <CompetitionCard key={competition.id} competition={competition} />)}
-              </div>
-              <div className="flex flex-col items-center justify-between gap-md rounded-xl border border-outline-variant bg-surface-container-low px-lg py-md sm:flex-row">
-                <p className="text-sm text-on-surface-variant">Página <span className="font-semibold text-on-surface">{page}</span> de <span className="font-semibold text-on-surface">{totalPages}</span></p>
-                <div className="flex items-center gap-sm">
-                  <Button variant="secondary" size="sm" disabled={!hasPrev} onClick={() => setPage(value => Math.max(1, value - 1))}>Anterior</Button>
-                  <Button variant="secondary" size="sm" disabled={!hasNext} onClick={() => setPage(value => Math.min(totalPages, value + 1))}>Seguinte</Button>
-                </div>
-              </div>
-            </>
-          )}
         </div>
-      </ExploreSection>
-    </ExplorePageShell>
+      }
+      pagination={
+        totalPages > 1 ? (
+          <div className="flex flex-col items-center justify-between gap-md rounded-xl border border-outline-variant/30 bg-surface-container-low px-lg py-md sm:flex-row">
+            <p className="text-sm text-on-surface-variant">
+              Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
+              <span className="font-semibold text-on-surface">{totalPages}</span>
+            </p>
+            <div className="flex items-center gap-sm">
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage(value => Math.max(1, value - 1))}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage(value => Math.min(totalPages, value + 1))}
+              >
+                Seguinte
+              </Button>
+            </div>
+          </div>
+        ) : undefined
+      }
+    >
+      {isLoading ? (
+        <PageSkeleton variant="list" />
+      ) : isError ? (
+        <ErrorState
+          title="Não foi possível carregar as competições"
+          message="Verifique a ligação e tente novamente."
+          onRetry={() => refetch()}
+        />
+      ) : competitions.length === 0 ? (
+        <EmptyState
+          title="Nenhuma competição encontrada"
+          description="Tente ajustar os filtros ou a pesquisa para encontrar competições."
+          action={hasFilters ? { label: 'Limpar filtros', onClick: handleClearFilters } : undefined}
+        />
+      ) : (
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3" aria-busy={isFetching}>
+          {competitions.map(competition => (
+            <CompetitionCard key={competition.id} competition={competition} />
+          ))}
+        </div>
+      )}
+    </SportListLayout>
   )
 }

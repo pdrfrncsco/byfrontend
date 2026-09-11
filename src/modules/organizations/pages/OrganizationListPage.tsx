@@ -1,14 +1,20 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
 import { Button, NativeSelect, PageSkeleton } from '@/components/ui'
 import { EmptyState, ErrorState } from '@/components/ui/empty-state'
-import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
+import { SearchToolbar } from '@/modules/shared/components'
+import { SportListLayout } from '@/modules/shared/components/sport'
 import { usePublicOrganizations } from '../hooks'
-import { OrganizationCard } from '../components'
+import { OrganizationCardCompact } from '../components'
 
 export function OrganizationListPage() {
-  useSeo({ title: 'Organizações', description: 'Conheça federações, associações, ligas e academias do ecossistema BolaYetu.', path: '/organizations' })
+  useSeo({
+    title: 'Organizações',
+    description: 'Conheça federações, associações, ligas e academias do ecossistema BolaYetu.',
+    path: '/organizations',
+  })
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
   const debouncedSearch = useDebounce(search, 300)
@@ -18,6 +24,7 @@ export function OrganizationListPage() {
     type: typeFilter || undefined,
   })
 
+  const count = organizations?.length ?? 0
   const hasFilters = Boolean(debouncedSearch || typeFilter)
   const clearFilters = () => {
     setSearch('')
@@ -25,32 +32,28 @@ export function OrganizationListPage() {
   }
 
   return (
-    <ExplorePageShell
-      breadcrumbs={[{ label: 'Organizações' }]}
-      hero={
-        <PublicListHero
-          badge="Explorar organizações"
-          title="Descubra organizações oficiais do ecossistema"
-          description="Conheça federações, associações, ligas, organizadores e academias de futebol registados na plataforma BolaYetu."
-          stats={[{ label: 'Estrutura oficial' }, { label: 'Rede de clubes' }, { label: 'Visibilidade regional' }]}
-          insightTitle="Rede futebolística"
-          insightDescription="As organizações conectam clubes, competições e comunidades em torno de um mesmo ecossistema."
-          metrics={[
-            { label: 'Organizações', value: organizations?.length ?? 0 },
-            { label: 'Tipo', value: typeFilter || 'Todos' },
-            { label: 'Pesquisa', value: debouncedSearch ? 'Ativa' : 'Geral' },
-          ]}
-        />
+    <SportListLayout
+      breadcrumb={
+        <div className="flex items-center gap-xs">
+          <Link to="/" className="hover:text-primary">Início</Link>
+          <span aria-hidden="true">/</span>
+          <span className="text-on-surface font-medium">Organizações</span>
+        </div>
       }
-    >
-      <ExploreSection title="Diretório público" description="Pesquise por nome, localização ou tipo de organização.">
-        <div className="space-y-lg">
+      title="Organizações"
+      count={count}
+      filters={
+        <div className="space-y-sm">
           <SearchToolbar
             value={search}
             onChange={setSearch}
             placeholder="Pesquisar por nome ou localização..."
             filters={
-              <NativeSelect value={typeFilter} onChange={event => setTypeFilter(event.target.value)} aria-label="Filtrar por tipo">
+              <NativeSelect
+                value={typeFilter}
+                onChange={event => setTypeFilter(event.target.value)}
+                aria-label="Filtrar por tipo"
+              >
                 <option value="">Todos os tipos</option>
                 <option value="federation">Federação</option>
                 <option value="association">Associação</option>
@@ -62,25 +65,37 @@ export function OrganizationListPage() {
             actions={hasFilters ? <Button variant="ghost" size="sm" onClick={clearFilters}>Limpar</Button> : undefined}
           />
 
-          <ResultCount count={organizations?.length ?? 0} label={(organizations?.length ?? 0) === 1 ? 'organização encontrada' : 'organizações encontradas'} />
-
-          {isLoading ? (
-            <PageSkeleton variant="list" />
-          ) : isError ? (
-            <ErrorState title="Não foi possível carregar as organizações" message="Verifique a ligação e tente novamente." onRetry={refetch} />
-          ) : organizations && organizations.length > 0 ? (
-            <div className="grid gap-lg sm:grid-cols-2 xl:grid-cols-3">
-              {organizations.map(organization => <OrganizationCard key={organization.id} organization={organization} />)}
-            </div>
-          ) : (
-            <EmptyState
-              title={hasFilters ? 'Sem resultados para os filtros' : 'Nenhuma organização registada'}
-              description={hasFilters ? 'Experimente mudar os termos da pesquisa ou selecionar outra categoria.' : 'Não existem organizações públicas registadas de momento.'}
-              action={hasFilters ? { label: 'Limpar filtros', onClick: clearFilters } : undefined}
-            />
-          )}
+          <div className="flex items-center justify-between text-xs text-on-surface-variant pt-1">
+            <span>{count} {count === 1 ? 'organização encontrada' : 'organizações encontradas'}</span>
+          </div>
         </div>
-      </ExploreSection>
-    </ExplorePageShell>
+      }
+    >
+      {isLoading ? (
+        <PageSkeleton variant="list" />
+      ) : isError ? (
+        <ErrorState
+          title="Não foi possível carregar as organizações"
+          message="Verifique a ligação e tente novamente."
+          onRetry={refetch}
+        />
+      ) : organizations && organizations.length > 0 ? (
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+          {organizations.map(organization => (
+            <OrganizationCardCompact key={organization.id} organization={organization} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title={hasFilters ? 'Sem resultados para os filtros' : 'Nenhuma organização registada'}
+          description={
+            hasFilters
+              ? 'Experimente mudar os termos da pesquisa ou selecionar outra categoria.'
+              : 'Não existem organizações públicas registadas de momento.'
+          }
+          action={hasFilters ? { label: 'Limpar filtros', onClick: clearFilters } : undefined}
+        />
+      )}
+    </SportListLayout>
   )
 }

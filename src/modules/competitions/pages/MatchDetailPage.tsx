@@ -247,15 +247,12 @@ export function MatchDetailPage() {
   // Guard: redirect if no matchId or competitionId (hooks above are safe due to enabled flags)
   if (!matchId || !compId) {
     return (
-      <PublicDetailPageShell
-        breadcrumb={
-          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-on-surface">Partida</span>
-          </nav>
-        }
-      >
+      <div className="min-h-screen bg-background">
+        <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface">Partida</span>
+        </nav>
         <div className="flex min-h-[60vh] flex-col items-center justify-center gap-md">
           <AlertCircle className="h-12 w-12 text-error opacity-70" />
           <p className="text-lg font-medium text-on-surface">ID do jogo não especificado</p>
@@ -265,7 +262,7 @@ export function MatchDetailPage() {
             </Button>
           </Link>
         </div>
-      </PublicDetailPageShell>
+      </div>
     )
   }
 
@@ -330,17 +327,14 @@ export function MatchDetailPage() {
       )
     }
     return (
-      <PublicDetailPageShell
-        breadcrumb={
-          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-on-surface">Partida</span>
-          </nav>
-        }
-      >
+      <div className="min-h-screen bg-background">
+        <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface">Partida</span>
+        </nav>
         <NotFoundComponent />
-      </PublicDetailPageShell>
+      </div>
     )
   }
 
@@ -503,7 +497,7 @@ export function MatchDetailPage() {
 
       {/* Tabs Navigation */}
       <div className="mx-auto max-w-4xl px-lg">
-        <div className="flex flex-wrap gap-xs border-b border-outline-variant/20" role="tablist" aria-label="Conteúdo da partida">
+        <div className="flex gap-0 border-b border-outline-variant/20 overflow-x-auto scrollbar-hide" role="tablist" aria-label="Conteúdo da partida">
           {TABS.map((tab) => {
             // Check role access
             const hasAccess = hasRequiredRole(userRoles, tab.roles)
@@ -519,14 +513,17 @@ export function MatchDetailPage() {
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-xs border-b-2 px-md py-sm text-sm font-semibold transition-colors ${
+                className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap ${
                   isActive
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-on-surface-variant hover:text-on-surface'
+                    ? 'text-primary font-semibold'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                {tab.label}
+                <span>{tab.label}</span>
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-primary" />
+                )}
               </button>
             )
           })}
@@ -564,16 +561,19 @@ export function MatchDetailPage() {
   }
 
   return (
-    <PublicDetailPageShell
-      breadcrumb={
-        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="truncate text-on-surface">{match.home_club_name} vs {match.away_club_name}</span>
-        </nav>
-      }
-    >
+    <div className="min-h-screen bg-background pb-2xl">
+      <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+        <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+        <span aria-hidden="true">/</span>
+        <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">
+          {competition?.name ?? 'Competição'}
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page" className="truncate text-on-surface font-medium">
+          {match.home_club_name} vs {match.away_club_name}
+        </span>
+      </nav>
       <main aria-label="Detalhe da partida">{pageContent}</main>
-    </PublicDetailPageShell>
+    </div>
   )
 }

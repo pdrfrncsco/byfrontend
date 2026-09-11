@@ -1,4 +1,5 @@
 export { PlayerCard } from './PlayerCard'
+export { PlayerCardCompact } from './PlayerCardCompact'
 export { PlayerCareerTimeline } from './PlayerCareerTimeline'
 export { PlayerDocumentsTab } from './PlayerDocumentsTab'
 export { PlayerVideosTab } from './PlayerVideosTab'
@@ -39,3 +40,6 @@ export { PlayerFilterPanel } from './filters/PlayerFilterPanel'
 
 // Comparison
 export { PlayerComparison } from './PlayerComparison'
+
+export { PlayerInfoSidebar } from './PlayerInfoSidebar'
+export { PlayerMatchesTab } from './PlayerMatchesTab'

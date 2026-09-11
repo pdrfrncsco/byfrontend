@@ -1,21 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, SlidersHorizontal, User } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
 import { ErrorState, EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useSeo } from '@/hooks/useSeo'
-import { ExplorePageShell, ExploreSection, PublicListHero, ResultCount, SearchToolbar } from '@/modules/shared/components'
-import { PlayerCard } from '../components'
+import { SearchToolbar } from '@/modules/shared/components'
+import { SportListLayout } from '@/modules/shared/components/sport'
+import { PlayerCardCompact } from '../components'
 import { usePlayers } from '../hooks'
 import { ALL_POSITIONS, POSITION_COLOR } from '../constants'
 import type { Player, PlayerPosition } from '../types'
 
 export function PlayerListPage() {
   const { t } = useTranslation()
-  useSeo({ title: 'Jogadores', description: 'Descubra jogadores, talentos e perfis públicos do futebol em Angola e África.', path: '/players' })
+  useSeo({
+    title: 'Jogadores',
+    description: 'Descubra jogadores, talentos e perfis públicos do futebol em Angola e África.',
+    path: '/players',
+  })
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPosition, setSelectedPosition] = useState<PlayerPosition | ''>('')
   const [selectedNationality, setSelectedNationality] = useState('')
@@ -32,7 +38,7 @@ export function PlayerListPage() {
 
   const listResult = usePlayers({
     page,
-    page_size: 12,
+    page_size: 15,
     search: isSearching ? debouncedSearch : undefined,
     position: selectedPosition || undefined,
     nationality: selectedNationality || undefined,
@@ -43,9 +49,11 @@ export function PlayerListPage() {
   const isError = listResult.isError
   const players: Player[] = listResult.data?.results ?? []
   const totalCount = listResult.data?.count ?? 0
-  const hasNext = Boolean(listResult.data?.next)
-  const hasPrev = page > 1
-  const activeFilters = useMemo(() => [selectedPosition, selectedNationality, showOnlyAvailable ? 'available' : ''].filter(Boolean).length, [selectedPosition, selectedNationality, showOnlyAvailable])
+  const totalPages = Math.max(1, Math.ceil(totalCount / 15))
+  const activeFilters = useMemo(
+    () => [selectedPosition, selectedNationality, showOnlyAvailable ? 'available' : ''].filter(Boolean).length,
+    [selectedPosition, selectedNationality, showOnlyAvailable]
+  )
 
   const handleClearFilters = useCallback(() => {
     setSearchQuery('')
@@ -56,32 +64,30 @@ export function PlayerListPage() {
   }, [])
 
   return (
-    <ExplorePageShell
-      breadcrumbs={[{ label: 'Jogadores' }]}
-      hero={
-        <PublicListHero
-          badge={t('players.list.badge')}
-          title={t('players.list.title')}
-          description={t('players.list.subtitle')}
-          stats={[{ label: 'Scouting público' }, { label: 'Perfis detalhados' }, { label: 'Acesso rápido' }]}
-          insightTitle="Descoberta de talento"
-          insightDescription="Pesquise por posição, nacionalidade e disponibilidade para encontrar jogadores com o perfil ideal."
-          metrics={[
-            { label: 'Jogadores', value: totalCount },
-            { label: 'Página', value: page },
-            { label: 'Filtros', value: activeFilters },
-          ]}
-        />
+    <SportListLayout
+      breadcrumb={
+        <div className="flex items-center gap-xs">
+          <Link to="/" className="hover:text-primary">Início</Link>
+          <span aria-hidden="true">/</span>
+          <span className="text-on-surface font-medium">Jogadores</span>
+        </div>
       }
-    >
-      <ExploreSection title="Diretório de jogadores" description={t('players.list.discoveryDescription')}>
-        <div className="space-y-lg">
+      title="Jogadores"
+      count={totalCount}
+      filters={
+        <div className="space-y-sm">
           <SearchToolbar
             value={searchQuery}
             onChange={setSearchQuery}
             placeholder={t('players.list.searchPlaceholder')}
             actions={
-              <Button id="players-filter-toggle" variant={showFilters ? 'primary' : 'secondary'} size="sm" onClick={() => setShowFilters(value => !value)} aria-expanded={showFilters}>
+              <Button
+                id="players-filter-toggle"
+                variant={showFilters ? 'primary' : 'secondary'}
+                size="sm"
+                onClick={() => setShowFilters(value => !value)}
+                aria-expanded={showFilters}
+              >
                 <SlidersHorizontal className="h-4 w-4" />
                 {t('players.list.filters')}{activeFilters > 0 ? ` (${activeFilters})` : ''}
               </Button>
@@ -89,57 +95,140 @@ export function PlayerListPage() {
           />
 
           {showFilters && (
-            <div className="space-y-lg rounded-xl border border-outline-variant bg-surface-container-low p-lg">
+            <div className="space-y-md rounded-xl border border-outline-variant/30 bg-surface-container-low p-md">
               <div>
-                <p className="mb-sm text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t('players.list.position')}</p>
-                <div className="flex flex-wrap gap-sm">
-                  <Button size="sm" variant={selectedPosition === '' ? 'primary' : 'outline'} onClick={() => setSelectedPosition('')}>{t('players.list.allPositions')}</Button>
+                <p className="mb-xs text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                  {t('players.list.position')}
+                </p>
+                <div className="flex flex-wrap gap-xs">
+                  <Button
+                    size="sm"
+                    variant={selectedPosition === '' ? 'primary' : 'outline'}
+                    onClick={() => setSelectedPosition('')}
+                  >
+                    {t('players.list.allPositions')}
+                  </Button>
                   {ALL_POSITIONS.filter(position => position.value !== 'multiple').map(position => (
-                    <Button key={position.value} size="sm" variant={selectedPosition === position.value ? 'primary' : 'outline'} style={selectedPosition === position.value ? { borderColor: POSITION_COLOR[position.value], background: `${POSITION_COLOR[position.value]}22`, color: POSITION_COLOR[position.value] } : undefined} onClick={() => setSelectedPosition(position.value as PlayerPosition)} title={position.fullLabel}>
+                    <Button
+                      key={position.value}
+                      size="sm"
+                      variant={selectedPosition === position.value ? 'primary' : 'outline'}
+                      style={
+                        selectedPosition === position.value
+                          ? {
+                              borderColor: POSITION_COLOR[position.value],
+                              background: `${POSITION_COLOR[position.value]}22`,
+                              color: POSITION_COLOR[position.value],
+                            }
+                          : undefined
+                      }
+                      onClick={() => setSelectedPosition(position.value as PlayerPosition)}
+                      title={position.fullLabel}
+                    >
                       {position.label}
                     </Button>
                   ))}
                 </div>
               </div>
-              <label className="block max-w-xs">
-                <span className="mb-sm block text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t('players.list.nationality')}</span>
-                <Input value={selectedNationality} onChange={event => setSelectedNationality(event.target.value.toUpperCase())} placeholder={t('players.list.nationalityPlaceholder')} maxLength={3} aria-label={t('players.list.nationality')} />
-              </label>
-              <div>
-                <p className="mb-sm text-xs font-bold uppercase tracking-wider text-on-surface-variant">{t('players.list.availability')}</p>
-                <div className="flex flex-wrap gap-sm">
-                  <Button size="sm" variant={!showOnlyAvailable ? 'primary' : 'outline'} onClick={() => setShowOnlyAvailable(false)}>{t('players.list.allPlayers')}</Button>
-                  <Button size="sm" variant={showOnlyAvailable ? 'primary' : 'outline'} onClick={() => setShowOnlyAvailable(true)}>✓ {t('players.list.onlyAvailable')}</Button>
+
+              <div className="flex flex-wrap items-center gap-md">
+                <label className="block max-w-xs">
+                  <span className="mb-xs block text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                    {t('players.list.nationality')}
+                  </span>
+                  <Input
+                    value={selectedNationality}
+                    onChange={event => setSelectedNationality(event.target.value.toUpperCase())}
+                    placeholder={t('players.list.nationalityPlaceholder')}
+                    maxLength={3}
+                    aria-label={t('players.list.nationality')}
+                  />
+                </label>
+
+                <div>
+                  <span className="mb-xs block text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                    {t('players.list.availability')}
+                  </span>
+                  <div className="flex flex-wrap gap-xs">
+                    <Button
+                      size="sm"
+                      variant={!showOnlyAvailable ? 'primary' : 'outline'}
+                      onClick={() => setShowOnlyAvailable(false)}
+                    >
+                      Todos
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={showOnlyAvailable ? 'primary' : 'outline'}
+                      onClick={() => setShowOnlyAvailable(true)}
+                    >
+                      {t('players.list.availableOnly')}
+                    </Button>
+                  </div>
                 </div>
+
+                {activeFilters > 0 && (
+                  <div className="self-end pb-1">
+                    <Button variant="ghost" size="sm" onClick={handleClearFilters}>
+                      Limpar filtros
+                    </Button>
+                  </div>
+                )}
               </div>
-              {activeFilters > 0 && <Button variant="ghost" size="sm" onClick={handleClearFilters}>{t('players.list.clearFilters')}</Button>}
             </div>
           )}
-
-          <div className="flex flex-wrap items-center justify-between gap-sm">
-            <ResultCount count={totalCount} label={t('players.list.playersCount', { count: totalCount }).replace(String(totalCount), '').trim()} />
-            {activeFilters > 0 && <Button variant="ghost" size="sm" onClick={handleClearFilters}>{t('players.list.clearFilters')}</Button>}
-          </div>
-
-          {isLoading ? (
-            <PageSkeleton variant="list" />
-          ) : isError ? (
-            <ErrorState title={t('players.list.loadErrorTitle')} message={t('players.list.loadErrorMessage')} onRetry={() => listResult.refetch()} />
-          ) : players.length === 0 ? (
-            <EmptyState icon={User} title={isSearching ? `Sem resultados para "${debouncedSearch}"` : 'Nenhum jogador encontrado'} description={isSearching ? 'Tente pesquisar por outro nome ou ajuste os filtros.' : 'Nenhum jogador encontrado com os filtros seleccionados.'} action={activeFilters > 0 ? { label: t('players.list.clearFilters'), onClick: handleClearFilters, variant: 'secondary' } : undefined} />
-          ) : (
-            <div className="grid gap-lg sm:grid-cols-2 xl:grid-cols-3" aria-busy={listResult.isFetching}>
-              {players.map(player => <PlayerCard key={player.id} player={player} />)}
-            </div>
-          )}
-
-          {(hasPrev || hasNext) && <div className="flex items-center justify-center gap-md rounded-xl border border-outline-variant bg-surface-container-low px-lg py-md">
-            <Button id="players-page-prev" variant="secondary" size="sm" onClick={() => setPage(current => Math.max(1, current - 1))} disabled={!hasPrev}><ChevronLeft className="h-4 w-4" />{t('players.list.previous')}</Button>
-            <span className="text-sm text-on-surface-variant">{t('players.list.page')} {page}</span>
-            <Button id="players-page-next" variant="secondary" size="sm" onClick={() => setPage(current => current + 1)} disabled={!hasNext}>{t('players.list.next')}<ChevronRight className="h-4 w-4" /></Button>
-          </div>}
         </div>
-      </ExploreSection>
-    </ExplorePageShell>
+      }
+      pagination={
+        totalPages > 1 ? (
+          <div className="flex flex-col items-center justify-between gap-md rounded-xl border border-outline-variant/30 bg-surface-container-low px-lg py-md sm:flex-row">
+            <p className="text-sm text-on-surface-variant">
+              Página <span className="font-semibold text-on-surface">{page}</span> de{' '}
+              <span className="font-semibold text-on-surface">{totalPages}</span>
+            </p>
+            <div className="flex items-center gap-sm">
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage(value => Math.max(1, value - 1))}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage(value => Math.min(totalPages, value + 1))}
+              >
+                Seguinte
+              </Button>
+            </div>
+          </div>
+        ) : undefined
+      }
+    >
+      {isLoading ? (
+        <PageSkeleton variant="list" />
+      ) : isError ? (
+        <ErrorState
+          title={t('players.list.errorTitle')}
+          message={t('players.list.errorMessage')}
+          onRetry={() => listResult.refetch()}
+        />
+      ) : players.length === 0 ? (
+        <EmptyState
+          title={t('players.list.emptyTitle')}
+          description={t('players.list.emptyDescription')}
+          action={activeFilters > 0 ? { label: 'Limpar filtros', onClick: handleClearFilters } : undefined}
+        />
+      ) : (
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
+          {players.map(player => (
+            <PlayerCardCompact key={player.id} player={player} />
+          ))}
+        </div>
+      )}
+    </SportListLayout>
   )
 }

@@ -2,15 +2,24 @@ import { useEffect, useMemo } from 'react'
 import { useSeo } from '@/hooks/useSeo'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Building2, ExternalLink, FileText, MapPin, Trophy, Users } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { NotFound, PermissionDenied, ServerError } from '@/components/ui/error-states'
 import { PageSkeleton } from '@/components/ui/page-skeleton'
-import { DetailHeroCard, PublicDetailPageShell } from '@/modules/shared/components'
-import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
+import {
+  SportDetailLayout,
+  SportEntityHeader,
+  SportTabs,
+  SportTabsList,
+  SportTabsTrigger,
+  SportTabsContent,
+} from '@/modules/shared/components/sport'
+import { ClubOverviewTab } from '@/modules/clubs/components/ClubOverviewTab'
+import { ClubSquadTable } from '@/modules/clubs/components/ClubSquadTable'
+import { ClubMatchesList } from '@/modules/clubs/components/ClubMatchesList'
+import { ClubInfoSidebar } from '@/modules/clubs/components/ClubInfoSidebar'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
 import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import { resolveMediaUrl } from '@/lib/media'
@@ -39,18 +48,9 @@ function formatDate(value?: string | null) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('pt-AO')
 }
 
-function DetailStat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-on-surface-variant">{label}</p>
-      <p className="mt-1 text-lg font-semibold text-on-surface">{value}</p>
-    </div>
-  )
-}
-
 function ClubBreadcrumb({ current = 'Detalhe' }: { current?: string }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-xl flex items-center gap-xs text-sm text-on-surface-variant">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
       <Link to="/clubs" className="hover:text-primary">Clubes</Link>
       <span aria-hidden="true">/</span>
       <span aria-current="page" className="truncate text-on-surface">{current}</span>
@@ -105,66 +105,58 @@ export default function ClubDetailPage() {
     return error?.response?.status
   }, [clubQuery.error])
 
+  // --- Loading state ---
   if (clubQuery.isLoading) {
     return (
-      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb current="A carregar..." />}>
-        <PageSkeleton variant="detail" />
-      </PublicDetailPageShell>
+      <SportDetailLayout
+        breadcrumb={<ClubBreadcrumb current="A carregar..." />}
+        header={<PageSkeleton variant="detail" />}
+        main={<div />}
+        sidebar={<div />}
+      />
     )
   }
 
+  // --- Error states ---
   if (clubQuery.isError) {
-    if (errorStatus === 403) {
-      return (
-        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
-          <PermissionDenied onAction={() => navigate('/clubs')} />
-        </PublicDetailPageShell>
-      )
-    }
-
-    if (errorStatus === 404) {
-      return (
-        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
-          <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
-        </PublicDetailPageShell>
-      )
-    }
-
-    if (errorStatus === 500) {
-      return (
-        <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
-          <ServerError onRetry={() => clubQuery.refetch()} />
-        </PublicDetailPageShell>
-      )
-    }
+    const errorContent = (() => {
+      if (errorStatus === 403) return <PermissionDenied onAction={() => navigate('/clubs')} />
+      if (errorStatus === 404) return <NotFound resourceName="clube" onAction={() => navigate('/clubs')} />
+      return <ServerError onRetry={() => clubQuery.refetch()} />
+    })()
 
     return (
-      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
-        <ServerError onRetry={() => clubQuery.refetch()} />
-      </PublicDetailPageShell>
+      <SportDetailLayout
+        breadcrumb={<ClubBreadcrumb />}
+        header={errorContent}
+        main={<div />}
+        sidebar={<div />}
+      />
     )
   }
 
   if (!club) {
     return (
-      <PublicDetailPageShell breadcrumb={<ClubBreadcrumb />}>
-        <EmptyState
-          title="Clube não encontrado"
-          description="Não foi possível encontrar informação para este clube."
-          action={{ label: 'Ver todos os clubes', onClick: () => navigate('/clubs') }}
-        />
-      </PublicDetailPageShell>
+      <SportDetailLayout
+        breadcrumb={<ClubBreadcrumb />}
+        header={
+          <EmptyState
+            title="Clube não encontrado"
+            description="Não foi possível encontrar informação para este clube."
+            action={{ label: 'Ver todos os clubes', onClick: () => navigate('/clubs') }}
+          />
+        }
+        main={<div />}
+        sidebar={<div />}
+      />
     )
   }
 
-  const initials = (club.short_name || club.name || '?').slice(0, 2).toUpperCase()
-
   return (
-    <PublicDetailPageShell breadcrumb={<ClubBreadcrumb current={club.name} />}>
-      <DetailHeroCard
-          eyebrow="Clube público"
-          title={club.name}
-          description={club.description || 'Perfil público do clube com plantel, staff, documentos e patrocinadores.'}
+    <SportDetailLayout
+      breadcrumb={<ClubBreadcrumb current={club.name} />}
+      header={
+        <SportEntityHeader
           visual={
             <ClubLogo
               name={club.name}
@@ -173,154 +165,62 @@ export default function ClubDetailPage() {
               primaryColor={club.primary_color}
               size="xl"
               shape="squircle"
-              className="border border-outline-variant/20 bg-surface-container-high shadow-[0_16px_28px_rgba(15,23,42,0.12)]"
+              className="border border-outline-variant/20 bg-surface-container-high shadow-md"
             />
           }
+          title={club.name}
+          subtitle={club.description || 'Perfil público do clube.'}
           chips={[
             { icon: MapPin, label: [club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível' },
             { label: club.tenant_name || club.tenant_slug || 'Organização não indicada' },
             { label: club.status_label || club.status || 'active' },
-            { label: club.is_verified ? 'Verificado' : 'Público' },
+            { label: club.is_verified ? '✓ Verificado' : 'Público' },
           ]}
-          backgroundClassName="bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.12),transparent_32%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.10),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(240,246,245,0.84))]"
           actions={
             <div className="flex flex-wrap gap-sm">
               {club.website && (
-                <Button asChild variant="secondary">
+                <Button asChild variant="secondary" size="sm">
                   <a href={club.website} target="_blank" rel="noreferrer">
                     Website
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
                   </a>
                 </Button>
               )}
-              <Button variant="outline" onClick={() => navigate('/clubs')}>
-                Voltar
-              </Button>
             </div>
           }
         />
+      }
+      main={
+        <SportTabs defaultValue="overview">
+          <SportTabsList>
+            <SportTabsTrigger value="overview">Visão Geral</SportTabsTrigger>
+            <SportTabsTrigger value="squad">Plantel</SportTabsTrigger>
+            <SportTabsTrigger value="matches">Jogos</SportTabsTrigger>
+            <SportTabsTrigger value="staff">Staff</SportTabsTrigger>
+            <SportTabsTrigger value="documents">Documentos</SportTabsTrigger>
+            <SportTabsTrigger value="gallery">Galeria</SportTabsTrigger>
+          </SportTabsList>
 
-        {kpisQuery.data && <ClubKpisCard kpis={kpisQuery.data} />}
-
-        <section aria-labelledby="club-overview-title" className="grid gap-lg lg:grid-cols-[1.3fr_0.7fr]">
-          <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-            <CardHeader>
-              <CardTitle id="club-overview-title">Visão geral</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-md sm:grid-cols-2">
-              <DetailStat label="Fundação" value={club.founded_year || 'N/A'} />
-              <DetailStat label="Estádio" value={club.stadium_name || 'N/A'} />
-              <DetailStat
-                label="Capacidade"
-                value={club.stadium_capacity ? `${club.stadium_capacity.toLocaleString('pt-AO')} lugares` : 'N/A'}
-              />
-              <DetailStat label="Contacto" value={club.email || club.phone || 'N/A'} />
-            </CardContent>
-          </Card>
-
-          <Card variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-            <CardHeader>
-              <CardTitle>Resumo rápido</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              <DetailStat label="Estado" value={club.status_label || club.status || 'active'} />
-              <DetailStat label="Atualizado em" value={formatDate(club.updated_at || club.created_at)} />
-              <DetailStat label="Cidade" value={club.city || 'N/A'} />
-            </CardContent>
-          </Card>
-        </section>
-
-        <section aria-label="Informação pública do clube">
-          <Tabs defaultValue="squad" className="space-y-lg">
-          <TabsList className="h-auto flex flex-wrap gap-sm rounded-full border border-outline-variant/20 bg-surface-container/50 p-sm">
-            <TabsTrigger 
-              value="competitions" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Competições & Jogos
-            </TabsTrigger>
-            <TabsTrigger 
-              value="squad" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Plantel
-            </TabsTrigger>
-            <TabsTrigger 
-              value="staff" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Staff
-            </TabsTrigger>
-            <TabsTrigger 
-              value="documents" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Documentos
-            </TabsTrigger>
-            <TabsTrigger 
-              value="sponsors" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Patrocinadores
-            </TabsTrigger>
-            <TabsTrigger 
-              value="gallery" 
-              className="rounded-full px-lg py-md data-[state=active]:bg-primary-container data-[state=active]:text-primary shadow-sm transition-all duration-300"
-            >
-              Galeria
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent
-            value="competitions"
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
-            <ClubCompetitionsView
-              clubId={club.id}
-              clubSlug={club.slug}
-              clubName={club.name}
-              competitions={competitions}
+          <SportTabsContent value="overview">
+            <ClubOverviewTab
+              club={club}
               matches={matches}
               standings={standings}
+              competitions={competitions}
+              kpis={kpisQuery.data}
               isLoading={competitionsQuery.isLoading || matchesQuery.isLoading || standingsQuery.isLoading}
             />
-          </TabsContent>
+          </SportTabsContent>
 
+          <SportTabsContent value="squad">
+            <ClubSquadTable squad={squad} clubSlug={club.slug} />
+          </SportTabsContent>
 
-          <TabsContent 
-            value="squad" 
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
-            {squad.length === 0 ? (
-              <EmptyState
-                icon={Users}
-                title="Plantel indisponível"
-                description="Este clube ainda não publicou jogadores no perfil público."
-              />
-            ) : (
-              <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
-                {squad.map((player) => (
-                  <Card key={player.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-                    <CardContent className="space-y-sm p-lg">
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold text-on-surface">{player.display_name}</p>
-                        <Badge variant="primary">{player.jersey_number ? `#${player.jersey_number}` : 'Sem número'}</Badge>
-                      </div>
-                      <p className="text-sm text-on-surface-variant">
-                        {player.position_label || player.position || 'Posição não indicada'}
-                      </p>
-                      <p className="text-xs text-on-surface-variant">Entrada: {formatDate(player.joined_at)}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
+          <SportTabsContent value="matches">
+            <ClubMatchesList matches={matches} />
+          </SportTabsContent>
 
-          <TabsContent 
-            value="staff" 
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
+          <SportTabsContent value="staff">
             {staff.length === 0 ? (
               <EmptyState
                 icon={Building2}
@@ -328,24 +228,24 @@ export default function ClubDetailPage() {
                 description="Não há membros do staff publicados para este clube."
               />
             ) : (
-              <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
+              <div className="space-y-1">
                 {staff.map((member) => (
-                  <Card key={member.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-                    <CardContent className="space-y-sm p-lg">
-                      <p className="font-semibold text-on-surface">{member.display_name}</p>
-                      <p className="text-sm text-on-surface-variant">{member.role_label || member.role || 'Staff'}</p>
-                      <p className="text-xs text-on-surface-variant">Entrada: {formatDate(member.joined_at)}</p>
-                    </CardContent>
-                  </Card>
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between rounded-lg border border-outline-variant/10 bg-surface-container px-4 py-3 hover:bg-surface-container-low transition-colors"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-on-surface">{member.display_name}</p>
+                      <p className="text-xs text-on-surface-variant">{member.role_label || member.role || 'Staff'}</p>
+                    </div>
+                    <span className="text-xs text-on-surface-variant">{formatDate(member.joined_at)}</span>
+                  </div>
                 ))}
               </div>
             )}
-          </TabsContent>
+          </SportTabsContent>
 
-          <TabsContent 
-            value="documents" 
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
+          <SportTabsContent value="documents">
             {documents.length === 0 ? (
               <EmptyState
                 icon={FileText}
@@ -353,79 +253,32 @@ export default function ClubDetailPage() {
                 description="Não existem documentos públicos associados a este clube."
               />
             ) : (
-              <div className="space-y-sm">
+              <div className="space-y-2">
                 {documents.map((document) => (
-                  <Card key={document.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-                    <CardContent className="flex flex-col gap-md p-lg md:flex-row md:items-center md:justify-between">
-                      <div className="space-y-xs">
-                        <div className="flex flex-wrap items-center gap-sm">
-                          <p className="font-semibold text-on-surface">{document.title}</p>
-                          <Badge variant="outline">{document.category_label || document.category}</Badge>
-                          {document.is_public && <Badge variant="primary">Público</Badge>}
-                        </div>
-                        <p className="text-sm text-on-surface-variant">{document.description || 'Sem descrição'}</p>
-                        <p className="text-xs text-on-surface-variant">Validade: {formatDate(document.valid_until)}</p>
+                  <div
+                    key={document.id}
+                    className="flex items-center justify-between rounded-lg border border-outline-variant/10 bg-surface-container px-4 py-3"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-sm">
+                        <p className="text-sm font-medium text-on-surface">{document.title}</p>
+                        <Badge variant="outline">{document.category_label || document.category}</Badge>
+                        {document.is_public && <Badge variant="primary">Público</Badge>}
                       </div>
-                      {document.asset_url && (
-                        <Button asChild variant="secondary" size="sm">
-                          <a href={document.asset_url} target="_blank" rel="noreferrer">
-                            Abrir ficheiro
-                          </a>
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
+                      <p className="text-xs text-on-surface-variant">Validade: {formatDate(document.valid_until)}</p>
+                    </div>
+                    {document.asset_url && (
+                      <Button asChild variant="secondary" size="sm">
+                        <a href={document.asset_url} target="_blank" rel="noreferrer">Abrir</a>
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
-          </TabsContent>
+          </SportTabsContent>
 
-          <TabsContent 
-            value="sponsors" 
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
-            {sponsors.length === 0 ? (
-              <EmptyState
-                icon={Trophy}
-                title="Patrocinadores indisponíveis"
-                description="Este clube ainda não publicou patrocinadores no perfil público."
-              />
-            ) : (
-              <div className="grid gap-md md:grid-cols-2 xl:grid-cols-3">
-                {sponsors.map((sponsor) => (
-                  <Card key={sponsor.id} variant="flat" padding="none" className="shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)]">
-                    <CardContent className="space-y-sm p-lg">
-                      <div className="flex items-center gap-md">
-                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-surface-container-high text-sm font-bold text-primary">
-                          {sponsor.logo_url ? (
-                            <img src={resolveMediaUrl(sponsor.logo_url)} alt={sponsor.name} className="h-full w-full object-cover" />
-                          ) : (
-                            sponsor.name.slice(0, 2).toUpperCase()
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-on-surface">{sponsor.name}</p>
-                          <p className="text-sm text-on-surface-variant">
-                            {sponsor.sponsor_type_label || sponsor.sponsor_type}
-                          </p>
-                        </div>
-                      </div>
-                      {sponsor.website && (
-                        <a className="text-sm font-medium text-primary" href={sponsor.website} target="_blank" rel="noreferrer">
-                          Visitar website
-                        </a>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent
-            value="gallery"
-            className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-          >
+          <SportTabsContent value="gallery">
             <MediaGalleryTab
               ownerType="club"
               ownerId={club.id}
@@ -433,9 +286,17 @@ export default function ClubDetailPage() {
               emptyTitle="Sem fotos na galeria"
               emptyDescription="Este clube ainda não publicou fotos na galeria pública."
             />
-          </TabsContent>
-          </Tabs>
-        </section>
-    </PublicDetailPageShell>
+          </SportTabsContent>
+        </SportTabs>
+      }
+      sidebar={
+        <ClubInfoSidebar
+          club={club}
+          kpis={kpisQuery.data}
+          competitions={competitions}
+          sponsors={sponsors}
+        />
+      }
+    />
   )
 }

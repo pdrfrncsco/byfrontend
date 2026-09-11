@@ -1,5 +1,6 @@
 export { default as TransferItem } from './TransferItem'
 export * from './OrganizationCard'
+export * from './OrganizationCardCompact'
 export * from './OrganizationHistoryTable'
 export * from './BrandPreviewCard'
 export * from './MediaSettingsCard'

@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, useLocation } from 'react-router-dom'
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom'
 import { Calendar, Activity, Filter, ArrowLeft } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { PublicDetailPageShell } from '@/modules/shared/components'
+import { MatchScoreWidget } from '@/modules/shared/components/sport'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import type { MatchStatus } from '../types'
-import { MatchCard } from '../components'
 import { useSeo } from '@/hooks/useSeo'
 
 // ─── Status Filter Configuration ─────────────────────────────────────────────
@@ -31,12 +30,13 @@ const STATUS_FILTERS: Array<{
 export function MatchCenterPage() {
   const { compId } = useParams<{ compId: string }>()
   const competitionId = compId ?? ''
+  const navigate = useNavigate()
   const { isAdmin } = useCompetitionAccess()
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
   useSeo({ title: 'Centro de Jogos', description: 'Acompanhe jogos, jornadas e resultados desta competição.', path: `/competitions/${competitionId}/match-center` })
 
-  const { isLoading: loadingComp } = useCompetition(competitionId)
+  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const [statusFilter, setStatusFilter] = useState<MatchStatus[] | null>(null)
 
   const {
@@ -79,7 +79,7 @@ export function MatchCenterPage() {
         {/* Match cards skeleton */}
         <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-32 animate-pulse rounded-xl bg-surface-container-high" />
+            <div key={i} className="h-28 animate-pulse rounded-xl bg-surface-container-high" />
           ))}
         </div>
       </div>
@@ -97,17 +97,18 @@ export function MatchCenterPage() {
       )
     }
     return (
-      <PublicDetailPageShell
-        breadcrumb={
-          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-on-surface">Centro de Jogos</span>
-          </nav>
-        }
-      >
-        <LoadingComponent />
-      </PublicDetailPageShell>
+      <div className="min-h-screen bg-background pb-2xl">
+        <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+          <span aria-hidden="true">/</span>
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface">Centro de Jogos</span>
+        </nav>
+        <main className="max-w-7xl mx-auto px-lg">
+          <LoadingComponent />
+        </main>
+      </div>
     )
   }
 
@@ -117,7 +118,7 @@ export function MatchCenterPage() {
     const hasActiveFilter = statusFilter !== null
 
     const NoMatchesComponent = () => (
-      <Card variant="flat" padding="lg">
+      <Card variant="flat" padding="lg" className="border border-outline-variant/20 bg-surface-container">
         <div className="flex flex-col items-center gap-md py-xl text-center">
           <Calendar className="h-12 w-12 text-on-surface-variant/30" />
           <h3 className="text-lg font-semibold text-on-surface">
@@ -142,18 +143,35 @@ export function MatchCenterPage() {
         </div>
       </Card>
     )
+
+    if (isDashboard) {
+      return (
+        <DashboardLayout
+          title="Centro de Jogos"
+          subtitle="Sem partidas"
+          dashboardType="competition"
+          sidebarLinks={sidebarLinks}
+        >
+          <NoMatchesComponent />
+        </DashboardLayout>
+      )
+    }
+
     return (
-      <PublicDetailPageShell
-        breadcrumb={
-          <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-            <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-on-surface">Centro de Jogos</span>
-          </nav>
-        }
-      >
-        <div className="mx-auto max-w-5xl"><NoMatchesComponent /></div>
-      </PublicDetailPageShell>
+      <div className="min-h-screen bg-background pb-2xl">
+        <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+          <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+          <span aria-hidden="true">/</span>
+          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">
+            {competition?.name ?? 'Competição'}
+          </Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" className="text-on-surface font-medium">Centro de Jogos</span>
+        </nav>
+        <main className="max-w-7xl mx-auto px-lg">
+          <NoMatchesComponent />
+        </main>
+      </div>
     )
   }
 
@@ -166,12 +184,12 @@ export function MatchCenterPage() {
         <div>
           <h1 className="text-2xl font-bold text-on-surface">Centro de Jogos</h1>
           <p className="text-sm text-on-surface-variant">
-            Jornada {selectedRound ?? 'Todas'} • {matches.length} partidas
+            {competition?.name ? `${competition.name} • ` : ''}Jornada {selectedRound ?? 'Todas'} • {matches.length} partidas
           </p>
         </div>
         <Link
           to={isDashboard ? competitionRoutes.adminDashboard(competitionId) : competitionRoutes.detail(competitionId)}
-          className="inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
+          className="inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Voltar à competição
@@ -179,15 +197,15 @@ export function MatchCenterPage() {
       </div>
 
       {/* Jornada Selector */}
-      <div className="mb-lg flex flex-wrap items-center gap-xs overflow-x-auto pb-2">
-        <span className="text-sm font-medium text-on-surface-variant mr-sm">Jornada:</span>
+      <div className="mb-md flex flex-wrap items-center gap-xs overflow-x-auto pb-2">
+        <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant mr-sm">Jornada:</span>
         <button
           type="button"
           onClick={() => setSelectedRound(null)}
-          className={`rounded-full px-sm py-xs text-xs font-medium transition-colors ${
+          className={`rounded-full px-sm py-1 text-xs font-medium transition-colors ${
             selectedRound === null
               ? 'bg-primary text-on-primary'
-              : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container'
+              : 'bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-high'
           }`}
         >
           Todas
@@ -197,10 +215,10 @@ export function MatchCenterPage() {
             key={round.number}
             type="button"
             onClick={() => setSelectedRound(round.number)}
-            className={`rounded-full px-sm py-xs text-xs font-medium transition-colors ${
+            className={`rounded-full px-sm py-1 text-xs font-medium transition-colors ${
               selectedRound === round.number
                 ? 'bg-primary text-on-primary'
-                : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container'
+                : 'bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-high'
             }`}
           >
             J{round.number} — {round.label}
@@ -210,7 +228,7 @@ export function MatchCenterPage() {
 
       {/* Status Filters */}
       <div className="mb-lg flex flex-wrap items-center gap-xs overflow-x-auto pb-2">
-        <span className="text-sm font-medium text-on-surface-variant mr-sm">Filtrar:</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant mr-sm">Filtrar:</span>
         {STATUS_FILTERS.map(filter => {
           const isActive = 
             (statusFilter === null && filter.id === null) ||
@@ -236,15 +254,15 @@ export function MatchCenterPage() {
               key={filter.label}
               type="button"
               onClick={() => setStatusFilter(filter.id)}
-              className={`flex items-center gap-xs rounded-full px-sm py-xs text-xs font-medium transition-colors ${
+              className={`flex items-center gap-xs rounded-full px-sm py-1 text-xs font-medium transition-colors ${
                 isActive
                   ? 'bg-primary text-on-primary'
-                  : 'bg-surface-container-high text-on-surface-variant hover:bg-surface-container'
+                  : 'bg-surface-container border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container-high'
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
               {filter.label}
-              <span className={`ml-xs rounded-full px-xs py-0.5 text-[10px] ${isActive ? 'bg-white/20' : 'bg-on-surface-variant/20'}`}>
+              <span className={`ml-xs rounded-full px-1.5 py-0.2 text-[10px] ${isActive ? 'bg-white/20' : 'bg-surface-container-highest text-on-surface-variant'}`}>
                 {count}
               </span>
             </button>
@@ -255,17 +273,16 @@ export function MatchCenterPage() {
       {/* Live Matches Section */}
       {liveMatches.length > 0 && (
         <div className="mb-xl">
-          <h2 className="mb-md flex items-center gap-xs text-lg font-semibold text-on-surface">
-            <Activity className="h-5 w-5 text-emerald-500" />
-            <span className="text-emerald-500">AO VIVO ({liveMatches.length})</span>
+          <h2 className="mb-md flex items-center gap-xs text-sm font-bold uppercase tracking-wider text-emerald-500">
+            <Activity className="h-4 w-4 text-emerald-500" />
+            <span>AO VIVO ({liveMatches.length})</span>
           </h2>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
             {liveMatches.map(match => (
-              <MatchCard
+              <MatchScoreWidget
                 key={match.id}
                 match={match}
-                competitionId={competitionId}
-                showLink
+                onClick={() => navigate(competitionRoutes.matchDetail(competitionId, match.id))}
               />
             ))}
           </div>
@@ -275,16 +292,15 @@ export function MatchCenterPage() {
       {/* Upcoming Matches Section */}
       {upcomingMatches.length > 0 && (
         <div className="mb-xl">
-          <h2 className="mb-md text-lg font-semibold text-on-surface">
+          <h2 className="mb-md text-sm font-bold uppercase tracking-wider text-on-surface-variant">
             Próximas Partidas ({upcomingMatches.length})
           </h2>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
             {upcomingMatches.map(match => (
-              <MatchCard
+              <MatchScoreWidget
                 key={match.id}
                 match={match}
-                competitionId={competitionId}
-                showLink
+                onClick={() => navigate(competitionRoutes.matchDetail(competitionId, match.id))}
               />
             ))}
           </div>
@@ -294,16 +310,15 @@ export function MatchCenterPage() {
       {/* Finished Matches Section */}
       {finishedMatches.length > 0 && (
         <div>
-          <h2 className="mb-md text-lg font-semibold text-on-surface">
+          <h2 className="mb-md text-sm font-bold uppercase tracking-wider text-on-surface-variant">
             Resultados ({finishedMatches.length})
           </h2>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-3">
             {finishedMatches.map(match => (
-              <MatchCard
+              <MatchScoreWidget
                 key={match.id}
                 match={match}
-                competitionId={competitionId}
-                showLink
+                onClick={() => navigate(competitionRoutes.matchDetail(competitionId, match.id))}
               />
             ))}
           </div>
@@ -328,16 +343,17 @@ export function MatchCenterPage() {
   }
 
   return (
-    <PublicDetailPageShell
-      breadcrumb={
-        <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-sm text-on-surface-variant">
-          <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">Competição</Link>
-          <span aria-hidden="true">/</span>
-          <span aria-current="page" className="text-on-surface">Centro de Jogos</span>
-        </nav>
-      }
-    >
-      <main aria-label="Centro de jogos" className="mx-auto max-w-5xl">{pageContent}</main>
-    </PublicDetailPageShell>
+    <div className="min-h-screen bg-background pb-2xl">
+      <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-lg py-sm flex items-center gap-xs text-sm text-on-surface-variant">
+        <Link to={competitionRoutes.list} className="hover:text-primary">Competições</Link>
+        <span aria-hidden="true">/</span>
+        <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary">
+          {competition?.name ?? 'Competição'}
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page" className="truncate text-on-surface font-medium">Centro de Jogos</span>
+      </nav>
+      <main aria-label="Centro de jogos" className="max-w-7xl mx-auto px-lg">{pageContent}</main>
+    </div>
   )
 }

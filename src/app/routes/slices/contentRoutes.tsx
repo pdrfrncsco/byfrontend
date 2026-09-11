@@ -86,6 +86,8 @@ export function contentRouteElements() {
       {/* Organizations (public) */}
       <Route path={organizationRoutes.list} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationListPage /></Suspense></PublicLayout>} />
       <Route path={organizationRoutes.detail(':slug')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationDetailPage /></Suspense></PublicLayout>} />
+      <Route path="/organizacoes" element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationListPage /></Suspense></PublicLayout>} />
+      <Route path="/organizacoes/:slug" element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><OrganizationDetailPage /></Suspense></PublicLayout>} />
 
       {/* Digital Asset Management */}
       <Route path={ROUTES.DASHBOARD_MEDIA} element={<ProtectedRoute><Suspense fallback={<RouteFallback />}><MediaManagerPage ownerType="organization" ownerId={undefined} /></Suspense></ProtectedRoute>} />
