@@ -129,17 +129,21 @@ export function contentRouteElements() {
       <Route path={competitionRoutes.detail(':id')} element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><CompetitionDetailPage /></Suspense></PublicLayout>} />
       <Route
         path={competitionRoutes.rankings(':id')}
-        element={<Suspense fallback={<RouteFallback />}><CompetitionRankingsPage /></Suspense>}
+        element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><CompetitionRankingsPage /></Suspense></PublicLayout>}
       />
       <Route
         path={competitionRoutes.suspensions(':id')}
-        element={<Suspense fallback={<RouteFallback />}><CompetitionSuspensionsPage /></Suspense>}
+        element={<PublicLayout variant="explore"><Suspense fallback={<RouteFallback />}><CompetitionSuspensionsPage /></Suspense></PublicLayout>}
       />
 
       {/* MatchCenter hub + detail pages */}
       <Route
         path={competitionRoutes.matchCenterHub(':compId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>}
+        element={
+          <PublicLayout variant="explore">
+            <Suspense fallback={<RouteFallback />}><MatchCenterPage /></Suspense>
+          </PublicLayout>
+        }
       />
       <Route
         path={competitionRoutes.matchDetail(':compId', ':matchId')}
@@ -151,7 +155,11 @@ export function contentRouteElements() {
       />
       <Route
         path={competitionRoutes.matchLineup(':compId', ':matchId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>}
+        element={
+          <PublicLayout variant="explore">
+            <Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>
+          </PublicLayout>
+        }
       />
       {/* MatchReportPage: protected — only referees/admins */}
       <Route

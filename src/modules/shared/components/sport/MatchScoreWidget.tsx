@@ -81,7 +81,7 @@ export const MatchScoreWidget = React.forwardRef<HTMLDivElement, MatchScoreWidge
       }
       return (
         <div className="w-7 h-7 rounded-full bg-surface-container-highest flex items-center justify-center text-xs font-semibold text-on-surface-variant uppercase overflow-hidden shrink-0">
-          {team.name.substring(0, 3)}
+          {(team.name || '???').substring(0, 3)}
         </div>
       )
     }
