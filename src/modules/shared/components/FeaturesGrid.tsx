@@ -5,10 +5,10 @@ export function FeaturesGrid() {
     <section id="features" className="py-20 md:py-28 max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider">
+        {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-wider">
           <LayoutTemplate className="h-3.5 w-3.5" />
           <span>Solução Desportiva Integral</span>
-        </div>
+        </div> */}
         <h2 className="font-display-lg text-3xl sm:text-4xl md:text-5xl font-black text-on-surface tracking-tight">
           Tudo o que o Futebol Precisa num Único Ecossistema
         </h2>
@@ -27,14 +27,14 @@ export function FeaturesGrid() {
             </div>
             <div>
               <h3 className="font-bold text-xl text-on-surface group-hover:text-primary transition-colors">
-                Centro de Jogos ao Vivo estilo SofaScore
+                Centro de Jogos ao Vivo
               </h3>
-              <p className="text-xs text-on-surface-variant">Súmula eletrónica oficial, cronómetro e eventos minuto a minuto.</p>
+              <p className="text-xs text-on-surface-variant">Súmula electrónica oficial, cronómetro e eventos minuto a minuto.</p>
             </div>
           </div>
 
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Acompanhe golos, substituições, cartões e estatísticas de jogo em direto com relógio sincronizado. A nossa central de jogos fornece uma experiência idêntica às maiores plataformas globais de desporto.
+            Acompanhe golos, substituições, cartões e estatísticas de jogo em directo com relógio sincronizado. A nossa central de jogos fornece uma experiência idêntica às maiores plataformas globais de desporto.
           </p>
 
           {/* Interactive Preview Bar */}

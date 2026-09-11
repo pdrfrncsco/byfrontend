@@ -147,16 +147,18 @@ export function LandingPage() {
         {t('landing.skipToContent', 'Saltar para o conteúdo')}
       </a>
 
-      {/* Top Live / Upcoming Match Ticker */}
-      <LiveMatchTicker
-        matches={matches}
-        isLoading={matchesLoading}
-        competitionName={featuredComp?.name}
-        competitionId={featuredComp?.id}
-      />
+      {/* Top Live / Upcoming Match Ticker - Offset by fixed header height (64px) */}
+      <div className="pt-16">
+        <LiveMatchTicker
+          matches={matches}
+          isLoading={matchesLoading}
+          competitionName={featuredComp?.name}
+          competitionId={featuredComp?.id}
+        />
+      </div>
 
       {/* Main Content */}
-      <main>
+      <div>
         {/* Hero Section connected to API */}
         <section id="hero">
           <HeroSection
@@ -231,13 +233,13 @@ export function LandingPage() {
 
           <section id="testimonials">
             <Testimonials />
-          </section>
+          </section>  */}
 
           <section id="faq">
             <FAQ />
           </section>
         </Suspense>
-      </main> */}
+      </div>
 
       {/* Demo Modal */}
       {showDemoModal && (

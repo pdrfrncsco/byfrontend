@@ -56,10 +56,10 @@ export function Statistics({ stats, className = '' }: StatisticsProps) {
             <span>Impacto em Números</span>
           </div>
           <h2 id="stats-title" className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight">
-            O Maior Hub Desportivo em Expansão
+            Um Hub Desportivo em Expansão
           </h2>
           <p className="text-xs sm:text-sm text-on-surface-variant">
-            Dados atualizados em tempo real diretamente a partir do ecossistema BolaYetu em Angola e África.
+            Dados actualizados em tempo real directamente a partir do ecossistema BolaYetu.
           </p>
         </div>
 

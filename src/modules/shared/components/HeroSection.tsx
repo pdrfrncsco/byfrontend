@@ -82,7 +82,7 @@ export function HeroSection({
     <section
       id="hero"
       aria-labelledby="hero-title"
-      className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden bg-gradient-to-b from-background via-background/95 to-surface-container-low/50"
+      className="relative flex flex-col items-center justify-center pt-8 sm:pt-12 pb-16 px-4 sm:px-6 md:px-8 overflow-hidden bg-gradient-to-b from-background via-background/95 to-surface-container-low/50"
     >
       {/* Background glow effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -90,13 +90,13 @@ export function HeroSection({
 
       <div className="relative z-10 max-w-4xl text-center space-y-5">
         {/* Pill Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold text-primary shadow-xs backdrop-blur-sm">
+        {/* <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold text-primary shadow-xs backdrop-blur-sm">
           <Sparkles className="h-3.5 w-3.5" />
           <span>O Ecossistema Digital do Futebol Angolano</span>
           <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] uppercase tracking-wider font-extrabold text-primary">
             2026
           </span>
-        </div>
+        </div> */}
 
         {/* Main Heading */}
         <h1

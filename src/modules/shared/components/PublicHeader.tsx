@@ -144,8 +144,8 @@ export function PublicHeader({ variant = 'landing', onNavClick }: PublicHeaderPr
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${
         opaque
-          ? 'border-border/60 bg-background/85 backdrop-blur-md shadow-sm'
-          : 'border-transparent bg-transparent'
+          ? 'border-outline-variant/20 bg-background/90 backdrop-blur-md shadow-xs'
+          : 'border-outline-variant/15 bg-background/80 backdrop-blur-md'
       }`}
     >
       <nav aria-label={t('nav.main', 'Navegação principal')} className="mx-auto flex h-16 max-w-7xl items-center justify-between px-md md:px-xl">

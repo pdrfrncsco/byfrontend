@@ -36,9 +36,9 @@ export function FAQ() {
     <section id="faq" className="py-24 max-w-4xl mx-auto px-md md:px-xl">
       {/* Header */}
       <div className="text-center mb-xl space-y-sm">
-        <div className="inline-flex items-center gap-xs rounded-full bg-primary/10 px-md py-xs text-xs font-bold text-primary">
+        {/* <div className="inline-flex items-center gap-xs rounded-full bg-primary/10 px-md py-xs text-xs font-bold text-primary">
           <HelpCircle className="h-3.5 w-3.5" /> Dúvidas Frequentes
-        </div>
+        </div> */}
         <h2 className="font-display-lg text-3xl sm:text-5xl font-black text-foreground tracking-tight">
           Perguntas Frequentes
         </h2>
