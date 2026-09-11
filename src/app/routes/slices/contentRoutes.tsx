@@ -172,7 +172,11 @@ export function contentRouteElements() {
       />
       <Route
         path={competitionRoutes.tacticalView(':compId', ':matchId')}
-        element={<Suspense fallback={<RouteFallback />}><MatchTacticalViewPage /></Suspense>}
+        element={
+          <PublicLayout variant="explore">
+            <Suspense fallback={<RouteFallback />}><MatchTacticalViewPage /></Suspense>
+          </PublicLayout>
+        }
       />
 
       {/* Competition management (protected) */}

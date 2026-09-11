@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
-import { ArrowLeft, Loader2, Save, RefreshCw, AlertCircle, Users } from 'lucide-react'
-import { Button, Card, Badge } from '@/components/ui'
+import { ArrowLeft, Loader2, Save, RefreshCw, AlertCircle, Users, Compass, Eye } from 'lucide-react'
+import { Button, Badge } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
@@ -9,10 +9,12 @@ import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
 import { useLineups } from '../hooks/useLineups'
 import { useTacticalPositions } from '../hooks/useTacticalPositions'
+import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import TacticalField, { TacticalPlayer } from '../components/tactical/TacticalField'
 import { generateTacticalPositions } from '../utils/tactical.utils'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { toast } from 'sonner'
+import { useSeo } from '@/hooks/useSeo'
 
 export default function MatchTacticalViewPage() {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
@@ -21,14 +23,23 @@ export default function MatchTacticalViewPage() {
 
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
+  const { isAdmin, isMatchOperator } = useCompetitionAccess()
 
   // Fetch match details and lineups
-  const { isLoading: loadingComp } = useCompetition(competitionId)
+  const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: matches = [], isLoading: loadingMatches } = useCompetitionMatches(competitionId)
   const { data: lineups = [], isLoading: loadingLineups } = useLineups(matchIdValue)
 
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
   const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+
+  useSeo({
+    title: match
+      ? `Quadro Tático — ${match.home_club_name || match.homeTeamName} vs ${match.away_club_name || match.awayTeamName}`
+      : 'Quadro Tático',
+    description: 'Simulação e visualização interativa do posicionamento tático dos jogadores no relvado.',
+    path: `/competitions/${competitionId}/matches/${matchIdValue}/tactical`,
+  })
 
   // Find home and away lineups
   const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club)
@@ -52,6 +63,7 @@ export default function MatchTacticalViewPage() {
   )
 
   const savingPositions = savingHome || savingAway
+  const canSave = isAdmin || isMatchOperator
 
   // Extract starters for a team
   const getStartersForTeam = useCallback(
@@ -181,7 +193,7 @@ export default function MatchTacticalViewPage() {
     } else {
       setPlayers([...homeTactical, ...awayTactical])
     }
-    toast.info('Posições reiniciadas para as formações regulamentares.')
+    toast.info('Posições reiniciadas para o padrão tático.')
   }
 
   // Loading state
@@ -194,7 +206,7 @@ export default function MatchTacticalViewPage() {
     if (isDashboard) {
       return (
         <DashboardLayout
-          title="Vista Tática"
+          title="Quadro Tático"
           subtitle="A carregar..."
           dashboardType="competition"
           sidebarLinks={sidebarLinks}
@@ -204,7 +216,7 @@ export default function MatchTacticalViewPage() {
       )
     }
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="max-w-6xl mx-auto px-lg py-xl">
         <LoadingState />
       </div>
     )
@@ -241,7 +253,7 @@ export default function MatchTacticalViewPage() {
       )
     }
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="max-w-6xl mx-auto px-lg py-xl">
         <NotFound />
       </div>
     )
@@ -249,26 +261,53 @@ export default function MatchTacticalViewPage() {
 
   const homeInfo = getStartersForTeam('home')
   const awayInfo = getStartersForTeam('away')
+  const homeName = match.home_club_name || match.homeTeamName || 'Casa'
+  const awayName = match.away_club_name || match.awayTeamName || 'Fora'
+
+  // Breadcrumb
+  const breadcrumb = (
+    <nav aria-label="Breadcrumb" className="flex items-center gap-xs text-xs sm:text-sm text-on-surface-variant mb-md overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <Link to="/competitions" className="hover:text-primary transition-colors">
+        Competições
+      </Link>
+      <span aria-hidden="true" className="opacity-40">/</span>
+      <Link to={competitionRoutes.detail(competitionId)} className="hover:text-primary transition-colors">
+        {competition?.name || 'Competição'}
+      </Link>
+      <span aria-hidden="true" className="opacity-40">/</span>
+      <Link
+        to={
+          isDashboard
+            ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
+            : competitionRoutes.matchDetail(competitionId, matchIdValue)
+        }
+        className="hover:text-primary transition-colors"
+      >
+        {homeName} vs {awayName}
+      </Link>
+      <span aria-hidden="true" className="opacity-40">/</span>
+      <span className="font-semibold text-on-surface">
+        Quadro Tático
+      </span>
+    </nav>
+  )
 
   const pageContent = (
-    <div className="mx-auto max-w-5xl space-y-lg px-lg py-xl">
-      {/* Header */}
-      <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
+    <div className="max-w-6xl mx-auto px-md sm:px-lg py-md space-y-md">
+      {/* Breadcrumb */}
+      {breadcrumb}
+
+      {/* Header Bar: Title, Match details and Action controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md p-md sm:p-lg rounded-2xl border border-outline-variant/15 bg-surface-container shadow-sm">
         <div>
-          <Link
-            to={
-              isDashboard
-                ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
-                : competitionRoutes.matchDetail(competitionId, matchIdValue)
-            }
-            className="mb-xs inline-flex items-center gap-xs text-sm text-on-surface-variant hover:text-primary"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar à partida
-          </Link>
-          <h1 className="text-2xl font-bold text-on-surface">Quadro Tático Interativo</h1>
-          <p className="text-sm text-on-surface-variant">
-            {match.home_club_name} vs {match.away_club_name}
+          <div className="flex items-center gap-2 mb-1">
+            <Compass className="w-5 h-5 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-black text-on-surface tracking-tight">
+              Quadro Tático
+            </h1>
+          </div>
+          <p className="text-xs sm:text-sm text-on-surface-variant font-medium">
+            {homeName} <span className="opacity-50">vs</span> {awayName}
           </p>
         </div>
 
@@ -279,82 +318,122 @@ export default function MatchTacticalViewPage() {
             size="sm"
             onClick={handleReset}
             disabled={savingPositions || players.length === 0}
+            className="text-xs"
           >
-            <RefreshCw className="mr-xs h-4 w-4" />
+            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Reiniciar
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleSave}
-            disabled={savingPositions || players.length === 0}
+
+          {canSave && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSave}
+              disabled={savingPositions || players.length === 0}
+              className="text-xs"
+            >
+              {savingPositions ? (
+                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Save className="w-3.5 h-3.5 mr-1.5" />
+              )}
+              Guardar Posições
+            </Button>
+          )}
+
+          <Link
+            to={
+              isDashboard
+                ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
+                : competitionRoutes.matchDetail(competitionId, matchIdValue)
+            }
           >
-            {savingPositions ? (
-              <Loader2 className="mr-xs h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-xs h-4 w-4" />
-            )}
-            Guardar Posições
-          </Button>
+            <Button variant="outline" size="sm" className="text-xs">
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+              Voltar
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Team Selection Tabs */}
-      <Card variant="flat" padding="md">
-        <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-sm">
-            <Button
-              variant={activeTeam === 'both' ? 'primary' : 'secondary'}
-              size="sm"
-              onClick={() => setActiveTeam('both')}
-            >
-              Campo Completo (Ambas)
-            </Button>
-            <Button
-              variant={activeTeam === 'home' ? 'primary' : 'secondary'}
-              size="sm"
-              onClick={() => setActiveTeam('home')}
-            >
-              {match.home_club_name} (Casa)
-            </Button>
-            <Button
-              variant={activeTeam === 'away' ? 'primary' : 'secondary'}
-              size="sm"
-              onClick={() => setActiveTeam('away')}
-            >
-              {match.away_club_name} (Fora)
-            </Button>
-          </div>
+      {/* Filter Bar: Segmented control for Team Focus */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-sm p-sm sm:px-md rounded-xl border border-outline-variant/15 bg-surface-container">
+        {/* Pills */}
+        <div className="inline-flex p-1 rounded-lg bg-surface-container-high/60 gap-1 overflow-x-auto scrollbar-hide text-xs">
+          <button
+            type="button"
+            onClick={() => setActiveTeam('both')}
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+              activeTeam === 'both'
+                ? 'bg-surface shadow-sm text-primary font-bold'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            <span>Ambas as Equipas</span>
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-primary/10 text-primary">
+              {players.length}
+            </span>
+          </button>
 
-          <div className="flex flex-wrap items-center gap-md text-xs sm:text-sm text-on-surface-variant font-medium">
-            <span>
-              {match.home_club_name}: <Badge variant="secondary">{homeInfo.formation}</Badge>
-            </span>
-            <span>
-              {match.away_club_name}: <Badge variant="secondary">{awayInfo.formation}</Badge>
-            </span>
-            <span>
-              Em campo: <Badge variant="default">{players.length}</Badge>
-            </span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTeam('home')}
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+              activeTeam === 'home'
+                ? 'bg-surface shadow-sm text-blue-500 font-bold'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-blue-500" />
+            <span>{homeName}</span>
+            <span className="text-[11px] opacity-70">({homeInfo.formation})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTeam('away')}
+            className={`px-3 py-1.5 rounded-md font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+              activeTeam === 'away'
+                ? 'bg-surface shadow-sm text-red-500 font-bold'
+                : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-red-500" />
+            <span>{awayName}</span>
+            <span className="text-[11px] opacity-70">({awayInfo.formation})</span>
+          </button>
         </div>
-      </Card>
+
+        {/* Formations legend */}
+        <div className="flex items-center gap-md text-xs text-on-surface-variant font-medium px-1">
+          <span>
+            {homeName}: <span className="font-bold text-on-surface">{homeInfo.formation}</span>
+          </span>
+          <span className="opacity-30">|</span>
+          <span>
+            {awayName}: <span className="font-bold text-on-surface">{awayInfo.formation}</span>
+          </span>
+        </div>
+      </div>
 
       {/* Tactical Canvas Field */}
       {players.length > 0 ? (
-        <Card variant="flat" padding="lg" className="flex justify-center overflow-x-auto">
+        <div className="rounded-2xl border border-outline-variant/15 bg-surface-container overflow-hidden shadow-lg p-md sm:p-lg flex flex-col items-center">
           <TacticalField players={players} onPositionsChange={onPositionsChange} />
-        </Card>
+          
+          <p className="mt-md text-center text-xs text-on-surface-variant/70 font-medium">
+            💡 Dica: Arraste os jogadores no relvado para simular e ajustar posicionamentos táticos em tempo real.
+          </p>
+        </div>
       ) : (
-        <Card variant="flat" padding="lg">
-          <div className="flex flex-col items-center gap-sm py-2xl text-center">
-            <Users className="h-12 w-12 text-on-surface-variant/30" />
-            <h3 className="text-lg font-semibold text-on-surface">Escalação ainda não definida</h3>
-            <p className="max-w-sm text-sm text-on-surface-variant">
-              Nenhuma equipa submeteu ainda a escalação dos titulares para este jogo.
-            </p>
-          </div>
-        </Card>
+        <div className="rounded-2xl border border-outline-variant/15 bg-surface-container p-2xl text-center">
+          <Users className="h-12 w-12 text-on-surface-variant/30 mx-auto mb-sm" />
+          <h3 className="text-base font-bold text-on-surface">Escalação ainda não definida</h3>
+          <p className="max-w-md mx-auto text-xs text-on-surface-variant mt-1 leading-relaxed">
+            As equipas ainda não submeteram os titulares para este confronto. A prancheta tática estará disponível assim que as escalações forem registadas.
+          </p>
+        </div>
       )}
     </div>
   )
@@ -362,8 +441,8 @@ export default function MatchTacticalViewPage() {
   if (isDashboard) {
     return (
       <DashboardLayout
-        title="Vista Tática"
-        subtitle={`${match.home_club_name} vs ${match.away_club_name}`}
+        title="Quadro Tático"
+        subtitle={`${homeName} vs ${awayName}`}
         dashboardType="competition"
         sidebarLinks={sidebarLinks}
       >
@@ -372,5 +451,5 @@ export default function MatchTacticalViewPage() {
     )
   }
 
-  return <div className="min-h-screen bg-background">{pageContent}</div>
+  return pageContent
 }

@@ -1,72 +1,123 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Trophy, Activity, Calendar, ChevronRight } from 'lucide-react'
-import { Badge, Card } from '@/components/ui'
+import { Trophy, Activity, Calendar, ChevronRight, Shield, Award } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import type { Competition, CompetitionStatus, CompetitionType } from '../types'
 
-const STATUS_CONFIG: Record<CompetitionStatus, { label: string; tone: 'default' | 'success' | 'secondary' }> = {
-  draft: { label: 'Rascunho', tone: 'default' },
-  active: { label: 'Em curso', tone: 'success' },
-  completed: { label: 'Concluída', tone: 'secondary' },
-}
-
-const TYPE_CONFIG: Record<CompetitionType, { icon: typeof Trophy; label: string; gradient: string }> = {
-  league: { icon: Trophy, label: 'Campeonato', gradient: 'linear-gradient(135deg, #f59e0b, #f97316)' },
-  tournament: { icon: Activity, label: 'Torneio', gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)' },
-  cup: { icon: Trophy, label: 'Taça', gradient: 'linear-gradient(135deg, #f59e0b, #f97316)' },
-}
-
-interface CompetitionCardProps {
+export interface CompetitionCardProps {
   competition: Competition
+  className?: string
 }
 
-export function CompetitionCard({ competition }: CompetitionCardProps) {
-  const statusCfg = STATUS_CONFIG[competition.status] ?? STATUS_CONFIG.draft
-  const typeCfg = TYPE_CONFIG[competition.competition_type] ?? TYPE_CONFIG.league
+const TYPE_CONFIG: Record<
+  CompetitionType,
+  { label: string; icon: typeof Trophy; bgClass: string; textClass: string; borderClass: string }
+> = {
+  league: {
+    label: 'Campeonato',
+    icon: Trophy,
+    bgClass: 'bg-amber-500/10',
+    textClass: 'text-amber-500',
+    borderClass: 'border-amber-500/20',
+  },
+  cup: {
+    label: 'Taça',
+    icon: Award,
+    bgClass: 'bg-emerald-500/10',
+    textClass: 'text-emerald-500',
+    borderClass: 'border-emerald-500/20',
+  },
+  tournament: {
+    label: 'Torneio',
+    icon: Activity,
+    bgClass: 'bg-violet-500/10',
+    textClass: 'text-violet-500',
+    borderClass: 'border-violet-500/20',
+  },
+}
+
+export function CompetitionCard({ competition, className = '' }: CompetitionCardProps) {
+  const [imgError, setImgError] = useState(false)
+
+  const type = competition.competition_type || 'league'
+  const typeCfg = TYPE_CONFIG[type] ?? TYPE_CONFIG.league
   const Icon = typeCfg.icon
 
+  const status = competition.status || 'draft'
+  const statusVariant =
+    status === 'active' ? 'primary' : status === 'completed' ? 'secondary' : 'warning'
+  const statusLabel =
+    competition.status_label || (status === 'active' ? 'Em curso' : status === 'completed' ? 'Concluída' : 'Rascunho')
+
+  const logoUrl =
+    (competition as any).logo_url ||
+    (competition as any).logo ||
+    (competition as any).emblem_url ||
+    (competition as any).emblem
+
   return (
-    <Link to={`/competitions/${competition.id}`} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-2xl">
-      <Card
-        variant="flat"
-        padding="none"
-        className="group relative overflow-hidden rounded-[1.5rem] border border-outline-variant/80 bg-surface-container-low shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-surface-container-high"
-      >
-        <div className="h-1.5 w-full" style={{ background: typeCfg.gradient }} />
+    <Link
+      to={`/competitions/${competition.slug || competition.id}`}
+      className={`group flex items-center justify-between gap-md rounded-xl border border-outline-variant/20 bg-surface-container p-md transition-all duration-200 hover:border-primary/40 hover:bg-surface-container-high hover:shadow-md ${className}`}
+    >
+      <div className="flex items-center gap-md min-w-0">
+        {/* Logo or Sports Icon Badge */}
+        {logoUrl && !imgError ? (
+          <img
+            src={logoUrl}
+            alt={competition.name}
+            className="h-11 w-11 shrink-0 rounded-xl border border-outline-variant/20 object-cover shadow-sm transition-transform duration-200 group-hover:scale-105"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-sm transition-transform duration-200 group-hover:scale-105 ${typeCfg.bgClass} ${typeCfg.textClass} ${typeCfg.borderClass}`}
+          >
+            <Icon className="h-5 w-5" />
+          </div>
+        )}
 
-        <div className="p-lg">
-          <div className="relative flex items-center gap-md">
-            <div
-              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-on-primary shadow-[0_10px_24px_rgba(15,23,42,0.12)] transition-transform duration-300 group-hover:scale-105"
-              style={{ background: typeCfg.gradient }}
-            >
-              <Icon className="h-6 w-6" />
-            </div>
+        {/* Competition Information */}
+        <div className="min-w-0 space-y-0.5">
+          <div className="flex items-center gap-1.5">
+            <h4 className="truncate font-semibold text-sm text-on-surface group-hover:text-primary transition-colors">
+              {competition.name}
+            </h4>
+          </div>
 
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-sm">
-                <h3 className="truncate text-xl font-bold text-on-surface transition-colors group-hover:text-primary">
-                  {competition.name}
-                </h3>
-                <ChevronRight className="h-5 w-5 shrink-0 text-on-surface-variant transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
-              </div>
+          <div className="flex items-center gap-xs text-xs text-on-surface-variant truncate">
+            <span className="font-medium text-primary text-[11px]">
+              {competition.type_label || typeCfg.label}
+            </span>
 
-              <div className="mt-sm flex flex-wrap items-center gap-sm text-sm text-on-surface-variant">
-                <span className="inline-flex items-center gap-xs font-medium">
-                  <Calendar className="h-4 w-4" />
+            {competition.season && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1 truncate">
+                  <Calendar className="h-3 w-3 shrink-0" />
                   {competition.season}
                 </span>
-                <span className="text-outline">•</span>
-                <span>{typeCfg.label}</span>
-              </div>
-            </div>
-          </div>
+              </>
+            )}
 
-          <div className="mt-md flex items-center justify-between gap-sm border-t border-outline-variant/70 pt-sm">
-            <Badge variant={statusCfg.tone}>{statusCfg.label}</Badge>
-            <span className="text-xs font-medium uppercase tracking-wide text-on-surface-variant">Ver curso</span>
+            {(competition as any).tenant_name && (
+              <>
+                <span>•</span>
+                <span className="truncate">{(competition as any).tenant_name}</span>
+              </>
+            )}
           </div>
         </div>
-      </Card>
+      </div>
+
+      {/* Status Badge & Arrow */}
+      <div className="flex items-center gap-sm shrink-0">
+        <Badge variant={statusVariant} className="text-[11px] hidden sm:inline-flex">
+          {statusLabel}
+        </Badge>
+        <ChevronRight className="h-4 w-4 text-on-surface-variant group-hover:text-primary transition-colors" />
+      </div>
     </Link>
   )
 }
