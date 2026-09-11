@@ -431,11 +431,18 @@ export const competitionApi = {
   // ─── Rankings ────────────────────────────────────────────────────────────
 
   async getTopScorers(competitionId?: string): Promise<TopScorer[]> {
-    const response = await client.get<ApiResponse<TopScorer[]>>(
-      '/competitions/rankings/top-scorers/',
-      { params: competitionId ? { competition_id: competitionId } : {} }
-    )
-    return response.data.data
+    try {
+      const response = await client.get<ApiResponse<TopScorer[]>>(
+        '/competitions/rankings/top-scorers/',
+        { params: competitionId ? { competition_id: competitionId } : {} }
+      )
+      return response.data.data ?? []
+    } catch (err: any) {
+      if (err?.response?.status === 404) {
+        return []
+      }
+      throw err
+    }
   },
 
   async getSeasonRanking(season?: string): Promise<SeasonRanking[]> {

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   Trophy,
@@ -246,31 +246,29 @@ function RegulationsTab({ competitionId }: { competitionId: string }) {
 // ─── Stats Tab ─────────────────────────────────────────────────────────────────
 
 function StatsTab({ competitionId }: { competitionId: string }) {
-  const { data: topScorers = [], isLoading: loadingScorers, isError, error, refetch } = useTopScorers(competitionId)
-
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
-        <AlertCircle className="h-12 w-12 text-error opacity-70" />
-        <p className="font-medium text-on-surface">Erro ao carregar estatísticas.</p>
-        <p className="text-sm opacity-70">{getErrorMessage(error)}</p>
-        <div className="mt-md">
-          <Button variant="secondary" size="sm" onClick={() => refetch()}>
-            Tentar novamente
-          </Button>
-        </div>
-      </div>
-    )
-  }
+  const { data: topScorers = [], isLoading: loadingScorers, isError, refetch } = useTopScorers(competitionId)
 
   return (
     <div className="space-y-xl">
       <section className="space-y-md">
-        <h2 className="flex items-center gap-sm text-base font-semibold text-on-surface">
-          <Trophy className="h-4 w-4 text-amber-500" />
-          Top Marcadores
-        </h2>
-        <TopScorersTable scorers={topScorers} isLoading={loadingScorers} limit={10} />
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-sm text-base font-semibold text-on-surface">
+            <Trophy className="h-4 w-4 text-amber-500" />
+            Top Marcadores
+          </h2>
+          {isError && (
+            <Button variant="ghost" size="sm" onClick={() => refetch()}>
+              Tentar novamente
+            </Button>
+          )}
+        </div>
+        {isError ? (
+          <div className="rounded-xl border border-outline-variant/15 bg-surface-container p-md text-sm text-on-surface-variant text-center">
+            Informação de marcadores indisponível de momento.
+          </div>
+        ) : (
+          <TopScorersTable scorers={topScorers} isLoading={loadingScorers} limit={10} />
+        )}
       </section>
 
       <section className="space-y-md">
@@ -302,7 +300,7 @@ export function CompetitionDetailPage() {
     path: `/competitions/${competitionId}`,
   })
 
-  useMemo(() => {
+  useEffect(() => {
     if (shouldFetchByUuid && competition?.slug && competition.slug !== competitionId) {
       navigate(`/competitions/${competition.slug}`, { replace: true })
     }
@@ -423,7 +421,7 @@ export function CompetitionDetailPage() {
           </SportTabsContent>
 
           <SportTabsContent value="stats">
-            <StatsTab competitionId={competitionId} />
+            <StatsTab competitionId={competition?.id || competitionId} />
           </SportTabsContent>
 
           <SportTabsContent value="regulations">

@@ -24,20 +24,20 @@ export function CupBracket({ competitionId }: { competitionId: string }) {
 
   return (
     <div className="flex gap-lg overflow-x-auto pb-md select-none">
-      {bracket.map((round) => (
-        <div key={round.name} className="flex min-w-[240px] flex-col gap-md">
+      {bracket.map((round, rIdx) => (
+        <div key={`round-${rIdx}-${round.name || ''}`} className="flex min-w-[240px] flex-col gap-md">
           <h4 className="border-b border-outline-variant/20 pb-xs text-center text-sm font-semibold text-on-surface-variant">
             {round.name}
           </h4>
           <div className="flex flex-1 flex-col justify-around gap-lg py-md">
-            {round.matches.map((match) => {
+            {round.matches.map((match, mIdx) => {
               const hasWinner = match.winner !== null
               const isTeam1Winner = match.winner === match.team1
               const isTeam2Winner = match.winner === match.team2
 
               return (
                 <div
-                  key={match.id}
+                  key={match.id ? `match-${match.id}` : `m-${rIdx}-${mIdx}`}
                   className="relative rounded-lg border border-outline-variant/30 bg-surface-container-low p-sm shadow-sm transition-all hover:border-primary/40 hover:bg-surface-container-high"
                 >
                   <div className="space-y-xs text-xs">

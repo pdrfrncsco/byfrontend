@@ -3,10 +3,36 @@ import { Link } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/ui/empty-state'
+import { resolveMediaUrl } from '@/lib/media'
 
 export interface ClubSquadTableProps {
   squad: any[]
   clubSlug: string
+}
+
+function getPlayerSector(pos?: string | null): 'GK' | 'DEF' | 'MID' | 'FWD' | 'OUTROS' {
+  if (!pos) return 'OUTROS'
+  const p = pos.toLowerCase()
+  if (p === 'gk' || p.includes('guarda') || p.includes('redes') || p.includes('goleiro')) return 'GK'
+  if (
+    p === 'def' || p === 'df' || p.includes('defesa') || p.includes('lateral') ||
+    p.includes('zagueiro') || p.includes('central') || p.includes('cb') || p.includes('lb') || p.includes('rb')
+  ) {
+    return 'DEF'
+  }
+  if (
+    p === 'mid' || p === 'mf' || p.includes('médio') || p.includes('medio') ||
+    p.includes('campo') || p.includes('volante') || p.includes('cm') || p.includes('cdm') || p.includes('cam')
+  ) {
+    return 'MID'
+  }
+  if (
+    p === 'fwd' || p === 'att' || p === 'fw' || p.includes('avan') || p.includes('atac') ||
+    p.includes('ponta') || p.includes('extremo') || p.includes('st') || p.includes('cf') || p.includes('lw') || p.includes('rw')
+  ) {
+    return 'FWD'
+  }
+  return 'OUTROS'
 }
 
 export function ClubSquadTable({ squad, clubSlug }: ClubSquadTableProps) {
@@ -20,45 +46,28 @@ export function ClubSquadTable({ squad, clubSlug }: ClubSquadTableProps) {
     )
   }
 
-  // Group by position
-  const positions = ['GK', 'DEF', 'MID', 'FWD']
-  const groupedSquad = positions.reduce((acc, pos) => {
-    const playersInPos = squad.filter((p) => p.position === pos)
-    if (playersInPos.length > 0) {
-      acc.push({ position: pos, players: playersInPos })
+  // Group by sector
+  const sectors: Array<{ key: 'GK' | 'DEF' | 'MID' | 'FWD' | 'OUTROS'; label: string; color: string }> = [
+    { key: 'GK', label: 'Guarda-redes', color: 'bg-[#f59e0b]' },
+    { key: 'DEF', label: 'Defesas', color: 'bg-[#3b82f6]' },
+    { key: 'MID', label: 'Médios', color: 'bg-[#10b981]' },
+    { key: 'FWD', label: 'Avançados', color: 'bg-[#ef4444]' },
+    { key: 'OUTROS', label: 'Outros Jogadores', color: 'bg-gray-400' },
+  ]
+
+  const groupedSquad = sectors.reduce((acc, sec) => {
+    const playersInSec = squad.filter((p) => getPlayerSector(p.position || p.position_label) === sec.key)
+    if (playersInSec.length > 0) {
+      acc.push({ ...sec, players: playersInSec })
     }
     return acc
-  }, [] as { position: string; players: any[] }[])
-  
-  // Also add players with unknown or other positions at the end
-  const otherPlayers = squad.filter((p) => !positions.includes(p.position))
-  if (otherPlayers.length > 0) {
-    groupedSquad.push({ position: 'OUTROS', players: otherPlayers })
-  }
+  }, [] as Array<{ key: string; label: string; color: string; players: any[] }>)
 
-  const getPositionLabel = (pos: string) => {
-    switch(pos) {
-      case 'GK': return 'Guarda-redes'
-      case 'DEF': return 'Defesa'
-      case 'MID': return 'Médio'
-      case 'FWD': return 'Avançado'
-      default: return 'Outro'
-    }
-  }
-
-  const getPositionColor = (pos: string) => {
-    switch(pos) {
-      case 'GK': return 'bg-[#f59e0b]'
-      case 'DEF': return 'bg-[#3b82f6]'
-      case 'MID': return 'bg-[#10b981]'
-      case 'FWD': return 'bg-[#ef4444]'
-      default: return 'bg-gray-400'
-    }
-  }
-
-  const calculateAge = (dob: string) => {
+  const calculateAge = (dob?: string | null) => {
     if (!dob) return '—'
-    const diff_ms = Date.now() - new Date(dob).getTime()
+    const birthDate = new Date(dob)
+    if (isNaN(birthDate.getTime())) return '—'
+    const diff_ms = Date.now() - birthDate.getTime()
     const age_dt = new Date(diff_ms)
     return Math.abs(age_dt.getUTCFullYear() - 1970)
   }
@@ -81,63 +90,72 @@ export function ClubSquadTable({ squad, clubSlug }: ClubSquadTableProps) {
           </thead>
           <tbody>
             {groupedSquad.map((group) => (
-              <React.Fragment key={group.position}>
+              <React.Fragment key={group.key}>
                 {/* Group Header */}
                 <tr className="bg-surface-container-low/30 border-b border-outline-variant/10">
                   <td colSpan={8} className="px-3 py-1.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                    {getPositionLabel(group.position)}
+                    {group.label}
                   </td>
                 </tr>
                 {/* Players */}
-                {group.players.map((player) => (
-                  <tr 
-                    key={player.id} 
-                    className="border-b border-outline-variant/8 transition-colors hover:bg-surface-container-low/50"
-                  >
-                    <td className="px-3 py-2 flex justify-center">
-                      {player.photo_url ? (
-                        <img 
-                          src={player.photo_url} 
-                          alt={player.name} 
-                          className="w-7 h-7 rounded-full object-cover bg-surface-container-low border border-outline-variant/20"
-                        />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-medium text-on-surface-variant">
-                          {player.name.substring(0, 2).toUpperCase()}
+                {group.players.map((player) => {
+                  const name = player.display_name || player.full_name || player.name || 'Jogador'
+                  const rawPhoto = player.photo_url || player.avatar
+                  const photoUrl = rawPhoto ? resolveMediaUrl(rawPhoto) : null
+                  const initials = name ? name.trim().slice(0, 2).toUpperCase() : '??'
+                  const playerTarget = player.player_slug || player.slug || player.player_id || player.id
+                  const positionDisplay = player.position_label || player.position || '—'
+
+                  return (
+                    <tr 
+                      key={player.id || playerTarget} 
+                      className="border-b border-outline-variant/8 transition-colors hover:bg-surface-container-low/50"
+                    >
+                      <td className="px-3 py-2 flex justify-center">
+                        {photoUrl ? (
+                          <img 
+                            src={photoUrl} 
+                            alt={name} 
+                            className="w-7 h-7 rounded-full object-cover bg-surface-container-low border border-outline-variant/20"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-medium text-on-surface-variant">
+                            {initials}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-sm">
+                        <Link 
+                          to={`/players/${playerTarget}`}
+                          className="font-medium text-on-surface hover:text-primary transition-colors"
+                        >
+                          {name}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2 text-sm text-on-surface-variant">
+                        <div className="flex items-center gap-1.5">
+                          <span className={cn("w-2 h-2 rounded-full", group.color)} />
+                          <span className="text-xs">{positionDisplay}</span>
                         </div>
-                      )}
-                    </td>
-                    <td className="px-3 py-2 text-sm">
-                      <Link 
-                        to={`/players/${player.slug || player.id}`}
-                        className="font-medium text-on-surface hover:text-primary transition-colors"
-                      >
-                        {player.name}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-on-surface-variant">
-                      <div className="flex items-center gap-1.5">
-                        <span className={cn("w-2 h-2 rounded-full", getPositionColor(player.position))} />
-                        <span className="text-xs">{player.position}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-center text-on-surface-variant">
-                      {calculateAge(player.date_of_birth)}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-center font-medium">
-                      {player.jersey_number || '—'}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
-                      {player.matches_played ?? 0}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
-                      {player.goals ?? 0}
-                    </td>
-                    <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
-                      {player.assists ?? 0}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-center text-on-surface-variant">
+                        {calculateAge(player.date_of_birth)}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-center font-medium">
+                        {player.jersey_number ?? '—'}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
+                        {player.matches_played ?? 0}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
+                        {player.goals ?? 0}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-center tabular-nums text-on-surface-variant">
+                        {player.assists ?? 0}
+                      </td>
+                    </tr>
+                  )
+                })}
               </React.Fragment>
             ))}
           </tbody>
