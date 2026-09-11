@@ -16,15 +16,12 @@ import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarLinks } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
-import {
-  useLineups,
-  useConfirmLineup,
-  useLockLineup,
-} from '../hooks/useLineups'
+import { useLineups, useConfirmLineup, useLockLineup } from '../hooks/useLineups'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
+import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
 import { matchApi } from '../services/match.api'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
-import { MatchLineupGrid } from '../components'
+import { MatchLineupGrid, BolaYetuLineupView } from '../components'
 import { toast } from 'sonner'
 import {
   SUPPORTED_FORMATIONS,
@@ -566,10 +563,18 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
   const match = (matches as Match[]).find((m) => m.id === matchIdValue)
   const canReviewLineups = isAdmin && match?.status === 'pre_match'
 
-    // Find home and away lineups — only show submissions that were approved by the organization
-    const VISIBLE_STATUSES = new Set(['confirmed', 'locked'])
-  const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase()))
-    const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase()))
+  const { data: events = [] } = useCompetitionMatchEvents(competitionId, matchIdValue)
+  const [viewMode, setViewMode] = useState<'pitch' | 'edit'>('pitch')
+
+  const VISIBLE_STATUSES = new Set(['confirmed', 'locked'])
+
+  // Find home and away lineups — prioritize confirmed/locked, fallback to any submission
+  const homeLineup =
+    (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase())) ||
+    (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club)
+  const awayLineup =
+    (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club && VISIBLE_STATUSES.has(String(l.status).toLowerCase())) ||
+    (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club)
 
     // Also detect submitted-but-not-confirmed submissions so public page can show an informative message
     const homeLineupSubmitted = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club && String(l.status).toLowerCase() === 'submitted')
@@ -678,68 +683,91 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
           <div className="flex items-center justify-center py-xl">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
+        ) : viewMode === 'pitch' ? (
+          <div className="space-y-md">
+            {allowEditing && match.status === 'pre_match' && (
+              <div className="flex flex-wrap justify-end gap-sm mb-sm">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setViewMode('edit')}
+                >
+                  <Users className="w-3.5 h-3.5 mr-1" />
+                  Modo de Edição / Drag & Drop
+                </Button>
+                {canReviewLineups && (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => {
+                        const lineupList = lineups as LineupSubmission[]
+                        lineupList.forEach((l) => {
+                          if (l.club) confirmLineup.mutate(l.club)
+                        })
+                      }}
+                      disabled={confirmLineup.isPending}
+                    >
+                      {confirmLineup.isPending ? (
+                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                      ) : (
+                        <Check className="mr-xs h-4 w-4" />
+                      )}
+                      Confirmar Escalações
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => lockLineup.mutate(undefined)}
+                      disabled={lockLineup.isPending}
+                    >
+                      {lockLineup.isPending ? (
+                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                      ) : (
+                        <Lock className="mr-xs h-4 w-4" />
+                      )}
+                      Bloquear Escalações
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
+            <BolaYetuLineupView
+              match={match}
+              homeLineup={homeLineup}
+              awayLineup={awayLineup}
+              events={events}
+              canReviewLineups={canReviewLineups}
+              onConfirmLineup={(clubId) => confirmLineup.mutate(clubId)}
+              onConfirmPending={confirmLineup.isPending}
+            />
+          </div>
         ) : (
-          <div className="grid gap-lg lg:grid-cols-2">
-            {/* Home Team Lineup */}
-            <Card variant="flat" padding="lg">
-              {homeLineup && ((homeLineup.starters?.length ?? 0) > 0 || (homeLineup.substitutes?.length ?? 0) > 0 || ((homeLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={homeLineup} isHome match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined} onConfirmPending={confirmLineup.isPending} />
-              ) : homeLineupSubmitted && !allowEditing ? (
-                <Card variant="flat" padding="lg">
-                  <div className="flex flex-col items-center gap-sm py-lg text-center">
-                    <Users className="h-10 w-10 text-on-surface-variant/30" />
-                    <p className="font-medium text-on-surface-variant">Escalação submetida</p>
-                    <p className="text-sm text-on-surface-variant/70">A escalação foi submetida pelo clube e aguarda aprovação da Organização.</p>
-                  </div>
-                </Card>
-              ) : (
+          <div className="space-y-md">
+            <div className="flex justify-end">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setViewMode('pitch')}
+              >
+                Ver Campo Único (SofaScore)
+              </Button>
+            </div>
+            <div className="grid gap-lg lg:grid-cols-2">
+              <Card variant="flat" padding="lg">
                 <LineupSection
-                  lineup={{
-                    id: '',
-                    match: match.id,
-                    club: match.home_club,
-                    formation: '4-3-3',
-                    status: 'pending',
-                    submitted_at: '',
-                    starters: [],
-                    substitutes: [],
-                    lineup_players: [],
-                  } as unknown as LineupSubmission}
+                  lineup={homeLineup || ({ id: '', match: match.id, club: match.home_club, formation: '4-3-3', status: 'pending', starters: [], substitutes: [], lineup_players: [] } as any)}
                   isHome
                   match={match}
-              editable={allowEditing && match.status === 'pre_match'}
+                  editable={allowEditing && match.status === 'pre_match'}
                   onSave={saveLineup}
                   onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined}
                   onConfirmPending={confirmLineup.isPending}
                 />
-              )}
-            </Card>
-
-            {/* Away Team Lineup */}
-            <Card variant="flat" padding="lg">
-              {awayLineup && ((awayLineup.starters?.length ?? 0) > 0 || (awayLineup.substitutes?.length ?? 0) > 0 || ((awayLineup as any).lineup_players?.length ?? 0) > 0) ? (
-                <LineupSection lineup={awayLineup} isHome={false} match={match} editable={allowEditing && match.status === 'pre_match'} onSave={saveLineup} onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined} onConfirmPending={confirmLineup.isPending} />
-              ) : awayLineupSubmitted && !allowEditing ? (
-                <Card variant="flat" padding="lg">
-                  <div className="flex flex-col items-center gap-sm py-lg text-center">
-                    <Users className="h-10 w-10 text-on-surface-variant/30" />
-                    <p className="font-medium text-on-surface-variant">Escalação submetida</p>
-                    <p className="text-sm text-on-surface-variant/70">A escalação foi submetida pelo clube e aguarda aprovação da Organização.</p>
-                  </div>
-                </Card>
-              ) : (
+              </Card>
+              <Card variant="flat" padding="lg">
                 <LineupSection
-                  lineup={{
-                    id: '',
-                    match: match.id,
-                    club: match.away_club,
-                    formation: '4-3-3',
-                    status: 'pending',
-                    submitted_at: '',
-                    starters: [],
-                    substitutes: [],
-                    lineup_players: [],
-                  } as unknown as LineupSubmission}
+                  lineup={awayLineup || ({ id: '', match: match.id, club: match.away_club, formation: '4-3-3', status: 'pending', starters: [], substitutes: [], lineup_players: [] } as any)}
                   isHome={false}
                   match={match}
                   editable={allowEditing && match.status === 'pre_match'}
@@ -747,46 +775,8 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
                   onConfirm={canReviewLineups ? (clubId) => confirmLineup.mutate(clubId) : undefined}
                   onConfirmPending={confirmLineup.isPending}
                 />
-              )}
-            </Card>
-
-            {/* Admin Actions */}
-            {isAdmin && match.status === 'pre_match' && lineups.length > 0 && (
-              <div className="flex justify-center gap-md">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => {
-                    // Confirmar cada lineup individualmente com o respectivo club_id
-                    const lineupList = lineups as LineupSubmission[]
-                    lineupList.forEach((l) => {
-                      if (l.club) confirmLineup.mutate(l.club)
-                    })
-                  }}
-                  disabled={confirmLineup.isPending}
-                >
-                  {confirmLineup.isPending ? (
-                    <Loader2 className="mr-xs h-4 w-4 animate-spin" />
-                  ) : (
-                    <Check className="mr-xs h-4 w-4" />
-                  )}
-                  Confirmar Escalações
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => lockLineup.mutate(undefined)}
-                  disabled={lockLineup.isPending}
-                >
-                  {lockLineup.isPending ? (
-                    <Loader2 className="mr-xs h-4 w-4 animate-spin" />
-                  ) : (
-                    <Lock className="mr-xs h-4 w-4" />
-                  )}
-                  Bloquear Escalações
-                </Button>
-              </div>
-            )}
+              </Card>
+            </div>
           </div>
         )}
       </div>

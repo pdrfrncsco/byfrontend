@@ -34,16 +34,26 @@ export default function MatchTacticalViewPage() {
   const homeLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.home_club)
   const awayLineup = (lineups as LineupSubmission[]).find((l) => l.club === match?.away_club)
 
-  const [activeTeam, setActiveTeam] = useState<'home' | 'away'>('home')
+  // View filter: 'both' (default) or single team focus
+  const [activeTeam, setActiveTeam] = useState<'both' | 'home' | 'away'>('both')
   const [players, setPlayers] = useState<TacticalPlayer[]>([])
 
-  const currentClubId = activeTeam === 'home' ? match?.home_club : match?.away_club
-  const { loadPositions, savePositions, loading: savingPositions } = useTacticalPositions(
+  const homeClubId = match?.home_club
+  const awayClubId = match?.away_club
+
+  const { loadPositions: loadHomePositions, savePositions: saveHomePositions, loading: savingHome } = useTacticalPositions(
     matchIdValue,
-    currentClubId
+    homeClubId
   )
 
-  // Extract starters for the current active team
+  const { loadPositions: loadAwayPositions, savePositions: saveAwayPositions, loading: savingAway } = useTacticalPositions(
+    matchIdValue,
+    awayClubId
+  )
+
+  const savingPositions = savingHome || savingAway
+
+  // Extract starters for a team
   const getStartersForTeam = useCallback(
     (team: 'home' | 'away'): { starters: LineupPlayer[]; formation: string } => {
       const lineup = team === 'home' ? homeLineup : awayLineup
@@ -62,26 +72,56 @@ export default function MatchTacticalViewPage() {
     [homeLineup, awayLineup]
   )
 
-  // Load tactical positions or fallback to generating from real lineup
+  // Load tactical positions
   const loadTacticalData = useCallback(async () => {
     if (!match) return
 
-    // 1. Try to load custom saved positions for this team
-    const customPositions = await loadPositions()
-    if (customPositions && customPositions.length > 0) {
-      setPlayers(customPositions)
-      return
+    // 1. Fetch home positions
+    const { starters: homeStarters, formation: homeFormation } = getStartersForTeam('home')
+    const customHome = await loadHomePositions()
+    let homeTactical: TacticalPlayer[] = []
+    if (customHome && customHome.length > 0) {
+      homeTactical = customHome.map(p => ({ ...p, team: 'home' as const }))
+    } else if (homeStarters.length > 0) {
+      homeTactical = generateTacticalPositions(homeStarters, homeFormation, true).map((p, i) => {
+        const rawPos = homeStarters[i]?.positionSpecific || homeStarters[i]?.position
+        const isGK = Boolean(
+          homeStarters[i]?.is_goalkeeper ||
+          String(rawPos).toUpperCase().includes('GK') ||
+          String(rawPos).toUpperCase().includes('GR') ||
+          String(p.id).includes('gk')
+        )
+        return { ...p, team: 'home' as const, isGK }
+      })
     }
 
-    // 2. Generate positions from real submitted lineup
-    const { starters, formation } = getStartersForTeam(activeTeam)
-    if (starters.length > 0) {
-      const generated = generateTacticalPositions(starters, formation, activeTeam === 'home')
-      setPlayers(generated)
-    } else {
-      setPlayers([])
+    // 2. Fetch away positions
+    const { starters: awayStarters, formation: awayFormation } = getStartersForTeam('away')
+    const customAway = await loadAwayPositions()
+    let awayTactical: TacticalPlayer[] = []
+    if (customAway && customAway.length > 0) {
+      awayTactical = customAway.map(p => ({ ...p, team: 'away' as const }))
+    } else if (awayStarters.length > 0) {
+      awayTactical = generateTacticalPositions(awayStarters, awayFormation, false).map((p, i) => {
+        const rawPos = awayStarters[i]?.positionSpecific || awayStarters[i]?.position
+        const isGK = Boolean(
+          awayStarters[i]?.is_goalkeeper ||
+          String(rawPos).toUpperCase().includes('GK') ||
+          String(rawPos).toUpperCase().includes('GR') ||
+          String(p.id).includes('gk')
+        )
+        return { ...p, team: 'away' as const, isGK }
+      })
     }
-  }, [match, loadPositions, getStartersForTeam, activeTeam])
+
+    if (activeTeam === 'home') {
+      setPlayers(homeTactical)
+    } else if (activeTeam === 'away') {
+      setPlayers(awayTactical)
+    } else {
+      setPlayers([...homeTactical, ...awayTactical])
+    }
+  }, [match, loadHomePositions, loadAwayPositions, getStartersForTeam, activeTeam])
 
   useEffect(() => {
     loadTacticalData()
@@ -92,27 +132,56 @@ export default function MatchTacticalViewPage() {
   }, [])
 
   const handleSave = async () => {
-    if (!currentClubId) return
-    const res = await savePositions(players)
-    if (res?.conflict) {
-      const message =
-        'Existe uma versão mais recente no servidor. Sobrescrever alterações ou carregar do servidor?'
-      if (window.confirm(message)) {
-        await savePositions(players, { force: true })
-      } else {
-        await loadTacticalData()
-        toast.info('Versão do servidor recarregada.')
+    try {
+      const homePlayersToSave = players.filter(p => p.team === 'home' || !p.team)
+      const awayPlayersToSave = players.filter(p => p.team === 'away')
+
+      if (homeClubId && (activeTeam === 'both' || activeTeam === 'home') && homePlayersToSave.length > 0) {
+        await saveHomePositions(homePlayersToSave)
       }
+      if (awayClubId && (activeTeam === 'both' || activeTeam === 'away') && awayPlayersToSave.length > 0) {
+        await saveAwayPositions(awayPlayersToSave)
+      }
+      toast.success('Posições táticas guardadas com sucesso!')
+    } catch (err: any) {
+      toast.error('Erro ao guardar posições: ' + (err?.message || String(err)))
     }
   }
 
   const handleReset = () => {
-    const { starters, formation } = getStartersForTeam(activeTeam)
-    if (starters.length > 0) {
-      const generated = generateTacticalPositions(starters, formation, activeTeam === 'home')
-      setPlayers(generated)
-      toast.info('Posições reiniciadas para a formação padrão.')
+    const { starters: homeStarters, formation: homeFormation } = getStartersForTeam('home')
+    const { starters: awayStarters, formation: awayFormation } = getStartersForTeam('away')
+
+    const homeTactical = generateTacticalPositions(homeStarters, homeFormation, true).map((p, i) => {
+      const rawPos = homeStarters[i]?.positionSpecific || homeStarters[i]?.position
+      const isGK = Boolean(
+        homeStarters[i]?.is_goalkeeper ||
+        String(rawPos).toUpperCase().includes('GK') ||
+        String(rawPos).toUpperCase().includes('GR') ||
+        String(p.id).includes('gk')
+      )
+      return { ...p, team: 'home' as const, isGK }
+    })
+
+    const awayTactical = generateTacticalPositions(awayStarters, awayFormation, false).map((p, i) => {
+      const rawPos = awayStarters[i]?.positionSpecific || awayStarters[i]?.position
+      const isGK = Boolean(
+        awayStarters[i]?.is_goalkeeper ||
+        String(rawPos).toUpperCase().includes('GK') ||
+        String(rawPos).toUpperCase().includes('GR') ||
+        String(p.id).includes('gk')
+      )
+      return { ...p, team: 'away' as const, isGK }
+    })
+
+    if (activeTeam === 'home') {
+      setPlayers(homeTactical)
+    } else if (activeTeam === 'away') {
+      setPlayers(awayTactical)
+    } else {
+      setPlayers([...homeTactical, ...awayTactical])
     }
+    toast.info('Posições reiniciadas para as formações regulamentares.')
   }
 
   // Loading state
@@ -178,7 +247,8 @@ export default function MatchTacticalViewPage() {
     )
   }
 
-  const activeLineupInfo = getStartersForTeam(activeTeam)
+  const homeInfo = getStartersForTeam('home')
+  const awayInfo = getStartersForTeam('away')
 
   const pageContent = (
     <div className="mx-auto max-w-5xl space-y-lg px-lg py-xl">
@@ -196,7 +266,7 @@ export default function MatchTacticalViewPage() {
             <ArrowLeft className="h-4 w-4" />
             Voltar à partida
           </Link>
-          <h1 className="text-2xl font-bold text-on-surface">Prancheta Tática Visual</h1>
+          <h1 className="text-2xl font-bold text-on-surface">Quadro Tático Interativo</h1>
           <p className="text-sm text-on-surface-variant">
             {match.home_club_name} vs {match.away_club_name}
           </p>
@@ -232,7 +302,14 @@ export default function MatchTacticalViewPage() {
       {/* Team Selection Tabs */}
       <Card variant="flat" padding="md">
         <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-sm">
+          <div className="flex flex-wrap items-center gap-sm">
+            <Button
+              variant={activeTeam === 'both' ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setActiveTeam('both')}
+            >
+              Campo Completo (Ambas)
+            </Button>
             <Button
               variant={activeTeam === 'home' ? 'primary' : 'secondary'}
               size="sm"
@@ -249,12 +326,15 @@ export default function MatchTacticalViewPage() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-md">
-            <span className="text-sm font-medium text-on-surface-variant">
-              Formação: <Badge variant="secondary">{activeLineupInfo.formation}</Badge>
+          <div className="flex flex-wrap items-center gap-md text-xs sm:text-sm text-on-surface-variant font-medium">
+            <span>
+              {match.home_club_name}: <Badge variant="secondary">{homeInfo.formation}</Badge>
             </span>
-            <span className="text-sm font-medium text-on-surface-variant">
-              Titulares: <Badge variant="default">{activeLineupInfo.starters.length}</Badge>
+            <span>
+              {match.away_club_name}: <Badge variant="secondary">{awayInfo.formation}</Badge>
+            </span>
+            <span>
+              Em campo: <Badge variant="default">{players.length}</Badge>
             </span>
           </div>
         </div>
@@ -271,7 +351,7 @@ export default function MatchTacticalViewPage() {
             <Users className="h-12 w-12 text-on-surface-variant/30" />
             <h3 className="text-lg font-semibold text-on-surface">Escalação ainda não definida</h3>
             <p className="max-w-sm text-sm text-on-surface-variant">
-              A equipa {activeTeam === 'home' ? match.home_club_name : match.away_club_name} ainda não submeteu a escalação dos 11 titulares para este jogo.
+              Nenhuma equipa submeteu ainda a escalação dos titulares para este jogo.
             </p>
           </div>
         </Card>

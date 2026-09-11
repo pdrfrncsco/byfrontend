@@ -7,6 +7,8 @@ export interface TacticalPlayer {
   name?: string
   x: number // normalized 0..1
   y: number
+  team?: 'home' | 'away'
+  isGK?: boolean
 }
 
 export interface TacticalFieldProps {
