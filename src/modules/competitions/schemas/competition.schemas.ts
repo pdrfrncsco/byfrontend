@@ -23,7 +23,12 @@ export const createCompetitionSchema = z.object({
   season: z
     .string({ required_error: 'A época é obrigatória.' })
     .regex(/^\d{4}(-\d{4})?$/, 'Formato inválido. Use AAAA ou AAAA-AAAA (ex: 2024 ou 2024-2025).'),
-  status: z.enum(['draft', 'active', 'completed']).default('draft').optional(),
+  status: z.enum(['draft', 'active', 'completed', 'inactive']).default('draft').optional(),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+  registration_start_date: z.string().nullable().optional(),
+  registration_end_date: z.string().nullable().optional(),
+  description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').nullable().optional(),
   config: competitionConfigSchema.optional(),
 }).superRefine((data, ctx) => {
   if (data.config && data.config.format !== data.competition_type) {
@@ -31,6 +36,20 @@ export const createCompetitionSchema = z.object({
       code: z.ZodIssueCode.custom,
       message: 'O formato da configuração deve corresponder ao tipo de competição selecionado.',
       path: ['config', 'format']
+    })
+  }
+  if (data.start_date && data.end_date && data.start_date > data.end_date) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'A data de conclusão não pode ser anterior à data de início.',
+      path: ['end_date']
+    })
+  }
+  if (data.registration_start_date && data.registration_end_date && data.registration_start_date > data.registration_end_date) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'A data de fim de inscrições não pode ser anterior à data de início.',
+      path: ['registration_end_date']
     })
   }
 })
@@ -46,7 +65,12 @@ export const updateCompetitionSchema = z.object({
     .string()
     .regex(/^\d{4}(-\d{4})?$/, 'Formato inválido. Use AAAA ou AAAA-AAAA (ex: 2024 ou 2024-2025).')
     .optional(),
-  status: z.enum(['draft', 'active', 'completed']).optional(),
+  status: z.enum(['draft', 'active', 'completed', 'inactive']).optional(),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+  registration_start_date: z.string().nullable().optional(),
+  registration_end_date: z.string().nullable().optional(),
+  description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').nullable().optional(),
   config: competitionConfigSchema.optional(),
 }).superRefine((data, ctx) => {
   if (data.competition_type && data.config && data.config.format !== data.competition_type) {
@@ -56,7 +80,22 @@ export const updateCompetitionSchema = z.object({
       path: ['config', 'format']
     })
   }
+  if (data.start_date && data.end_date && data.start_date > data.end_date) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'A data de conclusão não pode ser anterior à data de início.',
+      path: ['end_date']
+    })
+  }
+  if (data.registration_start_date && data.registration_end_date && data.registration_start_date > data.registration_end_date) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'A data de fim de inscrições não pode ser anterior à data de início.',
+      path: ['registration_end_date']
+    })
+  }
 })
+
 
 // Aliases para API validation
 export const CompetitionCreateSchema = createCompetitionSchema

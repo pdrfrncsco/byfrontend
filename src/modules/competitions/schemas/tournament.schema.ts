@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { baseSportConfigSchema } from './base-sport-config.schema'
 
 export const knockoutRoundSchema = z.enum([
   'final',
@@ -22,6 +23,7 @@ export const tournamentConfigSchema = z.object({
     extraTimeOnDraw: z.boolean().default(true),
     penaltiesOnDraw: z.boolean().default(true),
   }),
-})
+}).merge(baseSportConfigSchema)
+
 
 export type TournamentConfigFormData = z.infer<typeof tournamentConfigSchema>

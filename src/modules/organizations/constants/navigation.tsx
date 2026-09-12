@@ -53,8 +53,8 @@ const ORGANIZATION_SIDEBAR_LINKS: Record<OrganizationNavKey, Omit<OrganizationSi
     icon: <UserCheck className="h-4 w-4" />,
   },
   competitions: {
-    label: 'Competições',
-    href: ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS,
+    label: 'Gestão de competições',
+    href: ROUTES.DASHBOARD_COMPETITION,
     icon: <Trophy className="h-4 w-4" />,
   },
   members: {

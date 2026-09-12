@@ -43,7 +43,7 @@ import type {
 /**
  * Validates data before sending to API
  */
-function validateData<T>(schema: z.ZodSchema<T>, data: unknown): T {
+function validateData<T>(schema: z.ZodType<T, any, any>, data: unknown): T {
   const result = schema.safeParse(data)
   if (!result.success) {
     const details = result.error.errors.map((err) => ({

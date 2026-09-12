@@ -258,6 +258,10 @@ export function dashboardRouteElements() {
         path={organizationRoutes.lineups}
         element={<ProtectedRoute requiredRoles={['owner', 'admin']}><Suspense fallback={<RouteFallback />}><OrganizationLineupSubmissionsPage /></Suspense></ProtectedRoute>}
       />
+      <Route
+        path={ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS}
+        element={<Navigate to={ROUTES.DASHBOARD_COMPETITION} replace />}
+      />
 
       {/* Competition admin list */}
       <Route

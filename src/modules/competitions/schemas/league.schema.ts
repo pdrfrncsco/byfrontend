@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { baseSportConfigSchema } from './base-sport-config.schema'
 
 export const tiebreakerRuleSchema = z.enum([
   'head_to_head_points',
@@ -26,6 +27,7 @@ export const leagueConfigSchema = z.object({
   ]),
   relegationZone: z.number().int().nonnegative().default(0),
   promotionZone: z.number().int().nonnegative().default(0),
-})
+}).merge(baseSportConfigSchema)
+
 
 export type LeagueConfigFormData = z.infer<typeof leagueConfigSchema>

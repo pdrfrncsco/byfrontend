@@ -376,7 +376,7 @@ export default function OrganizationDashboardPage() {
               <span>Competições Organizacionais</span>
             </CardTitle>
             <Button variant="link" size="sm" asChild className="text-xs">
-              <Link to={ROUTES.DASHBOARD_ORGANIZATION_COMPETITIONS}>
+              <Link to={ROUTES.DASHBOARD_COMPETITION}>
                 <span>Ver todas</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>

@@ -2,7 +2,7 @@ import { CompetitionFormat, CompetitionConfig, CompetitionPhase } from './compet
 import { MatchStatus, LineupPlayer, MatchStats, EventType } from './match.types'
 
 export type CompetitionType = 'league' | 'tournament' | 'cup'
-export type CompetitionStatus = 'draft' | 'active' | 'completed'
+export type CompetitionStatus = 'draft' | 'active' | 'completed' | 'inactive'
 
 export interface Competition {
   id: string
@@ -13,6 +13,11 @@ export interface Competition {
   season: string
   status: CompetitionStatus
   status_label?: string
+  start_date?: string | null
+  end_date?: string | null
+  registration_start_date?: string | null
+  registration_end_date?: string | null
+  description?: string | null
   tenant?: string
   created_at?: string
   updated_at?: string
@@ -29,6 +34,12 @@ export interface CompetitionCreateData {
   competition_type: CompetitionType
   season: string
   status?: CompetitionStatus
+  start_date?: string | null
+  end_date?: string | null
+  registration_start_date?: string | null
+  registration_end_date?: string | null
+  description?: string | null
+  config?: CompetitionConfig
 }
 
 export interface CompetitionUpdateData {
@@ -36,6 +47,12 @@ export interface CompetitionUpdateData {
   competition_type?: CompetitionType
   season?: string
   status?: CompetitionStatus
+  start_date?: string | null
+  end_date?: string | null
+  registration_start_date?: string | null
+  registration_end_date?: string | null
+  description?: string | null
+  config?: CompetitionConfig
 }
 
 

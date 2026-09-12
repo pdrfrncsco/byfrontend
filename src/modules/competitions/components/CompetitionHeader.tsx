@@ -7,7 +7,9 @@ const STATUS_CONFIG: Record<CompetitionStatus, { label: string; variant: 'defaul
   draft: { label: 'Rascunho', variant: 'default' },
   active: { label: 'Em Curso', variant: 'success' },
   completed: { label: 'Concluída', variant: 'secondary' },
+  inactive: { label: 'Inativa', variant: 'secondary' },
 }
+
 
 const TYPE_LABELS: Record<CompetitionType, string> = {
   league: 'Campeonato',

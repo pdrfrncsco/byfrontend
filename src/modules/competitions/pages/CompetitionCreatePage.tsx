@@ -62,6 +62,11 @@ export function CompetitionCreatePage() {
     defaultValues: {
       status: 'draft',
       competition_type: 'league',
+      start_date: '',
+      end_date: '',
+      registration_start_date: '',
+      registration_end_date: '',
+      description: '',
       config: {
         format: 'league',
         rounds: 18,
@@ -79,6 +84,11 @@ export function CompetitionCreatePage() {
         ],
         relegationZone: 2,
         promotionZone: 2,
+        matchDuration: 90,
+        extraTimeMinutes: 30,
+        maxSubstitutes: 5,
+        yellowCardsPerSuspension: 3,
+        allowPublicRegistration: true,
       },
     },
   })
@@ -90,7 +100,16 @@ export function CompetitionCreatePage() {
   const goNext = async () => {
     let isValid = false
     if (step === 'basics') {
-      isValid = await trigger(['name', 'season', 'status'])
+      isValid = await trigger([
+        'name',
+        'season',
+        'status',
+        'start_date',
+        'end_date',
+        'registration_start_date',
+        'registration_end_date',
+        'description',
+      ])
     } else if (step === 'format') {
       isValid = await trigger('competition_type')
     } else if (step === 'format-config') {
@@ -111,12 +130,21 @@ export function CompetitionCreatePage() {
   }
 
   const onSubmit = (data: CreateCompetitionFormData) => {
-    createCompetition(data, {
+    const payload: CreateCompetitionFormData = {
+      ...data,
+      start_date: data.start_date ? data.start_date : null,
+      end_date: data.end_date ? data.end_date : null,
+      registration_start_date: data.registration_start_date ? data.registration_start_date : null,
+      registration_end_date: data.registration_end_date ? data.registration_end_date : null,
+      description: data.description || '',
+    }
+    createCompetition(payload, {
       onSuccess: (competition) => {
         navigate(competitionRoutes.adminDashboard(competition.id))
       },
     })
   }
+
 
   return (
     <DashboardLayout
@@ -167,7 +195,7 @@ export function CompetitionCreatePage() {
         {step === 'basics' && (
           <Card variant="flat" padding="none">
             <CardHeader>
-              <CardTitle>Dados Básicos</CardTitle>
+              <CardTitle>Dados Básicos & Ciclo de Vida</CardTitle>
             </CardHeader>
             <CardContent className="space-y-lg">
               <FormField
@@ -184,27 +212,114 @@ export function CompetitionCreatePage() {
                 />
               </FormField>
 
-              <FormField
-                label="Época"
-                htmlFor="comp-season"
-                error={errors.season?.message}
-                required
-                hint="Formato: AAAA ou AAAA-AAAA (ex: 2025 ou 2025-2026)"
-              >
-                <Input
-                  id="comp-season"
-                  placeholder="ex: 2025-2026"
-                  aria-invalid={!!errors.season}
-                  {...register('season')}
-                />
-              </FormField>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <FormField
+                  label="Época"
+                  htmlFor="comp-season"
+                  error={errors.season?.message}
+                  required
+                  hint="Formato: AAAA ou AAAA-AAAA (ex: 2025 ou 2025-2026)"
+                >
+                  <Input
+                    id="comp-season"
+                    placeholder="ex: 2025-2026"
+                    aria-invalid={!!errors.season}
+                    {...register('season')}
+                  />
+                </FormField>
 
-              <FormField label="Estado Inicial" htmlFor="comp-status" error={errors.status?.message}>
-                <NativeSelect id="comp-status" {...register('status')}>
-                  <option value="draft">Rascunho — visível apenas para admins</option>
-                  <option value="active">Ativa — visível publicamente</option>
-                </NativeSelect>
-              </FormField>
+                <FormField label="Estado Inicial" htmlFor="comp-status" error={errors.status?.message}>
+                  <NativeSelect id="comp-status" {...register('status')}>
+                    <option value="draft">Rascunho — Em planeamento (visível apenas para admins)</option>
+                    <option value="active">Ativa — Em curso (visível publicamente no portal)</option>
+                    <option value="inactive">Inativa — Pausada ou suspensa temporariamente</option>
+                  </NativeSelect>
+                </FormField>
+              </div>
+
+              {/* Calendário da Prova */}
+              <div className="border-t border-outline-variant/15 pt-md">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-sm">
+                  Datas Previstas da Competição
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                  <FormField
+                    label="Data Prevista de Início"
+                    htmlFor="comp-start-date"
+                    error={errors.start_date?.message}
+                    hint="Início da 1ª jornada ou eliminatória"
+                  >
+                    <Input
+                      id="comp-start-date"
+                      type="date"
+                      {...register('start_date')}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Data Prevista de Conclusão"
+                    htmlFor="comp-end-date"
+                    error={errors.end_date?.message}
+                    hint="Grande final ou encerramento"
+                  >
+                    <Input
+                      id="comp-end-date"
+                      type="date"
+                      {...register('end_date')}
+                    />
+                  </FormField>
+                </div>
+              </div>
+
+              {/* Janela de Inscrições */}
+              <div className="border-t border-outline-variant/15 pt-md">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-sm">
+                  Janela de Inscrição de Clubes
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                  <FormField
+                    label="Abertura das Inscrições"
+                    htmlFor="comp-reg-start"
+                    error={errors.registration_start_date?.message}
+                  >
+                    <Input
+                      id="comp-reg-start"
+                      type="date"
+                      {...register('registration_start_date')}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Encerramento das Inscrições"
+                    htmlFor="comp-reg-end"
+                    error={errors.registration_end_date?.message}
+                  >
+                    <Input
+                      id="comp-reg-end"
+                      type="date"
+                      {...register('registration_end_date')}
+                    />
+                  </FormField>
+                </div>
+              </div>
+
+              {/* Descrição e Notas Técnicas */}
+              <div className="border-t border-outline-variant/15 pt-md">
+                <FormField
+                  label="Descrição / Notas Regulamentares"
+                  htmlFor="comp-description"
+                  error={errors.description?.message}
+                  hint="Resumo sobre a competição, objetivos desportivos ou normas orientadoras."
+                >
+                  <textarea
+                    id="comp-description"
+                    rows={3}
+                    className="w-full rounded-md border border-outline bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    placeholder="Ex: Prova oficial sub-20 com participação de clubes federados..."
+                    {...register('description')}
+                  />
+                </FormField>
+              </div>
 
               <div className="flex items-center justify-end gap-sm pt-sm">
                 <Button type="button" variant="primary" onClick={goNext} id="step-basics-next">
@@ -684,6 +799,82 @@ export function CompetitionCreatePage() {
                 </div>
               )}
 
+              {/* Regras Gerais de Jogo & Gestão Desportiva */}
+              <div className="border-t border-outline-variant/20 pt-md mt-md">
+                <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-sm">
+                  Regras de Jogo & Disciplina
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+                  <FormField
+                    label="Duração do Jogo (min)"
+                    htmlFor="config-match-duration"
+                    hint="Tempo regulamentar (ex: 90)"
+                  >
+                    <Input
+                      id="config-match-duration"
+                      type="number"
+                      min={10}
+                      max={180}
+                      {...register('config.matchDuration', { valueAsNumber: true })}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Substituições Permitidas"
+                    htmlFor="config-max-subs"
+                    hint="Máx. por equipa (ex: 5)"
+                  >
+                    <Input
+                      id="config-max-subs"
+                      type="number"
+                      min={1}
+                      max={15}
+                      {...register('config.maxSubstitutes', { valueAsNumber: true })}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Amarelos para Suspensão"
+                    htmlFor="config-yellow-susp"
+                    hint="Cartões acumulados (ex: 3)"
+                  >
+                    <Input
+                      id="config-yellow-susp"
+                      type="number"
+                      min={1}
+                      max={10}
+                      {...register('config.yellowCardsPerSuspension', { valueAsNumber: true })}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Limite Máximo de Clubes"
+                    htmlFor="config-max-clubs"
+                    hint="Deixe vazio para sem limite"
+                  >
+                    <Input
+                      id="config-max-clubs"
+                      type="number"
+                      min={2}
+                      placeholder="Sem limite"
+                      {...register('config.maxClubs', { valueAsNumber: true })}
+                    />
+                  </FormField>
+
+                  <div className="md:col-span-2 flex items-center gap-sm mt-md">
+                    <input
+                      id="config-allow-public-reg"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-outline-variant accent-primary"
+                      {...register('config.allowPublicRegistration')}
+                    />
+                    <label htmlFor="config-allow-public-reg" className="text-sm text-on-surface">
+                      Permitir pedidos de inscrição de clubes através do portal online
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between gap-sm pt-sm">
                 <Button type="button" variant="secondary" onClick={goPrev}>
                   <ChevronLeft className="mr-xs h-4 w-4" /> Anterior
@@ -723,9 +914,22 @@ export function CompetitionCreatePage() {
                   <div>
                     <dt className="text-on-surface-variant text-xs">Estado Inicial</dt>
                     <dd className="font-medium text-on-surface mt-xs">
-                      {watch('status') === 'draft' ? 'Rascunho' : 'Ativa'}
+                      {watch('status') === 'active'
+                        ? 'Ativa'
+                        : watch('status') === 'inactive'
+                        ? 'Inativa'
+                        : 'Rascunho'}
                     </dd>
                   </div>
+
+                  <div className="col-span-2 border-t border-outline-variant/10 pt-sm">
+                    <dt className="text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-xs">Datas Previstas</dt>
+                    <dd className="grid grid-cols-2 gap-xs text-xs text-on-surface-variant">
+                      <div>Competição: <strong className="text-on-surface">{watch('start_date') || '—'} a {watch('end_date') || '—'}</strong></div>
+                      <div>Inscrições: <strong className="text-on-surface">{watch('registration_start_date') || '—'} a {watch('registration_end_date') || '—'}</strong></div>
+                    </dd>
+                  </div>
+
                   {competitionType === 'league' && configVal && (
                     <div className="col-span-2 border-t border-outline-variant/10 pt-md mt-xs">
                       <dt className="text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-xs">Configurações da Liga</dt>
@@ -759,6 +963,18 @@ export function CompetitionCreatePage() {
                         <div>Eliminatórias a Duas Mãos: <strong className="text-on-surface">{(configVal as CupConfig).twoLegs ? 'Sim' : 'Não'}</strong></div>
                         <div>Final a Duas Mãos: <strong className="text-on-surface">{(configVal as CupConfig).twoLegsFinal ? 'Sim' : 'Não'}</strong></div>
                         <div>Byes na 1ª Ronda: <strong className="text-on-surface">{(configVal as CupConfig).byeAllowed ? 'Sim' : 'Não'}</strong></div>
+                      </dd>
+                    </div>
+                  )}
+
+                  {configVal && (
+                    <div className="col-span-2 border-t border-outline-variant/10 pt-sm">
+                      <dt className="text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-xs">Regras de Jogo & Vagas</dt>
+                      <dd className="grid grid-cols-2 gap-xs text-xs text-on-surface-variant">
+                        <div>Duração: <strong className="text-on-surface">{configVal.matchDuration ?? 90} min</strong></div>
+                        <div>Substituições: <strong className="text-on-surface">{configVal.maxSubstitutes ?? 5} jogadores</strong></div>
+                        <div>Suspensão: <strong className="text-on-surface">{configVal.yellowCardsPerSuspension ?? 3} amarelos</strong></div>
+                        <div>Inscrições Online: <strong className="text-on-surface">{configVal.allowPublicRegistration ? 'Autorizadas' : 'Fechadas'}</strong></div>
                       </dd>
                     </div>
                   )}

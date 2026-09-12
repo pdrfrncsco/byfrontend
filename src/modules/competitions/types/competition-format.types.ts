@@ -14,7 +14,19 @@ export type TiebreakerRule =
   | 'fair_play'
   | 'random_draw';
 
-export interface LeagueConfig {
+export interface BaseCompetitionConfig {
+  matchDuration?: number;           // minutos por jogo (default 90)
+  extraTimeMinutes?: number;        // minutos de prolongamento (default 30)
+  maxSubstitutes?: number;          // número de substituições (default 5)
+  extraTimeSubstitutions?: boolean; // substituição adicional no prolongamento (default true)
+  yellowCardsPerSuspension?: number;// amarelos para suspensão (default 3)
+  redCardSuspensionMatches?: number;// jogos de suspensão por vermelho direto (default 1)
+  maxClubs?: number;                // limite de clubes inscritos
+  maxPlayersPerSquad?: number;      // limite de atletas por ficha (default 25)
+  allowPublicRegistration?: boolean;// autorizar pedidos de inscrição online pelo clube
+}
+
+export interface LeagueConfig extends BaseCompetitionConfig {
   format: 'league';
   rounds: number;              // número de jornadas
   homeAndAway: boolean;        // ida e volta
@@ -30,7 +42,7 @@ export type KnockoutRound = 'final' | 'semi-final' | 'quarter-final' | 'round-of
 export type CupRound = 'final' | 'semi-final' | 'quarter-final' | 'round-of-16' | 'round-of-32' | 'round-of-64';
 
 // Torneio — fase de grupos + eliminatórias
-export interface TournamentConfig {
+export interface TournamentConfig extends BaseCompetitionConfig {
   format: 'tournament';
   groupStage: {
     numberOfGroups: number;
@@ -47,7 +59,7 @@ export interface TournamentConfig {
 }
 
 // Taça/Copa — eliminação directa
-export interface CupConfig {
+export interface CupConfig extends BaseCompetitionConfig {
   format: 'cup';
   seeded: boolean;              // sorteio com cabeças-de-série
   twoLegs: boolean;             // ida e volta (excepto final)
@@ -59,6 +71,7 @@ export interface CupConfig {
 }
 
 export type CompetitionConfig = LeagueConfig | TournamentConfig | CupConfig;
+
 
 export interface CompetitionPhase {
   id: string;
