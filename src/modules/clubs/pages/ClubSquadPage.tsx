@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { resolveMediaUrl } from '@/lib/media'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import {
   useClubMe,
   useClubKpis,
@@ -200,7 +200,7 @@ export default function ClubSquadPage() {
     })
   }, [players, searchQuery, sectorFilter, statusFilter])
 
-  const sidebarLinks = getClubSidebarLinks()
+  const sidebarSections = useMemo(() => getClubSidebarSections(), [])
 
   if (clubLoading || !club) {
     return (
@@ -208,7 +208,7 @@ export default function ClubSquadPage() {
         title="Plantel"
         subtitle="Carregando plantel do clube..."
         dashboardType="club"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
           <Skeleton className="h-36 w-full rounded-[2rem]" />
@@ -231,7 +231,7 @@ export default function ClubSquadPage() {
       title={`Plantel • ${club.name}`}
       subtitle="Veja o plantel e equipa técnica do clube, organizados e prontos para consultar."
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <div className="flex items-center gap-sm">
           <Button asChild variant="secondary" size="sm">

@@ -171,6 +171,8 @@ export interface Match {
 
   // Legacy fields for backward compatibility
   competition: string;
+  competition_name?: string | null;
+  competitionName?: string | null;
   round_number: number;
   round_name?: string | null;
   phase?: string | null;

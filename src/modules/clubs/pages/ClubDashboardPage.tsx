@@ -1,20 +1,43 @@
+import { useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
+  ArrowRightLeft,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  FileText,
+  Flame,
+  ListChecks,
+  Plus,
+  Settings,
   Sparkles,
   Trophy,
+  UserCheck,
+  UserCircle,
+  UserPlus,
   Users,
 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
-import { ClubKpisCard } from '@/modules/clubs/components/ClubKpisCard'
 import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
-import { useClubDocuments, useClubKpis, useClubMe, useClubMembers, useClubSponsors, useTransfers } from '@/modules/clubs/hooks/useClubs'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
+import {
+  useClubMe,
+  useClubMeCompetitions,
+  useClubMeMatches,
+  useClubMembers,
+  useClubSquad,
+  useTransfers,
+} from '@/modules/clubs/hooks/useClubs'
+import { useClubPlayerRegistrationRequests } from '@/modules/players/hooks'
+import { POSITION_COLOR } from '@/modules/players/constants'
 
-function formatRelative(dateString?: string | null): string {
+function formatRelativeTime(dateString?: string | null): string {
   if (!dateString) return 'Recentemente'
   const date = new Date(dateString)
   if (Number.isNaN(date.getTime())) return 'Recentemente'
@@ -32,360 +55,598 @@ export default function ClubDashboardPage() {
   const { data: club, isLoading: clubLoading } = useClubMe()
   const slug = club?.slug
 
-  const { data: kpis, isLoading: kpisLoading } = useClubKpis(slug)
-  const { data: members, isLoading: membersLoading } = useClubMembers(slug)
-  const { data: documents } = useClubDocuments(slug)
-  const { data: sponsors } = useClubSponsors(slug)
-  const { data: transfers, isLoading: transfersLoading } = useTransfers({ page_size: 5 })
+  const { data: squad = [], isLoading: squadLoading } = useClubSquad(slug)
+  const { data: members = [], isLoading: membersLoading } = useClubMembers(slug)
+  const { data: competitions = [], isLoading: competitionsLoading } = useClubMeCompetitions()
+  const { data: matches = [], isLoading: matchesLoading } = useClubMeMatches()
+  const { data: transfersData, isLoading: transfersLoading } = useTransfers({ page_size: 5 })
+  const { data: playerRequests = [] } = useClubPlayerRegistrationRequests(club?.id)
 
-  const sidebarLinks = getClubSidebarLinks()
+  const pendingTransfers = useMemo(() => {
+    return (transfersData?.results ?? []).filter((t: any) =>
+      ['pending', 'in_progress', 'draft'].includes(t.status?.toLowerCase())
+    )
+  }, [transfersData])
 
-  const headerActions = (
-    <Button asChild variant="primary" size="sm" disabled={!club}>
-      <Link to={ROUTES.DASHBOARD_CLUB_SETTINGS}>
-        <Sparkles className="h-4 w-4" />
-        <span>Personalizar Clube</span>
-      </Link>
-    </Button>
+  const pendingRequests = useMemo(() => {
+    return playerRequests.filter((r) => r.status?.toLowerCase() === 'pending')
+  }, [playerRequests])
+
+  const sidebarSections = useMemo(
+    () =>
+      getClubSidebarSections({
+        pendingTransfers: pendingTransfers.length,
+        pendingRequests: pendingRequests.length,
+      }),
+    [pendingTransfers.length, pendingRequests.length],
   )
+
+  // Next scheduled match
+  const nextMatch = useMemo(() => {
+    const upcoming = matches
+      .filter((m: any) => m.status === 'scheduled' || !m.status)
+      .sort((a: any, b: any) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime())
+    return upcoming[0] || null
+  }, [matches])
 
   if (clubLoading) {
     return (
       <DashboardLayout
         title="Portal do Clube"
-        subtitle="Carregando consola de gestão..."
+        subtitle="A carregar painel operacional..."
         dashboardType="club"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
-          <Skeleton className="h-52 w-full rounded-[2rem]" />
-          <div className="grid gap-md md:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-28 w-full rounded-2xl" />
+          <Skeleton className="h-32 w-full rounded-2xl" />
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
             ))}
+          </div>
+          <div className="grid gap-lg lg:grid-cols-3">
+            <Skeleton className="h-80 rounded-2xl lg:col-span-2" />
+            <Skeleton className="h-80 rounded-2xl" />
           </div>
         </div>
       </DashboardLayout>
     )
   }
 
-  // If user is authenticated but has no club membership yet, show onboarding CTA
   if (!club) {
     return (
       <DashboardLayout
         title="Portal do Clube"
-        subtitle="Ainda não tem um clube associado"
+        subtitle="Ainda não possui um clube associado"
         dashboardType="club"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
-        <div className="max-w-2xl">
-          <div className="rounded-xl border border-outline-variant bg-surface-container-low p-xl text-center">
-            <h2 className="text-headline-md font-display-lg">Bem-vindo(a) — configurar o seu clube</h2>
-            <p className="mt-sm text-sm text-on-surface-variant">Complete o onboarding do clube ou solicite a vinculação a uma organização para começar a gerir o seu perfil.</p>
-            <div className="mt-lg flex justify-center gap-sm">
-              <Button onClick={() => navigate(ROUTES.CLUB_ONBOARDING)}>
-                Solicitar vinculação / Onboarding
-              </Button>
-              <Button variant="secondary" onClick={() => navigate(ROUTES.DASHBOARD)}>
-                Voltar ao dashboard
-              </Button>
-            </div>
-          </div>
-        </div>
+        <EmptyState
+          icon={Building2}
+          title="Nenhum clube encontrado"
+          description="Complete o processo de onboarding ou solicite a vinculação a uma organização desportiva."
+          action={{
+            label: 'Solicitar Vinculação / Onboarding',
+            onClick: () => navigate(ROUTES.CLUB_ONBOARDING),
+          }}
+        />
       </DashboardLayout>
     )
   }
 
-  const totalMembers = members?.length ?? 0
-  const totalDocuments = documents?.length ?? 0
-  const totalSponsors = sponsors?.length ?? 0
-  const recentTransfers = transfers?.results ?? []
-  const clubInitials = (club.short_name || club.name || '?').slice(0, 2).toUpperCase()
+  const isHome = nextMatch?.home_club === club.id
+  const nextOpponent = nextMatch ? (isHome ? nextMatch.away_club_name : nextMatch.home_club_name) : null
 
   return (
     <DashboardLayout
-      title={`Portal do Clube • ${club.name}`}
-      subtitle="Consola administrativa para gestão do perfil, membros e ativos públicos do clube."
+      title={club.name}
+      subtitle="Dashboard operacional · plantel, competições e transferências"
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
-      headerActions={headerActions}
+      sidebarSections={sidebarSections}
     >
-      <div className="space-y-xl">
-        {/* Affiliation request banner */}
-        {club.affiliation_request_status === 'pending' && (
-          <div className="rounded-2xl border border-primary/20 bg-primary-container/10 p-md text-sm text-on-surface flex items-center justify-between">
-            <div>
-              <strong>Pedido de vinculação enviado</strong>
-              <div className="text-xs text-on-surface-variant">O pedido de vinculação à organização foi submetido e aguarda validação. Ser-lhe-á notificado quando for aprovado ou rejeitado.</div>
-            </div>
-            <div>
-              <Button asChild size="sm">
-                <Link to={ROUTES.DASHBOARD}>Fechar</Link>
-              </Button>
-            </div>
-          </div>
-        )}
+      <div className="space-y-lg">
+        {/* ─── 1. PAGE HEADER (PROTOTYPE DESIGN SYSTEM) ────────────────── */}
+        <div className="flex flex-col gap-md rounded-2xl border border-outline-variant/30 bg-surface-container/40 p-lg shadow-xs sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-md">
+            <ClubLogo
+              name={club.name}
+              logoUrl={club.logo_url}
+              shortName={club.short_name}
+              primaryColor={club.primary_color || '#185fa5'}
+              size="lg"
+              shape="squircle"
+              className="shadow-sm"
+            />
 
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] backdrop-blur lg:grid-cols-[1.3fr_0.7fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/20 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Gestão central do clube
-            </div>
-            <div className="flex items-start gap-md">
-              <ClubLogo
-                name={club.name}
-                logoUrl={club.logo_url}
-                shortName={club.short_name}
-                primaryColor={club.primary_color}
-                size="xl"
-                shape="squircle"
-                className="shadow-lg"
-              />
-              <div className="space-y-sm">
-                <div className="flex flex-wrap items-center gap-sm">
-                  <h1 className="font-title-lg text-3xl text-on-surface">{club.name}</h1>
-                  <Badge variant={club.status === 'active' ? 'primary' : club.status === 'suspended' ? 'danger' : 'warning'}>
-                    {club.status_label || club.status || 'active'}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-xs">
+                <h1 className="text-xl font-bold text-on-surface">{club.name}</h1>
+                <Badge
+                  variant={club.status === 'active' ? 'success' : club.status === 'suspended' ? 'danger' : 'warning'}
+                  className="text-xs"
+                >
+                  {club.status_label || club.status || 'Ativo'}
+                </Badge>
+                {club.is_verified && (
+                  <Badge variant="secondary" className="text-xs">
+                    Verificado
                   </Badge>
-                  {club.is_verified && <Badge variant="secondary">Verificado</Badge>}
-                </div>
-                <p className="max-w-2xl text-on-surface-variant">
-                  {club.description || 'Acompanhe os dados do clube, publique ativos e mantenha a presença pública sempre atualizada.'}
-                </p>
-                <div className="flex flex-wrap gap-sm text-sm text-on-surface-variant">
-                  <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    {[club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível'}
-                  </span>
-                  <span className="rounded-full border border-outline-variant/20 bg-surface-container-high px-md py-1.5">
-                    Última atualização: {formatRelative(club.updated_at || club.created_at)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Atalhos</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link to={ROUTES.DASHBOARD_CLUB_SETTINGS}>
-                  <span>Editar perfil</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link to={ROUTES.DASHBOARD_CLUB_MEMBERS}>
-                  <span>Gerir membros</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link to={ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS}>
-                  <span>Pedidos de vínculo</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}>
-                  <span>Registar jogador</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full justify-between">
-                <Link to={`/clubs/${club.slug}`}>
-                  <span>Ver perfil público</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-
-              {/* Show a request-affiliation shortcut when the club is not linked to an organization */}
-              {(!club.tenant_name && !club.tenant_slug) && (
-                <Button asChild variant="outline" className="w-full justify-between">
-                  <Link to={ROUTES.CLUB_ONBOARDING}>
-                    <span>Solicitar vinculação</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </section>
-
-        {kpisLoading || !kpis ? (
-          <div className="grid gap-md md:grid-cols-2 xl:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-32 rounded-2xl" />
-            ))}
-          </div>
-        ) : (
-          <ClubKpisCard kpis={kpis} />
-        )}
-
-        <div className="grid gap-lg xl:grid-cols-[1.2fr_0.8fr]">
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Membros recentes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              {membersLoading ? (
-                <div className="space-y-sm">
-                  <Skeleton className="h-14 rounded-xl" />
-                  <Skeleton className="h-14 rounded-xl" />
-                  <Skeleton className="h-14 rounded-xl" />
-                </div>
-              ) : totalMembers === 0 ? (
-                <EmptyState
-                  title="Sem membros"
-                  description="Adicione os primeiros membros para estruturar a gestão do clube."
-                  icon={Users}
-                  action={{
-                    label: 'Gerir membros',
-                    onClick: () => navigate(ROUTES.DASHBOARD_CLUB_MEMBERS),
-                  }}
-                />
-              ) : (
-                members?.slice(0, 5).map((member) => (
-                  <div key={member.id} className="flex items-center justify-between rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                    <div>
-                      <p className="font-semibold text-on-surface">{member.display_name || member.full_name || 'Membro'}</p>
-                      <p className="text-sm text-on-surface-variant">{member.role_label || member.role || 'Membro'}</p>
-                    </div>
-                    <Badge variant={member.is_active ? 'primary' : 'outline'}>
-                      {member.is_active ? 'Ativo' : 'Inativo'}
-                    </Badge>
-                  </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
-
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Atividade recente</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-md">
-              <div className="grid grid-cols-2 gap-sm">
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Documentos</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{totalDocuments}</p>
-                </div>
-                <div className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                  <p className="text-xs uppercase tracking-wide text-on-surface-variant">Patrocinadores</p>
-                  <p className="mt-1 text-2xl font-bold text-on-surface">{totalSponsors}</p>
-                </div>
-              </div>
-
-              <div className="space-y-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-on-surface-variant">Transferências recentes</p>
-                {transfersLoading ? (
-                  <div className="space-y-sm">
-                    <Skeleton className="h-14 rounded-xl" />
-                    <Skeleton className="h-14 rounded-xl" />
-                  </div>
-                ) : recentTransfers.length === 0 ? (
-                  <EmptyState
-                    title="Sem transferências"
-                    description="Ainda não há movimentos registados para este clube."
-                    icon={Trophy}
-                    action={{
-                      label: 'Ver transferências',
-                      onClick: () => navigate(ROUTES.DASHBOARD_CLUB_TRANSFERS),
-                    }}
-                  />
-                ) : (
-                  recentTransfers.map((transfer) => (
-                    <div key={transfer.id} className="rounded-2xl border border-outline-variant/20 bg-surface-container p-md">
-                      <div className="flex items-center justify-between gap-sm">
-                        <div>
-                          <p className="font-semibold text-on-surface">{transfer.player?.full_name}</p>
-                          <p className="text-sm text-on-surface-variant">
-                            {transfer.from_club?.name || 'Sem clube'} → {transfer.to_club?.name}
-                          </p>
-                        </div>
-                        <Badge variant="outline">{transfer.status_display || transfer.status}</Badge>
-                      </div>
-                      <p className="mt-sm text-xs text-on-surface-variant">{formatRelative(transfer.created_at)}</p>
-                    </div>
-                  ))
                 )}
               </div>
 
-              <Button asChild variant="secondary" className="w-full">
-                <Link to={ROUTES.DASHBOARD_CLUB_MEMBERS}>
-                  <span>Ir para gestão completa</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+              <p className="flex items-center gap-xs text-xs text-on-surface-variant">
+                <span>{[club.city, club.country].filter(Boolean).join(' • ') || 'Angola'}</span>
+                <span>•</span>
+                <span>{squad.length} atletas inscritos</span>
+                <span>•</span>
+                <span>{competitions.length} competições ativas</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-xs">
+            <Button asChild variant="outline" size="sm" className="gap-xs text-xs">
+              <Link to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}>
+                <UserPlus className="h-3.5 w-3.5" />
+                Registar Jogador
+              </Link>
+            </Button>
+            <Button asChild variant="primary" size="sm" className="gap-xs text-xs">
+              <Link to={ROUTES.DASHBOARD_CLUB_TRANSFERS_CREATE}>
+                <Plus className="h-3.5 w-3.5" />
+                Nova Transferência
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        <div className="grid gap-lg md:grid-cols-3">
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Resumo público</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              <p className="text-sm text-on-surface-variant">Perfil público</p>
-              <Badge variant={club.is_public ? 'primary' : 'outline'}>{club.is_public ? 'Publicado' : 'Privado'}</Badge>
-              <p className="text-sm text-on-surface-variant">
-                Use as configurações para ajustar marca, contacto e visibilidade.
-              </p>
-            </CardContent>
-          </Card>
+        {/* ─── 2. KPI ROW (5 CARDS UNIFIED PATTERN) ────────────────────── */}
+        <div className="grid grid-cols-2 gap-sm sm:grid-cols-3 lg:grid-cols-5">
+          {/* Plantel */}
+          <div className="rounded-xl border border-outline-variant/30 bg-surface p-md shadow-xs">
+            <div className="mb-2 flex items-center gap-xs text-xs text-on-surface-variant">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#e6f1fb] text-[#185fa5]">
+                <Users className="h-3.5 w-3.5" />
+              </div>
+              <span className="font-medium">Plantel</span>
+            </div>
+            <div className="text-2xl font-bold text-on-surface">{squad.length}</div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+              <Flame className="h-3 w-3" />
+              Inscritos na época
+            </div>
+          </div>
 
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Documentos</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              {totalDocuments === 0 ? (
-                <div className="space-y-sm rounded-2xl border border-dashed border-outline-variant/30 bg-surface-container/40 p-md">
-                  <p className="font-semibold text-on-surface">Ainda sem documentos</p>
-                  <p className="text-sm text-on-surface-variant">Carregue regulamentos, contratos ou licenças.</p>
-                  <Button asChild variant="secondary" size="sm" className="w-full">
-                    <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>Gerir documentos</Link>
+          {/* Competições */}
+          <div className="rounded-xl border border-outline-variant/30 bg-surface p-md shadow-xs">
+            <div className="mb-2 flex items-center gap-xs text-xs text-on-surface-variant">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#faeeda] text-[#854f0b]">
+                <Trophy className="h-3.5 w-3.5" />
+              </div>
+              <span className="font-medium">Competições</span>
+            </div>
+            <div className="text-2xl font-bold text-on-surface">{competitions.length}</div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+              <CheckCircle2 className="h-3 w-3" />
+              Ativas no calendário
+            </div>
+          </div>
+
+          {/* Próximo Jogo */}
+          <div className="rounded-xl border border-outline-variant/30 bg-surface p-md shadow-xs">
+            <div className="mb-2 flex items-center gap-xs text-xs text-on-surface-variant">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#e1f5ee] text-[#0f6e56]">
+                <Calendar className="h-3.5 w-3.5" />
+              </div>
+              <span className="font-medium">Próximo Jogo</span>
+            </div>
+            <div className="truncate text-base font-bold text-on-surface">
+              {nextMatch
+                ? new Date(nextMatch.match_date).toLocaleDateString('pt-AO', { day: '2-digit', month: 'short' })
+                : 'A definir'}
+            </div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-on-surface-variant truncate">
+              {nextOpponent ? `vs ${nextOpponent}` : 'Sem jogos marcados'}
+            </div>
+          </div>
+
+          {/* Transferências Pendentes */}
+          <div className="rounded-xl border border-outline-variant/30 bg-surface p-md shadow-xs">
+            <div className="mb-2 flex items-center gap-xs text-xs text-on-surface-variant">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#fcebeb] text-[#a32d2d]">
+                <ArrowRightLeft className="h-3.5 w-3.5" />
+              </div>
+              <span className="font-medium">Transf. Pendentes</span>
+            </div>
+            <div className="text-2xl font-bold text-on-surface">{pendingTransfers.length}</div>
+            <div className="mt-1 flex items-center gap-1 text-[11px]">
+              {pendingTransfers.length > 0 ? (
+                <span className="text-amber-600 font-medium flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Aguardam aprovação
+                </span>
+              ) : (
+                <span className="text-on-surface-variant">Tudo regularizado</span>
+              )}
+            </div>
+          </div>
+
+          {/* Membros & Staff */}
+          <div className="rounded-xl border border-outline-variant/30 bg-surface p-md shadow-xs col-span-2 sm:col-span-1">
+            <div className="mb-2 flex items-center gap-xs text-xs text-on-surface-variant">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#eeedfe] text-[#534ab7]">
+                <UserCircle className="h-3.5 w-3.5" />
+              </div>
+              <span className="font-medium">Membros & Staff</span>
+            </div>
+            <div className="text-2xl font-bold text-on-surface">{members.length}</div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-on-surface-variant">
+              Equipa registada
+            </div>
+          </div>
+        </div>
+
+        {/* ─── 3. BODY 65/35 (COLUNA PRINCIPAL + COLUNA LATERAL) ───────── */}
+        <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
+          {/* Coluna Principal (65%) */}
+          <div className="space-y-lg lg:col-span-2">
+            {/* Card: Plantel Recente */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardHeader className="border-b border-outline-variant/20 pb-md">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-xs text-sm font-semibold text-on-surface">
+                    <Users className="h-4 w-4 text-primary" />
+                    Plantel de Atletas
+                  </CardTitle>
+                  <Button asChild variant="ghost" size="sm" className="gap-1 text-xs text-primary">
+                    <Link to={ROUTES.DASHBOARD_CLUB_SQUAD}>
+                      Ver todos <ArrowRight className="h-3 w-3" />
+                    </Link>
                   </Button>
                 </div>
-              ) : (
-                <>
-                  <p className="text-sm text-on-surface-variant">Total</p>
-                  <p className="text-3xl font-bold text-on-surface">{totalDocuments}</p>
-                  <Button asChild variant="secondary" size="sm" className="w-full">
-                    <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>Gerir documentos</Link>
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent className="p-lg">
+                {squadLoading ? (
+                  <div className="space-y-sm">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-12 w-full rounded-xl" />
+                    ))}
+                  </div>
+                ) : squad.length === 0 ? (
+                  <EmptyState
+                    icon={Users}
+                    title="Nenhum jogador inscrito no plantel"
+                    description="Comece por registar os atletas do clube para participar nas competições oficiais."
+                    action={{
+                      label: 'Registar Jogador',
+                      onClick: () => navigate(ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER),
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-xs divide-y divide-outline-variant/15">
+                    {squad.slice(0, 5).map((player) => {
+                      const posKey = (player.position || '').toLowerCase()
+                      const posColor = POSITION_COLOR[posKey] || '#185fa5'
+                      const initials = (player.display_name || '?').slice(0, 2).toUpperCase()
 
-          <Card variant="flat" padding="none">
-            <CardHeader>
-              <CardTitle>Patrocinadores</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-sm">
-              {totalSponsors === 0 ? (
-                <div className="space-y-sm rounded-2xl border border-dashed border-outline-variant/30 bg-surface-container/40 p-md">
-                  <p className="font-semibold text-on-surface">Ainda sem patrocinadores</p>
-                  <p className="text-sm text-on-surface-variant">Adicione parceiros para fortalecer a vitrine comercial.</p>
-                  <Button asChild variant="secondary" size="sm" className="w-full">
-                    <Link to={ROUTES.DASHBOARD_CLUB_SPONSORS}>Gerir patrocinadores</Link>
+                      return (
+                        <div
+                          key={player.id}
+                          className="flex items-center justify-between py-2 transition-colors hover:bg-surface-container/30 px-xs rounded-lg"
+                        >
+                          <div className="flex items-center gap-sm">
+                            <div
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white shadow-xs"
+                              style={{ background: posColor }}
+                            >
+                              {initials}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-xs text-on-surface">{player.display_name}</p>
+                              <p className="text-[11px] text-on-surface-variant">
+                                {player.position_label || player.position || 'Atleta'}
+                                {player.jersey_number ? ` · #${player.jersey_number}` : ''}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-xs">
+                            <Badge
+                              variant={player.status === 'suspended' ? 'danger' : 'success'}
+                              className="text-[11px]"
+                            >
+                              {player.status_label || (player.status === 'suspended' ? 'Suspenso' : 'Ativo')}
+                            </Badge>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Card: Competições Ativas */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardHeader className="border-b border-outline-variant/20 pb-md">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-xs text-sm font-semibold text-on-surface">
+                    <Trophy className="h-4 w-4 text-primary" />
+                    Competições em Disputa
+                  </CardTitle>
+                  <Button asChild variant="ghost" size="sm" className="gap-1 text-xs text-primary">
+                    <Link to={ROUTES.DASHBOARD_CLUB_COMPETITIONS}>
+                      Ver todas <ArrowRight className="h-3 w-3" />
+                    </Link>
                   </Button>
                 </div>
-              ) : (
-                <>
-                  <p className="text-sm text-on-surface-variant">Total</p>
-                  <p className="text-3xl font-bold text-on-surface">{totalSponsors}</p>
-                  <Button asChild variant="secondary" size="sm" className="w-full">
-                    <Link to={ROUTES.DASHBOARD_CLUB_SPONSORS}>Gerir patrocinadores</Link>
+              </CardHeader>
+              <CardContent className="p-lg">
+                {competitionsLoading ? (
+                  <div className="space-y-sm">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <Skeleton key={i} className="h-12 w-full rounded-xl" />
+                    ))}
+                  </div>
+                ) : competitions.length === 0 ? (
+                  <EmptyState
+                    icon={Trophy}
+                    title="Nenhuma competição ativa"
+                    description="O clube ainda não está inscrito em nenhuma competição na presente temporada."
+                  />
+                ) : (
+                  <div className="space-y-xs divide-y divide-outline-variant/15">
+                    {competitions.slice(0, 4).map((comp: any) => (
+                      <div
+                        key={comp.id}
+                        className="flex items-center justify-between py-2 transition-colors hover:bg-surface-container/30 px-xs rounded-lg"
+                      >
+                        <div className="space-y-0.5">
+                          <p className="font-semibold text-xs text-on-surface">{comp.name}</p>
+                          <p className="text-[11px] text-on-surface-variant">
+                            {comp.season ? `Época ${comp.season}` : 'Temporada oficial'}
+                            {comp.format ? ` · ${comp.format}` : ''}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {comp.status_label || comp.status || 'Ativa'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Card: Transferências Recentes */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardHeader className="border-b border-outline-variant/20 pb-md">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-xs text-sm font-semibold text-on-surface">
+                    <ArrowRightLeft className="h-4 w-4 text-primary" />
+                    Movimentações & Transferências
+                  </CardTitle>
+                  <Button asChild variant="ghost" size="sm" className="gap-1 text-xs text-primary">
+                    <Link to={ROUTES.DASHBOARD_CLUB_TRANSFERS}>
+                      Ver todas <ArrowRight className="h-3 w-3" />
+                    </Link>
                   </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                </div>
+              </CardHeader>
+              <CardContent className="p-lg">
+                {transfersLoading ? (
+                  <Skeleton className="h-16 rounded-xl" />
+                ) : (transfersData?.results ?? []).length === 0 ? (
+                  <p className="text-xs text-on-surface-variant py-sm text-center">
+                    Sem movimentos de transferência registados nesta época.
+                  </p>
+                ) : (
+                  <div className="space-y-xs divide-y divide-outline-variant/15">
+                    {(transfersData?.results ?? []).slice(0, 3).map((transfer: any) => (
+                      <div key={transfer.id} className="flex items-center justify-between py-2 text-xs">
+                        <div>
+                          <p className="font-semibold text-on-surface">
+                            {transfer.player_name || 'Jogador'}
+                          </p>
+                          <p className="text-[11px] text-on-surface-variant">
+                            {transfer.from_club_name || 'Clube'} → {transfer.to_club_name || 'Clube'}
+                          </p>
+                        </div>
+                        <Badge variant={transfer.status === 'completed' ? 'success' : 'warning'} className="text-[11px]">
+                          {transfer.status_label || transfer.status || 'Pendente'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Coluna Lateral (35%) */}
+          <div className="space-y-md lg:col-span-1">
+            {/* Card: Ações Rápidas (Grid 2x2 com ícones coloridos) */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardHeader className="border-b border-outline-variant/20 pb-xs">
+                <CardTitle className="flex items-center gap-xs text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  Ações Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-xs p-md">
+                {/* 1. Registar jogador */}
+                <Link
+                  to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}
+                  className="flex items-center gap-sm rounded-xl border border-outline-variant/20 bg-surface-container/30 p-sm transition-all hover:bg-surface-container/80 hover:border-primary/30"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e6f1fb] text-[#185fa5]">
+                    <UserPlus className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-on-surface">Registar</p>
+                    <p className="truncate text-[10px] text-on-surface-variant">Novo atleta</p>
+                  </div>
+                </Link>
+
+                {/* 2. Transferência */}
+                <Link
+                  to={ROUTES.DASHBOARD_CLUB_TRANSFERS_CREATE}
+                  className="flex items-center gap-sm rounded-xl border border-outline-variant/20 bg-surface-container/30 p-sm transition-all hover:bg-surface-container/80 hover:border-primary/30"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#faeeda] text-[#854f0b]">
+                    <ArrowRightLeft className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-on-surface">Transferência</p>
+                    <p className="truncate text-[10px] text-on-surface-variant">Iniciar pedido</p>
+                  </div>
+                </Link>
+
+                {/* 3. Lineup */}
+                <Link
+                  to={ROUTES.DASHBOARD_CLUB_LINEUP}
+                  className="flex items-center gap-sm rounded-xl border border-outline-variant/20 bg-surface-container/30 p-sm transition-all hover:bg-surface-container/80 hover:border-primary/30"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e1f5ee] text-[#0f6e56]">
+                    <ListChecks className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-on-surface">Lineup</p>
+                    <p className="truncate text-[10px] text-on-surface-variant">Escalação tática</p>
+                  </div>
+                </Link>
+
+                {/* 4. Convidar membro */}
+                <Link
+                  to={ROUTES.DASHBOARD_CLUB_MEMBERS}
+                  className="flex items-center gap-sm rounded-xl border border-outline-variant/20 bg-surface-container/30 p-sm transition-all hover:bg-surface-container/80 hover:border-primary/30"
+                >
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#eeedfe] text-[#534ab7]">
+                    <UserCircle className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-semibold text-on-surface">Membros</p>
+                    <p className="truncate text-[10px] text-on-surface-variant">Gerir equipa</p>
+                  </div>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Card: Atividade Recente (Activity Feed com dots coloridos) */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardHeader className="border-b border-outline-variant/20 pb-xs">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+                  Atividade Recente
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-sm p-md text-xs">
+                {squad.length > 0 && (
+                  <div className="flex items-start gap-sm border-b border-outline-variant/10 pb-sm">
+                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#185fa5]" />
+                    <div>
+                      <p className="font-semibold text-on-surface">
+                        {squad[0]?.display_name} no plantel
+                      </p>
+                      <p className="text-[11px] text-on-surface-variant">
+                        Atleta inscrito com camisola #{squad[0]?.jersey_number || '—'}
+                      </p>
+                      <span className="text-[10px] text-on-surface-variant/70">
+                        {formatRelativeTime(squad[0]?.joined_at)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {pendingRequests.length > 0 && (
+                  <div className="flex items-start gap-sm border-b border-outline-variant/10 pb-sm">
+                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#a32d2d]" />
+                    <div>
+                      <p className="font-semibold text-on-surface">Pedido de vínculo pendente</p>
+                      <p className="text-[11px] text-on-surface-variant">
+                        {pendingRequests[0]?.player_name} aguarda revisão da secretaria
+                      </p>
+                      <span className="text-[10px] text-on-surface-variant/70">Ação requerida</span>
+                    </div>
+                  </div>
+                )}
+
+                {nextMatch && (
+                  <div className="flex items-start gap-sm border-b border-outline-variant/10 pb-sm">
+                    <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#0f6e56]" />
+                    <div>
+                      <p className="font-semibold text-on-surface">Partida agendada</p>
+                      <p className="text-[11px] text-on-surface-variant">
+                        vs {nextOpponent} na {nextMatch.competition_name || nextMatch.competition || 'Competição'}
+                      </p>
+                      <span className="text-[10px] text-on-surface-variant/70">
+                        {new Date(nextMatch.match_date).toLocaleDateString('pt-AO', { day: '2-digit', month: 'short' })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-start gap-sm">
+                  <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#534ab7]" />
+                  <div>
+                    <p className="font-semibold text-on-surface">Painel institucional atualizado</p>
+                    <p className="text-[11px] text-on-surface-variant">
+                      Registos e documentação desportiva sincronizados
+                    </p>
+                    <span className="text-[10px] text-on-surface-variant/70">Hoje</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Card: Atalhos Rápidos para Ativos */}
+            <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+              <CardContent className="space-y-xs p-md">
+                <Button asChild variant="outline" size="sm" className="w-full justify-between text-xs">
+                  <Link to={ROUTES.DASHBOARD_CLUB_DOCUMENTS}>
+                    <span className="flex items-center gap-xs">
+                      <FileText className="h-3.5 w-3.5 text-primary" />
+                      Documentos Oficiais
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-on-surface-variant" />
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" size="sm" className="w-full justify-between text-xs">
+                  <Link to={ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS}>
+                    <span className="flex items-center gap-xs">
+                      <UserCheck className="h-3.5 w-3.5 text-primary" />
+                      Pedidos de Vínculo
+                    </span>
+                    {pendingRequests.length > 0 && (
+                      <Badge variant="warning" className="text-[10px] py-0 px-1.5">
+                        {pendingRequests.length}
+                      </Badge>
+                    )}
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" size="sm" className="w-full justify-between text-xs">
+                  <Link to={`/clubs/${club.slug}`}>
+                    <span className="flex items-center gap-xs">
+                      <ExternalLink className="h-3.5 w-3.5 text-primary" />
+                      Ver Perfil Público
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-on-surface-variant" />
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" size="sm" className="w-full justify-between text-xs">
+                  <Link to={ROUTES.DASHBOARD_CLUB_SETTINGS}>
+                    <span className="flex items-center gap-xs">
+                      <Settings className="h-3.5 w-3.5 text-primary" />
+                      Definições do Clube
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-on-surface-variant" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </DashboardLayout>

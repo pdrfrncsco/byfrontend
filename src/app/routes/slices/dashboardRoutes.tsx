@@ -363,6 +363,14 @@ export function dashboardRouteElements() {
         }
       />
       <Route
+        path={clubRoutes.lineup}
+        element={
+          <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>
+            <Suspense fallback={<RouteFallback />}><ClubMatchLineupManagerPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path={clubRoutes.matchLineup(':matchId')}
         element={
           <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'club_admin', 'club']}>

@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubMeMatches, useClubSquad } from '@/modules/clubs/hooks/useClubs'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { matchApi } from '@/modules/competitions/services/match.api'
@@ -219,7 +219,7 @@ export default function ClubMatchLineupManagerPage() {
   const queryClient = useQueryClient()
 
   const { data: club, isLoading: clubLoading } = useClubMe()
-  const sidebarLinks = getClubSidebarLinks()
+  const sidebarSections = useMemo(() => getClubSidebarSections(), [])
 
   // Fetch matches for current club
   const { data: matches = [], isLoading: matchesLoading } = useClubMeMatches()
@@ -477,7 +477,7 @@ export default function ClubMatchLineupManagerPage() {
 
   if (clubLoading || matchesLoading || squadLoading || lineupLoading) {
     return (
-      <DashboardLayout title="Gestão de Escalação" subtitle="A carregar dados..." dashboardType="club" sidebarLinks={sidebarLinks}>
+      <DashboardLayout title="Gestão de Escalação" subtitle="A carregar dados..." dashboardType="club" sidebarSections={sidebarSections}>
         <div className="flex min-h-[40vh] items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -487,13 +487,92 @@ export default function ClubMatchLineupManagerPage() {
 
   if (!currentMatch) {
     return (
-      <DashboardLayout title="Jogo não encontrado" dashboardType="club" sidebarLinks={sidebarLinks}>
-        <div className="flex flex-col items-center justify-center py-2xl text-center">
-          <AlertCircle className="h-12 w-12 text-error mb-md" />
-          <h2 className="text-xl font-bold text-on-surface">Jogo não encontrado ou não pertence a este clube</h2>
-          <Button asChild variant="secondary" className="mt-lg">
-            <Link to={ROUTES.DASHBOARD_CLUB_COMPETITIONS}>Voltar às Competições</Link>
+      <DashboardLayout
+        title="Gestão de Escalações"
+        subtitle="Selecione um jogo para convocar atletas, definir o onze titular e submeter a ficha oficial"
+        dashboardType="club"
+        sidebarSections={sidebarSections}
+        headerActions={
+          <Button asChild variant="secondary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB}>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              Voltar ao Painel
+            </Link>
           </Button>
+        }
+      >
+        <div className="space-y-lg">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
+            <CardHeader className="border-b border-outline-variant/20 pb-md">
+              <CardTitle className="flex items-center gap-xs text-sm font-semibold text-on-surface">
+                <Trophy className="h-4 w-4 text-primary" />
+                Jogos Agendados do Clube
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-lg">
+              {matches.length === 0 ? (
+                <EmptyState
+                  icon={Calendar}
+                  title="Nenhum jogo agendado"
+                  description="Ainda não existem partidas agendadas para este clube no calendário das competições."
+                  action={{
+                    label: 'Ver Competições',
+                    onClick: () => (window.location.href = ROUTES.DASHBOARD_CLUB_COMPETITIONS),
+                    variant: 'secondary',
+                  }}
+                />
+              ) : (
+                <div className="space-y-sm">
+                  {matches.map((m: any) => (
+                    <div
+                      key={m.id}
+                      className="flex flex-col gap-sm rounded-xl border border-outline-variant/25 bg-surface-container/30 p-md transition-colors hover:border-primary/30 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-xs">
+                          <Badge variant="outline" className="text-xs">
+                            {m.competition_name || m.competition?.name || 'Competição'}
+                          </Badge>
+                          {m.round_number && (
+                            <span className="text-xs text-on-surface-variant font-medium">
+                              Jornada {m.round_number}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-bold text-on-surface">
+                          {m.home_club_name || m.home_club?.name}{' '}
+                          <span className="text-primary font-normal">vs</span>{' '}
+                          {m.away_club_name || m.away_club?.name}
+                        </p>
+                        <p className="flex items-center gap-xs text-xs text-on-surface-variant">
+                          <Calendar className="h-3.5 w-3.5 text-primary" />
+                          {m.match_date
+                            ? new Date(m.match_date).toLocaleDateString('pt-AO', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : 'Data a definir'}
+                          {m.venue && <span>• 📍 {m.venue}</span>}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Button asChild variant="primary" size="sm" className="gap-xs text-xs">
+                          <Link to={ROUTES.DASHBOARD_CLUB_MATCH_LINEUP(m.id)}>
+                            <Send className="h-3.5 w-3.5" />
+                            Gerir Escalação
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </DashboardLayout>
     )
@@ -513,7 +592,7 @@ export default function ClubMatchLineupManagerPage() {
       title={`Convocatória & Escalação • ${club?.name}`}
       subtitle={`Gestão táctica e envio da lista oficial para o jogo contra ${opponentName}`}
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={ROUTES.DASHBOARD_CLUB_COMPETITIONS}>
