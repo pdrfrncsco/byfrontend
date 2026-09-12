@@ -10,16 +10,12 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { ROUTES } from '@/constants/routes'
 import {
   Trophy,
-  Home,
   PlusCircle,
-  Calendar,
-  Gavel,
-  MapPin,
-  ShieldAlert,
 } from 'lucide-react'
+import { getCompetitionSidebarSections } from '../constants/navigation'
+import { competitionRoutes } from '../routes'
 import { useCompetitionsPaginated } from '../hooks'
 import type { Competition } from '../types'
 
@@ -30,25 +26,23 @@ function getStatusBadge(status: string) {
   return <Badge variant="default">RASCUNHO</Badge>
 }
 
+const TYPE_CONFIG: Record<string, { label: string; icon: any }> = {
+  league: { label: 'Liga (Pontos)', icon: Trophy },
+  cup: { label: 'Taça (Mata-Mata)', icon: Trophy },
+  tournament: { label: 'Torneio (Misto)', icon: Trophy },
+}
+
 export function CompetitionAdminListPage() {
   const [page] = useState(1)
   const [pageSize] = useState(10)
   const { data, isLoading } = useCompetitionsPaginated({ page, page_size: pageSize })
   const navigate = useNavigate()
 
-  const sidebarLinks = [
-    { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
-    { label: 'Geral de Provas', href: ROUTES.DASHBOARD_COMPETITION, icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Torneios', href: ROUTES.DASHBOARD_COMPETITIONS_LIST, icon: <Trophy className="w-5 h-5" />, active: true },
-    { label: 'Partidas', href: ROUTES.DASHBOARD_COMPETITIONS_MATCHES, icon: <Calendar className="w-5 h-5" /> },
-    { label: 'Árbitros', href: ROUTES.DASHBOARD_COMPETITION, icon: <Gavel className="w-5 h-5" />, disabled: true },
-    { label: 'Estádios', href: ROUTES.DASHBOARD_COMPETITION, icon: <MapPin className="w-5 h-5" />, disabled: true },
-    { label: 'Conformidade', href: ROUTES.DASHBOARD_COMPETITION, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
-  ]
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])
 
   const headerActions = (
     <Button variant="primary" size="sm" asChild>
-      <Link to={ROUTES.COMPETITION_CREATE}>
+      <Link to={competitionRoutes.create}>
         <PlusCircle className="h-4 w-4" />
         <span>Criar Nova Competição</span>
       </Link>
@@ -59,29 +53,43 @@ export function CompetitionAdminListPage() {
     () => [
       {
         accessorKey: 'name',
-        header: 'Nome',
+        header: 'Nome da Competição',
         cell: ({ row }) => (
-          <Link
-            to={ROUTES.COMPETITION_SETTINGS(row.original.id)}
-            className="font-semibold text-primary hover:underline hover:text-primary-container"
-          >
-            {row.original.name}
-          </Link>
+          <div className="flex items-center gap-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary font-bold text-sm">
+              <Trophy className="h-4 w-4" />
+            </div>
+            <div>
+              <Link
+                to={competitionRoutes.adminDashboard(row.original.id)}
+                className="font-semibold text-on-surface hover:text-primary transition-colors block"
+              >
+                {row.original.name}
+              </Link>
+              <span className="text-xs text-on-surface-variant font-data-tabular">
+                Época {row.original.season}
+              </span>
+            </div>
+          </div>
         ),
       },
       {
         accessorKey: 'competition_type',
-        header: 'Tipo',
-        cell: ({ row }) => (
-          <span className="text-xs text-on-surface-variant">
-            {row.original.competition_type || 'Liga'}
-          </span>
-        ),
+        header: 'Formato',
+        cell: ({ row }) => {
+          const type = row.original.competition_type || 'league'
+          const label = TYPE_CONFIG[type]?.label || type
+          return (
+            <span className="inline-flex items-center rounded-lg bg-surface-container-high px-sm py-xs text-xs font-medium text-on-surface-variant">
+              {label}
+            </span>
+          )
+        },
       },
       {
         accessorKey: 'season',
         header: 'Época',
-        cell: ({ row }) => <span className="font-data-tabular text-xs">{row.original.season}</span>,
+        cell: ({ row }) => <span className="font-data-tabular text-xs font-semibold">{row.original.season}</span>,
       },
       {
         id: 'status',
@@ -94,11 +102,13 @@ export function CompetitionAdminListPage() {
         id: 'actions',
         header: 'Ações',
         cell: ({ row }) => (
-          <Button variant="ghost" size="sm" asChild className="text-primary hover:bg-primary-container/20">
-            <Link to={ROUTES.COMPETITION_SETTINGS(row.original.id)}>
-              Gerir
-            </Link>
-          </Button>
+          <div className="flex items-center gap-xs">
+            <Button variant="secondary" size="sm" asChild>
+              <Link to={competitionRoutes.adminDashboard(row.original.id)}>
+                Gerir Prova
+              </Link>
+            </Button>
+          </div>
         ),
       },
     ],
@@ -109,10 +119,10 @@ export function CompetitionAdminListPage() {
 
   return (
     <DashboardLayout
-      title="Torneios"
-      subtitle="Gerir todas as competições da organização"
+      title="Torneios & Competições"
+      subtitle="Gerir todas as competições e formatos da organização"
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={headerActions}
     >
       <div className="animate-fade-in">
@@ -138,7 +148,7 @@ export function CompetitionAdminListPage() {
             description="Ainda não há competições registadas. Crie a sua primeira competição para começar."
             action={{
               label: 'Criar Nova Competição',
-              onClick: () => navigate(ROUTES.COMPETITION_CREATE),
+              onClick: () => navigate(competitionRoutes.create),
               variant: 'primary',
             }}
           />

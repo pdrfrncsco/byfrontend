@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +9,7 @@ import { FormField } from '@/components/ui/form-field'
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 
 /**
  * CompetitionSettingsPage — edit competition metadata and status.
@@ -17,7 +18,7 @@ import { getCompetitionSidebarLinks } from '../constants'
 export function CompetitionSettingsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
 
   const { data: competition, isLoading } = useCompetition(competitionId)
   const { mutate: updateCompetition, isPending } = useUpdateCompetition()
@@ -48,7 +49,7 @@ export function CompetitionSettingsPage() {
         title="Configurações da Competição"
         subtitle="Ajuste os dados gerais e o estado da competição."
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <Card variant="flat" padding="lg" className="space-y-sm">
           <div className="h-5 w-40 rounded-full bg-surface-container-high animate-pulse" />
@@ -66,7 +67,7 @@ export function CompetitionSettingsPage() {
         title="Configurações da Competição"
         subtitle="Ajuste os dados gerais e o estado da competição."
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="flex flex-col items-center gap-md py-2xl text-on-surface-variant">
           <p>Competição não encontrada.</p>
@@ -83,7 +84,7 @@ export function CompetitionSettingsPage() {
       title={`Configurações • ${competition.name}`}
       subtitle="Edite os dados gerais desta competição."
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={competitionRoutes.detail(competitionId)}>

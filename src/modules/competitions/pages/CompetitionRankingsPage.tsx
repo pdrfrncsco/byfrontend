@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Loader2, RefreshCw, Trophy, Shield, Target } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -8,7 +9,7 @@ import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { TopScorersTable } from '../components/TopScorersTable'
 import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import type { FairPlayRanking } from '../types'
 
 // ─── Fair Play Table ─────────────────────────────────────────────────────────
@@ -114,7 +115,7 @@ function FairPlayTable({
 export function CompetitionRankingsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
   const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
@@ -127,7 +128,7 @@ export function CompetitionRankingsPage() {
       title="Classificação & Rankings"
       subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar classificação, marcadores e fair play da competição.'}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <div className="flex items-center gap-sm">
           {isAdmin && (

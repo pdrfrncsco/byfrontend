@@ -1,15 +1,15 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Trophy, Loader2, ChevronRight, ChevronLeft, Check } from 'lucide-react'
+import { Trophy, Loader2, ChevronRight, ChevronLeft, Check, Sparkles } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect, Select } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useCreateCompetition } from '../hooks/useCompetitions'
 import { createCompetitionSchema, type CreateCompetitionFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import type { CompetitionType, LeagueConfig, TournamentConfig, KnockoutRound, CupConfig, CupRound } from '../types'
 
 type WizardStep = 'basics' | 'format' | 'format-config' | 'review'
@@ -46,7 +46,7 @@ const FORMAT_LABELS: Record<CompetitionType, { title: string; description: strin
 export function CompetitionCreatePage() {
   const navigate = useNavigate()
   const { mutate: createCompetition, isPending } = useCreateCompetition()
-  const sidebarLinks = getCompetitionSidebarLinks()
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])
   const [step, setStep] = useState<WizardStep>('basics')
 
   const {
@@ -113,7 +113,7 @@ export function CompetitionCreatePage() {
   const onSubmit = (data: CreateCompetitionFormData) => {
     createCompetition(data, {
       onSuccess: (competition) => {
-        navigate(competitionRoutes.detail(competition.id))
+        navigate(competitionRoutes.adminDashboard(competition.id))
       },
     })
   }
@@ -123,12 +123,12 @@ export function CompetitionCreatePage() {
       title="Criar Competição"
       subtitle="Preencha os dados para criar uma nova competição na sua organização."
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={competitionRoutes.list}>
             <Trophy className="h-4 w-4" />
-            <span>Ver página pública</span>
+            <span>Ver portal público</span>
           </Link>
         </Button>
       }

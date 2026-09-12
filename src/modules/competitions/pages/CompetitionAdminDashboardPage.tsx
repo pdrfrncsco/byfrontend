@@ -1,133 +1,166 @@
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
+  AlertTriangle,
   Calendar,
   CheckCircle2,
+  Clock,
+  Download,
   ExternalLink,
+  Flame,
+  FolderKanban,
   Loader2,
+  Plus,
   RefreshCw,
   Settings,
   Shield,
   Target,
+  TrendingUp,
   Trophy,
   Users,
 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui'
+import { useTenant } from '@/app/providers/TenantProvider'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
-import { useTopScorers, useFairPlayRanking, useSuspensions, useRecalculateRankings } from '../hooks/useCompetitionAdvanced'
-import { useCompetitionStandings } from '../hooks/useCompetitionMatches'
+import { useTopScorers, useSuspensions, useRecalculateRankings } from '../hooks/useCompetitionAdvanced'
+import { useCompetitionStandings, useCompetitionRounds } from '../hooks/useCompetitionMatches'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
-import type { Suspension } from '../types'
+import { getCompetitionSidebarSections } from '../constants/navigation'
+import type { Match, Suspension } from '../types'
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
-
-interface StatCardProps {
-  label: string
-  value: string | number
-  icon: React.ReactNode
-  variant?: 'default' | 'success' | 'warning' | 'danger'
-}
-
-function StatCard({ label, value, icon, variant = 'default' }: StatCardProps) {
-  const colorMap = {
-    default: 'bg-primary/10 text-primary',
-    success: 'bg-emerald-500/10 text-emerald-600',
-    warning: 'bg-amber-500/10 text-amber-600',
-    danger: 'bg-red-500/10 text-red-600',
+function getMatchStatusBadge(status?: string) {
+  switch (status) {
+    case 'finished':
+      return <Badge variant="success" className="text-[11px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20">Concluído</Badge>
+    case 'live':
+      return <Badge variant="danger" className="animate-pulse text-[11px] bg-red-500/10 text-red-600 border-red-500/20">Ao Vivo</Badge>
+    case 'halftime':
+      return <Badge variant="warning" className="text-[11px] bg-amber-500/10 text-amber-700 border-amber-500/20">Intervalo</Badge>
+    case 'postponed':
+      return <Badge variant="secondary" className="text-[11px] bg-slate-500/10 text-slate-600 border-slate-500/20">Adiado</Badge>
+    default:
+      return <Badge variant="secondary" className="text-[11px] bg-amber-500/10 text-amber-800 dark:text-amber-200 border-amber-500/20">Agendado</Badge>
   }
-  return (
-    <div className="flex items-center gap-md rounded-xl border border-outline-variant/20 bg-surface-container p-md">
-      <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${colorMap[variant]}`}>
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wide text-on-surface-variant">{label}</p>
-        <p className="text-xl font-bold text-on-surface">{value}</p>
-      </div>
-    </div>
-  )
 }
 
-// ─── Quick Action Button ───────────────────────────────────────────────────────
-
-interface QuickActionProps {
-  label: string
-  description: string
-  href: string
-  icon: React.ReactNode
-}
-
-function QuickAction({ label, description, href, icon }: QuickActionProps) {
-  return (
-    <Link
-      to={href}
-      className="group flex items-center gap-md rounded-xl border border-outline-variant/20 bg-surface-container p-md transition-all hover:border-primary/40 hover:bg-surface-container-high"
-    >
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-on-surface">{label}</p>
-        <p className="text-xs text-on-surface-variant">{description}</p>
-      </div>
-    </Link>
-  )
-}
-
-// ─── CompetitionAdminDashboardPage ────────────────────────────────────────────
-
-/**
- * CompetitionAdminDashboardPage — per-competition admin panel.
- * Shows KPIs (clubs, standings, active suspensions), top scorer preview,
- * and quick access to all admin operations.
- */
 export function CompetitionAdminDashboardPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const { tenant } = useTenant()
   const { isAdmin } = useCompetitionAccess()
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
-  const { isLeague, isTournament, isCup } = useCompetitionConfig(competitionId)
+  const { isLeague, isCup, isTournament } = useCompetitionConfig(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
+  const { data: roundsView, isLoading: loadingRounds } = useCompetitionRounds(competitionId)
   const { data: topScorers = [], isLoading: loadingScorers } = useTopScorers(competitionId)
   const { data: suspensions = [] } = useSuspensions(competitionId)
-  const { data: fairPlay = [] } = useFairPlayRanking(competitionId)
   const recalculate = useRecalculateRankings(competitionId)
 
-  const activeSuspensions = (suspensions as Suspension[]).filter(s => s.is_active)
-  const clubsCount = standings.length
-  const leader = standings[0]
-  const topScorer = topScorers[0]
+  const activeSuspensions = useMemo(
+    () => (suspensions as Suspension[]).filter((s) => s.is_active),
+    [suspensions],
+  )
 
-  const statusConfig: Record<string, { label: string; variant: 'success' | 'warning' | 'default' }> = {
-    active: { label: 'Em Curso', variant: 'success' },
-    draft: { label: 'Rascunho', variant: 'warning' },
-    completed: { label: 'Concluída', variant: 'default' },
+  const sidebarSections = useMemo(
+    () =>
+      getCompetitionSidebarSections(competitionId, {
+        activeSuspensions: activeSuspensions.length,
+      }),
+    [competitionId, activeSuspensions.length],
+  )
+
+  // Derive matches and metrics across all rounds
+  const allMatches = useMemo(() => {
+    const rounds = roundsView?.rounds ?? []
+    return rounds.flatMap((r) => r.matches ?? [])
+  }, [roundsView])
+
+  const finishedMatches = useMemo(
+    () => allMatches.filter((m) => m.status === 'finished'),
+    [allMatches],
+  )
+
+  const upcomingMatches = useMemo(
+    () =>
+      allMatches
+        .filter((m) => m.status === 'scheduled' || m.status === 'pre_match')
+        .sort((a, b) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime()),
+    [allMatches],
+  )
+
+  const recentMatches = useMemo(() => {
+    return [...allMatches]
+      .filter((m) => m.status === 'finished' || m.status === 'live' || m.status === 'halftime')
+      .slice(-4)
+      .reverse()
+  }, [allMatches])
+
+  const nextMatch = upcomingMatches[0]
+
+  const totalGoals = useMemo(() => {
+    return finishedMatches.reduce(
+      (acc, m) => acc + (m.home_score ?? 0) + (m.away_score ?? 0),
+      0,
+    )
+  }, [finishedMatches])
+
+  const avgGoals = finishedMatches.length > 0
+    ? (totalGoals / finishedMatches.length).toFixed(1)
+    : '0.0'
+
+  const progressPercent = allMatches.length > 0
+    ? Math.round((finishedMatches.length / allMatches.length) * 100)
+    : 0
+
+  const statusLabel = useMemo(() => {
+    const s = competition?.status
+    if (s === 'active') return 'Em Curso'
+    if (s === 'completed') return 'Concluída'
+    return 'Rascunho'
+  }, [competition?.status])
+
+  const currentRoundLabel = useMemo(() => {
+    if (allMatches.length === 0) return 'Configuração Inicial'
+    const lastRound = roundsView?.rounds?.[roundsView.rounds.length - 1]
+    const completedRounds = (roundsView?.rounds ?? []).filter((r) =>
+      r.matches.length > 0 && r.matches.every((m) => m.status === 'finished'),
+    ).length
+    const totalRounds = roundsView?.rounds?.length || 1
+    if (isCup) return lastRound?.label || 'Fase Eliminatória'
+    return `Jornada ${Math.min(completedRounds + 1, totalRounds)}/${totalRounds}`
+  }, [allMatches.length, roundsView?.rounds, isCup])
+
+  if (loadingComp) {
+    return (
+      <DashboardLayout
+        title="Carregando Competição..."
+        subtitle="A sincronizar dados federativos..."
+        dashboardType="competition"
+        sidebarSections={sidebarSections}
+      >
+        <div className="space-y-lg">
+          <Skeleton className="h-32 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 gap-md md:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 w-full rounded-2xl" />
+        </div>
+      </DashboardLayout>
+    )
   }
-  const competitionStatus = competition?.status
-    ? (statusConfig[competition.status] ?? { label: competition.status, variant: 'default' })
-    : null
 
   return (
     <DashboardLayout
-      title={
-        loadingComp
-          ? 'Painel da Competição'
-          : (competition?.name ?? 'Painel da Competição')
-      }
-      subtitle={
-        loadingComp
-          ? 'A carregar dados...'
-          : competition
-            ? `${competition.season} • Visão geral administrativa`
-            : 'Painel administrativo da competição'
-      }
+      title={competition?.name || 'Painel da Competição'}
+      subtitle={`${competition?.season} · Visão executiva da prova`}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <div className="flex items-center gap-sm">
           {isAdmin && (
@@ -136,255 +169,437 @@ export function CompetitionAdminDashboardPage() {
               size="sm"
               onClick={() => recalculate.mutate()}
               disabled={recalculate.isPending}
+              className="text-xs"
               id="recalculate-rankings-btn"
             >
               {recalculate.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-3.5 w-3.5" />
               )}
               <span>Recalcular</span>
             </Button>
           )}
-          <Button asChild variant="secondary" size="sm">
+          <Button asChild variant="secondary" size="sm" className="text-xs">
             <Link to={competitionRoutes.detail(competitionId)}>
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-3.5 w-3.5" />
               <span>Página Pública</span>
             </Link>
           </Button>
         </div>
       }
     >
-      {/* Status + Competition Info */}
-      {competition && (
-        <div className="mb-lg flex flex-wrap items-center gap-sm rounded-xl border border-outline-variant/20 bg-surface-container p-md">
-          <div className="flex items-center gap-sm">
-            <Trophy className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-on-surface">{competition.name}</span>
-            {competitionStatus && (
-              <Badge variant={competitionStatus.variant}>{competitionStatus.label}</Badge>
-            )}
+      {/* ══════════════════ 1. EXECUTIVE PAGE HEADER ══════════════════ */}
+      <div className="rounded-2xl border border-outline-variant/30 bg-surface-container-low p-lg shadow-sm">
+        <div className="flex flex-col gap-md sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-md">
+            {/* Squircle logo */}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-600/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-xl font-bold font-display shadow-sm">
+              {competition?.name ? competition.name.substring(0, 2).toUpperCase() : 'CP'}
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl">
+                  {competition?.name}
+                </h1>
+                <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-200">
+                  {currentRoundLabel}
+                </span>
+                <Badge variant={competition?.status === 'active' ? 'success' : 'secondary'} className="text-[11px]">
+                  {statusLabel}
+                </Badge>
+              </div>
+              <p className="text-xs text-on-surface-variant mt-1">
+                {isLeague ? 'Campeonato de Pontos Corridos' : isCup ? 'Taça / Eliminatória Direta' : 'Torneio'} ·{' '}
+                <span className="font-semibold text-on-surface">{standings.length} clubes inscritos</span> ·{' '}
+                {tenant?.name || 'Organização Titular'}
+              </p>
+            </div>
           </div>
-          <span className="ml-auto text-xs text-on-surface-variant">
-            Época: <strong className="text-on-surface">{competition.season}</strong>
-          </span>
-        </div>
-      )}
 
-      {/* ── KPI Grid ───────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-md sm:grid-cols-4">
-        <StatCard
-          label="Clubes Inscritos"
-          value={loadingStandings ? '…' : clubsCount}
-          icon={<Shield className="h-5 w-5" />}
-          variant="default"
-        />
-        <StatCard
-          label="Suspensões Ativas"
-          value={activeSuspensions.length}
-          icon={<Users className="h-5 w-5" />}
-          variant={activeSuspensions.length > 0 ? 'danger' : 'success'}
-        />
-        <StatCard
-          label="Classificações Fair Play"
-          value={fairPlay.length}
-          icon={<CheckCircle2 className="h-5 w-5" />}
-          variant="success"
-        />
-        <StatCard
-          label="Top Marcadores"
-          value={loadingScorers ? '…' : topScorers.length}
-          icon={<Target className="h-5 w-5" />}
-          variant="default"
-        />
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs gap-1.5"
+              onClick={() => window.print()}
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Exportar</span>
+            </Button>
+            <Button asChild size="sm" className="text-xs gap-1.5">
+              <Link to={competitionRoutes.schedule(competitionId)}>
+                <Plus className="h-3.5 w-3.5" />
+                <span>Agendar jogo</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-lg grid grid-cols-1 gap-lg lg:grid-cols-12">
+      {/* ══════════════════ 2. ROW OF 5 KPIS (HTML PROTOTYPE SPEC) ══════════════════ */}
+      <div className="grid grid-cols-2 gap-md sm:grid-cols-3 lg:grid-cols-5 mt-md">
+        {/* KPI 1: Clubes inscritos */}
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md transition-all hover:bg-surface-container">
+          <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-500/10 text-blue-600">
+              <Shield className="h-3.5 w-3.5" />
+            </div>
+            <span>Clubes inscritos</span>
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-on-surface">
+            {loadingStandings ? '…' : standings.length}
+          </div>
+          <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-700 dark:text-amber-300 font-medium">
+            <Clock className="h-3 w-3" />
+            <span>{standings.length < 4 ? 'Inscrições abertas' : 'Quadro federativo ativo'}</span>
+          </div>
+        </div>
 
-        {/* ── Standings Preview ──────────────────────────────────────────────── */}
-        <Card variant="flat" padding="none" className="lg:col-span-7">
-          <CardHeader className="flex flex-row items-center justify-between pb-sm">
-            <CardTitle className="flex items-center gap-sm">
-              <Trophy className="h-4 w-4 text-primary" />
-              {isCup ? 'Clubes Inscritos' : isTournament ? 'Resumo de Grupos' : 'Classificação'}
-            </CardTitle>
-            <Button asChild variant="link" size="sm" className="text-xs">
-              <Link to={competitionRoutes.adminRankings(competitionId)}>Ver todos</Link>
-            </Button>
-          </CardHeader>
-          <CardContent className="p-0">
-            {loadingStandings ? (
-              <div className="space-y-xs p-md">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-10 animate-pulse rounded-lg bg-surface-container-high" />
-                ))}
-              </div>
-            ) : standings.length === 0 ? (
-              <div className="flex flex-col items-center gap-sm py-xl text-on-surface-variant">
-                <Trophy className="h-10 w-10 opacity-20" />
-                <p className="text-sm">Sem dados de classificação.</p>
-              </div>
-            ) : isLeague ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-outline-variant/20 bg-surface-container-high text-xs">
-                      <th className="w-8 px-md py-sm text-center font-semibold text-on-surface-variant">#</th>
-                      <th className="px-md py-sm text-left font-semibold text-on-surface-variant">Clube</th>
-                      <th className="w-10 px-sm py-sm text-center font-semibold text-on-surface-variant">J</th>
-                      <th className="w-10 px-sm py-sm text-center font-semibold text-on-surface-variant">V</th>
-                      <th className="w-10 px-sm py-sm text-center font-semibold text-on-surface-variant">D</th>
-                      <th className="w-10 px-sm py-sm text-center font-bold text-on-surface">Pts</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {standings.slice(0, 6).map((s, idx) => (
-                      <tr
-                        key={s.id ?? idx}
-                        className={`border-b border-outline-variant/10 transition-colors last:border-0 hover:bg-surface-container-high/50 ${idx === 0 ? 'bg-primary/5' : ''}`}
-                      >
-                        <td className="px-md py-sm text-center text-xs font-semibold text-on-surface-variant">{idx + 1}</td>
-                        <td className="px-md py-sm font-medium text-on-surface">{s.club_name}</td>
-                        <td className="px-sm py-sm text-center text-xs text-on-surface-variant">{s.played}</td>
-                        <td className="px-sm py-sm text-center text-xs text-emerald-600">{s.won}</td>
-                        <td className="px-sm py-sm text-center text-xs text-red-500">{s.lost}</td>
-                        <td className="px-sm py-sm text-center">
-                          <span className="rounded-md bg-primary/10 px-sm py-xs text-xs font-bold text-primary">{s.points}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : isTournament ? (
-              <div className="p-md space-y-sm">
-                <p className="text-xs text-on-surface-variant">Esta competição está dividida em grupos. Segue a classificação detalhada nas páginas específicas.</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-sm">
-                  {standings.slice(0, 6).map((s, idx) => (
-                    <div key={s.id ?? idx} className="rounded-lg border border-outline-variant/10 bg-surface-container-low p-sm flex justify-between items-center">
-                      <span className="font-semibold text-xs text-on-surface">{s.club_name}</span>
-                      <span className="rounded bg-primary/10 px-xs py-0.5 text-xs text-primary font-bold">{s.points} Pts</span>
+        {/* KPI 2: Jogos disputados */}
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md transition-all hover:bg-surface-container">
+          <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/10 text-amber-600">
+              <Flame className="h-3.5 w-3.5" />
+            </div>
+            <span>Jogos disputados</span>
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-on-surface">
+            {loadingRounds ? '…' : finishedMatches.length}
+          </div>
+          <div className="mt-1.5 flex items-center gap-2 text-[11px] text-emerald-600 font-medium">
+            <div className="h-1.5 w-14 overflow-hidden rounded-full bg-surface-container-highest">
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <span>{progressPercent}%</span>
+          </div>
+        </div>
+
+        {/* KPI 3: Próximo jogo */}
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md transition-all hover:bg-surface-container">
+          <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600">
+              <Calendar className="h-3.5 w-3.5" />
+            </div>
+            <span>Próximo jogo</span>
+          </div>
+          <div className="text-sm font-bold tracking-tight text-on-surface truncate">
+            {nextMatch
+              ? `${nextMatch.home_club_name || 'Equipa A'} vs ${nextMatch.away_club_name || 'Equipa B'}`
+              : 'Sem partidas'}
+          </div>
+          <div className="mt-1 text-[11px] text-on-surface-variant truncate">
+            {nextMatch
+              ? new Date(nextMatch.match_date).toLocaleDateString('pt-AO', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'short',
+                })
+              : 'A aguardar calendário'}
+          </div>
+        </div>
+
+        {/* KPI 4: Golos marcados */}
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md transition-all hover:bg-surface-container">
+          <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-purple-500/10 text-purple-600">
+              <Trophy className="h-3.5 w-3.5" />
+            </div>
+            <span>Golos marcados</span>
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-on-surface">
+            {loadingRounds ? '…' : totalGoals}
+          </div>
+          <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+            <TrendingUp className="h-3 w-3" />
+            <span>{avgGoals} por jogo</span>
+          </div>
+        </div>
+
+        {/* KPI 5: Suspensões ativas */}
+        <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-md transition-all hover:bg-surface-container">
+          <div className="flex items-center gap-2 text-xs font-medium text-on-surface-variant mb-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-rose-500/10 text-rose-600">
+              <AlertTriangle className="h-3.5 w-3.5" />
+            </div>
+            <span>Suspensões ativas</span>
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-on-surface">
+            {activeSuspensions.length}
+          </div>
+          <div className="mt-1 text-[11px] text-amber-700 dark:text-amber-300 font-medium">
+            {activeSuspensions.length > 0 ? 'Aguardam cumprimento' : 'Quadro disciplinar limpo'}
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════ 3. BODY 65% / 35% (HTML SPEC) ══════════════════ */}
+      <div className="grid grid-cols-1 gap-lg lg:grid-cols-12 mt-lg">
+        {/* ── COLUNA PRINCIPAL (65% -> col-span-8) ── */}
+        <div className="space-y-lg lg:col-span-8">
+          {/* Card: Jogos Recentes */}
+          <Card variant="flat" padding="none" className="border-outline-variant/30">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-outline-variant/20 px-md py-sm">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <Flame className="h-4 w-4 text-amber-600" />
+                <span>Jogos recentes</span>
+              </CardTitle>
+              <Button asChild variant="link" size="sm" className="text-xs text-primary p-0">
+                <Link to={competitionRoutes.schedule(competitionId)} className="flex items-center gap-1">
+                  <span>Ver todos</span>
+                  <span>→</span>
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingRounds ? (
+                <div className="space-y-sm p-md">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-12 w-full rounded-xl" />
+                  ))}
+                </div>
+              ) : recentMatches.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-xl text-center text-on-surface-variant">
+                  <Calendar className="h-10 w-10 opacity-30 mb-2" />
+                  <p className="text-sm font-semibold">Nenhum jogo registado recentemente</p>
+                  <p className="text-xs opacity-75 mt-1">Gere ou agende partidas no calendário oficial.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-outline-variant/10">
+                  {recentMatches.map((m) => (
+                    <div
+                      key={m.id}
+                      className="flex items-center justify-between px-md py-3 text-xs transition-colors hover:bg-surface-container-high/40"
+                    >
+                      <div className="font-semibold text-on-surface text-sm">
+                        {m.home_club_name || 'Equipa A'}{' '}
+                        <span className="text-on-surface-variant font-normal text-xs">vs</span>{' '}
+                        {m.away_club_name || 'Equipa B'}
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className="font-bold text-sm min-w-[36px] text-center text-on-surface">
+                          {m.home_score != null && m.away_score != null
+                            ? `${m.home_score} – ${m.away_score}`
+                            : '– : –'}
+                        </span>
+                        {getMatchStatusBadge(m.status)}
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-outline-variant/20 bg-surface-container-high text-xs">
-                      <th className="w-8 px-md py-sm text-center font-semibold text-on-surface-variant">#</th>
-                      <th className="px-md py-sm text-left font-semibold text-on-surface-variant">Clube</th>
-                      <th className="px-md py-sm text-right font-semibold text-on-surface-variant">Inscrição</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {standings.slice(0, 6).map((s, idx) => (
-                      <tr
-                        key={s.id ?? idx}
-                        className="border-b border-outline-variant/10 transition-colors last:border-0 hover:bg-surface-container-high/50"
-                      >
-                        <td className="px-md py-sm text-center text-xs font-semibold text-on-surface-variant">{idx + 1}</td>
-                        <td className="px-md py-sm font-medium text-on-surface">{s.club_name}</td>
-                        <td className="px-md py-sm text-right text-xs text-on-surface-variant">Inscrito</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* ── Right Column ──────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-lg lg:col-span-5">
-
-          {/* Quick Actions */}
-          <Card variant="flat" padding="md">
-            <CardHeader className="pb-sm">
-              <CardTitle>Ações Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-sm">
-              <QuickAction
-                label="Configurações"
-                description="Editar dados e estado da competição"
-                href={competitionRoutes.settings(competitionId)}
-                icon={<Settings className="h-4 w-4" />}
-              />
-              <QuickAction
-                label="Inscrições de Clubes"
-                description="Gerir clubes inscritos"
-                href={competitionRoutes.registration(competitionId)}
-                icon={<Shield className="h-4 w-4" />}
-              />
-              <QuickAction
-                label="Calendário de Jogos"
-                description="Gerar e gerir partidas"
-                href={competitionRoutes.schedule(competitionId)}
-                icon={<Calendar className="h-4 w-4" />}
-              />
-              <QuickAction
-                label="Suspensões"
-                description={activeSuspensions.length > 0 ? `${activeSuspensions.length} suspensão(ões) ativas` : 'Gerir suspensões de jogadores'}
-                href={competitionRoutes.adminSuspensions(competitionId)}
-                icon={<Users className="h-4 w-4" />}
-              />
+              )}
             </CardContent>
           </Card>
 
-          {/* Top Scorer Highlight */}
-          {!loadingScorers && topScorer && (
-            <Card variant="flat" padding="md">
-              <CardHeader className="pb-sm">
-                <CardTitle className="flex items-center gap-sm">
-                  <Target className="h-4 w-4 text-primary" />
-                  Melhor Marcador
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between gap-md">
-                  <div>
-                    <p className="font-semibold text-on-surface">{topScorer.player_name}</p>
-                    <p className="text-xs text-on-surface-variant">{topScorer.club_name}</p>
-                  </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <span className="text-lg font-bold text-primary">{topScorer.goals}</span>
-                  </div>
+          {/* Card: Classificação (Top 4) */}
+          <Card variant="flat" padding="none" className="border-outline-variant/30">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-outline-variant/20 px-md py-sm">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <Target className="h-4 w-4 text-primary" />
+                <span>Classificação (Top 4)</span>
+              </CardTitle>
+              <Button asChild variant="link" size="sm" className="text-xs text-primary p-0">
+                <Link to={competitionRoutes.adminRankings(competitionId)} className="flex items-center gap-1">
+                  <span>Ver completa</span>
+                  <span>→</span>
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingStandings ? (
+                <div className="space-y-sm p-md">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} className="h-10 w-full rounded-xl" />
+                  ))}
                 </div>
-                <Button asChild variant="link" size="sm" className="mt-sm text-xs p-0">
-                  <Link to={competitionRoutes.adminRankings(competitionId)}>
-                    Ver todos os marcadores →
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+              ) : standings.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-xl text-center text-on-surface-variant">
+                  <Trophy className="h-10 w-10 opacity-30 mb-2" />
+                  <p className="text-sm font-semibold">Sem dados de classificação</p>
+                  <p className="text-xs opacity-75 mt-1">Inscreva clubes e realize os jogos para pontuar.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-outline-variant/10">
+                  {standings.slice(0, 4).map((s, idx) => (
+                    <div
+                      key={s.id ?? idx}
+                      className="flex items-center justify-between px-md py-2.5 text-xs transition-colors hover:bg-surface-container-high/40"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-5 text-center font-bold text-on-surface-variant text-xs">
+                          {idx + 1}
+                        </span>
+                        {s.club_logo ? (
+                          <img
+                            src={s.club_logo}
+                            alt={s.club_name}
+                            className="h-6 w-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
+                            {s.club_name.charAt(0)}
+                          </div>
+                        )}
+                        <span className="font-semibold text-on-surface text-sm">
+                          {s.club_name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] text-on-surface-variant">
+                          {s.played}J · {s.won}V {s.drawn}E {s.lost}D
+                        </span>
+                        <span className="rounded-md bg-primary/10 px-2 py-0.5 font-bold text-xs text-primary">
+                          {s.points} pts
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Leader Highlight */}
-          {!loadingStandings && leader && (
-            <Card variant="flat" padding="md">
-              <CardHeader className="pb-sm">
-                <CardTitle className="flex items-center gap-sm">
-                  <Trophy className="h-4 w-4 text-amber-500" />
-                  {isCup ? 'Clube em Destaque' : isTournament ? 'Líder Geral' : 'Líder da Classificação'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between gap-md">
+        {/* ── COLUNA LATERAL (35% -> col-span-4) ── */}
+        <div className="space-y-lg lg:col-span-4">
+          {/* Card: Ações Rápidas (Grid 2x2 do Protótipo) */}
+          <Card variant="flat" padding="none" className="border-outline-variant/30">
+            <CardHeader className="border-b border-outline-variant/20 px-md py-sm">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                <Flame className="h-4 w-4 text-amber-500" />
+                <span>Ações rápidas</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-sm">
+              <div className="grid grid-cols-2 gap-2">
+                {/* 1. Agendar Jogo */}
+                <Link
+                  to={competitionRoutes.schedule(competitionId)}
+                  className="flex flex-col gap-1.5 rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 transition-all hover:bg-surface-container hover:border-primary/40 group"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <Calendar className="h-4 w-4" />
+                  </div>
                   <div>
-                    <p className="font-semibold text-on-surface">{leader.club_name}</p>
-                    <p className="text-xs text-on-surface-variant">
-                      {isCup ? 'Participante na Taça' : `${leader.played} jogos • ${leader.won}V ${leader.drawn}E ${leader.lost}D`}
+                    <p className="text-xs font-semibold text-on-surface">Agendar jogo</p>
+                    <p className="text-[10px] text-on-surface-variant">Nova partida</p>
+                  </div>
+                </Link>
+
+                {/* 2. Suspensões */}
+                <Link
+                  to={competitionRoutes.adminSuspensions(competitionId)}
+                  className="flex flex-col gap-1.5 rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 transition-all hover:bg-surface-container hover:border-rose-500/40 group"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                    <AlertTriangle className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface">Suspensão</p>
+                    <p className="text-[10px] text-on-surface-variant">Registar</p>
+                  </div>
+                </Link>
+
+                {/* 3. Inscrições */}
+                <Link
+                  to={competitionRoutes.registration(competitionId)}
+                  className="flex flex-col gap-1.5 rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 transition-all hover:bg-surface-container hover:border-blue-500/40 group"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface">Inscrições</p>
+                    <p className="text-[10px] text-on-surface-variant">Gerir clubes</p>
+                  </div>
+                </Link>
+
+                {/* 4. Regulamento */}
+                <Link
+                  to={competitionRoutes.adminRegulations(competitionId)}
+                  className="flex flex-col gap-1.5 rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 transition-all hover:bg-surface-container hover:border-emerald-500/40 group"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface">Regulamento</p>
+                    <p className="text-[10px] text-on-surface-variant">Actualizar</p>
+                  </div>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Card: Atividade Recente */}
+          <Card variant="flat" padding="none" className="border-outline-variant/30">
+            <CardHeader className="border-b border-outline-variant/20 px-md py-sm">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span>Atividade recente</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-md space-y-3">
+              {recentMatches.length > 0 ? (
+                recentMatches.slice(0, 2).map((m) => (
+                  <div key={m.id} className="flex gap-2.5 text-xs">
+                    <span className="h-2 w-2 rounded-full bg-amber-600 mt-1 shrink-0" />
+                    <div>
+                      <p className="font-semibold text-on-surface">Jogo Concluído</p>
+                      <p className="text-[11px] text-on-surface-variant">
+                        {m.home_club_name} {m.home_score} – {m.away_score} {m.away_club_name}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : null}
+
+              {activeSuspensions.length > 0 ? (
+                <div className="flex gap-2.5 text-xs">
+                  <span className="h-2 w-2 rounded-full bg-rose-500 mt-1 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-on-surface">Suspensão Registada</p>
+                    <p className="text-[11px] text-on-surface-variant">
+                      {activeSuspensions[0].player_name} · {activeSuspensions[0].matches_remaining} jogo(s)
                     </p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
-                    <span className="text-lg font-bold text-amber-600">
-                      {isCup ? '🏆' : leader.points}
-                    </span>
+                </div>
+              ) : null}
+
+              <div className="flex gap-2.5 text-xs">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 mt-1 shrink-0" />
+                <div>
+                  <p className="font-semibold text-on-surface">Quadro de Prova Sincronizado</p>
+                  <p className="text-[11px] text-on-surface-variant">
+                    {competition?.name} · {competition?.season}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Destaque: Melhor Marcador */}
+          {!loadingScorers && topScorers[0] && (
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-md">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary font-bold">
+                    <Trophy className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-on-surface">{topScorers[0].player_name}</p>
+                    <p className="text-[11px] text-on-surface-variant">{topScorers[0].club_name}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="text-right">
+                  <span className="text-xl font-bold text-primary">{topScorers[0].goals}</span>
+                  <p className="text-[10px] text-on-surface-variant">golos marcados</p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

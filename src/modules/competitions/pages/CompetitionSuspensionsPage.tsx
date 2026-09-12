@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AlertTriangle, Loader2, Plus, User as UserIcon, X } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -7,7 +7,7 @@ import { useSuspensions, useCancelSuspension, useCreateSuspension } from '../hoo
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import type { Suspension, SuspensionType, ManualSuspensionCreateData } from '../types'
 
 const SUSPENSION_TYPE_LABELS: Record<SuspensionType, string> = {
@@ -223,7 +223,6 @@ function ManualSuspensionForm({
 export function CompetitionSuspensionsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
   const { isAdmin } = useCompetitionAccess()
   const [showForm, setShowForm] = useState(false)
 
@@ -233,12 +232,17 @@ export function CompetitionSuspensionsPage() {
   const active = (suspensions as Suspension[]).filter(s => s.is_active)
   const past = (suspensions as Suspension[]).filter(s => !s.is_active)
 
+  const sidebarSections = useMemo(
+    () => getCompetitionSidebarSections(competitionId, { activeSuspensions: active.length }),
+    [competitionId, active.length]
+  )
+
   return (
     <DashboardLayout
       title="Suspensões"
       subtitle={!loadingComp && competition ? `${competition.name} — ${competition.season}` : 'Consultar suspensões ativas e cumpridas.'}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <div className="flex items-center gap-sm">
           {isAdmin && (

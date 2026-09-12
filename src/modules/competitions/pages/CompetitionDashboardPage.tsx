@@ -1,16 +1,15 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button } from '@/components/ui'
 import { useDashboardOverview } from '@/modules/dashboards/hooks/useDashboard'
-import { dashboardRoutes } from '@/modules/dashboards/routes'
 import { ROUTES } from '@/constants'
+import { getCompetitionSidebarSections } from '../constants/navigation'
+import { competitionRoutes } from '../routes'
 import { 
-  Home, 
   Trophy, 
   Calendar, 
-  Gavel, 
-  MapPin, 
-  ShieldAlert, 
+  Gavel,
   ArrowRight,
   TrendingUp,
   Loader2,
@@ -28,15 +27,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
 export function CompetitionDashboardPage() {
   const { data, isLoading } = useDashboardOverview()
 
-  const sidebarLinks = [
-    { label: 'Painel', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
-    { label: 'Competições',       href: dashboardRoutes.competition, icon: <Trophy className="w-5 h-5" />, active: true },
-    { label: 'Torneios',              href: ROUTES.DASHBOARD_COMPETITIONS_LIST, icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Partidas',              href: ROUTES.DASHBOARD_COMPETITIONS_MATCHES, icon: <Calendar className="w-5 h-5" /> },
-    { label: 'Árbitros',              href: dashboardRoutes.competition, icon: <Gavel className="w-5 h-5" />, disabled: true },
-    { label: 'Estádios',              href: dashboardRoutes.competition, icon: <MapPin className="w-5 h-5" />, disabled: true },
-    { label: 'Conformidade',          href: dashboardRoutes.competition, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
-  ]
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])
 
   const headerActions = (
     <Button asChild size="sm">
@@ -70,7 +61,7 @@ export function CompetitionDashboardPage() {
       title="Organizador de Competições"
       subtitle="Gestão desportiva de torneios, escalamento de arbitragem, vistorias de recintos e conformidade técnica."
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={headerActions}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-lg">
@@ -104,7 +95,7 @@ export function CompetitionDashboardPage() {
                   return (
                     <Link
                       key={comp.id}
-                      to={ROUTES.COMPETITION_SETTINGS(comp.id)}
+                      to={competitionRoutes.adminDashboard(comp.id)}
                       className="p-3 bg-surface-container rounded-lg border border-outline/30 flex items-center justify-between hover:border-primary/40 hover:bg-surface-container-high transition-all group"
                     >
                       <div className="flex items-center gap-sm min-w-0">

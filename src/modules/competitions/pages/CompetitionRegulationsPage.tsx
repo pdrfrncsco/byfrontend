@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { BookOpen, ExternalLink, FileText, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -6,7 +6,7 @@ import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/compo
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionAccess } from '../hooks/useCompetitionAccess'
 import { useRegulations, useCreateRegulation, useDeleteRegulation } from '../hooks/useCompetitionAdvanced'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import type { CompetitionRegulation, CompetitionRegulationCreateData, RegulationStatus } from '../types'
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
@@ -219,7 +219,7 @@ function RegulationForm({ competitionId, onClose }: { competitionId: string; onC
 export function CompetitionRegulationsPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
   const { isAdmin } = useCompetitionAccess()
   const [showForm, setShowForm] = useState(false)
 
@@ -239,7 +239,7 @@ export function CompetitionRegulationsPage() {
           : 'Gerir regulamentos da competição.'
       }
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         isAdmin ? (
           <Button

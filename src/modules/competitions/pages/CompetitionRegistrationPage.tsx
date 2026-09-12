@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Users, Loader2, Shield } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -7,7 +8,7 @@ import { useCompetitionStandings, useRegisterClub } from '../hooks/useCompetitio
 import { useCompetition } from '../hooks/useCompetitions'
 import { useOrganizationMe, useOrganizationClubs } from '@/modules/organizations/hooks'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import type { Standing } from '../types'
 
 /**
@@ -18,7 +19,7 @@ import type { Standing } from '../types'
 export function CompetitionRegistrationPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
@@ -33,7 +34,7 @@ export function CompetitionRegistrationPage() {
         title="Inscrição de Clubes"
         subtitle="Gerir os clubes participantes desta competição."
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <Card variant="flat" padding="lg" className="space-y-sm">
           <div className="h-5 w-48 rounded-full bg-surface-container-high animate-pulse" />
@@ -48,7 +49,7 @@ export function CompetitionRegistrationPage() {
       title="Inscrição de Clubes"
       subtitle={competition ? `${competition.name} — ${competition.season}` : 'Gerir os clubes participantes desta competição.'}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={competitionRoutes.detail(competitionId)}>

@@ -14,13 +14,10 @@ import { competitionRoutes } from '../routes'
 import { ROUTES } from '@/constants/routes'
 import {
   Trophy,
-  Home,
   Calendar,
-  Gavel,
-  MapPin,
-  ShieldAlert,
   Search,
 } from 'lucide-react'
+import { getCompetitionSidebarSections } from '../constants/navigation'
 import { useOrganizationMe, useOrganizationTournaments } from '@/modules/organizations/hooks'
 import { competitionApi } from '../services/competition.api'
 import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
@@ -99,15 +96,7 @@ export function CompetitionMatchesPage() {
 
   const liveCount = matches.filter(match => match.status === 'live' || match.status === 'halftime').length
 
-  const sidebarLinks = [
-    { label: 'Painel da Organização', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Home className="w-5 h-5" /> },
-    { label: 'Geral de Provas', href: ROUTES.DASHBOARD_COMPETITION, icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Torneios', href: ROUTES.DASHBOARD_COMPETITIONS_LIST, icon: <Trophy className="w-5 h-5" /> },
-    { label: 'Partidas', href: ROUTES.DASHBOARD_COMPETITIONS_MATCHES, icon: <Calendar className="w-5 h-5" />, active: true },
-    { label: 'Árbitros', href: ROUTES.DASHBOARD_COMPETITION, icon: <Gavel className="w-5 h-5" />, disabled: true },
-    { label: 'Estádios', href: ROUTES.DASHBOARD_COMPETITION, icon: <MapPin className="w-5 h-5" />, disabled: true },
-    { label: 'Conformidade', href: ROUTES.DASHBOARD_COMPETITION, icon: <ShieldAlert className="w-5 h-5" />, disabled: true },
-  ]
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])
 
   const columns = useMemo<ColumnDef<Match>[]>(
     () => [
@@ -201,7 +190,7 @@ export function CompetitionMatchesPage() {
       title="Partidas"
       subtitle="Gerencie todas as partidas da organização"
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
     >
       <div className="animate-fade-in">
         {isLoading ? (

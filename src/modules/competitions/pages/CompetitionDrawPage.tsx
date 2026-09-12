@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Trophy, HelpCircle, Loader2, Sparkles, Check } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -9,7 +9,7 @@ import { useCompetitionStandings } from '../hooks/useCompetitionMatches'
 import { useDraw } from '../hooks/useCompetitionAdvanced'
 import { drawGroups, shuffle } from '../utils/draw-engine'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 
 /**
  * CompetitionDrawPage — Sorteio de grupos (Torneio) e chaves (Taça).
@@ -19,12 +19,12 @@ export function CompetitionDrawPage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
   const navigate = useNavigate()
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const { isLeague, isTournament, isCup, tournamentConfig, cupConfig } = useCompetitionConfig(competitionId)
   const { data: standings = [], isLoading: loadingStandings } = useCompetitionStandings(competitionId)
-  
+
   const drawMutation = useDraw(competitionId)
 
   const [previewGroups, setPreviewGroups] = useState<any[][]>([])
@@ -54,7 +54,7 @@ export function CompetitionDrawPage() {
       }
       setIsDrawing(false)
       setDone(true)
-    }, 1200) // Delay to simulate shuffling animation
+    }, 1200)
   }
 
   const handleConfirmDraw = () => {
@@ -71,7 +71,7 @@ export function CompetitionDrawPage() {
         title="Sorteio da Competição"
         subtitle="Gerir sorteio de equipas e emparelhamentos."
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <Card variant="flat" padding="lg" className="space-y-sm">
           <div className="h-5 w-48 rounded-full bg-surface-container-high animate-pulse" />
@@ -86,7 +86,7 @@ export function CompetitionDrawPage() {
       title="Sorteio Oficial"
       subtitle={competition ? `${competition.name} — Realizar sorteio de chaves/grupos` : 'Sorteio de equipas.'}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={competitionRoutes.detail(competitionId)}>
@@ -101,7 +101,7 @@ export function CompetitionDrawPage() {
           <HelpCircle className="h-12 w-12 text-primary mx-auto opacity-70" />
           <h3 className="text-lg font-bold text-on-surface">Não é necessário Sorteio</h3>
           <p className="text-sm text-on-surface-variant leading-relaxed">
-            Esta competição está configurada no formato de **Campeonato (Liga)**. 
+            Esta competição está configurada no formato de <strong>Campeonato (Liga)</strong>. 
             Neste formato, todos os clubes jogam entre si num único grupo e o calendário pode ser gerado diretamente.
           </p>
           <Button asChild variant="primary" className="mt-md">
@@ -119,8 +119,8 @@ export function CompetitionDrawPage() {
             </CardHeader>
             <CardContent className="space-y-md">
               <p className="text-sm text-on-surface-variant leading-relaxed">
-                Antes de gerar o calendário de partidas de um **{isCup ? 'Taça' : 'Torneio'}**, deve realizar o sorteio oficial 
-                das equipas inscritas. Estão atualmente inscritos **{standings.length} clubes**.
+                Antes de gerar o calendário de partidas de um <strong>{isCup ? 'Taça' : 'Torneio'}</strong>, deve realizar o sorteio oficial 
+                das equipas inscritas. Estão atualmente inscritos <strong>{standings.length} clubes</strong>.
               </p>
 
               {standings.length < 2 ? (

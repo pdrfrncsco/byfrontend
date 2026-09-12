@@ -24,7 +24,7 @@ import {
   MatchScoreWidget,
 } from '@/modules/shared/components/sport'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useMatchCenter } from '../hooks/useMatchCenter'
 import { useCompetitionRounds } from '../hooks/useCompetitionMatches'
@@ -67,6 +67,7 @@ export function MatchCenterPage() {
   const { isAdmin } = useCompetitionAccess()
   const location = useLocation()
   const isDashboard = location.pathname.startsWith('/dashboard')
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
   const compSlugOrId = competition?.slug || competitionId
@@ -127,7 +128,6 @@ export function MatchCenterPage() {
 
   const typeLabel = competition ? (TYPE_LABELS[competition.competition_type] ?? competition.competition_type) : ''
   const statusLabel = competition ? (STATUS_LABELS[competition.status] ?? competition.status) : ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
 
   // Round navigation step helpers
   const handlePrevRound = () => {
@@ -381,7 +381,7 @@ export function MatchCenterPage() {
         title="Centro de Jogos"
         subtitle={competition?.name ? `${competition.name} • Partidas por jornada` : 'Partidas por jornada'}
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         {renderContent()}
       </DashboardLayout>

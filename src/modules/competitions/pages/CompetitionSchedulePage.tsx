@@ -16,7 +16,7 @@ import {
   type GenerateScheduleFormData,
 } from '../schemas'
 import { competitionRoutes } from '../routes'
-import { getCompetitionSidebarLinks } from '../constants'
+import { getCompetitionSidebarSections } from '../constants'
 import { MatchCard } from '../components/MatchCard'
 import type { Match } from '../types'
 import type { CompetitionRoundView } from '../hooks/useCompetitionMatches'
@@ -28,7 +28,7 @@ import type { CompetitionRoundView } from '../hooks/useCompetitionMatches'
 export function CompetitionSchedulePage() {
   const { id } = useParams<{ id: string }>()
   const competitionId = id ?? ''
-  const sidebarLinks = getCompetitionSidebarLinks(competitionId)
+  const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
   const { isLeague, isCup, isTournament } = useCompetitionConfig(competitionId)
 
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
@@ -41,6 +41,7 @@ export function CompetitionSchedulePage() {
   const [generated, setGenerated] = useState(false)
   const [manualCreated, setManualCreated] = useState(false)
   const [quickCreateLabel, setQuickCreateLabel] = useState<string | null>(null)
+  const [selectedRoundFilter, setSelectedRoundFilter] = useState<number | 'all'>('all')
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null)
   const [editHomeScore, setEditHomeScore] = useState<string>('')
   const [editAwayScore, setEditAwayScore] = useState<string>('')
@@ -48,6 +49,10 @@ export function CompetitionSchedulePage() {
   const createMatchCardRef = useRef<HTMLDivElement | null>(null)
 
   const rounds = roundsView?.rounds ?? []
+  const displayedRounds = useMemo(() => {
+    if (selectedRoundFilter === 'all') return rounds
+    return rounds.filter((r) => r.number === selectedRoundFilter)
+  }, [rounds, selectedRoundFilter])
   const registeredClubs = useMemo(
     () =>
       standings
@@ -275,7 +280,7 @@ export function CompetitionSchedulePage() {
         title="Calendário e Partidas"
         subtitle="Configurar calendário e gerir partidas da competição."
         dashboardType="competition"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <Card variant="flat" padding="lg" className="space-y-sm">
           <div className="h-5 w-48 rounded-full bg-surface-container-high animate-pulse" />
@@ -291,7 +296,7 @@ export function CompetitionSchedulePage() {
       title="Calendário e Partidas"
       subtitle={competition ? `${competition.name} — ${competition.season}` : 'Configurar calendário e gerir partidas da competição.'}
       dashboardType="competition"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={competitionRoutes.detail(competitionId)}>
@@ -680,7 +685,36 @@ export function CompetitionSchedulePage() {
               </div>
             ) : (
               <div className="space-y-xl">
-                {rounds.map((round) => (
+                {rounds.length > 1 && (
+                  <div className="flex items-center gap-xs overflow-x-auto pb-xs pt-1 scrollbar-none border-b border-outline-variant/10">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRoundFilter('all')}
+                      className={`px-md py-xs rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                        selectedRoundFilter === 'all'
+                          ? 'bg-primary text-on-primary shadow-sm'
+                          : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                      }`}
+                    >
+                      Todas ({rounds.length})
+                    </button>
+                    {rounds.map((round) => (
+                      <button
+                        key={round.id}
+                        type="button"
+                        onClick={() => setSelectedRoundFilter(round.number)}
+                        className={`px-md py-xs rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                          selectedRoundFilter === round.number
+                            ? 'bg-primary text-on-primary shadow-sm'
+                            : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                        }`}
+                      >
+                        {getRoundDisplayLabel(round)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {displayedRounds.map((round) => (
                   <div key={round.id} className="space-y-sm">
                     <h3 className="flex flex-wrap items-center justify-between gap-sm text-sm font-semibold text-on-surface-variant">
                       <span className="inline-flex items-center rounded-full bg-primary-container/20 px-sm py-0.5 text-xs font-bold text-primary">
