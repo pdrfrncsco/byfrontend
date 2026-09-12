@@ -4,10 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { resolveMediaUrl } from '@/lib/media'
 import {
   Activity,
+  ArrowRight,
   Award,
   ExternalLink,
   FileText,
+  GraduationCap,
   Handshake,
+  HeartPulse,
   LayoutDashboard,
   Settings,
   Sparkles,
@@ -24,7 +27,6 @@ import {
   PlayerCareerTimeline,
   PlayerDocumentsTab,
   PlayerVideosTab,
-  PlayerDashboardSections,
 } from '../components'
 import { usePlayerMe } from '../hooks'
 import { playerRoutes } from '../routes'
@@ -222,7 +224,87 @@ export function PlayerDashboardPage() {
           </Card>
         </div>
 
-        <PlayerDashboardSections slug={player.slug} playerId={player.id} />
+        {/* Quick Access Cockpit Cards to Dedicated Pages */}
+        <div className="space-y-sm pt-md">
+          <div className="flex flex-col gap-xs sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="text-lg font-bold text-on-surface">Dossiês e Gestão Especializada</h3>
+            <p className="text-xs text-on-surface-variant">Aceda aos módulos dedicados através do menu lateral</p>
+          </div>
+
+          <div className="grid gap-md md:grid-cols-3">
+            {/* Career Card */}
+            <Card variant="flat" padding="none" className="group border border-outline-variant/30 transition-all hover:border-primary/50 hover:shadow-sm">
+              <CardContent className="p-lg space-y-md">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-xl bg-primary/10 p-sm text-primary">
+                    <GraduationCap className="h-6 w-6" />
+                  </div>
+                  <Badge variant="outline">FIFA EPP</Badge>
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-on-surface">Carreira & Formação</h4>
+                  <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">
+                    Histórico de épocas federadas, clubes formadores e cálculo de solidariedade FIFA.
+                  </p>
+                </div>
+                <Button asChild variant="secondary" size="sm" className="w-full justify-between text-xs">
+                  <Link to={playerRoutes.career}>
+                    Ver Dossiê de Carreira
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Contracts Card */}
+            <Card variant="flat" padding="none" className="group border border-outline-variant/30 transition-all hover:border-primary/50 hover:shadow-sm">
+              <CardContent className="p-lg space-y-md">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-xl bg-emerald-500/10 p-sm text-emerald-500">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <Badge variant="outline">Jurídico</Badge>
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-on-surface">Contratos & Agentes</h4>
+                  <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">
+                    Vínculos contratuais, cláusulas de rescisão, vencimentos e representação licenciada.
+                  </p>
+                </div>
+                <Button asChild variant="secondary" size="sm" className="w-full justify-between text-xs">
+                  <Link to={playerRoutes.contracts}>
+                    Gerir Contratos
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Medical Card */}
+            <Card variant="flat" padding="none" className="group border border-outline-variant/30 transition-all hover:border-primary/50 hover:shadow-sm">
+              <CardContent className="p-lg space-y-md">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-xl bg-red-500/10 p-sm text-red-500">
+                    <HeartPulse className="h-6 w-6" />
+                  </div>
+                  <Badge variant="outline">Saúde & Exames</Badge>
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-on-surface">Dossiê Médico</h4>
+                  <p className="mt-1 text-xs text-on-surface-variant line-clamp-2">
+                    Aptidão desportiva, atestados médicos, historial de lesões e exames periódicos.
+                  </p>
+                </div>
+                <Button asChild variant="secondary" size="sm" className="w-full justify-between text-xs">
+                  <Link to={playerRoutes.medical}>
+                    Aceder ao Registo Médico
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   )

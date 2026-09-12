@@ -20,3 +20,6 @@ export {
 } from './PlayerOnboardingSupplementalPage'
 export { PlayerOnboardingCompletePage } from './onboarding/PlayerOnboardingCompletePage'
 export { PlayerComparisonPage } from './PlayerComparisonPage'
+export { PlayerCareerPage } from './PlayerCareerPage'
+export { PlayerContractsPage } from './PlayerContractsPage'
+export { PlayerMedicalPage } from './PlayerMedicalPage'

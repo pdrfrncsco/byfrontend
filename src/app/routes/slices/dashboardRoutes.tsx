@@ -49,6 +49,15 @@ const OrganizationLineupSubmissionsPage = lazy(() => import('@/modules/organizat
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({ default: m.PlayerDashboardPage })),
 )
+const PlayerCareerPage = lazy(() =>
+  import('@/modules/players/pages/PlayerCareerPage').then((m) => ({ default: m.PlayerCareerPage })),
+)
+const PlayerContractsPage = lazy(() =>
+  import('@/modules/players/pages/PlayerContractsPage').then((m) => ({ default: m.PlayerContractsPage })),
+)
+const PlayerMedicalPage = lazy(() =>
+  import('@/modules/players/pages/PlayerMedicalPage').then((m) => ({ default: m.PlayerMedicalPage })),
+)
 const PlayerDashboardSettingsPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardSettingsPage').then((m) => ({ default: m.PlayerDashboardSettingsPage })),
 )
@@ -143,6 +152,30 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive']}>
             <Suspense fallback={<RouteFallback />}><PlayerDashboardPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.career}
+        element={
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive']}>
+            <Suspense fallback={<RouteFallback />}><PlayerCareerPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.contracts}
+        element={
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive']}>
+            <Suspense fallback={<RouteFallback />}><PlayerContractsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.medical}
+        element={
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive', 'doctor', 'medical_staff']}>
+            <Suspense fallback={<RouteFallback />}><PlayerMedicalPage /></Suspense>
           </ProtectedRoute>
         }
       />

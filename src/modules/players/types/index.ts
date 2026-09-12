@@ -906,7 +906,9 @@ export interface PlayerMedicalProfile {
   id: string
   player: string
   blood_type: BloodType
+  blood_type_label?: string
   medical_status: MedicalStatus
+  medical_status_label?: string
   injury_status: string | null
   medical_clearance: boolean
   fitness_status: string | null
