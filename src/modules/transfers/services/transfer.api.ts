@@ -124,7 +124,21 @@ export const transferApi = {
   },
 
   async create(data: CreateTransferPayload): Promise<Transfer> {
-    const response = await client.post<Envelope<Transfer>>(BASE.CREATE, data)
+    const payload = {
+      player_id: data.player_id,
+      to_club_id: data.to_club_id,
+      transfer_date: data.transfer_date || data.joined_date,
+      joined_date: data.joined_date || data.transfer_date,
+      from_club_id: data.transfer_type === 'free_agent' ? null : (data.from_club_id || null),
+      competition_id: data.competition_id || null,
+      shirt_number: data.shirt_number ? Number(data.shirt_number) : null,
+      fee: data.fee != null && data.fee !== '' ? Number(data.fee) : null,
+      transfer_type: data.transfer_type,
+      loan_end_date: data.transfer_type === 'loan' ? (data.loan_end_date || null) : null,
+      salary_contribution: Boolean(data.salary_contribution),
+      notes: data.notes || '',
+    }
+    const response = await client.post<Envelope<Transfer>>(BASE.CREATE, payload)
     return normalizeTransfer(unwrapData(response.data))
   },
 

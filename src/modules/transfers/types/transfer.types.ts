@@ -56,7 +56,10 @@ export interface CreateTransferPayload {
   to_club_id: string
   from_club_id?: string | null
   transfer_type?: TransferType
-  transfer_date: string
+  transfer_date?: string
+  joined_date?: string
+  shirt_number?: number | null
+  competition_id?: string | null
   loan_end_date?: string | null
   salary_contribution?: boolean
   fee?: number | string | null

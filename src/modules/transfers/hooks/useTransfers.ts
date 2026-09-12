@@ -15,8 +15,26 @@ export const transferKeys = {
 }
 
 function errorMessage(error: unknown, fallback: string) {
-  const data = (error as { response?: { data?: { error?: string; message?: string } } })?.response?.data
-  return data?.error || data?.message || fallback
+  const data = (error as { response?: { data?: unknown } })?.response?.data
+  if (!data) return fallback
+  if (typeof data === 'string') return data
+  if (typeof data === 'object') {
+    const d = data as Record<string, unknown>
+    if (typeof d.error === 'string') return d.error
+    if (typeof d.message === 'string') return d.message
+    if (typeof d.detail === 'string') return d.detail
+    const firstKey = Object.keys(d)[0]
+    if (firstKey) {
+      const val = d[firstKey]
+      if (Array.isArray(val) && typeof val[0] === 'string') {
+        return firstKey !== 'non_field_errors' ? `${firstKey}: ${val[0]}` : val[0]
+      }
+      if (typeof val === 'string') {
+        return firstKey !== 'non_field_errors' ? `${firstKey}: ${val}` : val
+      }
+    }
+  }
+  return fallback
 }
 
 export function useTransfers(params?: TransferListParams) {
