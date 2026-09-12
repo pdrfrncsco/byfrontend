@@ -12,12 +12,10 @@ import {
   User,
   Footprints,
   Maximize2,
-  Weight,
 } from 'lucide-react'
 import { resolveMediaUrl } from '@/lib/media'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import type { ClubMember, ClubSquadMember } from '@/modules/clubs/types'
 import { usePlayer } from '@/modules/players/hooks/usePlayerQueries'
 import { getPositionAccentColor, getStatusBadgeConfig } from './ClubSquadPlayerCard'
@@ -188,200 +186,204 @@ export function ClubPlayerPreviewModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       role="dialog"
       aria-modal="true"
       aria-labelledby="player-preview-title"
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface shadow-2xl animate-in zoom-in-95 duration-200"
+        className="relative flex w-full max-w-xl max-h-[92vh] flex-col overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface shadow-2xl animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top color header banner */}
+        {/* Subtle tactical color bar */}
         <div
-          className="relative h-28 w-full shrink-0 overflow-hidden"
+          className="h-1.5 w-full shrink-0"
           style={{
-            background: `linear-gradient(135deg, ${positionColor}dd, ${positionColor}44), #0f172a`,
+            background: `linear-gradient(90deg, ${positionColor}, ${positionColor}88 60%, transparent)`,
           }}
-        >
-          {/* Subtle dorsal watermark */}
-          {jerseyNumber !== null && (
-            <span className="absolute -right-2 -top-6 select-none font-mono text-8xl font-black text-white/10">
-              #{jerseyNumber}
-            </span>
-          )}
+        />
+
+        {/* Integrated Executive Header */}
+        <div className="flex items-start justify-between gap-3 border-b border-outline-variant/20 p-4 sm:p-5 bg-surface-container/25">
+          <div className="flex items-center gap-3.5 min-w-0">
+            {/* Avatar Squircle */}
+            <div
+              className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-surface bg-surface-container-high shadow-md"
+              style={{ backgroundColor: `${positionColor}18` }}
+            >
+              {avatarUrl && !imgError ? (
+                <img
+                  src={avatarUrl}
+                  alt={name}
+                  className="h-full w-full object-cover"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <span
+                  className="text-lg font-black select-none"
+                  style={{ color: positionColor }}
+                >
+                  {initials}
+                </span>
+              )}
+              {jerseyNumber !== null && (
+                <span className="absolute bottom-0.5 right-0.5 rounded-md bg-black/80 px-1 py-0.2 text-[9px] font-black font-mono text-white">
+                  #{jerseyNumber}
+                </span>
+              )}
+            </div>
+
+            {/* Info: Name, Badges, Dorsal */}
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <Badge
+                  variant="outline"
+                  className="px-2 py-0 text-[11px] font-semibold capitalize"
+                  style={{
+                    borderColor: `${positionColor}60`,
+                    color: positionColor,
+                    backgroundColor: `${positionColor}15`,
+                  }}
+                >
+                  {positionLabel}
+                </Badge>
+
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0 text-[11px] font-medium ${statusConfig.badgeClass}`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dotColor}`} />
+                  {statusLabel}
+                </span>
+
+                {clubName && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-outline-variant/30 bg-surface-container px-2 py-0 text-[11px] font-medium text-on-surface">
+                    <Shield className="h-3 w-3 text-primary" />
+                    <span>{clubName}</span>
+                  </span>
+                )}
+              </div>
+
+              <h2
+                id="player-preview-title"
+                className="truncate text-lg font-bold tracking-tight text-on-surface sm:text-xl"
+              >
+                {name}
+              </h2>
+
+              <p className="text-[11px] text-on-surface-variant flex items-center gap-1.5">
+                {jerseyNumber !== null ? (
+                  <span className="font-mono font-bold text-on-surface">Dorsal #{jerseyNumber}</span>
+                ) : (
+                  <span>Sem dorsal atribuída</span>
+                )}
+                {age !== null && (
+                  <>
+                    <span>•</span>
+                    <span>{age} anos</span>
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
 
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-colors hover:bg-black/60 hover:text-white"
+            className="shrink-0 flex h-7 w-7 items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors"
             aria-label="Fechar prévia"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Modal Body with Scroll */}
-        <div className="flex-1 overflow-y-auto px-lg pb-lg">
-          {/* Hero Identity Section */}
-          <div className="relative -mt-12 flex flex-col items-start gap-md sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-end gap-md">
-              {/* Avatar container */}
-              <div
-                className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-surface bg-surface-container-high shadow-lg"
-                style={{
-                  backgroundColor: `${positionColor}20`,
-                }}
-              >
-                {avatarUrl && !imgError ? (
-                  <img
-                    src={avatarUrl}
-                    alt={name}
-                    className="h-full w-full object-cover"
-                    onError={() => setImgError(true)}
-                  />
-                ) : (
-                  <span
-                    className="text-2xl font-black select-none"
-                    style={{ color: positionColor }}
-                  >
-                    {initials}
-                  </span>
-                )}
-                {jerseyNumber !== null && (
-                  <span className="absolute bottom-1 right-1 rounded-md bg-black/75 px-1.5 py-0.5 text-[10px] font-black font-mono text-white shadow-xs">
-                    #{jerseyNumber}
-                  </span>
-                )}
-              </div>
-
-              {/* Title & Roles */}
-              <div className="space-y-1">
-                <h2
-                  id="player-preview-title"
-                  className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl"
-                >
-                  {name}
-                </h2>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <Badge
-                    variant="outline"
-                    className="px-2.5 py-0.5 text-xs font-semibold capitalize"
-                    style={{
-                      borderColor: `${positionColor}60`,
-                      color: positionColor,
-                      backgroundColor: `${positionColor}15`,
-                    }}
-                  >
-                    {positionLabel}
-                  </Badge>
-
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusConfig.badgeClass}`}
-                  >
-                    <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dotColor}`} />
-                    {statusLabel}
-                  </span>
-                </div>
-              </div>
+        {/* Compact Performance Metrics Strip */}
+        <div className="grid grid-cols-4 gap-2 px-4 pt-3.5 sm:px-5">
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low p-2 text-center">
+            <div className="flex items-center justify-center gap-1 text-[11px] text-on-surface-variant">
+              <User className="h-3 w-3 text-blue-500" />
+              <span>Partidas</span>
             </div>
-
-            {/* Club Tag */}
-            {clubName && (
-              <div className="inline-flex items-center gap-1.5 rounded-xl border border-outline-variant/30 bg-surface-container px-3 py-1.5 text-xs font-medium text-on-surface">
-                <Shield className="h-3.5 w-3.5 text-primary" />
-                <span>{clubName}</span>
-              </div>
-            )}
+            <p className="mt-0.5 text-base font-bold text-on-surface">{matches}</p>
           </div>
 
-          {/* Quick Stats Grid */}
-          <div className="mt-lg grid grid-cols-2 gap-sm sm:grid-cols-4">
-            <Card variant="flat" padding="sm" className="text-center bg-surface-container/60 border-outline-variant/20">
-              <div className="flex items-center justify-center gap-1 text-xs text-on-surface-variant">
-                <User className="h-3.5 w-3.5 text-blue-500" />
-                <span>Partidas</span>
-              </div>
-              <p className="mt-1 text-xl font-black text-on-surface">{matches}</p>
-            </Card>
-
-            <Card variant="flat" padding="sm" className="text-center bg-surface-container/60 border-outline-variant/20">
-              <div className="flex items-center justify-center gap-1 text-xs text-on-surface-variant">
-                <Trophy className="h-3.5 w-3.5 text-amber-500" />
-                <span>Golos</span>
-              </div>
-              <p className="mt-1 text-xl font-black text-on-surface">{goals}</p>
-            </Card>
-
-            <Card variant="flat" padding="sm" className="text-center bg-surface-container/60 border-outline-variant/20">
-              <div className="flex items-center justify-center gap-1 text-xs text-on-surface-variant">
-                <Target className="h-3.5 w-3.5 text-emerald-500" />
-                <span>Assistências</span>
-              </div>
-              <p className="mt-1 text-xl font-black text-on-surface">{assists}</p>
-            </Card>
-
-            <Card variant="flat" padding="sm" className="text-center bg-surface-container/60 border-outline-variant/20">
-              <div className="flex items-center justify-center gap-1 text-xs text-on-surface-variant">
-                <Activity className="h-3.5 w-3.5 text-rose-500" />
-                <span>Cartões</span>
-              </div>
-              <p className="mt-1 text-xs font-semibold text-on-surface">
-                <span className="text-amber-500 font-bold">{yellowCards} Am.</span>
-                <span className="mx-1 text-on-surface-variant/40">•</span>
-                <span className="text-rose-500 font-bold">{redCards} Verm.</span>
-              </p>
-            </Card>
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low p-2 text-center">
+            <div className="flex items-center justify-center gap-1 text-[11px] text-on-surface-variant">
+              <Trophy className="h-3 w-3 text-amber-500" />
+              <span>Golos</span>
+            </div>
+            <p className="mt-0.5 text-base font-bold text-on-surface">{goals}</p>
           </div>
 
-          {/* Section: Dados Pessoais & Físicos */}
-          <div className="mt-lg space-y-md">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Ficha Técnica e Dados Pessoais
-            </h3>
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low p-2 text-center">
+            <div className="flex items-center justify-center gap-1 text-[11px] text-on-surface-variant">
+              <Target className="h-3 w-3 text-emerald-500" />
+              <span>Assistências</span>
+            </div>
+            <p className="mt-0.5 text-base font-bold text-on-surface">{assists}</p>
+          </div>
 
-            <div className="grid gap-sm sm:grid-cols-2">
-              <div className="flex items-center gap-md rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <MapPin className="h-5 w-5" />
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low p-2 text-center">
+            <div className="flex items-center justify-center gap-1 text-[11px] text-on-surface-variant">
+              <Activity className="h-3 w-3 text-rose-500" />
+              <span>Cartões</span>
+            </div>
+            <p className="mt-0.5 text-[11px] font-semibold text-on-surface leading-normal">
+              <span className="text-amber-600 font-bold">{yellowCards} Am.</span>
+              <span className="mx-1 text-on-surface-variant/40">•</span>
+              <span className="text-rose-600 font-bold">{redCards} Verm.</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Modal Body: Ficha Técnica & Vínculo */}
+        <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-5 space-y-3">
+          {/* Ficha Técnica: 2x2 Grid */}
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2">
+              Ficha Técnica & Biometria
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2 rounded-lg bg-surface-container/60 p-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <MapPin className="h-3.5 w-3.5" />
                 </div>
-                <div>
-                  <p className="text-xs text-on-surface-variant">Nacionalidade</p>
-                  <p className="text-sm font-semibold text-on-surface">{nationality}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-on-surface-variant">Nacionalidade</p>
+                  <p className="font-semibold text-on-surface truncate">{nationality}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-md rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Calendar className="h-5 w-5" />
+              <div className="flex items-center gap-2 rounded-lg bg-surface-container/60 p-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <Calendar className="h-3.5 w-3.5" />
                 </div>
-                <div>
-                  <p className="text-xs text-on-surface-variant">Idade / Nascimento</p>
-                  <p className="text-sm font-semibold text-on-surface">
+                <div className="min-w-0">
+                  <p className="text-[10px] text-on-surface-variant">Idade / Nascimento</p>
+                  <p className="font-semibold text-on-surface truncate">
                     {age !== null ? `${age} anos` : 'Idade N/D'}
-                    {dob && <span className="ml-1 text-xs font-normal text-on-surface-variant">({dob})</span>}
+                    {dob && <span className="ml-1 text-[10px] font-normal text-on-surface-variant">({dob})</span>}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-md rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Footprints className="h-5 w-5" />
+              <div className="flex items-center gap-2 rounded-lg bg-surface-container/60 p-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <Footprints className="h-3.5 w-3.5" />
                 </div>
-                <div>
-                  <p className="text-xs text-on-surface-variant">Pé Preferido</p>
-                  <p className="text-sm font-semibold text-on-surface">{preferredFoot}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] text-on-surface-variant">Pé Preferido</p>
+                  <p className="font-semibold text-on-surface truncate">{preferredFoot}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-md rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Maximize2 className="h-5 w-5" />
+              <div className="flex items-center gap-2 rounded-lg bg-surface-container/60 p-2">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <Maximize2 className="h-3.5 w-3.5" />
                 </div>
-                <div>
-                  <p className="text-xs text-on-surface-variant">Altura / Peso</p>
-                  <p className="text-sm font-semibold text-on-surface">
+                <div className="min-w-0">
+                  <p className="text-[10px] text-on-surface-variant">Altura / Peso</p>
+                  <p className="font-semibold text-on-surface truncate">
                     {heightCm ? `${heightCm} cm` : '—'} / {weightKg ? `${weightKg} kg` : '—'}
                   </p>
                 </div>
@@ -389,46 +391,45 @@ export function ClubPlayerPreviewModal({
             </div>
           </div>
 
-          {/* Section: Vínculo com o Clube */}
-          <div className="mt-lg space-y-md">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
+          {/* Vínculo Federativo: 3 Colunas */}
+          <div className="rounded-xl border border-outline-variant/25 bg-surface-container-low/60 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2">
               Vínculo Federativo no Clube
-            </h3>
-
-            <div className="rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md space-y-sm">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-on-surface-variant">Data de Entrada:</span>
-                <span className="font-semibold text-on-surface">{joinedDateFormatted}</span>
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div className="rounded-lg bg-surface-container/60 p-2">
+                <p className="text-[10px] text-on-surface-variant">Data de Entrada</p>
+                <p className="font-semibold text-on-surface mt-0.5">{joinedDateFormatted}</p>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-on-surface-variant">Dorsal Atribuída:</span>
-                <span className="font-semibold text-on-surface font-mono">
+              <div className="rounded-lg bg-surface-container/60 p-2">
+                <p className="text-[10px] text-on-surface-variant">Dorsal Atribuída</p>
+                <p className="font-semibold text-on-surface font-mono mt-0.5">
                   {jerseyNumber !== null ? `#${jerseyNumber}` : 'Sem número oficial'}
-                </span>
+                </p>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-on-surface-variant">Condição no Plantel:</span>
-                <span className="font-semibold text-on-surface">{statusLabel}</span>
+              <div className="rounded-lg bg-surface-container/60 p-2">
+                <p className="text-[10px] text-on-surface-variant">Condição no Plantel</p>
+                <p className="font-semibold text-on-surface mt-0.5">{statusLabel}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Modal Actions Footer */}
-        <div className="flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-low/80 px-lg py-md">
-          <Button variant="outline" size="sm" onClick={onClose}>
+        <div className="flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-low/80 px-4 py-2.5 sm:px-5">
+          <Button variant="outline" size="sm" onClick={onClose} className="h-8 text-xs">
             Fechar
           </Button>
 
           {publicProfileSlug ? (
-            <Button asChild size="sm" variant="primary">
+            <Button asChild size="sm" variant="primary" className="h-8 text-xs">
               <Link to={`/players/${publicProfileSlug}`}>
                 <span>Ver Perfil Completo</span>
                 <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           ) : (
-            <span className="text-xs text-on-surface-variant">Perfil público em processamento</span>
+            <span className="text-[11px] text-on-surface-variant">Perfil público em processamento</span>
           )}
         </div>
       </div>

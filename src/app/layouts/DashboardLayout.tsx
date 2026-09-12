@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/app/providers/AuthProvider'
@@ -7,6 +7,7 @@ import { DashboardSidebar } from './components/DashboardSidebar'
 import { DashboardHeader } from './components/DashboardHeader'
 import { DashboardMobileMenu } from './components/DashboardMobileMenu'
 import type { NavItem } from '@/types/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 
 interface SidebarSection {
   title?: string
@@ -86,6 +87,12 @@ export function DashboardLayout({
     navigate('/login')
   }
 
+  const resolvedSidebarSections = useMemo(() => {
+    if (sidebarSections && sidebarSections.length > 0) return sidebarSections
+    if (dashboardType === 'club') return getClubSidebarSections()
+    return undefined
+  }, [sidebarSections, dashboardType])
+
   return (
     <div className="dashboard-shell min-h-screen flex">
       {/* Dynamic Background Glow Effect */}
@@ -99,7 +106,7 @@ export function DashboardLayout({
         logo={getLogo()}
         dashboardType={dashboardType}
         sidebarLinks={sidebarLinks}
-        sidebarSections={sidebarSections}
+        sidebarSections={resolvedSidebarSections}
         subLabel={getSubLabel()}
         onLogout={handleLogout}
       />
@@ -111,7 +118,7 @@ export function DashboardLayout({
         logo={getLogo()}
         dashboardType={dashboardType}
         sidebarLinks={sidebarLinks}
-        sidebarSections={sidebarSections}
+        sidebarSections={resolvedSidebarSections}
         subLabel={getSubLabel()}
         onLogout={handleLogout}
       />

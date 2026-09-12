@@ -19,7 +19,7 @@ import {
   Skeleton,
   EmptyState,
 } from '@/components/ui'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
 import { usePlayers } from '@/modules/players/hooks'
 import type { Player } from '@/modules/players/types'
@@ -107,8 +107,9 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
       player.full_name.toLowerCase().includes(playerSearch.toLowerCase()),
     ) ?? []
 
+  const sidebarSections = isClubScope ? getClubSidebarSections() : undefined
   const sidebarLinks = isClubScope
-    ? getClubSidebarLinks()
+    ? undefined
     : [
         { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
         { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
@@ -154,6 +155,7 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
         subtitle="Carregando..."
         dashboardType="club"
         sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
           <Skeleton className="h-36 w-full rounded-[2rem]" />
@@ -165,10 +167,15 @@ export function TransferCreatePage({ scope }: TransferCreatePageProps) {
 
   return (
     <DashboardLayout
-      title="Nova Transferência"
-      subtitle="Registar movimento de jogador entre clubes"
+      title={isClubScope ? `Nova Transferência • ${club?.name || 'Clube'}` : 'Nova Transferência'}
+      subtitle={
+        isClubScope
+          ? 'Submeta uma proposta de transferência, empréstimo ou contratação de atleta livre.'
+          : 'Registo de transferência de atleta entre clubes ou agentes livres.'
+      }
       dashboardType={isClubScope ? 'club' : 'organization'}
       sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button variant="secondary" size="sm" onClick={() => navigate(listPath)}>
           <ArrowLeft className="h-4 w-4" />

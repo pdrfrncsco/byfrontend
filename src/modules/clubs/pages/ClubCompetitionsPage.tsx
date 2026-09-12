@@ -1,18 +1,21 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Trophy } from 'lucide-react'
+import { ArrowLeft, Calendar, CheckCircle2, ListChecks, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Badge } from '@/components/ui/badge'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { ClubCompetitionsView } from '@/modules/clubs/components/ClubCompetitionsView'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import {
   useClubMe,
   useClubMeCompetitions,
   useClubMeMatches,
   useClubMeStandings,
 } from '@/modules/clubs/hooks/useClubs'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 export default function ClubCompetitionsPage() {
   const { data: club, isLoading: clubLoading } = useClubMe()
@@ -21,7 +24,19 @@ export default function ClubCompetitionsPage() {
   const { data: matches = [], isLoading: matchesLoading } = useClubMeMatches()
   const { data: standings = [], isLoading: standingsLoading } = useClubMeStandings()
 
-  const sidebarLinks = getClubSidebarLinks()
+  const sidebarSections = useMemo(() => getClubSidebarSections(), [])
+
+  // Next scheduled match calculation
+  const nextMatch = useMemo(() => {
+    const upcoming = matches
+      .filter((m: any) => m.status === 'scheduled' || !m.status)
+      .sort((a: any, b: any) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime())
+    return upcoming[0] || null
+  }, [matches])
+
+  const finishedMatchesCount = useMemo(() => {
+    return matches.filter((m) => m.status === 'finished').length
+  }, [matches])
 
   if (clubLoading || !club) {
     return (
@@ -29,68 +44,159 @@ export default function ClubCompetitionsPage() {
         title="Competições & Jogos"
         subtitle="Carregando dados das competições..."
         dashboardType="club"
-        sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
-          <Skeleton className="h-36 w-full rounded-[2rem]" />
-          <Skeleton className="h-96 w-full rounded-[2rem]" />
+          <Skeleton className="h-36 w-full rounded-2xl" />
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 w-full rounded-2xl" />
         </div>
       </DashboardLayout>
     )
   }
 
   const isDataLoading = compLoading || matchesLoading || standingsLoading
+  const isHome = nextMatch?.home_club === club.id
+  const nextOpponent = nextMatch
+    ? isHome
+      ? nextMatch.away_club_name
+      : nextMatch.home_club_name
+    : null
 
   return (
     <DashboardLayout
       title={`Competições & Jogos • ${club.name}`}
       subtitle="Acompanhe as provas, classificações na tabela, resultados de jogos e a agenda de partidas do clube."
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
-        <Button asChild variant="secondary" size="sm">
-          <Link to={ROUTES.DASHBOARD_CLUB}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar ao Painel</span>
-          </Link>
-        </Button>
+        <div className="flex items-center gap-sm">
+          <Button asChild variant="secondary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB}>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              <span>Voltar ao Painel</span>
+            </Link>
+          </Button>
+          <Button asChild variant="primary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB_LINEUP}>
+              <ListChecks className="mr-xs h-4 w-4" />
+              <span>Lineup Manager</span>
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="space-y-xl">
-        {/* Banner Section */}
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_0.8fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Trophy className="h-3.5 w-3.5" />
-              Competições e Calendário
+        {/* Executive Page Header */}
+        <div className="rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-xs">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-md">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container/50 p-1 flex items-center justify-center">
+                <ClubLogo logoUrl={club.logo_url} name={club.name} size="lg" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-xs">
+                  <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary font-semibold text-[11px]">
+                    <Trophy className="mr-1 h-3 w-3" />
+                    Calendário Desportivo
+                  </Badge>
+                  {(club.tenant_name || (club as any).association_name) && (
+                    <Badge variant="outline" className="text-[11px] text-on-surface-variant">
+                      {club.tenant_name || (club as any).association_name}
+                    </Badge>
+                  )}
+                </div>
+                <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
+                  Competições & Calendário • {club.name}
+                </h1>
+                <p className="text-xs text-on-surface-variant">
+                  Consulte tabelas de classificação, histórico de jogos e convoque a equipa para os próximos desafios.
+                </p>
+              </div>
             </div>
-            <div className="space-y-sm">
-              <h1 className="text-3xl font-semibold text-on-surface">Histórico e Jogos do Clube</h1>
-              <p className="max-w-2xl text-on-surface-variant">
-                Consulte em tempo real onde o seu clube participa, a posição na tabela de classificação, os resultados mais recentes e as próximas partidas.
-              </p>
+
+            <div className="flex flex-wrap gap-xs">
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_SQUAD}>
+                  Ver Plantel
+                </Link>
+              </Button>
+              <Button asChild variant="primary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_LINEUP}>
+                  <ListChecks className="mr-xs h-4 w-4" />
+                  Convocatória
+                </Link>
+              </Button>
             </div>
           </div>
+        </div>
 
-          <div className="grid gap-sm sm:grid-cols-3">
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Competições</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{competitions.length}</p>
-            </Card>
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Jogos Totais</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{matches.length}</p>
-            </Card>
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Concluídos</p>
-              <p className="mt-1 text-2xl font-bold text-primary">
-                {matches.filter((m) => m.status === 'finished').length}
+        {/* 4 KPIs Row with micro-context */}
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Competições</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Trophy className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{competitions.length}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Provas em disputa oficial</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Jogos Totais</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#534ab7]/10 text-[#534ab7]">
+                  <Calendar className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{matches.length}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Calendário geral da época</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Concluídos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0f6e56]/10 text-[#0f6e56]">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-[#0f6e56]">{finishedMatchesCount}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Partidas com resultado final</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Próximo Jogo</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ba751b]/10 text-[#ba751b]">
+                  <ListChecks className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 truncate text-base font-bold text-on-surface">
+                {nextOpponent ? `vs ${nextOpponent}` : 'Sem partidas'}
               </p>
-            </Card>
-          </div>
-        </section>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">
+                {nextMatch
+                  ? new Date(nextMatch.match_date).toLocaleDateString('pt-AO', { day: '2-digit', month: 'short' })
+                  : 'A aguardar sorteio'}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Reusable View Component */}
+        {/* Competitions View */}
         <ClubCompetitionsView
           clubId={club.id}
           clubSlug={club.slug}

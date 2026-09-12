@@ -37,6 +37,7 @@ import {
   getStatusBadgeConfig,
 } from '@/modules/clubs/components/ClubSquadPlayerCard'
 import { ClubPlayerPreviewModal } from '@/modules/clubs/components/ClubPlayerPreviewModal'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 type SectorType = 'all' | 'gk' | 'def' | 'mid' | 'att'
 type StatusFilterType = 'all' | 'active' | 'loaned' | 'suspended'
@@ -160,6 +161,36 @@ export default function ClubSquadPage() {
     return counts
   }, [players])
 
+  // Active players count
+  const activePlayersCount = useMemo(() => {
+    return players.filter((p) => getPlayerStatusGroup(p) === 'active').length
+  }, [players])
+
+  // Squad average age
+  const averageAge = useMemo(() => {
+    const ages: number[] = []
+    players.forEach((p) => {
+      const dob = ('date_of_birth' in p && p.date_of_birth) || null
+      if (dob) {
+        const birthDate = new Date(dob)
+        if (!Number.isNaN(birthDate.getTime())) {
+          const today = new Date()
+          let age = today.getFullYear() - birthDate.getFullYear()
+          const m = today.getMonth() - birthDate.getMonth()
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--
+          }
+          if (age > 12 && age < 55) {
+            ages.push(age)
+          }
+        }
+      }
+    })
+    if (ages.length === 0) return null
+    const sum = ages.reduce((acc, a) => acc + a, 0)
+    return (sum / ages.length).toFixed(1)
+  }, [players])
+
   // Filtered players list
   const filteredPlayers = useMemo(() => {
     return players.filter((player) => {
@@ -228,21 +259,21 @@ export default function ClubSquadPage() {
 
   return (
     <DashboardLayout
-      title={`Plantel • ${club.name}`}
-      subtitle="Veja o plantel e equipa técnica do clube, organizados e prontos para consultar."
+      title={`Plantel & Equipa Técnica • ${club.name}`}
+      subtitle="Consulte atletas federados por setor tático, equipa técnica e histórico desportivo."
       dashboardType="club"
       sidebarSections={sidebarSections}
       headerActions={
         <div className="flex items-center gap-sm">
           <Button asChild variant="secondary" size="sm">
             <Link to={ROUTES.DASHBOARD_CLUB}>
-              <ArrowLeft className="h-4 w-4" />
-              <span>Voltar</span>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              <span>Voltar ao Painel</span>
             </Link>
           </Button>
           <Button asChild variant="primary" size="sm">
             <Link to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}>
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="mr-xs h-4 w-4" />
               <span>Registar Jogador</span>
             </Link>
           </Button>
@@ -250,60 +281,116 @@ export default function ClubSquadPage() {
       }
     >
       <div className="space-y-xl">
-        {/* Top Summary Banner */}
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_1fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Users className="h-3.5 w-3.5" />
-              Plantel Oficial
+        {/* Executive Page Header */}
+        <div className="rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-xs">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-md">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container/50 p-1 flex items-center justify-center">
+                <ClubLogo logoUrl={club.logo_url} name={club.name} size="lg" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-xs">
+                  <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary font-semibold text-[11px]">
+                    <Users className="mr-1 h-3 w-3" />
+                    Gestão de Plantel & Elenco
+                  </Badge>
+                  {(club.tenant_name || (club as any).association_name) && (
+                    <Badge variant="outline" className="text-[11px] text-on-surface-variant">
+                      {club.tenant_name || (club as any).association_name}
+                    </Badge>
+                  )}
+                </div>
+                <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
+                  Plantel & Equipa Técnica • {club.name}
+                </h1>
+                <p className="text-xs text-on-surface-variant">
+                  Consulte os atletas federados por setor tático, equipa técnica e condições desportivas.
+                </p>
+              </div>
             </div>
-            <div className="space-y-xs">
-              <h1 className="text-3xl font-bold tracking-tight text-on-surface">Equipa Principal</h1>
-              <p className="max-w-xl text-sm text-on-surface-variant leading-relaxed">
-                Gestão dos atletas federados e equipa técnica do {club.name}. Clique em qualquer jogador para consultar a ficha detalhada.
-              </p>
+
+            <div className="flex flex-wrap gap-xs">
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_LINEUP}>
+                  Convocatórias & Onze
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS}>
+                  Pedidos de Vínculo
+                </Link>
+              </Button>
+              <Button asChild variant="primary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}>
+                  <UserPlus className="mr-xs h-4 w-4" />
+                  <span>Novo Jogador</span>
+                </Link>
+              </Button>
             </div>
           </div>
+        </div>
 
-          {kpisLoading || !kpis ? (
-            <div className="grid gap-sm sm:grid-cols-3">
-              <Skeleton className="h-24 rounded-2xl" />
-              <Skeleton className="h-24 rounded-2xl" />
-              <Skeleton className="h-24 rounded-2xl" />
-            </div>
-          ) : (
-            <div className="grid gap-sm sm:grid-cols-3">
-              <Card variant="flat" padding="md" className="flex flex-col justify-between bg-surface-container-high/60 border-outline-variant/20">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">Plantel</p>
-                  <p className="mt-1 text-3xl font-black text-on-surface">{players.length}</p>
+        {/* 4 KPIs Row */}
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Plantel Principal</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Users className="h-4 w-4" />
                 </div>
-                <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-on-surface-variant">
-                  <span className="rounded bg-amber-500/10 px-1 py-0.5 text-amber-600 font-semibold">{sectorCounts.gk} GR</span>
-                  <span className="rounded bg-blue-500/10 px-1 py-0.5 text-blue-600 font-semibold">{sectorCounts.def} DEF</span>
-                  <span className="rounded bg-emerald-500/10 px-1 py-0.5 text-emerald-600 font-semibold">{sectorCounts.mid} MED</span>
-                  <span className="rounded bg-rose-500/10 px-1 py-0.5 text-rose-600 font-semibold">{sectorCounts.att} AVA</span>
-                </div>
-              </Card>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{players.length}</p>
+              <div className="mt-1 flex flex-wrap gap-1 text-[10px]">
+                <span className="rounded bg-amber-500/10 px-1 py-0.5 font-semibold text-amber-600 dark:text-amber-400">{sectorCounts.gk} GR</span>
+                <span className="rounded bg-blue-500/10 px-1 py-0.5 font-semibold text-blue-600 dark:text-blue-400">{sectorCounts.def} DEF</span>
+                <span className="rounded bg-emerald-500/10 px-1 py-0.5 font-semibold text-emerald-600 dark:text-emerald-400">{sectorCounts.mid} MED</span>
+                <span className="rounded bg-rose-500/10 px-1 py-0.5 font-semibold text-rose-600 dark:text-rose-400">{sectorCounts.att} AVA</span>
+              </div>
+            </CardContent>
+          </Card>
 
-              <Card variant="flat" padding="md" className="flex flex-col justify-between bg-surface-container-high/60 border-outline-variant/20">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">Staff Técnico</p>
-                  <p className="mt-1 text-3xl font-black text-on-surface">{staff.length}</p>
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Equipa Técnica</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  <Building2 className="h-4 w-4" />
                 </div>
-                <p className="mt-2 text-[11px] text-on-surface-variant">Treinadores e apoio</p>
-              </Card>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{staff.length}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Treinadores e comissão técnica</p>
+            </CardContent>
+          </Card>
 
-              <Card variant="flat" padding="md" className="flex flex-col justify-between bg-surface-container-high/60 border-outline-variant/20">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-on-surface-variant">Total Clube</p>
-                  <p className="mt-1 text-3xl font-black text-on-surface">{players.length + staff.length}</p>
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Atletas Ativos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <Shield className="h-4 w-4" />
                 </div>
-                <p className="mt-2 text-[11px] text-on-surface-variant">Membros inscritos</p>
-              </Card>
-            </div>
-          )}
-        </section>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{activePlayersCount}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Elegíveis para convocatórias</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Média Etária</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <Calendar className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">
+                {averageAge ? `${averageAge} anos` : 'Em apuramento'}
+              </p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Perfil etário do plantel</p>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Tabs: Plantel / Staff */}
         <Tabs defaultValue="squad" className="space-y-lg">
@@ -327,7 +414,7 @@ export default function ClubSquadPage() {
           {/* Tab Content: Squad */}
           <TabsContent value="squad" className="space-y-lg animate-in fade-in duration-300">
             {/* Dynamic Controls Bar: Search + Sectors + Status + ViewMode */}
-            <div className="flex flex-col gap-md rounded-2xl border border-outline-variant/20 bg-surface-container-low p-md lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-md rounded-2xl border border-outline-variant/30 bg-surface p-md shadow-xs lg:flex-row lg:items-center lg:justify-between">
               {/* Search & Sector Filters */}
               <div className="flex flex-1 flex-col gap-sm sm:flex-row sm:items-center">
                 {/* Search input */}
@@ -501,7 +588,7 @@ export default function ClubSquadPage() {
               </div>
             ) : (
               /* Table / List View */
-              <div className="overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface-container shadow-xs">
+              <div className="overflow-hidden rounded-2xl border border-outline-variant/30 bg-surface shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-sm">
                     <thead className="border-b border-outline-variant/20 bg-surface-container-high/60 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">

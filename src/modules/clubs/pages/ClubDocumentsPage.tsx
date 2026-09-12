@@ -21,12 +21,13 @@ import {
   Skeleton,
   Textarea,
 } from '@/components/ui'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { useClubDocuments, useClubMe, useCreateClubDocument, useDeleteClubDocument } from '@/modules/clubs/hooks/useClubs'
 import { clubDocumentSchema, type ClubDocumentFormData } from '@/modules/clubs/schemas'
 import type { ClubDocument } from '@/modules/clubs/types'
 import { MediaAssetPicker } from '@/modules/media_manager/components/MediaAssetPicker'
 import type { MediaAsset } from '@/modules/media_manager/types'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 function categoryLabel(category?: string | null) {
   switch (category) {
@@ -75,7 +76,15 @@ export default function ClubDocumentsPage() {
   const watchedFile = watch('document')
   const isPublic = watch('is_public')
 
-  const sidebarLinks = getClubSidebarLinks()
+  const sidebarSections = useMemo(() => getClubSidebarSections(), [])
+
+  const stats = useMemo(() => {
+    const list = Array.isArray(documents) ? documents : []
+    const total = list.length
+    const publicDocs = list.filter((doc) => doc.is_public).length
+    const privateDocs = total - publicDocs
+    return { total, publicDocs, privateDocs }
+  }, [documents])
 
   const documentRows = useMemo(() => (Array.isArray(documents) ? documents : []), [documents])
 
@@ -160,10 +169,20 @@ export default function ClubDocumentsPage() {
 
   if (clubLoading || !club) {
     return (
-      <DashboardLayout title="Documentos do Clube" subtitle="Carregando biblioteca..." dashboardType="club" sidebarLinks={sidebarLinks}>
+      <DashboardLayout
+        title="Documentos do Clube"
+        subtitle="Carregando biblioteca documental..."
+        dashboardType="club"
+        sidebarSections={sidebarSections}
+      >
         <div className="space-y-lg">
-          <Skeleton className="h-36 w-full rounded-[2rem]" />
-          <Skeleton className="h-96 w-full rounded-[2rem]" />
+          <Skeleton className="h-36 w-full rounded-2xl" />
+          <div className="grid gap-md sm:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 w-full rounded-2xl" />
         </div>
       </DashboardLayout>
     )
@@ -174,39 +193,116 @@ export default function ClubDocumentsPage() {
       title={`Documentos • ${club.name}`}
       subtitle="Centralize contratos, licenças e regulamentos com uma apresentação limpa e objetiva."
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
-        <Button asChild variant="secondary" size="sm">
-          <Link to={ROUTES.DASHBOARD_CLUB}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar</span>
-          </Link>
-        </Button>
+        <div className="flex items-center gap-sm">
+          <Button asChild variant="secondary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB}>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              <span>Voltar ao Painel</span>
+            </Link>
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              window.requestAnimationFrame(() => {
+                document.getElementById('title')?.focus()
+              })
+            }}
+          >
+            <Upload className="mr-xs h-4 w-4" />
+            <span>Novo Documento</span>
+          </Button>
+        </div>
       }
     >
       <div className="space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_0.7fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Upload className="h-3.5 w-3.5" />
-              Gestão documental
+        {/* Executive Page Header */}
+        <div className="rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-xs">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-md">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container/50 p-1 flex items-center justify-center">
+                <ClubLogo logoUrl={club.logo_url} name={club.name} size="lg" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-xs">
+                  <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary font-semibold text-[11px]">
+                    <FileText className="mr-1 h-3 w-3" />
+                    Gestão Documental & Homologação
+                  </Badge>
+                  {(club.tenant_name || (club as any).association_name) && (
+                    <Badge variant="outline" className="text-[11px] text-on-surface-variant">
+                      {club.tenant_name || (club as any).association_name}
+                    </Badge>
+                  )}
+                </div>
+                <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
+                  Documentos & Dossiê Regulamentar • {club.name}
+                </h1>
+                <p className="text-xs text-on-surface-variant">
+                  Centralize contratos de trabalho, licenças federativas, certificados e atas oficiais de assembleia.
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-semibold text-on-surface">Documentos organizados</h1>
-            <p className="max-w-2xl text-on-surface-variant">
-              Faça upload, classifique e publique documentos do clube sem interromper o fluxo de trabalho.
-            </p>
+
+            <div className="flex flex-wrap gap-xs">
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_MEDIA}>
+                  Biblioteca de Media
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_SETTINGS}>
+                  Configurações
+                </Link>
+              </Button>
+            </div>
           </div>
-          <div className="grid gap-sm sm:grid-cols-2">
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Total</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{documentRows.length}</p>
-            </Card>
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Públicos</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{documentRows.filter((doc) => doc.is_public).length}</p>
-            </Card>
-          </div>
-        </section>
+        </div>
+
+        {/* 3 KPIs Row */}
+        <div className="grid gap-md sm:grid-cols-3">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Total Documentos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <FileText className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.total}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Arquivos registados no cofre</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Públicos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0f6e56]/10 text-[#0f6e56]">
+                  <Globe className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-[#0f6e56]">{stats.publicDocs}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Visíveis no perfil público do clube</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Confidenciais</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ba751b]/10 text-[#ba751b]">
+                  <Lock className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.privateDocs}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Acesso restrito à direção e staff</p>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="grid gap-lg xl:grid-cols-[0.95fr_1.05fr]">
           <Card ref={formCardRef} variant="flat" padding="none">

@@ -28,7 +28,7 @@ import {
   Skeleton,
   EmptyState,
 } from '@/components/ui'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import {
   useApproveTransfer,
   useCancelTransfer,
@@ -100,8 +100,9 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
   const [showCancelForm, setShowCancelForm] = useState(false)
 
   const listPath = isClubScope ? transferRoutes.clubList : transferRoutes.list
+  const sidebarSections = isClubScope ? getClubSidebarSections() : undefined
   const sidebarLinks = isClubScope
-    ? getClubSidebarLinks()
+    ? undefined
     : [
         { label: 'Visão Geral', href: ROUTES.DASHBOARD_ORGANIZATION, icon: <Trophy className="h-4 w-4" /> },
         { label: 'Transferências', href: transferRoutes.list, icon: <Shield className="h-4 w-4" /> },
@@ -123,6 +124,7 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
         subtitle="Carregando..."
         dashboardType={isClubScope ? 'club' : 'organization'}
         sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
           <Skeleton className="h-40 w-full rounded-[2rem]" />
@@ -139,6 +141,7 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
         subtitle="Não foi possível carregar"
         dashboardType={isClubScope ? 'club' : 'organization'}
         sidebarLinks={sidebarLinks}
+        sidebarSections={sidebarSections}
       >
         <EmptyState
           title="Transferência não encontrada"
@@ -157,6 +160,7 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
       subtitle={`${transfer.from_club?.name || 'Livre'} → ${transfer.to_club.name}`}
       dashboardType={isClubScope ? 'club' : 'organization'}
       sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
         <Button asChild variant="secondary" size="sm">
           <Link to={listPath}>

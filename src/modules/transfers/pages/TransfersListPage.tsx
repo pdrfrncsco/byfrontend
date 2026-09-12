@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Filter, Plus, SlidersHorizontal, Trophy, Settings, Shield } from 'lucide-react'
+import { ArrowLeft, ArrowRightLeft, CheckCircle2, Clock, Filter, Plus, SlidersHorizontal, Trophy, Settings, Shield } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -23,9 +23,10 @@ import {
   SelectValue,
   Skeleton,
 } from '@/components/ui'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { getOrganizationSidebarSections } from '@/modules/organizations/constants/navigation'
 import { useClubMe } from '@/modules/clubs/hooks/useClubs'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 import { useTransfers } from '../hooks'
 import { transferRoutes } from '../routes'
 import type { Transfer, TransferStatus, TransferType } from '../types'
@@ -62,8 +63,16 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
   const detailPath = (id: string) => (isClubScope ? transferRoutes.clubDetail(id) : transferRoutes.detail(id))
   const backPath = isClubScope ? ROUTES.DASHBOARD_CLUB : ROUTES.DASHBOARD_ORGANIZATION
 
-  const sidebarLinks = isClubScope ? getClubSidebarLinks() : undefined
-  const sidebarSections = !isClubScope ? getOrganizationSidebarSections('overview') : undefined
+  const sidebarSections = isClubScope ? getClubSidebarSections() : getOrganizationSidebarSections('overview')
+
+  const stats = useMemo(() => {
+    const list = transfersData?.results ?? []
+    const total = list.length
+    const pending = list.filter((t) => ['pending', 'in_progress', 'draft'].includes(t.status?.toLowerCase())).length
+    const completed = list.filter((t) => t.status?.toLowerCase() === 'completed').length
+    const loans = list.filter((t) => t.transfer_type?.toLowerCase() === 'loan').length
+    return { total, pending, completed, loans }
+  }, [transfersData?.results])
 
   const rows = useMemo(() => {
     const list = transfersData?.results ?? []
@@ -168,13 +177,17 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       <DashboardLayout
         title="Transferências do Clube"
         subtitle="Carregando movimentos..."
-        dashboardType={isClubScope ? 'club' : 'organization'}
-        sidebarLinks={sidebarLinks}
+        dashboardType="club"
         sidebarSections={sidebarSections}
       >
         <div className="space-y-lg">
-          <Skeleton className="h-36 w-full rounded-[2rem]" />
-          <Skeleton className="h-96 w-full rounded-[2rem]" />
+          <Skeleton className="h-36 w-full rounded-2xl" />
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 w-full rounded-2xl" />
         </div>
       </DashboardLayout>
     )
@@ -185,19 +198,18 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       title={title}
       subtitle={subtitle}
       dashboardType={isClubScope ? 'club' : 'organization'}
-      sidebarLinks={sidebarLinks}
       sidebarSections={sidebarSections}
       headerActions={
-        <div className="flex gap-sm">
+        <div className="flex items-center gap-sm">
           <Button asChild variant="secondary" size="sm">
             <Link to={backPath}>
-              <ArrowLeft className="h-4 w-4" />
-              <span>Voltar</span>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              <span>Voltar ao Painel</span>
             </Link>
           </Button>
           <Button asChild variant="primary" size="sm">
             <Link to={createPath}>
-              <Plus className="h-4 w-4" />
+              <Plus className="mr-xs h-4 w-4" />
               <span>Nova Transferência</span>
             </Link>
           </Button>
@@ -205,23 +217,112 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       }
     >
       <div className="space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_0.7fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Monitorização
+        {/* Executive Page Header */}
+        <div className="rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-xs">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-md">
+              {isClubScope && club ? (
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container/50 p-1 flex items-center justify-center">
+                  <ClubLogo logoUrl={club.logo_url} name={club.name} size="lg" />
+                </div>
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <ArrowRightLeft className="h-7 w-7" />
+                </div>
+              )}
+              <div>
+                <div className="flex flex-wrap items-center gap-xs">
+                  <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary font-semibold text-[11px]">
+                    <ArrowRightLeft className="mr-1 h-3 w-3" />
+                    Mercado & Transferências
+                  </Badge>
+                  {isClubScope && (club?.tenant_name || (club as any)?.association_name) && (
+                    <Badge variant="outline" className="text-[11px] text-on-surface-variant">
+                      {club?.tenant_name || (club as any)?.association_name}
+                    </Badge>
+                  )}
+                </div>
+                <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
+                  {title}
+                </h1>
+                <p className="text-xs text-on-surface-variant">
+                  {subtitle}
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-semibold text-on-surface">Movimentos do plantel</h1>
-            <p className="max-w-2xl text-on-surface-variant">
-              Consulta rápida com filtros por tipo e estado. Abra o detalhe para aprovar, rejeitar ou
-              concluir o fluxo.
-            </p>
+
+            <div className="flex flex-wrap gap-xs">
+              {isClubScope && (
+                <Button asChild variant="secondary" size="sm">
+                  <Link to={ROUTES.DASHBOARD_CLUB_PLAYER_REQUESTS}>
+                    Pedidos de Vínculo
+                  </Link>
+                </Button>
+              )}
+              <Button asChild variant="primary" size="sm">
+                <Link to={createPath}>
+                  <Plus className="mr-xs h-4 w-4" />
+                  Nova Transferência
+                </Link>
+              </Button>
+            </div>
           </div>
-          <Card variant="flat" padding="md">
-            <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Total visível</p>
-            <p className="mt-1 text-2xl font-bold text-on-surface">{rows.length}</p>
+        </div>
+
+        {/* 4 KPIs Row */}
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Movimentos Totais</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <ArrowRightLeft className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.total}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Histórico de transferências</p>
+            </CardContent>
           </Card>
-        </section>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Em Negociação</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ba751b]/10 text-[#ba751b]">
+                  <Clock className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-[#ba751b]">{stats.pending}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">A aguardar aprovação federativa</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Concluídas</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0f6e56]/10 text-[#0f6e56]">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-[#0f6e56]">{stats.completed}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Processos fechados e homologados</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Empréstimos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#534ab7]/10 text-[#534ab7]">
+                  <Shield className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.loans}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Cedências temporárias ativas</p>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card variant="flat" padding="none">
           <CardHeader>

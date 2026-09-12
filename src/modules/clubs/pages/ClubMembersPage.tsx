@@ -3,7 +3,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Edit3, Search, Trash2, Users } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Edit3, Plus, Search, Shield, Trash2, UserCheck, UserPlus, Users } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import {
@@ -20,10 +20,11 @@ import {
   NativeSelect,
   Skeleton,
 } from '@/components/ui'
-import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
+import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useAddClubMember, useUpdateClubMember, useRemoveClubMember, useClubMembers } from '@/modules/clubs/hooks/useClubs'
 import { clubMemberSchema, type ClubMemberFormData } from '@/modules/clubs/schemas'
 import type { ClubMember } from '@/modules/clubs/types'
+import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 function roleOptions() {
   return [
@@ -92,7 +93,16 @@ export default function ClubMembersPage() {
     reset(toDefaults(editingMember))
   }, [editingMember, reset])
 
-  const sidebarLinks = getClubSidebarLinks()
+  const sidebarSections = useMemo(() => getClubSidebarSections(), [])
+
+  const stats = useMemo(() => {
+    const list = Array.isArray(members) ? members : []
+    const total = list.length
+    const active = list.filter((m) => m.is_active !== false).length
+    const staff = list.filter((m) => ['coach', 'assistant_coach', 'manager', 'physio', 'staff', 'president'].includes(m.role || '')).length
+    const players = list.filter((m) => m.role === 'player' || !m.role).length
+    return { total, active, staff, players }
+  }, [members])
 
   const memberRows = useMemo(() => {
     const list = Array.isArray(members) ? members : []
@@ -206,10 +216,20 @@ export default function ClubMembersPage() {
 
   if (clubLoading || !club) {
     return (
-      <DashboardLayout title="Membros do Clube" subtitle="Carregando gestão de membros..." dashboardType="club" sidebarLinks={sidebarLinks}>
+      <DashboardLayout
+        title="Membros do Clube"
+        subtitle="Carregando gestão de membros..."
+        dashboardType="club"
+        sidebarSections={sidebarSections}
+      >
         <div className="space-y-lg">
-          <Skeleton className="h-36 w-full rounded-[2rem]" />
-          <Skeleton className="h-96 w-full rounded-[2rem]" />
+          <Skeleton className="h-36 w-full rounded-2xl" />
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-96 w-full rounded-2xl" />
         </div>
       </DashboardLayout>
     )
@@ -220,45 +240,131 @@ export default function ClubMembersPage() {
       title={`Membros • ${club.name}`}
       subtitle="Adicione, edite e mantenha o plantel e staff do clube com uma vista clara e rápida."
       dashboardType="club"
-      sidebarLinks={sidebarLinks}
+      sidebarSections={sidebarSections}
       headerActions={
-        <Button asChild variant="secondary" size="sm">
-          <Link to={ROUTES.DASHBOARD_CLUB}>
-            <ArrowLeft className="h-4 w-4" />
-            <span>Voltar</span>
-          </Link>
-        </Button>
+        <div className="flex items-center gap-sm">
+          <Button asChild variant="secondary" size="sm">
+            <Link to={ROUTES.DASHBOARD_CLUB}>
+              <ArrowLeft className="mr-xs h-4 w-4" />
+              <span>Voltar ao Painel</span>
+            </Link>
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setEditingMember(null)
+              reset(toDefaults())
+              formCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              window.requestAnimationFrame(() => {
+                document.getElementById('full_name')?.focus()
+              })
+            }}
+          >
+            <UserPlus className="mr-xs h-4 w-4" />
+            <span>Novo Membro</span>
+          </Button>
+        </div>
       }
     >
       <div className="space-y-xl">
-        <section className="grid gap-lg rounded-[2rem] border border-outline-variant/20 bg-surface-container p-xl shadow-[0_18px_40px_-30px_rgba(15,17,23,0.18)] lg:grid-cols-[1fr_0.8fr]">
-          <div className="space-y-md">
-            <div className="inline-flex items-center gap-sm rounded-full border border-primary/15 bg-primary-container/20 px-md py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              <Users className="h-3.5 w-3.5" />
-              Gestão de membros
+        {/* Executive Page Header */}
+        <div className="rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-xs">
+          <div className="flex flex-col gap-md md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-md">
+              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container/50 p-1 flex items-center justify-center">
+                <ClubLogo logoUrl={club.logo_url} name={club.name} size="lg" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-xs">
+                  <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary font-semibold text-[11px]">
+                    <Users className="mr-1 h-3 w-3" />
+                    Estrutura & Recursos Humanos
+                  </Badge>
+                  {(club.tenant_name || (club as any).association_name) && (
+                    <Badge variant="outline" className="text-[11px] text-on-surface-variant">
+                      {club.tenant_name || (club as any).association_name}
+                    </Badge>
+                  )}
+                </div>
+                <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
+                  Membros & Staff Técnico • {club.name}
+                </h1>
+                <p className="text-xs text-on-surface-variant">
+                  Organize funções, número de camisola, licenças e estado de cada elemento da estrutura desportiva.
+                </p>
+              </div>
             </div>
-            <div className="space-y-sm">
-              <h1 className="text-3xl font-semibold text-on-surface">Plantel e equipa técnica</h1>
-              <p className="max-w-2xl text-on-surface-variant">
-                Organize papéis, números e estado de cada membro num fluxo único, sem perder tempo entre ecrãs.
-              </p>
+
+            <div className="flex flex-wrap gap-xs">
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_SQUAD}>
+                  Ver Plantel
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_REGISTER_PLAYER}>
+                  Registar Jogador
+                </Link>
+              </Button>
             </div>
           </div>
-          <div className="grid gap-sm sm:grid-cols-3">
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Total</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{Array.isArray(members) ? members.length : 0}</p>
-            </Card>
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Filtro</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">{memberRows.length}</p>
-            </Card>
-            <Card variant="flat" padding="md">
-              <p className="text-xs uppercase tracking-[0.2em] text-on-surface-variant">Estado</p>
-              <p className="mt-1 text-2xl font-bold text-on-surface">Ativo</p>
-            </Card>
-          </div>
-        </section>
+        </div>
+
+        {/* 4 KPIs Row */}
+        <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Total Membros</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Users className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.total}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Estrutura global do clube</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Staff Técnico</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#534ab7]/10 text-[#534ab7]">
+                  <Shield className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.staff}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Treinadores, médicos e gestores</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Jogadores</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ba751b]/10 text-[#ba751b]">
+                  <UserCheck className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-on-surface">{stats.players}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Atletas registados no clube</p>
+            </CardContent>
+          </Card>
+
+          <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs transition-all hover:border-primary/30">
+            <CardContent className="p-md">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Ativos</p>
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0f6e56]/10 text-[#0f6e56]">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+              </div>
+              <p className="mt-2 text-2xl font-bold text-[#0f6e56]">{stats.active}</p>
+              <p className="mt-0.5 text-[11px] text-on-surface-variant">Vínculos em vigor homologados</p>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="grid gap-lg xl:grid-cols-[0.9fr_1.1fr]">
           <Card ref={formCardRef} variant="flat" padding="none">
