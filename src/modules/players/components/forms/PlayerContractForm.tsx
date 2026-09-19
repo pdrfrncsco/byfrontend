@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { DollarSign, Plus, Trash2 } from 'lucide-react'
+import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import {
   playerContractFormSchema,
   type PlayerContractFormData,
@@ -51,6 +52,7 @@ export function PlayerContractForm({
   isSubmitting = false,
 }: PlayerContractFormProps) {
   const { t } = useTranslation()
+  const { data: clubsData, isLoading: loadingClubs } = useClubs({ page_size: 100 })
   const [bonusFields, setBonusFields] = useState<string[]>(
     Object.keys(initialData?.bonuses || {})
   )
@@ -111,13 +113,25 @@ export function PlayerContractForm({
         <CardContent className="space-y-md">
           {/* Club */}
           <div>
-            <Label htmlFor="club">Clube*</Label>
-            <Input
-              id="club"
-              placeholder="Selecionar clube"
-              {...register('club')}
-              className={errors.club ? 'border-error' : ''}
-            />
+            <Label htmlFor="club">Clube Empregador*</Label>
+            {loadingClubs ? (
+              <div className="text-xs text-on-surface-variant py-2">A carregar lista de clubes...</div>
+            ) : (
+              <select
+                id="club"
+                {...register('club')}
+                className={`flex h-10 w-full rounded-lg border border-outline bg-surface px-md py-sm text-sm text-on-surface placeholder:text-on-surface-variant focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                  errors.club ? 'border-error' : ''
+                }`}
+              >
+                <option value="">Selecione o clube empregador</option>
+                {(clubsData?.results || []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} {c.short_name ? `(${c.short_name})` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
             {errors.club && <p className="mt-1 text-xs text-error">{errors.club.message}</p>}
           </div>
 

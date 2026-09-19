@@ -16,6 +16,13 @@ import {
   type PlayerContract,
 } from '../../hooks/usePlayerContracts'
 
+function getClubDisplayName(c: PlayerContract): string {
+  if (typeof c.club === 'object' && c.club !== null && 'name' in c.club) {
+    return c.club.name
+  }
+  return c.club_name || 'Clube'
+}
+
 interface PlayerContractSectionProps {
   playerId: string
   onAddContract?: () => void
@@ -80,7 +87,7 @@ export function PlayerContractSection({
                   )}
                 </CardTitle>
                 <CardDescription>
-                  {typeof activeContract.club === 'string' ? activeContract.club_name : activeContract.club.name} • {getContractTypeLabel(activeContract.contract_type)}
+                  {getClubDisplayName(activeContract)} • {getContractTypeLabel(activeContract.contract_type)}
                 </CardDescription>
               </div>
               {isContractExpiringSoon(activeContract.end_date) && (
@@ -233,7 +240,7 @@ export function PlayerContractSection({
                     <div className="flex items-start justify-between gap-md">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-sm flex-wrap">
-                          <h4 className="font-semibold text-on-surface">{typeof contract.club === 'string' ? contract.club_name : contract.club.name}</h4>
+                          <h4 className="font-semibold text-on-surface">{getClubDisplayName(contract)}</h4>
                           <Badge variant="outline" className="text-xs">
                             {getContractTypeLabel(contract.contract_type)}
                           </Badge>

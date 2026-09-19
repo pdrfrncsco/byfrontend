@@ -14,6 +14,13 @@ import {
   type PlayerAgentRelationship,
 } from '../../hooks/usePlayerAgents'
 
+function getAgentDisplayName(rel: PlayerAgentRelationship): string {
+  if (typeof rel.agent === 'object' && rel.agent !== null && 'name' in rel.agent) {
+    return rel.agent.name
+  }
+  return rel.agent_name || 'Agente'
+}
+
 interface PlayerAgentSectionProps {
   playerId: string
   onAddAgent?: () => void
@@ -87,7 +94,7 @@ export function PlayerAgentSection({
                   Agente Ativo
                 </CardTitle>
                 <CardDescription>
-                  {typeof activeAgent.agent === 'string' ? activeAgent.agent_name : activeAgent.agent.name} • {typeof activeAgent.agent === 'string' ? 'Agente' : getAgencyTypeLabel(activeAgent.agent.agency_type)}
+                  {getAgentDisplayName(activeAgent)} • {typeof activeAgent.agent === 'object' && activeAgent.agent !== null ? getAgencyTypeLabel(activeAgent.agent.agency_type) : 'Agência Licenciada'}
                 </CardDescription>
               </div>
             </div>
