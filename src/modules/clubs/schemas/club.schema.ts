@@ -20,6 +20,7 @@ export const clubSettingsSchema = z.object({
   description: z.string().max(2000, 'A descrição não pode exceder 2000 caracteres.').optional().or(z.literal('')),
   primary_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use o formato #RRGGBB.'),
   secondary_color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Use o formato #RRGGBB.'),
+  gender: z.enum(['male', 'female', 'mixed']).optional(),
   is_public: z.boolean(),
 })
 

@@ -72,6 +72,7 @@ export const playerRegisterSchema = z.object({
     .union([z.coerce.number().int().min(1).max(99), z.literal('')])
     .optional(),
   competition_id: z.string().optional().or(z.literal('')),
+  category_id: z.string().optional().or(z.literal('')),
 })
 
 export type PlayerRegisterFormData = z.infer<typeof playerRegisterSchema>

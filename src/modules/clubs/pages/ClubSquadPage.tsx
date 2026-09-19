@@ -11,6 +11,7 @@ import {
   Shield,
   Calendar,
   X,
+  Tag,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -23,6 +24,9 @@ import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { resolveMediaUrl } from '@/lib/media'
 import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
+import { ClubGenderBadge } from '@/modules/clubs/components/ClubGenderBadge'
+import { PlayerCategoryBadge } from '@/modules/players/components/PlayerCategoryBadge'
+import { useClubCategories } from '@/modules/players/hooks/usePlayerCategories'
 import {
   useClubMe,
   useClubKpis,
@@ -128,9 +132,12 @@ export default function ClubSquadPage() {
   const { data: members, isLoading: membersLoading } = useClubMembers(slug)
   const { data: publicSquad, isLoading: publicSquadLoading } = useClubSquad(slug)
   const { data: publicStaff, isLoading: publicStaffLoading } = useClubStaff(slug)
+  const { data: categories = [] } = useClubCategories(club?.slug || club?.id)
 
   // Interactive filtering states
   const [searchQuery, setSearchQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all')
   const [sectorFilter, setSectorFilter] = useState<SectorType>('all')
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
@@ -191,6 +198,18 @@ export default function ClubSquadPage() {
     return (sum / ages.length).toFixed(1)
   }, [players])
 
+  // Category breakdown counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    players.forEach((p) => {
+      const catId = (p as any).category?.id || (p as any).category_id
+      const catSlug = (p as any).category?.slug || (p as any).category_slug
+      if (catId) counts[catId] = (counts[catId] || 0) + 1
+      if (catSlug && catSlug !== catId) counts[catSlug] = (counts[catSlug] || 0) + 1
+    })
+    return counts
+  }, [players])
+
   // Filtered players list
   const filteredPlayers = useMemo(() => {
     return players.filter((player) => {
@@ -215,13 +234,26 @@ export default function ClubSquadPage() {
         if (!matchesQuery) return false
       }
 
-      // 2. Sector Filter
+      // 2. Category Filter
+      if (categoryFilter !== 'all') {
+        const catId = (player as any).category?.id || (player as any).category_id
+        const catSlug = (player as any).category?.slug || (player as any).category_slug
+        if (catId !== categoryFilter && catSlug !== categoryFilter) return false
+      }
+
+      // 3. Gender Filter
+      if (genderFilter !== 'all') {
+        const pGender = (player as any).gender
+        if (pGender && pGender.toLowerCase() !== genderFilter) return false
+      }
+
+      // 4. Sector Filter
       if (sectorFilter !== 'all') {
         const playerSector = getPlayerSector(player)
         if (playerSector !== sectorFilter) return false
       }
 
-      // 3. Status Filter
+      // 5. Status Filter
       if (statusFilter !== 'all') {
         const playerStatus = getPlayerStatusGroup(player)
         if (playerStatus !== statusFilter) return false
@@ -229,7 +261,7 @@ export default function ClubSquadPage() {
 
       return true
     })
-  }, [players, searchQuery, sectorFilter, statusFilter])
+  }, [players, searchQuery, categoryFilter, genderFilter, sectorFilter, statusFilter])
 
   const sidebarSections = useMemo(() => getClubSidebarSections(), [])
 
@@ -249,10 +281,17 @@ export default function ClubSquadPage() {
     )
   }
 
-  const hasActiveFilters = searchQuery.trim() !== '' || sectorFilter !== 'all' || statusFilter !== 'all'
+  const hasActiveFilters =
+    searchQuery.trim() !== '' ||
+    categoryFilter !== 'all' ||
+    genderFilter !== 'all' ||
+    sectorFilter !== 'all' ||
+    statusFilter !== 'all'
 
   const handleClearFilters = () => {
     setSearchQuery('')
+    setCategoryFilter('all')
+    setGenderFilter('all')
     setSectorFilter('all')
     setStatusFilter('all')
   }
@@ -299,6 +338,7 @@ export default function ClubSquadPage() {
                       {club.tenant_name || (club as any).association_name}
                     </Badge>
                   )}
+                  <ClubGenderBadge gender={club.gender} size="sm" />
                 </div>
                 <h1 className="mt-1 text-2xl font-bold text-on-surface tracking-tight">
                   Plantel & Equipa Técnica • {club.name}
@@ -310,6 +350,12 @@ export default function ClubSquadPage() {
             </div>
 
             <div className="flex flex-wrap gap-xs">
+              <Button asChild variant="secondary" size="sm">
+                <Link to={ROUTES.DASHBOARD_CLUB_CATEGORIES}>
+                  <Tag className="mr-xs h-4 w-4" />
+                  <span>Gerir Escalões</span>
+                </Link>
+              </Button>
               <Button asChild variant="secondary" size="sm">
                 <Link to={ROUTES.DASHBOARD_CLUB_LINEUP}>
                   Convocatórias & Onze
@@ -413,7 +459,46 @@ export default function ClubSquadPage() {
 
           {/* Tab Content: Squad */}
           <TabsContent value="squad" className="space-y-lg animate-in fade-in duration-300">
-            {/* Dynamic Controls Bar: Search + Sectors + Status + ViewMode */}
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <button
+                onClick={() => setCategoryFilter('all')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                  categoryFilter === 'all'
+                    ? 'bg-primary text-on-primary shadow-xs'
+                    : 'bg-surface border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                }`}
+              >
+                <span>Todos os Escalões</span>
+                <span className={`rounded-full px-1.5 py-0.2 text-[10px] ${categoryFilter === 'all' ? 'bg-on-primary/20 text-on-primary' : 'bg-surface-container-highest text-on-surface-variant'}`}>
+                  {players.length}
+                </span>
+              </button>
+
+              {categories.map((cat) => {
+                const count = categoryCounts[cat.id] || categoryCounts[cat.slug] || 0
+                const isSelected = categoryFilter === cat.id || categoryFilter === cat.slug
+
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategoryFilter(isSelected ? 'all' : cat.id)}
+                    className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                      isSelected
+                        ? 'bg-primary text-on-primary shadow-xs'
+                        : 'bg-surface border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                    }`}
+                  >
+                    <span>{cat.name}</span>
+                    <span className={`rounded-full px-1.5 py-0.2 text-[10px] ${isSelected ? 'bg-on-primary/20 text-on-primary' : 'bg-surface-container-highest text-on-surface-variant'}`}>
+                      {count}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Dynamic Controls Bar: Search + Sectors + Status + Gender + ViewMode */}
             <div className="flex flex-col gap-md rounded-2xl border border-outline-variant/30 bg-surface p-md shadow-xs lg:flex-row lg:items-center lg:justify-between">
               {/* Search & Sector Filters */}
               <div className="flex flex-1 flex-col gap-sm sm:flex-row sm:items-center">
@@ -493,8 +578,20 @@ export default function ClubSquadPage() {
                 </div>
               </div>
 
-              {/* Status Filter & View Toggle */}
+              {/* Status & Gender Filters & View Toggle */}
               <div className="flex items-center justify-between sm:justify-end gap-sm border-t border-outline-variant/15 pt-sm lg:border-t-0 lg:pt-0">
+                {/* Gender selector */}
+                <select
+                  value={genderFilter}
+                  onChange={(e) => setGenderFilter(e.target.value as any)}
+                  className="rounded-xl border border-outline-variant/30 bg-surface-container px-2.5 py-1.5 text-xs font-medium text-on-surface shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary"
+                  aria-label="Filtrar por género"
+                >
+                  <option value="all">Todos os géneros</option>
+                  <option value="male">Masculino</option>
+                  <option value="female">Feminino</option>
+                </select>
+
                 {/* Status selector */}
                 <select
                   value={statusFilter}
@@ -596,6 +693,7 @@ export default function ClubSquadPage() {
                         <th className="px-lg py-md">Dorsal</th>
                         <th className="px-lg py-md">Atleta</th>
                         <th className="px-lg py-md">Posição</th>
+                        <th className="px-lg py-md">Escalão</th>
                         <th className="px-lg py-md">Estado</th>
                         <th className="px-lg py-md">Entrada</th>
                         <th className="px-lg py-md text-right">Ações</th>
@@ -614,6 +712,7 @@ export default function ClubSquadPage() {
                         const isActive = 'is_active' in player ? player.is_active : true
                         const statusConf = getStatusBadgeConfig(rawStatus, isActive)
                         const avatar = resolveMediaUrl(player.avatar)
+                        const category = (player as any).category || (player as any).category_name
 
                         return (
                           <tr
@@ -664,6 +763,13 @@ export default function ClubSquadPage() {
                               >
                                 {position}
                               </Badge>
+                            </td>
+                            <td className="px-lg py-md">
+                              {category ? (
+                                <PlayerCategoryBadge category={category} size="sm" />
+                              ) : (
+                                <span className="text-xs text-on-surface-variant/60">—</span>
+                              )}
                             </td>
                             <td className="px-lg py-md">
                               <span

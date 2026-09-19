@@ -29,6 +29,8 @@ export const createCompetitionSchema = z.object({
   registration_start_date: z.string().nullable().optional(),
   registration_end_date: z.string().nullable().optional(),
   description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').nullable().optional(),
+  category_id: z.string().nullable().optional().or(z.literal('')),
+  allowed_genders: z.enum(['male', 'female', 'mixed']).optional(),
   config: competitionConfigSchema.optional(),
 }).superRefine((data, ctx) => {
   if (data.config && data.config.format !== data.competition_type) {
@@ -71,6 +73,8 @@ export const updateCompetitionSchema = z.object({
   registration_start_date: z.string().nullable().optional(),
   registration_end_date: z.string().nullable().optional(),
   description: z.string().max(1000, 'A descrição não pode exceder 1000 caracteres.').nullable().optional(),
+  category_id: z.string().nullable().optional().or(z.literal('')),
+  allowed_genders: z.enum(['male', 'female', 'mixed']).optional(),
   config: competitionConfigSchema.optional(),
 }).superRefine((data, ctx) => {
   if (data.competition_type && data.config && data.config.format !== data.competition_type) {

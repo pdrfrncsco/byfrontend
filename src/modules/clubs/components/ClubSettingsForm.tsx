@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Palette, Globe } from 'lucide-react'
+import { Palette, Globe, Users } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Textarea } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
+import { CLUB_GENDER_OPTIONS } from '@/constants/categories'
 import { clubSettingsSchema, type ClubSettingsFormData } from '../schemas'
 import { ClubLogo } from './ClubLogo'
 import { ClubLogoUploadCard } from './ClubLogoUploadCard'
+import { ClubGenderBadge } from './ClubGenderBadge'
 
 interface ClubSettingsFormProps {
   club: any
@@ -28,6 +30,7 @@ function toFormDefaults(club?: any): ClubSettingsFormData {
     description: club?.description || '',
     primary_color: club?.primary_color || '#1B4D3E',
     secondary_color: club?.secondary_color || '#D4AF37',
+    gender: (club?.gender as any) || 'male',
     is_public: club?.is_public ?? true,
   }
 }
@@ -52,6 +55,7 @@ export function ClubSettingsForm({
   const primaryColor = watch('primary_color')
   const secondaryColor = watch('secondary_color')
   const name = watch('name')
+  const clubGender = watch('gender')
   const isPublic = watch('is_public')
 
   useEffect(() => {
@@ -116,6 +120,7 @@ export function ClubSettingsForm({
                 </div>
               </div>
               <div className="mt-md flex flex-wrap gap-sm">
+                <ClubGenderBadge gender={clubGender} size="sm" />
                 <span className="rounded-full border border-outline-variant/20 bg-surface-container px-md py-1.5 text-sm">
                   {isPublic ? 'Perfil público' : 'Perfil privado'}
                 </span>
@@ -156,12 +161,25 @@ export function ClubSettingsForm({
               <Input id="name" {...register('name')} state={errors.name ? 'error' : 'default'} />
             </FormField>
 
-            <div className="grid gap-md md:grid-cols-2">
+            <div className="grid gap-md md:grid-cols-3">
               <FormField label="Sigla" htmlFor="short_name" error={errors.short_name?.message}>
                 <Input id="short_name" {...register('short_name')} state={errors.short_name ? 'error' : 'default'} />
               </FormField>
               <FormField label="Ano de Fundação" htmlFor="founded_year" error={errors.founded_year?.message}>
                 <Input id="founded_year" type="number" {...register('founded_year')} state={errors.founded_year ? 'error' : 'default'} />
+              </FormField>
+              <FormField label="Género do Clube" htmlFor="gender" error={errors.gender?.message}>
+                <select
+                  id="gender"
+                  {...register('gender')}
+                  className="h-10 w-full rounded-xl border border-outline-variant/30 bg-surface px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  {CLUB_GENDER_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </FormField>
             </div>
 

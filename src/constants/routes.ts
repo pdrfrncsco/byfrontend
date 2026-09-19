@@ -73,6 +73,7 @@ export const ROUTES = {
   DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',
   DASHBOARD_CLUB_PLAYER_REQUESTS: '/dashboard/club/player-requests',
   DASHBOARD_CLUB_SQUAD: '/dashboard/club/squad',
+  DASHBOARD_CLUB_CATEGORIES: '/dashboard/club/categories',
   DASHBOARD_CLUB_COMPETITIONS: '/dashboard/club/competitions',
   DASHBOARD_CLUB_LINEUP: '/dashboard/club/lineup',
   DASHBOARD_CLUB_MATCH_LINEUP: (matchId: string) => `/dashboard/club/matches/${matchId}/lineup`,

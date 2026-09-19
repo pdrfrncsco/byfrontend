@@ -48,6 +48,7 @@ import {
 import { playerRegisterSchema, type PlayerRegisterFormData } from '../schemas'
 import { POSITION_COLOR } from '../constants'
 import type { Player } from '../types'
+import { PlayerCategorySelect, PlayerCategoryBadge } from '../components'
 
 type SectorFilter = 'all' | 'gk' | 'def' | 'mid' | 'att'
 
@@ -97,6 +98,7 @@ export function ClubPlayerRegisterPage() {
       joined_date: new Date().toISOString().split('T')[0],
       shirt_number: '',
       competition_id: '',
+      category_id: '',
     },
   })
 
@@ -105,6 +107,19 @@ export function ClubPlayerRegisterPage() {
       setValue('club_id', club.id)
     }
   }, [club?.id, setValue])
+
+  const selectedPlayerAge = useMemo(() => {
+    if (!selectedPlayer?.date_of_birth) return null
+    const dob = new Date(selectedPlayer.date_of_birth)
+    if (Number.isNaN(dob.getTime())) return null
+    const now = new Date()
+    let age = now.getFullYear() - dob.getFullYear()
+    const m = now.getMonth() - dob.getMonth()
+    if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) {
+      age--
+    }
+    return age
+  }, [selectedPlayer])
 
   const pendingRequestsCount = useMemo(
     () => playerRequests.filter((r) => r.status?.toLowerCase() === 'pending').length,
@@ -150,6 +165,7 @@ export function ClubPlayerRegisterPage() {
         joined_date: data.joined_date,
         shirt_number: data.shirt_number ? Number(data.shirt_number) : undefined,
         competition_id: data.competition_id || undefined,
+        category_id: data.category_id || undefined,
       },
       {
         onSuccess: () => navigate(ROUTES.DASHBOARD_CLUB),
@@ -389,7 +405,7 @@ export function ClubPlayerRegisterPage() {
 
                             <div className="min-w-0 flex-1">
                               <p className="truncate text-xs font-semibold text-on-surface">{player.full_name}</p>
-                              <div className="flex items-center gap-1 mt-0.5">
+                              <div className="flex items-center gap-1 mt-0.5 flex-wrap">
                                 <span className="text-[10px] text-on-surface-variant">
                                   {player.position_label || player.primary_position}
                                 </span>
@@ -397,6 +413,20 @@ export function ClubPlayerRegisterPage() {
                                 <span className="text-[10px] text-on-surface-variant">
                                   {player.nationality || 'Angola'}
                                 </span>
+                                {player.gender_label && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="text-[10px] font-medium text-on-surface-variant">
+                                      {player.gender_label}
+                                    </span>
+                                  </>
+                                )}
+                                {(player.category || player.categoryId) && (
+                                  <>
+                                    <span>•</span>
+                                    <PlayerCategoryBadge category={player.category || player.categoryId} size="sm" />
+                                  </>
+                                )}
                               </div>
                             </div>
 
@@ -429,7 +459,7 @@ export function ClubPlayerRegisterPage() {
                     2. Termos do Vínculo Federativo
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-md p-lg sm:grid-cols-3">
+                <CardContent className="grid gap-md p-lg sm:grid-cols-2 lg:grid-cols-4">
                   <FormField
                     label="Data de Entrada"
                     htmlFor="joined-date"
@@ -482,6 +512,14 @@ export function ClubPlayerRegisterPage() {
                       ))}
                     </NativeSelect>
                   </FormField>
+
+                  <PlayerCategorySelect
+                    clubIdOrSlug={club?.slug || club?.id}
+                    value={watch('category_id') || ''}
+                    onChange={(val) => setValue('category_id', val, { shouldDirty: true })}
+                    playerAge={selectedPlayerAge}
+                    error={errors.category_id?.message}
+                  />
                 </CardContent>
               </Card>
 
@@ -499,6 +537,7 @@ export function ClubPlayerRegisterPage() {
                         <strong>{formatDate(watch('joined_date'))}</strong>.
                         {watch('shirt_number') ? ` Camisola pretendida: #${watch('shirt_number')}.` : ''}
                         {selectedCompetition ? ` Competição: ${selectedCompetition.name}.` : ''}
+                        {watch('category_id') ? ` Categoria selecionada: ${watch('category_id')}.` : ''}
                       </p>
                     </div>
                   </div>

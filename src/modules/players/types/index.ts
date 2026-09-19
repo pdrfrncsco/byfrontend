@@ -54,6 +54,9 @@ export interface PlayerCurrentClub {
   shirt_number: number | null
 }
 
+import type { PlayerCategory } from './player-category.types'
+export * from './player-category.types'
+
 export interface Player {
   id: string
   /** Global unique identifier: BY-PLY-... */
@@ -65,6 +68,10 @@ export interface Player {
   /** @deprecated Use PlayerContact.primary_email instead. Removed September 2026. */
   email: string | null
   date_of_birth: string | null
+  gender?: 'male' | 'female'
+  gender_label?: string
+  categoryId?: string
+  category?: PlayerCategory
   age: number | null
   is_minor: boolean
   nationality: string | null
@@ -472,6 +479,7 @@ export interface PlayerRegisterPayload {
   joined_date: string
   shirt_number?: number
   competition_id?: string
+  category_id?: string
 }
 
 export type PlayerRegistrationRequestStatus = 'pending' | 'approved' | 'rejected'

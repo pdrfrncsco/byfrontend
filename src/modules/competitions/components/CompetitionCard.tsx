@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Trophy, Activity, Calendar, ChevronRight, Shield, Award } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { PlayerCategoryBadge } from '@/modules/players/components/PlayerCategoryBadge'
 import type { Competition, CompetitionStatus, CompetitionType } from '../types'
 
 export interface CompetitionCardProps {
@@ -97,6 +98,28 @@ export function CompetitionCard({ competition, className = '' }: CompetitionCard
                 <span className="flex items-center gap-1 truncate">
                   <Calendar className="h-3 w-3 shrink-0" />
                   {competition.season}
+                </span>
+              </>
+            )}
+
+            {competition.category && (
+              <>
+                <span>•</span>
+                <PlayerCategoryBadge category={competition.category} size="sm" />
+              </>
+            )}
+
+            {(competition.allowed_genders || competition.allowed_genders_label) && (
+              <>
+                <span>•</span>
+                <span className="text-[10px] font-medium text-on-surface-variant">
+                  {competition.allowed_genders_label ||
+                    (() => {
+                      const g = Array.isArray(competition.allowed_genders)
+                        ? competition.allowed_genders[0]
+                        : competition.allowed_genders
+                      return g === 'female' ? 'Feminino' : g === 'mixed' ? 'Misto' : 'Masculino'
+                    })()}
                 </span>
               </>
             )}

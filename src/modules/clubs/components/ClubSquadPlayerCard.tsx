@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { ClubMember, ClubSquadMember } from '@/modules/clubs/types'
 import { POSITION_COLOR } from '@/modules/players/constants'
+import { PlayerCategoryBadge } from '@/modules/players/components/PlayerCategoryBadge'
 
 export function getPositionAccentColor(pos?: string | null): string {
   if (!pos) return '#64748b'
@@ -175,23 +176,30 @@ export function ClubSquadPlayerCard({ player, onClick }: ClubSquadPlayerCardProp
               )}
             </div>
 
-            {/* Position and Status Badges */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-              <Badge
-                variant="outline"
-                className="px-2 py-0 text-[11px] font-semibold tracking-wide capitalize"
-                style={{
-                  borderColor: `${positionColor}40`,
-                  color: positionColor,
-                  backgroundColor: `${positionColor}12`,
-                }}
-              >
-                {positionLabel}
-              </Badge>
+              {/* Position, Category and Status Badges */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <Badge
+                  variant="outline"
+                  className="px-2 py-0 text-[11px] font-semibold tracking-wide capitalize"
+                  style={{
+                    borderColor: `${positionColor}40`,
+                    color: positionColor,
+                    backgroundColor: `${positionColor}12`,
+                  }}
+                >
+                  {positionLabel}
+                </Badge>
 
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0 text-[10px] font-medium ${statusConfig.badgeClass}`}
-              >
+                {((player as any).category || (player as any).category_name || (player as any).category_slug) && (
+                  <PlayerCategoryBadge
+                    category={(player as any).category || (player as any).category_name || (player as any).category_slug}
+                    size="sm"
+                  />
+                )}
+
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0 text-[10px] font-medium ${statusConfig.badgeClass}`}
+                >
                 <span className={`h-1.5 w-1.5 rounded-full ${statusConfig.dotColor}`} />
                 {statusLabel}
               </span>

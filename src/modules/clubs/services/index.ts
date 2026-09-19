@@ -105,8 +105,14 @@ export async function getClubKpis(slug: string): Promise<ClubKpis> {
   return unwrapData(res.data)
 }
 
-export async function getClubSquad(slug: string): Promise<ClubSquadMember[]> {
-  const res = await apiClient.get<PaginatedEnvelope<ClubSquadMember>>(API_ROUTES.CLUBS.PUBLIC.SQUAD(slug))
+export async function getClubSquad(
+  slug: string,
+  params?: { category_id?: string; gender?: string }
+): Promise<ClubSquadMember[]> {
+  const res = await apiClient.get<PaginatedEnvelope<ClubSquadMember>>(
+    API_ROUTES.CLUBS.PUBLIC.SQUAD(slug),
+    { params }
+  )
   return unwrapList(res.data)
 }
 

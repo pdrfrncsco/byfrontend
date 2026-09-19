@@ -11,6 +11,8 @@ export interface ClubListParams {
 
 export type ClubStatus = 'active' | 'suspended' | 'inactive'
 
+import type { PlayerCategory } from '@/modules/players/types/player-category.types'
+
 export interface Club {
   id: string
   name: string
@@ -34,6 +36,9 @@ export interface Club {
   description?: string | null
   is_public?: boolean
   is_verified?: boolean
+  gender?: 'male' | 'female' | 'mixed'
+  gender_label?: string
+  categoryIds?: string[]
   status?: ClubStatus
   status_label?: string
   affiliation_request_status?: 'draft' | 'pending' | 'approved' | 'rejected' | null
@@ -97,6 +102,12 @@ export interface ClubSquadMember {
   status?: string
   status_label?: string
   nationality?: string | null
+  gender?: 'male' | 'female' | string | null
+  gender_label?: string
+  category?: PlayerCategory | null
+  category_id?: string | null
+  category_name?: string | null
+  category_slug?: string | null
   date_of_birth?: string | null
   height_cm?: number | null
   weight_kg?: number | null

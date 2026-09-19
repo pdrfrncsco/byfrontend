@@ -6,6 +6,7 @@ import { Settings, Loader2 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
+import { useFederationCategories } from '@/modules/players/hooks/usePlayerCategories'
 import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
@@ -21,11 +22,14 @@ export function CompetitionSettingsPage() {
   const sidebarSections = useMemo(() => getCompetitionSidebarSections(competitionId), [competitionId])
 
   const { data: competition, isLoading } = useCompetition(competitionId)
+  const { data: federationCategories = [], isLoading: categoriesLoading } = useFederationCategories()
   const { mutate: updateCompetition, isPending } = useUpdateCompetition()
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<UpdateCompetitionFormData>({
     resolver: zodResolver(updateCompetitionSchema),
@@ -35,6 +39,12 @@ export function CompetitionSettingsPage() {
           competition_type: competition.competition_type,
           season: competition.season,
           status: competition.status,
+          category_id: (competition as any).categoryId || (competition as any).category_id || (competition as any).category?.id || '',
+          allowed_genders: (() => {
+            const raw = (competition as any).allowed_genders || (competition as any).allowedGenders
+            if (Array.isArray(raw)) return raw[0] || 'male'
+            return raw || 'male'
+          })(),
           start_date: competition.start_date ?? '',
           end_date: competition.end_date ?? '',
           registration_start_date: competition.registration_start_date ?? '',
@@ -47,6 +57,8 @@ export function CompetitionSettingsPage() {
   const onSubmit = (data: UpdateCompetitionFormData) => {
     const payload = {
       ...data,
+      category_id: data.category_id || undefined,
+      allowed_genders: data.allowed_genders ? (Array.isArray(data.allowed_genders) ? (data.allowed_genders[0] as any) : data.allowed_genders) : undefined,
       start_date: data.start_date ? data.start_date : null,
       end_date: data.end_date ? data.end_date : null,
       registration_start_date: data.registration_start_date ? data.registration_start_date : null,
@@ -154,6 +166,62 @@ export function CompetitionSettingsPage() {
                   <option value="inactive">Inativa / Pausada (Temporariamente Suspensa)</option>
                 </NativeSelect>
               </FormField>
+            </div>
+
+            {/* Escalão & Género Elegível */}
+            <div className="border-t border-outline-variant/15 pt-md">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-sm">
+                Escalão & Género Elegível
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <FormField
+                  label="Categoria / Escalão Etário"
+                  htmlFor="comp-edit-category"
+                  error={errors.category_id?.message}
+                  hint="Define a faixa etária permitida na prova (ex: Sub-20, Seniores)"
+                >
+                  <NativeSelect
+                    id="comp-edit-category"
+                    disabled={categoriesLoading}
+                    {...register('category_id')}
+                  >
+                    <option value="">Aberto a todos os escalões / Livre</option>
+                    {categoriesLoading ? (
+                      <option value="" disabled>A carregar escalões oficiais...</option>
+                    ) : (
+                      federationCategories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name} ({cat.gender_label || cat.gender}
+                          {cat.min_age && cat.max_age
+                            ? ` • ${cat.min_age}-${cat.max_age} anos`
+                            : cat.max_age
+                            ? ` • até ${cat.max_age} anos`
+                            : cat.min_age
+                            ? ` • a partir de ${cat.min_age} anos`
+                            : ''}
+                          )
+                        </option>
+                      ))
+                    )}
+                  </NativeSelect>
+                </FormField>
+
+                <FormField
+                  label="Género Elegível"
+                  htmlFor="comp-edit-allowed-genders"
+                  error={errors.allowed_genders?.message as string | undefined}
+                  hint="Separação por género dos atletas e clubes elegíveis a inscreverem-se."
+                >
+                  <NativeSelect
+                    id="comp-edit-allowed-genders"
+                    {...register('allowed_genders')}
+                  >
+                    <option value="male">Masculino</option>
+                    <option value="female">Feminino</option>
+                    <option value="mixed">Misto</option>
+                  </NativeSelect>
+                </FormField>
+              </div>
             </div>
 
             {/* Calendário da Competição */}

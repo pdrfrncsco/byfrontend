@@ -1,6 +1,8 @@
 import { CompetitionFormat, CompetitionConfig, CompetitionPhase } from './competition-format.types'
 import { MatchStatus, LineupPlayer, MatchStats, EventType } from './match.types'
 
+import type { PlayerCategory } from '@/modules/players/types/player-category.types'
+
 export type CompetitionType = 'league' | 'tournament' | 'cup'
 export type CompetitionStatus = 'draft' | 'active' | 'completed' | 'inactive'
 
@@ -13,6 +15,14 @@ export interface Competition {
   season: string
   status: CompetitionStatus
   status_label?: string
+  categoryId?: string | null
+  category_id?: string | null
+  category?: PlayerCategory | null
+  category_name?: string | null
+  category_slug?: string | null
+  allowedGenders?: 'male' | 'female' | 'mixed' | string
+  allowed_genders?: 'male' | 'female' | 'mixed' | string
+  allowed_genders_label?: string
   start_date?: string | null
   end_date?: string | null
   registration_start_date?: string | null
@@ -34,6 +44,11 @@ export interface CompetitionCreateData {
   competition_type: CompetitionType
   season: string
   status?: CompetitionStatus
+  category?: string | null
+  categoryId?: string | null
+  category_id?: string | null
+  allowed_genders?: 'male' | 'female' | 'mixed' | string
+  allowedGenders?: 'male' | 'female' | 'mixed' | string
   start_date?: string | null
   end_date?: string | null
   registration_start_date?: string | null
@@ -47,6 +62,11 @@ export interface CompetitionUpdateData {
   competition_type?: CompetitionType
   season?: string
   status?: CompetitionStatus
+  category?: string | null
+  categoryId?: string | null
+  category_id?: string | null
+  allowed_genders?: 'male' | 'female' | 'mixed' | string
+  allowedGenders?: 'male' | 'female' | 'mixed' | string
   start_date?: string | null
   end_date?: string | null
   registration_start_date?: string | null

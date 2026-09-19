@@ -19,7 +19,8 @@ export const clubKeys = {
   details: () => [...clubKeys.all, 'detail'] as const,
   detail: (slug: string) => [...clubKeys.details(), slug] as const,
   kpis: (slug: string) => [...clubKeys.all, slug, 'kpis'] as const,
-  squad: (slug: string) => [...clubKeys.all, slug, 'squad'] as const,
+  squad: (slug: string, params?: { category_id?: string; gender?: string }) =>
+    [...clubKeys.all, slug, 'squad', params] as const,
   staff: (slug: string) => [...clubKeys.all, slug, 'staff'] as const,
   publicDocuments: (slug: string) => [...clubKeys.all, slug, 'documents', 'public'] as const,
   documents: (slug: string) => [...clubKeys.all, slug, 'documents', 'private'] as const,
@@ -61,10 +62,10 @@ export function useClubKpis(slug?: string) {
   })
 }
 
-export function useClubSquad(slug?: string) {
+export function useClubSquad(slug?: string, params?: { category_id?: string; gender?: string }) {
   return useQuery({
-    queryKey: clubKeys.squad(slug || ''),
-    queryFn: () => (slug ? service.getClubSquad(slug) : Promise.resolve([])),
+    queryKey: clubKeys.squad(slug || '', params),
+    queryFn: () => (slug ? service.getClubSquad(slug, params) : Promise.resolve([])),
     enabled: !!slug,
   })
 }

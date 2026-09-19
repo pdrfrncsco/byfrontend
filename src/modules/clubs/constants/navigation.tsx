@@ -6,6 +6,7 @@ import {
   ListChecks,
   Settings,
   Star,
+  Tag,
   Trophy,
   UserCheck,
   UserCircle,
@@ -44,6 +45,11 @@ export function getClubSidebarSections(counts?: ClubSidebarCounts): ClubSidebarS
           label: 'Plantel',
           href: ROUTES.DASHBOARD_CLUB_SQUAD,
           icon: <Users className="h-4 w-4" />,
+        },
+        {
+          label: 'Categorias & Escalões',
+          href: ROUTES.DASHBOARD_CLUB_CATEGORIES,
+          icon: <Tag className="h-4 w-4" />,
         },
         {
           label: 'Registar jogador',

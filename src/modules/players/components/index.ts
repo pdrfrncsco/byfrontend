@@ -65,3 +65,6 @@ export type {
   PlayerTransferStatusProps,
   PlayerMarketStatus,
 } from './cards'
+
+export { PlayerCategoryBadge } from './PlayerCategoryBadge'
+export { PlayerCategorySelect } from './PlayerCategorySelect'

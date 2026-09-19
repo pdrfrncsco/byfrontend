@@ -6,11 +6,12 @@ import { Trophy, Loader2, ChevronRight, ChevronLeft, Check, Sparkles } from 'luc
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect, Select } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
+import { useFederationCategories } from '@/modules/players/hooks/usePlayerCategories'
 import { useCreateCompetition } from '../hooks/useCompetitions'
 import { createCompetitionSchema, type CreateCompetitionFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarSections } from '../constants'
-import type { CompetitionType, LeagueConfig, TournamentConfig, KnockoutRound, CupConfig, CupRound } from '../types'
+import type { CompetitionType, CompetitionCreateData, LeagueConfig, TournamentConfig, KnockoutRound, CupConfig, CupRound } from '../types'
 
 type WizardStep = 'basics' | 'format' | 'format-config' | 'review'
 
@@ -48,6 +49,7 @@ export function CompetitionCreatePage() {
   const { mutate: createCompetition, isPending } = useCreateCompetition()
   const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])
   const [step, setStep] = useState<WizardStep>('basics')
+  const { data: federationCategories = [], isLoading: categoriesLoading } = useFederationCategories()
 
   const {
     register,
@@ -62,6 +64,8 @@ export function CompetitionCreatePage() {
     defaultValues: {
       status: 'draft',
       competition_type: 'league',
+      category_id: '',
+      allowed_genders: 'male',
       start_date: '',
       end_date: '',
       registration_start_date: '',
@@ -130,8 +134,10 @@ export function CompetitionCreatePage() {
   }
 
   const onSubmit = (data: CreateCompetitionFormData) => {
-    const payload: CreateCompetitionFormData = {
+    const payload: CompetitionCreateData = {
       ...data,
+      category_id: data.category_id || undefined,
+      allowed_genders: data.allowed_genders || 'male',
       start_date: data.start_date ? data.start_date : null,
       end_date: data.end_date ? data.end_date : null,
       registration_start_date: data.registration_start_date ? data.registration_start_date : null,
@@ -235,6 +241,62 @@ export function CompetitionCreatePage() {
                     <option value="inactive">Inativa — Pausada ou suspensa temporariamente</option>
                   </NativeSelect>
                 </FormField>
+              </div>
+
+              {/* Escalão & Género Elegível */}
+              <div className="border-t border-outline-variant/15 pt-md">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-primary mb-sm">
+                  Escalão & Género Elegível
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                  <FormField
+                    label="Categoria / Escalão Etário"
+                    htmlFor="comp-category"
+                    error={errors.category_id?.message}
+                    hint="Define a faixa etária permitida na prova (ex: Sub-20, Seniores)"
+                  >
+                    <NativeSelect
+                      id="comp-category"
+                      disabled={categoriesLoading}
+                      {...register('category_id')}
+                    >
+                      <option value="">Aberto a todos os escalões / Livre</option>
+                      {categoriesLoading ? (
+                        <option value="" disabled>A carregar escalões oficiais...</option>
+                      ) : (
+                        federationCategories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name} ({cat.gender_label || cat.gender}
+                            {cat.min_age && cat.max_age
+                              ? ` • ${cat.min_age}-${cat.max_age} anos`
+                              : cat.max_age
+                              ? ` • até ${cat.max_age} anos`
+                              : cat.min_age
+                              ? ` • a partir de ${cat.min_age} anos`
+                              : ''}
+                            )
+                          </option>
+                        ))
+                      )}
+                    </NativeSelect>
+                  </FormField>
+
+                  <FormField
+                    label="Género Elegível"
+                    htmlFor="comp-allowed-genders"
+                    error={errors.allowed_genders?.message as string | undefined}
+                    hint="Separação por género dos atletas e equipas autorizados na prova"
+                  >
+                    <NativeSelect
+                      id="comp-allowed-genders"
+                      {...register('allowed_genders')}
+                    >
+                      <option value="male">Masculino</option>
+                      <option value="female">Feminino</option>
+                      <option value="mixed">Misto</option>
+                    </NativeSelect>
+                  </FormField>
+                </div>
               </div>
 
               {/* Calendário da Prova */}
@@ -927,6 +989,28 @@ export function CompetitionCreatePage() {
                     <dd className="grid grid-cols-2 gap-xs text-xs text-on-surface-variant">
                       <div>Competição: <strong className="text-on-surface">{watch('start_date') || '—'} a {watch('end_date') || '—'}</strong></div>
                       <div>Inscrições: <strong className="text-on-surface">{watch('registration_start_date') || '—'} a {watch('registration_end_date') || '—'}</strong></div>
+                    </dd>
+                  </div>
+
+                  <div className="col-span-2 border-t border-outline-variant/10 pt-sm">
+                    <dt className="text-on-surface-variant text-xs font-semibold uppercase tracking-wider mb-xs">Escalão & Elegibilidade</dt>
+                    <dd className="grid grid-cols-2 gap-xs text-xs text-on-surface-variant">
+                      <div>
+                        Escalão:{' '}
+                        <strong className="text-on-surface">
+                          {federationCategories.find((c) => c.id === watch('category_id'))?.name || 'Aberto a todos os escalões'}
+                        </strong>
+                      </div>
+                      <div>
+                        Género:{' '}
+                        <strong className="text-on-surface">
+                          {(() => {
+                            const val = watch('allowed_genders')
+                            const g = Array.isArray(val) ? val[0] : val
+                            return g === 'female' ? 'Feminino' : g === 'mixed' ? 'Misto' : 'Masculino'
+                          })()}
+                        </strong>
+                      </div>
                     </dd>
                   </div>
 
