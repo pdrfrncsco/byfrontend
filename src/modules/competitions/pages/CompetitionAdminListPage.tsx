@@ -35,7 +35,7 @@ const TYPE_CONFIG: Record<string, { label: string; icon: any }> = {
 export function CompetitionAdminListPage() {
   const [page] = useState(1)
   const [pageSize] = useState(10)
-  const { data, isLoading } = useCompetitionsPaginated({ page, page_size: pageSize })
+  const { data, isLoading } = useCompetitionsPaginated({ page, page_size: pageSize, admin: true })
   const navigate = useNavigate()
 
   const sidebarSections = useMemo(() => getCompetitionSidebarSections(), [])

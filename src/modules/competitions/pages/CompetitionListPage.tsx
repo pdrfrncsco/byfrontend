@@ -19,7 +19,7 @@ export function CompetitionListPage() {
     path: '/competitions',
   })
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | CompetitionStatus>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed'>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | CompetitionType>('all')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(12)
@@ -71,9 +71,8 @@ export function CompetitionListPage() {
                 <label className="flex items-center gap-xs text-xs text-on-surface-variant">
                   <span className="sr-only">Estado:</span>
                   <NativeSelect value={statusFilter} onChange={event => setStatusFilter(event.target.value as typeof statusFilter)}>
-                    <option value="all">Todos os estados</option>
+                    <option value="all">Todas as competições públicas</option>
                     <option value="active">Em curso</option>
-                    <option value="draft">Rascunho</option>
                     <option value="completed">Concluída</option>
                   </NativeSelect>
                 </label>

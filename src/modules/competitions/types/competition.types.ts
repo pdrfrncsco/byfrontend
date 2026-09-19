@@ -340,6 +340,7 @@ export interface CompetitionListParams {
   competition_type?: CompetitionType
   status?: CompetitionStatus
   season?: string
+  admin?: boolean
 }
 
 export interface MatchListParams {
