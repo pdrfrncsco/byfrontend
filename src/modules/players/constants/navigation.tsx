@@ -1,5 +1,6 @@
 import {
   Activity,
+  ArrowLeftRight,
   ExternalLink,
   FileText,
   FolderOpen,
@@ -17,6 +18,7 @@ export function getPlayerSidebarLinks(playerSlug?: string) {
     { label: 'Carreira & Formação', href: playerRoutes.career, icon: GraduationCap },
     { label: 'Contratos & Agentes', href: playerRoutes.contracts, icon: FileText },
     { label: 'Dossiê Médico', href: playerRoutes.medical, icon: HeartPulse },
+    { label: 'Transferências', href: playerRoutes.transfers, icon: ArrowLeftRight },
     { label: 'Pedidos de vínculo', href: playerRoutes.linkClub, icon: Handshake },
     { label: 'Biblioteca de média', href: playerRoutes.media, icon: FolderOpen },
     { label: 'Configurações', href: playerRoutes.dashboardSettings, icon: Settings },

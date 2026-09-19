@@ -1,11 +1,8 @@
 // Players module — Transfer hooks
-// ⚠️  DISABLED: The backend endpoint /players/{id}/transfers/ does not exist in
-//     urls.py. Player transfers are handled via PlayerRegistration.
-//     The PlayerTransferSection has been removed from the dashboard.
-//     These hooks are stubs that return empty data without making any API call.
-//     Re-enable when the backend implements a dedicated transfer endpoint.
+// Connects to /api/v1/transfers/ endpoints with full normalization.
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import apiClient from '@/lib/api-client'
 
 export interface PlayerTransfer {
   id: string
@@ -24,41 +21,134 @@ export interface PlayerTransfer {
   updated_at: string
 }
 
-// ─── Disabled Hooks ───────────────────────────────────────────────────────────
+export interface CreatePlayerTransferPayload {
+  player_id: string
+  to_club_id: string
+  from_club_id?: string | null
+  joined_date?: string | null
+  fee?: number | string | null
+  shirt_number?: number | null
+  competition_id?: string | null
+}
 
-export function usePlayerTransfers(_playerId: string, _enabled = true) {
+export function adaptTransferToPlayerTransfer(raw: any): PlayerTransfer {
+  const fromClub =
+    typeof raw.from_club === 'object' && raw.from_club !== null
+      ? {
+          id: String(raw.from_club.id ?? ''),
+          name: String(raw.from_club.name ?? raw.from_club_name ?? 'Agente Livre'),
+          slug: String(raw.from_club.slug ?? ''),
+        }
+      : {
+          id: raw.from_club ? String(raw.from_club) : '',
+          name: String(raw.from_club_name ?? (raw.from_club ? 'Clube de Origem' : 'Agente Livre')),
+          slug: '',
+        }
+
+  const toClub =
+    typeof raw.to_club === 'object' && raw.to_club !== null
+      ? {
+          id: String(raw.to_club.id ?? ''),
+          name: String(raw.to_club.name ?? raw.to_club_name ?? 'Clube de Destino'),
+          slug: String(raw.to_club.slug ?? ''),
+        }
+      : {
+          id: raw.to_club ? String(raw.to_club) : '',
+          name: String(raw.to_club_name ?? 'Clube de Destino'),
+          slug: '',
+        }
+
+  return {
+    id: String(raw.id),
+    player: typeof raw.player === 'object' && raw.player !== null ? String(raw.player.id) : String(raw.player ?? ''),
+    from_club: fromClub,
+    to_club: toClub,
+    transfer_type: raw.transfer_type ?? 'permanent',
+    status: raw.status ?? 'pending',
+    requested_at: raw.request_date ?? raw.requested_at ?? raw.created_at ?? new Date().toISOString(),
+    effective_date: raw.joined_date ?? raw.effective_date,
+    transfer_fee: raw.fee != null ? Number(raw.fee) : (raw.transfer_fee != null ? Number(raw.transfer_fee) : undefined),
+    currency: raw.currency ?? 'EUR',
+    loan_duration_months: raw.loan_duration_months != null ? Number(raw.loan_duration_months) : undefined,
+    notes: raw.notes ?? raw.rejection_reason ?? undefined,
+    created_at: raw.created_at ?? raw.request_date ?? new Date().toISOString(),
+    updated_at: raw.updated_at ?? raw.created_at ?? new Date().toISOString(),
+  }
+}
+
+// ─── Query Hooks ──────────────────────────────────────────────────────────────
+
+export function usePlayerTransfers(playerId: string, enabled = true) {
   return useQuery<PlayerTransfer[]>({
-    queryKey: ['player-transfers-disabled'],
-    queryFn: () => Promise.resolve([]),
-    enabled: false,
-    staleTime: Infinity,
+    queryKey: ['player-transfers', playerId],
+    queryFn: async () => {
+      const res = await apiClient.get<any>('/transfers/', {
+        params: { player_id: playerId },
+      })
+      const payload = res.data
+      const rawList = Array.isArray(payload)
+        ? payload
+        : payload && typeof payload === 'object' && 'results' in payload && Array.isArray(payload.results)
+          ? payload.results
+          : []
+      return rawList.map(adaptTransferToPlayerTransfer)
+    },
+    enabled: enabled && !!playerId,
+    staleTime: 1000 * 60 * 3,
   })
 }
 
-export function useTransferDetails(_playerId: string, _transferId: string, _enabled = true) {
+export function useTransferDetails(_playerId: string, transferId: string, enabled = true) {
   return useQuery<PlayerTransfer | null>({
-    queryKey: ['transfer-disabled'],
-    queryFn: () => Promise.resolve(null),
-    enabled: false,
-    staleTime: Infinity,
+    queryKey: ['transfer-detail', transferId],
+    queryFn: async () => {
+      const res = await apiClient.get<any>(`/transfers/${transferId}/`)
+      const payload = res.data?.data ?? res.data
+      return payload ? adaptTransferToPlayerTransfer(payload) : null
+    },
+    enabled: enabled && !!transferId,
+    staleTime: 1000 * 60 * 3,
   })
 }
 
-const disabledMutation = {
-  mutate: () => { console.warn('[PlayerTransfers] Endpoint not implemented in backend yet.') },
-  mutateAsync: () => Promise.reject(new Error('Endpoint not implemented in backend yet.')),
-  isPending: false,
-  isError: false,
-  isSuccess: false,
-  reset: () => {},
-} as const
+export function useCreateTransfer(playerId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload: CreatePlayerTransferPayload) => {
+      const res = await apiClient.post('/transfers/', payload)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['player-transfers', playerId] })
+    },
+  })
+}
 
-/** @deprecated Endpoint not yet available. */
-export function useCreateTransfer(_playerId: string) { return disabledMutation }
-/** @deprecated Endpoint not yet available. */
-export function useUpdateTransfer(_playerId: string, _transferId: string) { return disabledMutation }
-/** @deprecated Endpoint not yet available. */
-export function useCancelTransfer(_playerId: string) { return disabledMutation }
+export function useCancelTransfer(playerId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (transferId: string) => {
+      const res = await apiClient.post(`/transfers/${transferId}/cancel/`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['player-transfers', playerId] })
+    },
+  })
+}
+
+export function useUpdateTransfer(playerId: string, _transferId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (_payload: unknown) => {
+      console.warn('[useUpdateTransfer] Not implemented directly in backend.')
+      return null
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['player-transfers', playerId] })
+    },
+  })
+}
 
 // ─── Utility Functions (kept for future use) ──────────────────────────────────
 

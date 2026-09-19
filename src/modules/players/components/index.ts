@@ -1,6 +1,7 @@
 export { PlayerCard } from './PlayerCard'
 export { PlayerCardCompact } from './PlayerCardCompact'
 export { PlayerCareerTimeline } from './PlayerCareerTimeline'
+export { PlayerKpisBar } from './PlayerKpisBar'
 export { PlayerDocumentsTab } from './PlayerDocumentsTab'
 export { PlayerVideosTab } from './PlayerVideosTab'
 export { PlayerAchievementsTab } from './PlayerAchievementsTab'

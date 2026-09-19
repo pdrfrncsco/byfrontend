@@ -67,6 +67,7 @@ export const ROUTES = {
   DASHBOARD_PLAYER_CONTRACTS: '/dashboard/player/contracts',
   DASHBOARD_PLAYER_MEDICAL: '/dashboard/player/medical',
   DASHBOARD_PLAYER_SETTINGS: '/dashboard/player/settings',
+  DASHBOARD_PLAYER_TRANSFERS: '/dashboard/player/transfers',
   DASHBOARD_PLAYER_MEDIA: '/dashboard/player/media',
   DASHBOARD_PLAYER_LINK_CLUB: '/dashboard/player/link-club',
   DASHBOARD_CLUB_REGISTER_PLAYER: '/dashboard/club/register-player',

@@ -48,6 +48,7 @@ import {
   PlayerVideosSection,
   PlayerContactSettingsPanel,
   PlayerPrivacySettingsPanel,
+  PlayerComplianceSection,
 } from '../components'
 import { usePlayerMe, useUpdatePlayerMe } from '../hooks'
 import { playerUpdateSchema, type PlayerUpdateFormData } from '../schemas'
@@ -261,6 +262,10 @@ export function PlayerDashboardSettingsPage() {
             <TabsTrigger value="achievements" className="gap-xs rounded-xl px-md py-sm text-xs font-medium">
               <Award className="h-4 w-4" />
               Conquistas
+            </TabsTrigger>
+            <TabsTrigger value="compliance" className="gap-xs rounded-xl px-md py-sm text-xs font-medium">
+              <Shield className="h-4 w-4" />
+              Conformidade
             </TabsTrigger>
           </TabsList>
 
@@ -611,6 +616,11 @@ export function PlayerDashboardSettingsPage() {
           {/* ─── TAB: CONQUISTAS ──────────────────────────────────────── */}
           <TabsContent value="achievements">
             <PlayerAchievementsSection slug={player.slug} ownerId={player.id} />
+          </TabsContent>
+
+          {/* ─── TAB: CONFORMIDADE ────────────────────────────────────── */}
+          <TabsContent value="compliance">
+            <PlayerComplianceSection playerId={player.id} />
           </TabsContent>
         </Tabs>
       </div>

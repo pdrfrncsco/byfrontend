@@ -18,7 +18,7 @@ export {
 export * from './usePlayerComparison'
 export { usePlayerContracts, useContractDetails, useCreateContract, useUpdateContract, useDeleteContract, useSignContract, useRenewContract, useTerminateContract, getActiveContract, formatCurrency, getContractStatusInfo, getContractTypeLabel, getContractDuration, isContractExpiringSoon, isContractFullySigned } from './usePlayerContracts'
 export { usePlayerAgents, useAgentDetails, useAgentSearch, useCreateAgentRelationship, useUpdateAgentRelationship, useDeleteAgentRelationship, getActiveAgentRelationship, getAgentRelationshipStatusInfo, getAgencyTypeLabel, isRelationshipActive, getRelationshipDuration } from './usePlayerAgents'
-export { usePlayerTransfers, useTransferDetails, useCreateTransfer, useUpdateTransfer, useCancelTransfer, getTransferStatusInfo, getTransferTypeLabel, formatTransferFee, isTransferPendingApproval, canCancelTransfer, getTransferTimelineSteps, getDaysUntilEffective } from './usePlayerTransfers'
+export { usePlayerTransfers, useTransferDetails, useCreateTransfer, useUpdateTransfer, useCancelTransfer, getTransferStatusInfo, getTransferTypeLabel, formatTransferFee, isTransferPendingApproval, canCancelTransfer, getTransferTimelineSteps, getDaysUntilEffective, type PlayerTransfer } from './usePlayerTransfers'
 export * from './usePlayerMedical'
 export * from './usePlayerNationalTeam'
 export * from './usePlayerPerformance'

@@ -58,6 +58,9 @@ const PlayerContractsPage = lazy(() =>
 const PlayerMedicalPage = lazy(() =>
   import('@/modules/players/pages/PlayerMedicalPage').then((m) => ({ default: m.PlayerMedicalPage })),
 )
+const PlayerTransferCenterPage = lazy(() =>
+  import('@/modules/players/pages/PlayerTransferCenterPage').then((m) => ({ default: m.PlayerTransferCenterPage })),
+)
 const PlayerDashboardSettingsPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardSettingsPage').then((m) => ({ default: m.PlayerDashboardSettingsPage })),
 )
@@ -176,6 +179,14 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive', 'doctor', 'medical_staff']}>
             <Suspense fallback={<RouteFallback />}><PlayerMedicalPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={playerRoutes.transfers}
+        element={
+          <ProtectedRoute requiredRoles={['player', 'owner', 'admin', 'executive']}>
+            <Suspense fallback={<RouteFallback />}><PlayerTransferCenterPage /></Suspense>
           </ProtectedRoute>
         }
       />

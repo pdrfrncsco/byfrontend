@@ -261,22 +261,29 @@ function CallUpCard({ callUp }: { callUp: NationalTeamCallUp }) {
 function renderPerformanceMetrics(data: any) {
   const categories = Object.keys(data).filter((key) => data[key] && typeof data[key] === 'object')
 
-  return categories.map((category) => (
-    <Card key={category}>
-      <CardHeader>
-        <CardTitle className="text-base capitalize">
-          {category.replace(/_/g, ' ')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-md sm:grid-cols-2 md:grid-cols-3">
-          {data[category].map((metric: any, index: number) => (
-            <MetricCard key={index} metric={metric} />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  ))
+  return categories.map((category) => {
+    const rawVal = data[category]
+    const metricsList: any[] = Array.isArray(rawVal) ? rawVal : (Array.isArray(rawVal?.metrics) ? rawVal.metrics : [])
+
+    if (metricsList.length === 0) return null
+
+    return (
+      <Card key={category}>
+        <CardHeader>
+          <CardTitle className="text-base capitalize">
+            {category.replace(/_metrics/g, '').replace(/_/g, ' ')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-md sm:grid-cols-2 md:grid-cols-3">
+            {metricsList.map((metric: any, index: number) => (
+              <MetricCard key={index} metric={metric} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  })
 }
 
 function MetricCard({ metric }: { metric: any }) {

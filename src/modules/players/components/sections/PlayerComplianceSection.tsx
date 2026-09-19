@@ -42,7 +42,7 @@ export function PlayerComplianceSection({
   } = usePlayerComplianceSummary(playerId)
 
   const records = useMemo(
-    () => ((recordsData?.results || []) as ComplianceRecord[]) || [],
+    () => ((Array.isArray(recordsData) ? recordsData : recordsData?.results) || []) as ComplianceRecord[],
     [recordsData]
   )
 
