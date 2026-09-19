@@ -2,7 +2,12 @@ import { useNavigate } from 'react-router-dom'
 import { CheckCircle2, CircleAlert } from 'lucide-react'
 import { Badge } from '@/components/ui'
 import { ROUTES } from '@/constants/routes'
-import { useCompleteOnboardingStep, usePlayerOnboardingStatus, usePlayerWizard } from '../hooks'
+import {
+  useCompleteOnboardingStep,
+  useMyRegistrationRequests,
+  usePlayerOnboardingStatus,
+  usePlayerWizard,
+} from '../hooks'
 import { PlayerOnboardingLayout } from './PlayerOnboardingLayout'
 
 function StatusRow({ label, complete }: { label: string; complete: boolean }) {
@@ -21,19 +26,30 @@ function StatusRow({ label, complete }: { label: string; complete: boolean }) {
 export function PlayerOnboardingReviewPage() {
   const navigate = useNavigate()
   const { data, isLoading } = usePlayerOnboardingStatus()
+  const { data: requests = [] } = useMyRegistrationRequests()
   const completeStep = useCompleteOnboardingStep()
   const { reset } = usePlayerWizard()
   const player = data?.player
+
+  const hasClub = Boolean(data?.club_complete || requests.length > 0 || player?.current_club)
+
   const readyToComplete = Boolean(
     data?.account_complete
-      && data.personal_complete
-      && data.football_complete
+      && (data.personal_complete || data.has_basic_info)
+      && (data.football_complete || data.has_football_info)
       && data.contact_complete
       && (data.guardian_complete || !player?.is_minor)
-      && data.club_complete
+      && hasClub
   )
 
   const handleComplete = async () => {
+    if (!data?.club_complete && hasClub) {
+      try {
+        await completeStep.mutateAsync('club')
+      } catch {
+        // Ignora se já estiver marcado no backend
+      }
+    }
     await completeStep.mutateAsync('review')
     reset()
     navigate(ROUTES.ONBOARDING_PLAYER_COMPLETE, { replace: true })
@@ -66,7 +82,7 @@ export function PlayerOnboardingReviewPage() {
               <StatusRow label="Contacto" complete={Boolean(data?.contact_complete)} />
               <StatusRow label="Identidade (opcional)" complete={Boolean(data?.identity_complete)} />
               <StatusRow label="Responsável legal" complete={Boolean(data?.guardian_complete || !player?.is_minor)} />
-              <StatusRow label="Clube" complete={Boolean(data?.club_complete)} />
+              <StatusRow label="Clube" complete={hasClub} />
             </div>
 
             {player && (

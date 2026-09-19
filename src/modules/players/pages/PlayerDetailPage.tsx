@@ -17,6 +17,7 @@ import {
 import {
   PlayerAchievementsTab,
   PlayerCareerTimeline,
+  PlayerContractSection,
   PlayerDocumentsTab,
   PlayerInfoSidebar,
   PlayerMatchesTab,
@@ -24,7 +25,7 @@ import {
   PlayerVideosTab,
 } from '../components'
 import { MediaGalleryTab } from '@/modules/media_manager/components'
-import { usePlayer } from '../hooks'
+import { usePlayer, usePlayerPermissions } from '../hooks'
 import { useSeo } from '@/hooks/useSeo'
 import { POSITION_COLOR, STATUS_COLOR } from '../constants'
 import { playerRoutes } from '../routes'
@@ -50,6 +51,7 @@ export function PlayerDetailPage() {
   }, [slug])
 
   const { data: player, isLoading, isError, refetch } = usePlayer(slug)
+  const permissions = usePlayerPermissions(player)
   useSeo({
     title: player?.full_name ? `${player.full_name} — Jogador` : 'Perfil do jogador',
     description: player?.bio || 'Consulte o perfil, carreira, desempenho e conquistas deste jogador.',
@@ -147,6 +149,12 @@ export function PlayerDetailPage() {
             <SportTabsTrigger value="achievements">{t('players.detail.tabs.achievements')}</SportTabsTrigger>
             <SportTabsTrigger value="videos">{t('players.detail.tabs.videos')}</SportTabsTrigger>
             <SportTabsTrigger value="gallery">Galeria</SportTabsTrigger>
+            {permissions.canViewDocuments && (
+              <SportTabsTrigger value="documents">Documentos</SportTabsTrigger>
+            )}
+            {permissions.canViewContracts && (
+              <SportTabsTrigger value="contracts">Contratos</SportTabsTrigger>
+            )}
           </SportTabsList>
 
           <SportTabsContent value="matches">
@@ -188,6 +196,24 @@ export function PlayerDetailPage() {
               emptyDescription="Este jogador ainda não adicionou fotos públicas à sua galeria."
             />
           </SportTabsContent>
+
+          {permissions.canViewDocuments && (
+            <SportTabsContent value="documents">
+              <PlayerDocumentsTab
+                slug={slug}
+                fallbackDocuments={player.documents ?? []}
+              />
+            </SportTabsContent>
+          )}
+
+          {permissions.canViewContracts && (
+            <SportTabsContent value="contracts">
+              <PlayerContractSection
+                playerId={player.id}
+                readOnly={!permissions.canEditContracts}
+              />
+            </SportTabsContent>
+          )}
         </SportTabs>
       }
       sidebar={
