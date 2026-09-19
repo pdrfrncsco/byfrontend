@@ -2,6 +2,8 @@ export { PlayerCard } from './PlayerCard'
 export { PlayerCardCompact } from './PlayerCardCompact'
 export { PlayerCareerTimeline } from './PlayerCareerTimeline'
 export { PlayerKpisBar } from './PlayerKpisBar'
+export { PlayerTechnicalAttributesCard } from './PlayerTechnicalAttributesCard'
+export { PlayerQuickActionsCard } from './PlayerQuickActionsCard'
 export { PlayerDocumentsTab } from './PlayerDocumentsTab'
 export { PlayerVideosTab } from './PlayerVideosTab'
 export { PlayerAchievementsTab } from './PlayerAchievementsTab'
@@ -25,6 +27,7 @@ export { PlayerAgentForm } from './forms/PlayerAgentForm'
 export { PlayerTransferForm } from './forms/PlayerTransferForm'
 export { PlayerMedicalProfileForm } from './forms/PlayerMedicalProfileForm'
 export { PlayerMedicalDocumentForm } from './forms/PlayerMedicalDocumentForm'
+export { PlayerProfileSettingsForm } from './forms/PlayerProfileSettingsForm'
 
 // Sections
 export { PlayerPrivacySection } from './sections/PlayerPrivacySection'
@@ -45,3 +48,20 @@ export { PlayerComparison } from './PlayerComparison'
 
 export { PlayerInfoSidebar } from './PlayerInfoSidebar'
 export { PlayerMatchesTab } from './PlayerMatchesTab'
+
+// Domain Cards
+export {
+  PlayerRegistrationCard,
+  PlayerContractCard,
+  PlayerMedicalCard,
+  PlayerIdentityCard,
+  PlayerTransferStatus,
+} from './cards'
+export type {
+  PlayerRegistrationCardProps,
+  PlayerContractCardProps,
+  PlayerMedicalCardProps,
+  PlayerIdentityCardProps,
+  PlayerTransferStatusProps,
+  PlayerMarketStatus,
+} from './cards'

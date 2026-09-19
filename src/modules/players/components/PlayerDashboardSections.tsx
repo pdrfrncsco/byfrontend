@@ -1,4 +1,4 @@
-import { Activity, FileText, GraduationCap, HeartPulse, Lock, UserRound } from "lucide-react"
+import { Activity, ArrowLeftRight, FileText, GraduationCap, HeartPulse, Lock, ShieldCheck, UserRound } from "lucide-react"
 import { Card, CardHeader, CardTitle } from "@/components/ui"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePlayerCareer } from "../hooks"
@@ -6,6 +6,8 @@ import { PlayerContractSection } from "./sections/PlayerContractSection"
 import { PlayerAgentSection } from "./sections/PlayerAgentSection"
 import { PlayerTrainingHistorySection } from "./sections/PlayerTrainingHistorySection"
 import { PlayerMedicalSection } from "./sections/PlayerMedicalSection"
+import { PlayerTransferSection } from "./sections/PlayerTransferSection"
+import { PlayerComplianceSection } from "./sections/PlayerComplianceSection"
 import { PlayerPrivacySettingsPanel } from "./PlayerPrivacySettingsPanel"
 
 interface Props {
@@ -28,6 +30,10 @@ export function PlayerDashboardSections({ slug, playerId }: Props) {
             <FileText className="h-4 w-4" />
             Contratos
           </TabsTrigger>
+          <TabsTrigger value="transfers" className="gap-xs">
+            <ArrowLeftRight className="h-4 w-4" />
+            Transferências
+          </TabsTrigger>
           <TabsTrigger value="agents" className="gap-xs">
             <UserRound className="h-4 w-4" />
             Agentes
@@ -35,6 +41,10 @@ export function PlayerDashboardSections({ slug, playerId }: Props) {
           <TabsTrigger value="training" className="gap-xs">
             <GraduationCap className="h-4 w-4" />
             Formação & EPP
+          </TabsTrigger>
+          <TabsTrigger value="compliance" className="gap-xs">
+            <ShieldCheck className="h-4 w-4" />
+            Conformidade
           </TabsTrigger>
           <TabsTrigger value="medical" className="gap-xs">
             <HeartPulse className="h-4 w-4" />
@@ -89,12 +99,20 @@ export function PlayerDashboardSections({ slug, playerId }: Props) {
           <PlayerContractSection playerId={playerId} />
         </TabsContent>
 
+        <TabsContent value="transfers" className="p-lg">
+          <PlayerTransferSection playerId={playerId} />
+        </TabsContent>
+
         <TabsContent value="agents" className="p-lg">
           <PlayerAgentSection playerId={playerId} />
         </TabsContent>
 
         <TabsContent value="training" className="p-lg">
           <PlayerTrainingHistorySection playerId={playerId} />
+        </TabsContent>
+
+        <TabsContent value="compliance" className="p-lg">
+          <PlayerComplianceSection playerId={playerId} />
         </TabsContent>
 
         <TabsContent value="medical" className="p-lg">

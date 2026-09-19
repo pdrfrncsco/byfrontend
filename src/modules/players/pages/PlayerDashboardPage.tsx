@@ -3,36 +3,25 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { resolveMediaUrl } from '@/lib/media'
 import {
-  Activity,
-  AlertTriangle,
   ArrowRight,
-  Award,
-  Calendar,
-  CheckCircle2,
   Clock,
   Edit,
   ExternalLink,
   FileText,
-  Flame,
   GraduationCap,
-  Handshake,
   HeartPulse,
-  Plus,
-  Share2,
-  Shield,
   Sparkles,
-  Star,
-  Target,
-  Trophy,
-  User,
-  Users,
-  Zap,
 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Skeleton } from '@/components/ui'
 import { EmptyState } from '@/components/ui/empty-state'
-import { PlayerKpisBar } from '../components'
+import {
+  PlayerKpisBar,
+  PlayerTechnicalAttributesCard,
+  PlayerQuickActionsCard,
+  PlayerTransferStatus,
+} from '../components'
 import { usePlayerMe, usePlayerMedicalProfile } from '../hooks'
 import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
@@ -97,15 +86,6 @@ export function PlayerDashboardPage() {
   const positionColor = POSITION_COLOR[player.primary_position] ?? '#534ab7'
   const initials = `${player.first_name?.[0] ?? ''}${player.last_name?.[0] ?? ''}`.toUpperCase() || '?'
   const avatarUrl = resolveMediaUrl(player.avatar || player.profile_photo_url)
-
-  // Technical attributes (dynamically calculated or realistic baseline)
-  const technicalAttributes = [
-    { label: 'Finalização', value: Math.min(95, 60 + (player.total_goals || 0) * 4), color: '#534ab7' },
-    { label: 'Visão & Passe', value: Math.min(92, 65 + (player.total_assists || 0) * 5), color: '#185fa5' },
-    { label: 'Físico & Resistência', value: Math.min(90, 70 + (player.total_matches || 0) * 2), color: '#0f6e56' },
-    { label: 'Velocidade', value: 84, color: '#854f0b' },
-    { label: 'Drible & Controlo', value: 80, color: '#a32d2d' },
-  ]
 
   // Recent career highlights
   const careerEntries = (player.career_history ?? []).slice(0, 3)
@@ -186,31 +166,7 @@ export function PlayerDashboardPage() {
           {/* MAIN COLUMN (65% -> 8 cols) */}
           <div className="space-y-lg lg:col-span-8">
             {/* Performance Stats Bar */}
-            <Card className="border border-outline-variant/30 bg-surface shadow-xs">
-              <CardHeader className="flex flex-row items-center justify-between pb-sm">
-                <div className="flex items-center gap-xs">
-                  <Activity className="h-4 w-4 text-primary" />
-                  <CardTitle className="text-sm font-bold">Desempenho por Área de Jogo</CardTitle>
-                </div>
-                <Link to={playerRoutes.career} className="text-xs font-medium text-primary hover:underline flex items-center gap-1">
-                  Ver histórico <ArrowRight className="h-3 w-3" />
-                </Link>
-              </CardHeader>
-              <CardContent className="space-y-sm pt-xs">
-                {technicalAttributes.map((attr) => (
-                  <div key={attr.label} className="flex items-center gap-sm text-xs">
-                    <span className="w-32 shrink-0 font-medium text-on-surface-variant">{attr.label}</span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-container">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${attr.value}%`, background: attr.color }}
-                      />
-                    </div>
-                    <span className="w-8 shrink-0 text-right font-bold text-on-surface">{attr.value}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <PlayerTechnicalAttributesCard player={player} />
 
             {/* Career Timeline Summary */}
             <Card className="border border-outline-variant/30 bg-surface shadow-xs">
@@ -335,74 +291,11 @@ export function PlayerDashboardPage() {
 
           {/* SIDE COLUMN (35% -> 4 cols) */}
           <div className="space-y-lg lg:col-span-4">
-            {/* Quick Actions (2x2 Grid from Prototype) */}
-            <Card className="border border-outline-variant/30 bg-surface shadow-xs">
-              <CardHeader className="pb-xs">
-                <div className="flex items-center gap-xs">
-                  <Zap className="h-4 w-4 text-amber-500" />
-                  <CardTitle className="text-sm font-bold">Ações Rápidas</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="p-sm pt-xs">
-                <div className="grid grid-cols-2 gap-xs">
-                  {/* Action 1: Editar Perfil */}
-                  <Link
-                    to={playerRoutes.dashboardSettings}
-                    className="flex items-center gap-2 rounded-xl border border-outline-variant/20 p-2.5 transition-colors hover:bg-surface-container/60"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#eeedfe] text-[#534ab7]">
-                      <Edit className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-xs text-on-surface">Editar perfil</p>
-                      <p className="text-[10px] text-on-surface-variant">Atualizar dados</p>
-                    </div>
-                  </Link>
+            {/* Quick Actions */}
+            <PlayerQuickActionsCard />
 
-                  {/* Action 2: Contratos */}
-                  <Link
-                    to={playerRoutes.contracts}
-                    className="flex items-center gap-2 rounded-xl border border-outline-variant/20 p-2.5 transition-colors hover:bg-surface-container/60"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e6f1fb] text-[#185fa5]">
-                      <FileText className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-xs text-on-surface">Contratos</p>
-                      <p className="text-[10px] text-on-surface-variant">Ver acordos</p>
-                    </div>
-                  </Link>
-
-                  {/* Action 3: Dossiê Médico */}
-                  <Link
-                    to={playerRoutes.medical}
-                    className="flex items-center gap-2 rounded-xl border border-outline-variant/20 p-2.5 transition-colors hover:bg-surface-container/60"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fcebeb] text-[#a32d2d]">
-                      <HeartPulse className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-xs text-on-surface">Dossiê médico</p>
-                      <p className="text-[10px] text-on-surface-variant">Aptidão & exames</p>
-                    </div>
-                  </Link>
-
-                  {/* Action 4: Vincular Clube */}
-                  <Link
-                    to={playerRoutes.linkClub}
-                    className="flex items-center gap-2 rounded-xl border border-outline-variant/20 p-2.5 transition-colors hover:bg-surface-container/60"
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e1f5ee] text-[#0f6e56]">
-                      <Handshake className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate font-semibold text-xs text-on-surface">Vínculos</p>
-                      <p className="text-[10px] text-on-surface-variant">Pedir filiação</p>
-                    </div>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Transfer & Market Status Card */}
+            <PlayerTransferStatus playerStatus={player.status} />
 
             {/* Activity Feed (Prototype Pattern) */}
             <Card className="border border-outline-variant/30 bg-surface shadow-xs">
