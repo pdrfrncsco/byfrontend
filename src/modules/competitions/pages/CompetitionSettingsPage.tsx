@@ -1,13 +1,13 @@
-import { useMemo } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useState, useMemo } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Settings, Loader2 } from 'lucide-react'
+import { Settings, Loader2, AlertTriangle, Trash2 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, NativeSelect } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
 import { useFederationCategories } from '@/modules/players/hooks/usePlayerCategories'
-import { useCompetition, useUpdateCompetition } from '../hooks/useCompetitions'
+import { useCompetition, useUpdateCompetition, useDeleteCompetition } from '../hooks/useCompetitions'
 import { updateCompetitionSchema, type UpdateCompetitionFormData } from '../schemas'
 import { competitionRoutes } from '../routes'
 import { getCompetitionSidebarSections } from '../constants'
@@ -23,7 +23,13 @@ export function CompetitionSettingsPage() {
 
   const { data: competition, isLoading } = useCompetition(competitionId)
   const { data: federationCategories = [], isLoading: categoriesLoading } = useFederationCategories()
+  const navigate = useNavigate()
   const { mutate: updateCompetition, isPending } = useUpdateCompetition()
+  const deleteCompetition = useDeleteCompetition()
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [forceDelete, setForceDelete] = useState(false)
 
   const {
     register,
@@ -321,6 +327,102 @@ export function CompetitionSettingsPage() {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card variant="flat" padding="none" className="mt-xl border-error/30 bg-error/5">
+        <CardHeader className="border-b border-error/20 pb-md">
+          <div className="flex items-center gap-xs text-error">
+            <AlertTriangle className="h-5 w-5" />
+            <CardTitle className="text-error font-semibold">Zona de Perigo</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-lg space-y-md">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-md">
+            <div>
+              <h4 className="text-sm font-semibold text-on-surface">Eliminar esta competição</h4>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                Uma vez eliminada, a competição e os seus dados não poderão ser recuperados. Se houver partidas já terminadas, será necessária autorização forçada.
+              </p>
+            </div>
+            {!showDeleteConfirm ? (
+              <Button
+                type="button"
+                variant="danger"
+                size="sm"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="whitespace-nowrap"
+              >
+                <Trash2 className="mr-xs h-4 w-4" />
+                Eliminar Competição
+              </Button>
+            ) : (
+              <div className="flex flex-col gap-sm p-md rounded-xl bg-surface border border-error/30 max-w-md w-full">
+                <p className="text-xs font-medium text-error">
+                  Digite <strong>{competition.name}</strong> para confirmar a eliminação:
+                </p>
+                <Input
+                  type="text"
+                  placeholder={competition.name}
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  className="text-xs"
+                />
+                <label className="flex items-center gap-xs text-xs text-on-surface-variant cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={forceDelete}
+                    onChange={(e) => setForceDelete(e.target.checked)}
+                    className="rounded border-outline text-error focus:ring-error"
+                  />
+                  Forçar eliminação (mesmo com jogos finalizados)
+                </label>
+                <div className="flex gap-xs justify-end mt-xs">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setShowDeleteConfirm(false)
+                      setDeleteConfirmText('')
+                      setForceDelete(false)
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    disabled={deleteConfirmText !== competition.name || deleteCompetition.isPending}
+                    onClick={() => {
+                      deleteCompetition.mutate(
+                        { id: competitionId, force: forceDelete },
+                        {
+                          onSuccess: () => {
+                            navigate(competitionRoutes.list)
+                          },
+                        }
+                      )
+                    }}
+                  >
+                    {deleteCompetition.isPending ? (
+                      <>
+                        <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                        A eliminar...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="mr-xs h-4 w-4" />
+                        Confirmar Eliminação
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </DashboardLayout>

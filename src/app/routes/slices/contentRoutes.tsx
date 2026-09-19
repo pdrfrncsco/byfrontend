@@ -159,16 +159,16 @@ export function contentRouteElements() {
         path={competitionRoutes.matchLineup(':compId', ':matchId')}
         element={
           <PublicLayout variant="explore">
-            <Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
           </PublicLayout>
         }
       />
-      {/* MatchReportPage: protected — only referees/admins */}
+      {/* MatchReportPage: protected — only referees/admins (embedded inside MatchDetailPage) */}
       <Route
         path={competitionRoutes.matchReport(':compId', ':matchId')}
         element={
           <ProtectedRoute>
-            <Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
           </ProtectedRoute>
         }
       />
@@ -176,7 +176,7 @@ export function contentRouteElements() {
         path={competitionRoutes.tacticalView(':compId', ':matchId')}
         element={
           <PublicLayout variant="explore">
-            <Suspense fallback={<RouteFallback />}><MatchTacticalViewPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
           </PublicLayout>
         }
       />

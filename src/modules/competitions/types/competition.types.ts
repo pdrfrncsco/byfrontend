@@ -91,6 +91,7 @@ export interface Standing {
   goal_difference: number
   points: number
   position: number
+  form?: string[]
 }
 
 export interface CompetitionRegistration {

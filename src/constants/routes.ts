@@ -281,10 +281,12 @@ export const API_ROUTES = {
     STANDINGS: (id: string) => `/competitions/${id}/standings/`,
     BRACKET: (id: string) => `/competitions/${id}/bracket/`,
     ROUNDS: (id: string) => `/competitions/${id}/rounds/`,
+    MATCH_DETAIL: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/`,
     UPDATE_MATCH: (matchId: string) => `/competitions/matches/${matchId}/`,
     MATCH_STREAM: (matchId: string) => `/competitions/matches/${matchId}/stream/`,
     MATCH_EVENTS: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/events/`,
     DELETE_EVENT: (compId: string, matchId: string, eventId: string) => `/competitions/${compId}/matches/${matchId}/events/${eventId}/`,
+    MATCH_MANUAL_SCORESHEET: (compId: string, matchId: string) => `/competitions/${compId}/matches/${matchId}/manual-scoresheet/`,
     PLAYER_STATS: (compId: string) => `/competitions/${compId}/stats/`,
   },
   MATCHES: {

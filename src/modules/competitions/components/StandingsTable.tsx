@@ -63,6 +63,7 @@ export function StandingsTable({
             <th className="w-14 px-sm py-sm text-center font-semibold text-on-surface-variant" title="Golos Sofridos">GS</th>
             <th className="w-14 px-sm py-sm text-center font-semibold text-on-surface-variant" title="Diferença de Golos">DG</th>
             <th className="w-14 px-sm py-sm text-center font-bold text-on-surface" title="Pontos">Pts</th>
+            <th className="w-28 px-sm py-sm text-center font-semibold text-on-surface-variant" title="Últimos 5 Jogos">Forma</th>
           </tr>
         </thead>
         <tbody>
@@ -142,6 +143,36 @@ export function StandingsTable({
                   <span className="rounded-lg bg-primary/10 px-sm py-xs text-sm font-bold text-primary">
                     {s.points}
                   </span>
+                </td>
+
+                {/* Form (Last 5 matches) */}
+                <td className="px-sm py-md">
+                  <div className="flex items-center justify-center gap-1">
+                    {s.form && s.form.length > 0 ? (
+                      s.form.map((res, i) => {
+                        const isWin = res === 'W'
+                        const isDraw = res === 'D'
+                        const label = isWin ? 'V' : isDraw ? 'E' : 'D'
+                        const bgClass = isWin
+                          ? 'bg-emerald-500 text-white'
+                          : isDraw
+                            ? 'bg-amber-500 text-white'
+                            : 'bg-red-500 text-white'
+
+                        return (
+                          <span
+                            key={i}
+                            title={isWin ? 'Vitória' : isDraw ? 'Empate' : 'Derrota'}
+                            className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${bgClass}`}
+                          >
+                            {label}
+                          </span>
+                        )
+                      })
+                    ) : (
+                      <span className="text-xs text-on-surface-variant/40">—</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             )

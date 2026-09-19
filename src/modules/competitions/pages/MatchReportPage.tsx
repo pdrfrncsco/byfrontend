@@ -447,8 +447,8 @@ export function MatchReportPage({ embedded = false }: { embedded?: boolean }) {
     )
   }
 
-  // Pre-condition: Match must be in progress or finished to access report
-  const canAccessReport = match.status === 'live' || match.status === 'halftime' || match.status === 'finished' || match.status === 'archived'
+  // Pre-condition: Match can be accessed if in progress, finished, archived, or by match officials/admins to register scoresheet
+  const canAccessReport = hasReportAccess || match.status === 'live' || match.status === 'halftime' || match.status === 'finished' || match.status === 'archived'
   if (!canAccessReport) {
     const NotAccessibleComponent = () => (
       <div className="flex min-h-[40vh] flex-col items-center justify-center gap-md">

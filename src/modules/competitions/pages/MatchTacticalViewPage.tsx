@@ -16,7 +16,11 @@ import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { toast } from 'sonner'
 import { useSeo } from '@/hooks/useSeo'
 
-export default function MatchTacticalViewPage() {
+interface MatchTacticalViewPageProps {
+  embedded?: boolean
+}
+
+export default function MatchTacticalViewPage({ embedded = false }: MatchTacticalViewPageProps) {
   const { compId, matchId } = useParams<{ compId: string; matchId: string }>()
   const competitionId = compId ?? ''
   const matchIdValue = matchId ?? ''
@@ -203,6 +207,9 @@ export default function MatchTacticalViewPage() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
+    if (embedded) {
+      return <LoadingState />
+    }
     if (isDashboard) {
       return (
         <DashboardLayout
@@ -241,6 +248,9 @@ export default function MatchTacticalViewPage() {
         </Link>
       </div>
     )
+    if (embedded) {
+      return <NotFound />
+    }
     if (isDashboard) {
       return (
         <DashboardLayout
@@ -293,9 +303,9 @@ export default function MatchTacticalViewPage() {
   )
 
   const pageContent = (
-    <div className="max-w-6xl mx-auto px-md sm:px-lg py-md space-y-md">
+    <div className={embedded ? "space-y-md" : "max-w-6xl mx-auto px-md sm:px-lg py-md space-y-md"}>
       {/* Breadcrumb */}
-      {breadcrumb}
+      {!embedded && breadcrumb}
 
       {/* Header Bar: Title, Match details and Action controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-md p-md sm:p-lg rounded-2xl border border-outline-variant/15 bg-surface-container shadow-sm">
@@ -437,6 +447,10 @@ export default function MatchTacticalViewPage() {
       )}
     </div>
   )
+
+  if (embedded) {
+    return pageContent
+  }
 
   if (isDashboard) {
     return (

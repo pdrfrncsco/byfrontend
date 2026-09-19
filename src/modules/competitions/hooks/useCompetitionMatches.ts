@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import { competitionApi } from '../services/competition.api'
 import type { Match, MatchListParams, PaginatedResponse } from '../types'
 
@@ -333,3 +334,115 @@ export function useMatchesPaginated(params?: MatchListParams | Record<string, an
     queryFn: () => competitionApi.listAllMatches(params),
   })
 }
+
+/**
+ * Mutation: Update match metadata/details (date, venue, round, clubs, status).
+ */
+export function useUpdateMatch(competitionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      matchId,
+      data,
+    }: {
+      matchId: string
+      data: {
+        home_club?: string
+        away_club?: string
+        match_date?: string
+        round_number?: number
+        round_name?: string
+        phase?: string
+        group_id?: string
+        venue?: string
+        status?: string
+      }
+    }) => competitionApi.updateMatch(competitionId, matchId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: standingKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: ['rounds', competitionId] })
+      toast.success('Partida atualizada com sucesso.')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao atualizar partida.')
+    },
+  })
+}
+
+/**
+ * Mutation: Delete a match.
+ */
+export function useDeleteMatch(competitionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ matchId, force }: { matchId: string; force?: boolean }) =>
+      competitionApi.deleteMatch(competitionId, matchId, force),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: standingKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: ['rounds', competitionId] })
+      toast.success('Partida eliminada com sucesso.')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao eliminar partida.')
+    },
+  })
+}
+
+/**
+ * Mutation: Submit full manual scoresheet (score, goals, cards) for non-live matches.
+ */
+export function useSubmitManualScoresheet(competitionId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      matchId,
+      data,
+    }: {
+      matchId: string
+      data: {
+        home_score: number
+        away_score: number
+        status?: string
+        home_penalty_score?: number | null
+        away_penalty_score?: number | null
+        goals?: Array<{
+          club_id: string
+          player_id?: string | null
+          minute: number
+          event_type: string
+          notes?: string
+        }>
+        cards?: Array<{
+          club_id: string
+          player_id?: string | null
+          minute: number
+          event_type: string
+          notes?: string
+        }>
+        substitutions?: Array<{
+          club_id: string
+          player_id?: string | null
+          player_off_id?: string | null
+          minute: number
+          notes?: string
+        }>
+        notes?: string
+        replace_existing_events?: boolean
+      }
+    }) => competitionApi.submitManualScoresheet(competitionId, matchId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: matchKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: standingKeys.byCompetition(competitionId) })
+      queryClient.invalidateQueries({ queryKey: ['rounds', competitionId] })
+      queryClient.invalidateQueries({ queryKey: ['match-events'] })
+      queryClient.invalidateQueries({ queryKey: ['rankings'] })
+      toast.success('Súmula manual registada com sucesso!')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao registar súmula.')
+    },
+  })
+}
+

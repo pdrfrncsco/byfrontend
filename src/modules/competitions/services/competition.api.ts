@@ -133,6 +133,12 @@ export const competitionApi = {
     return response.data.data
   },
 
+  async delete(id: string, force?: boolean): Promise<void> {
+    await client.delete(API_ROUTES.COMPETITIONS.DELETE(id), {
+      params: force ? { force: true } : undefined,
+    })
+  },
+
   // ─── Registration & Schedule ─────────────────────────────────────────────
 
   async registerClub(competitionId: string, clubId: string): Promise<any> {
@@ -181,6 +187,82 @@ export const competitionApi = {
       data
     )
     return response.data.data
+  },
+
+  async updateMatch(
+    competitionId: string,
+    matchId: string,
+    data: {
+      home_club?: string
+      away_club?: string
+      match_date?: string
+      round_number?: number
+      round_name?: string
+      phase?: string
+      group_id?: string
+      venue?: string
+      status?: string
+    }
+  ): Promise<Match> {
+    const response = await client.patch<ApiResponse<Match>>(
+      API_ROUTES.COMPETITIONS.MATCH_DETAIL(competitionId, matchId),
+      data
+    )
+    return normalizeMatch(response.data.data)
+  },
+
+  async deleteMatch(
+    competitionId: string,
+    matchId: string,
+    force?: boolean
+  ): Promise<void> {
+    await client.delete(
+      API_ROUTES.COMPETITIONS.MATCH_DETAIL(competitionId, matchId),
+      {
+        params: force ? { force: true } : undefined,
+      }
+    )
+  },
+
+  async submitManualScoresheet(
+    competitionId: string,
+    matchId: string,
+    data: {
+      home_score: number
+      away_score: number
+      status?: string
+      home_penalty_score?: number | null
+      away_penalty_score?: number | null
+      goals?: Array<{
+        club_id: string
+        player_id?: string | null
+        minute: number
+        event_type: string
+        notes?: string
+      }>
+      cards?: Array<{
+        club_id: string
+        player_id?: string | null
+        minute: number
+        event_type: string
+        notes?: string
+      }>
+      substitutions?: Array<{
+        club_id: string
+        player_id?: string | null
+        player_off_id?: string | null
+        minute: number
+        notes?: string
+      }>
+      notes?: string
+      replace_existing_events?: boolean
+    }
+  ): Promise<Match> {
+    const response = await client.post<ApiResponse<Match>>(
+      API_ROUTES.COMPETITIONS.MATCH_MANUAL_SCORESHEET(competitionId, matchId),
+      data
+    )
+    return normalizeMatch(response.data.data)
   },
 
   // ─── Matches & Standings ────────────────────────────────────────────────

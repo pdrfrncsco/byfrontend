@@ -310,21 +310,21 @@ export function dashboardRouteElements() {
           </ProtectedRoute>
         }
       />
-      {/* Competition admin match lineup */}
+      {/* Competition admin match lineup (integrated into MatchDetailPage tab) */}
       <Route
         path={ROUTES.DASHBOARD_MATCH_LINEUP(':compId', ':matchId')}
         element={
           <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
-            <Suspense fallback={<RouteFallback />}><MatchLineupPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
           </ProtectedRoute>
         }
       />
-      {/* Competition admin match report */}
+      {/* Competition admin match report (integrated into MatchDetailPage tab) */}
       <Route
         path={ROUTES.DASHBOARD_MATCH_REPORT(':compId', ':matchId')}
         element={
           <ProtectedRoute requiredRoles={['owner', 'admin', 'manager', 'competition_organizer']}>
-            <Suspense fallback={<RouteFallback />}><MatchReportPage /></Suspense>
+            <Suspense fallback={<RouteFallback />}><MatchDetailPage /></Suspense>
           </ProtectedRoute>
         }
       />

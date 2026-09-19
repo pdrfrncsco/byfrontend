@@ -110,7 +110,12 @@ export function MatchTimeline({ events, match, isLoading = false, limit }: Match
           separator = <PeriodSeparator label={periodLabels[eventPeriod] || eventPeriod} />
         }
 
-        const playerName = event.player_name || event.playerId || meta.label
+        const playerName =
+          event.player_name ||
+          (event as any).player_full_name ||
+          (!event.player_off_name ? event.notes : '') ||
+          event.playerId ||
+          meta.label
         const subNote = event.player_off_name
           ? `↔ ${event.player_off_name}`
           : event.notes || ''

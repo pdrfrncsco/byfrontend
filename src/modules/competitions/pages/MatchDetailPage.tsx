@@ -15,6 +15,8 @@ import {
   Activity,
   ArrowRight,
   ExternalLink,
+  Compass,
+  Zap,
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
@@ -50,14 +52,18 @@ import {
   MatchStandingsCard,
   StandingsTable,
 } from '../components'
+import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
+import { ManualMatchScoresheetModal } from '../components/ManualMatchScoresheetModal'
+import { LiveEventModal } from '../components/LiveEventModal'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
 const MatchReportPage = lazy(() => import('./MatchReportPage').then(m => ({ default: m.MatchReportPage })))
+const MatchTacticalViewPage = lazy(() => import('./MatchTacticalViewPage'))
 
 // ─── Tab Configuration ───────────────────────────────────────────────────────
 
-type TabId = 'overview' | 'lineup' | 'stats' | 'standings' | 'h2h' | 'report'
+type TabId = 'overview' | 'lineup' | 'tactical' | 'stats' | 'standings' | 'h2h' | 'report'
 
 interface TabConfig {
   id: TabId
@@ -69,6 +75,7 @@ interface TabConfig {
 const TABS: TabConfig[] = [
   { id: 'overview', label: 'Resumo', icon: LayoutDashboard, roles: ['*'] },
   { id: 'lineup', label: 'Formações', icon: Users, roles: ['*'] },
+  { id: 'tactical', label: 'Quadro Tático', icon: Compass, roles: ['*'] },
   { id: 'stats', label: 'Estatísticas', icon: BarChart3, roles: ['*'] },
   { id: 'standings', label: 'Classificação', icon: Trophy, roles: ['*'] },
   { id: 'h2h', label: 'H2H', icon: Shield, roles: ['*'] },
@@ -218,12 +225,15 @@ export function MatchDetailPage() {
 
   const getInitialTab = (): TabId => {
     if (location.pathname.includes('/lineup')) return 'lineup'
+    if (location.pathname.includes('/tactical')) return 'tactical'
     if (location.pathname.includes('/stats')) return 'stats'
     if (location.pathname.includes('/report')) return 'report'
     return 'overview'
   }
 
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
+  const [manualScoresheetOpen, setManualScoresheetOpen] = useState(false)
+  const [liveEventModalOpen, setLiveEventModalOpen] = useState(false)
 
   // Data fetching
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
@@ -388,6 +398,19 @@ export function MatchDetailPage() {
           </Suspense>
         )
 
+      case 'tactical':
+        return (
+          <Suspense
+            fallback={
+              <div className="flex min-h-[300px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            }
+          >
+            <MatchTacticalViewPage embedded />
+          </Suspense>
+        )
+
       case 'stats':
         return (
           <MatchStatsWorkspace
@@ -415,12 +438,7 @@ export function MatchDetailPage() {
                 Ver competição completa <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
-            <StandingsTable
-              standings={standings}
-              qualifyingSpots={(competition?.config as any)?.advancementRule?.qualifyCount ?? 3}
-              relegationSpots={(competition?.config as any)?.advancementRule?.relegateCount ?? 0}
-              competitionId={competitionId}
-            />
+            <CompetitionStandingsRouter competitionId={competitionId} />
           </div>
         )
 
@@ -616,6 +634,28 @@ export function MatchDetailPage() {
               onUpdated={() => liveState.refetch()}
             />
 
+            {(activeMatch.status === 'live' || activeMatch.status === 'halftime' || activeMatch.status === 'pre_match') && isMatchOperator && (
+              <Button
+                variant="primary"
+                size="sm"
+                className="w-full"
+                onClick={() => setLiveEventModalOpen(true)}
+              >
+                <Zap className="mr-xs h-3.5 w-3.5" /> Registar Evento ao Vivo
+              </Button>
+            )}
+
+            {activeMatch.status !== 'archived' && (isMatchOperator || isAdmin) && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => setManualScoresheetOpen(true)}
+              >
+                <FileText className="mr-xs h-3.5 w-3.5" /> Lançar Ficha de Jogo
+              </Button>
+            )}
+
             {activeMatch.status === 'pre_match' && isMatchOperator && (
               <Button
                 variant="secondary"
@@ -700,6 +740,15 @@ export function MatchDetailPage() {
             <div>{sidebarContent}</div>
           </div>
         </div>
+        <ManualMatchScoresheetModal
+          competitionId={competitionId}
+          match={activeMatch}
+          isOpen={manualScoresheetOpen}
+          onClose={() => {
+            setManualScoresheetOpen(false)
+            liveState.refetch()
+          }}
+        />
       </DashboardLayout>
     )
   }
@@ -723,17 +772,35 @@ export function MatchDetailPage() {
   )
 
   return (
-    <SportDetailLayout
-      breadcrumb={breadcrumb}
-      header={
-        <MatchHeroHeader
-          match={activeMatch}
-          competition={competition}
-          events={liveState.events}
-        />
-      }
-      main={mainContent}
-      sidebar={sidebarContent}
-    />
+    <>
+      <SportDetailLayout
+        breadcrumb={breadcrumb}
+        header={
+          <MatchHeroHeader
+            match={activeMatch}
+            competition={competition}
+            events={liveState.events}
+          />
+        }
+        main={mainContent}
+        sidebar={sidebarContent}
+      />
+      <ManualMatchScoresheetModal
+        competitionId={competitionId}
+        match={activeMatch}
+        isOpen={manualScoresheetOpen}
+        onClose={() => {
+          setManualScoresheetOpen(false)
+          liveState.refetch()
+        }}
+      />
+      <LiveEventModal
+        competitionId={competitionId}
+        match={activeMatch}
+        isOpen={liveEventModalOpen}
+        onClose={() => setLiveEventModalOpen(false)}
+        onSuccess={() => liveState.refetch()}
+      />
+    </>
   )
 }

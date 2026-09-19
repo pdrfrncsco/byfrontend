@@ -98,3 +98,22 @@ export function useUpdateCompetition() {
   })
 }
 
+/**
+ * Mutation: Delete a competition (org admin).
+ */
+export function useDeleteCompetition() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, force }: { id: string; force?: boolean }) =>
+      competitionApi.delete(id, force),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: competitionKeys.all })
+      toast.success('Competição eliminada com sucesso.')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Erro ao eliminar competição.')
+    },
+  })
+}
+
+

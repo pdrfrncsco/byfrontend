@@ -2,13 +2,22 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Loader2, Zap, Edit3, Check, XCircle, PlusCircle } from 'lucide-react'
+import { Calendar, Loader2, Zap, Edit3, Check, XCircle, PlusCircle, Trash2, Settings2, FileText } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@/components/ui'
 import { FormField } from '@/components/ui/form-field'
-import { useCompetitionRounds, useGenerateSchedule, useUpdateMatchScore, useCompetitionStandings, useCreateMatch } from '../hooks/useCompetitionMatches'
+import {
+  useCompetitionRounds,
+  useGenerateSchedule,
+  useUpdateMatchScore,
+  useCompetitionStandings,
+  useCreateMatch,
+  useDeleteMatch,
+} from '../hooks/useCompetitionMatches'
 import { useCompetition } from '../hooks/useCompetitions'
 import { useCompetitionConfig } from '../hooks/useCompetitionConfig'
+import { EditMatchModal } from '../components/EditMatchModal'
+import { ManualMatchScoresheetModal } from '../components/ManualMatchScoresheetModal'
 import {
   createMatchSchema,
   generateScheduleSchema,
@@ -37,6 +46,7 @@ export function CompetitionSchedulePage() {
   const generateSchedule = useGenerateSchedule(competitionId)
   const createMatch = useCreateMatch(competitionId)
   const updateMatchScore = useUpdateMatchScore(competitionId)
+  const deleteMatch = useDeleteMatch(competitionId)
 
   const [generated, setGenerated] = useState(false)
   const [manualCreated, setManualCreated] = useState(false)
@@ -46,6 +56,10 @@ export function CompetitionSchedulePage() {
   const [editHomeScore, setEditHomeScore] = useState<string>('')
   const [editAwayScore, setEditAwayScore] = useState<string>('')
   const [editStatus, setEditStatus] = useState<string>('finished')
+  const [editingMatchDetails, setEditingMatchDetails] = useState<Match | null>(null)
+  const [scoresheetMatch, setScoresheetMatch] = useState<Match | null>(null)
+  const [deletingMatch, setDeletingMatch] = useState<Match | null>(null)
+  const [forceDeleteMatch, setForceDeleteMatch] = useState(false)
   const createMatchCardRef = useRef<HTMLDivElement | null>(null)
 
   const rounds = roundsView?.rounds ?? []
@@ -805,10 +819,30 @@ export function CompetitionSchedulePage() {
                               </div>
                             </div>
                           ) : (
-                            <div className="flex justify-end">
+                            <div className="flex flex-wrap items-center justify-end gap-xs">
                               <Button variant="secondary" size="sm" type="button" onClick={() => startEditMatch(match)}>
                                 <Edit3 className="mr-xs h-4 w-4" />
-                                Editar Resultado
+                                Placar Rápido
+                              </Button>
+                              <Button variant="secondary" size="sm" type="button" onClick={() => setScoresheetMatch(match)}>
+                                <FileText className="mr-xs h-4 w-4" />
+                                Súmula Manual
+                              </Button>
+                              <Button variant="secondary" size="sm" type="button" onClick={() => setEditingMatchDetails(match)}>
+                                <Settings2 className="mr-xs h-4 w-4" />
+                                Editar Jogo
+                              </Button>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                type="button"
+                                title="Eliminar Partida"
+                                onClick={() => {
+                                  setDeletingMatch(match)
+                                  setForceDeleteMatch(false)
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
                           )}
@@ -822,6 +856,109 @@ export function CompetitionSchedulePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de Edição Completa da Partida */}
+      <EditMatchModal
+        competitionId={competitionId}
+        match={editingMatchDetails}
+        isOpen={Boolean(editingMatchDetails)}
+        onClose={() => setEditingMatchDetails(null)}
+        clubs={registeredClubs}
+      />
+
+      {/* Modal de Súmula Manual da Partida */}
+      <ManualMatchScoresheetModal
+        competitionId={competitionId}
+        match={scoresheetMatch}
+        isOpen={Boolean(scoresheetMatch)}
+        onClose={() => setScoresheetMatch(null)}
+      />
+
+      {/* Modal de Confirmação de Eliminação da Partida */}
+      {deletingMatch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-md">
+          <div className="w-full max-w-md rounded-2xl border border-error/30 bg-surface p-lg shadow-2xl space-y-md">
+            <div className="flex items-start gap-md text-error">
+              <div className="rounded-full bg-error/10 p-sm">
+                <Trash2 className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-on-surface">Eliminar Partida</h3>
+                <p className="text-xs text-on-surface-variant mt-xs">
+                  Tem a certeza de que deseja eliminar o jogo{' '}
+                  <strong className="text-on-surface">
+                    {deletingMatch.home_club_name} vs {deletingMatch.away_club_name}
+                  </strong>
+                  ?
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-outline-variant/20 bg-surface-container-low p-md space-y-xs text-xs text-on-surface-variant">
+              <div><strong>Jornada:</strong> {deletingMatch.round_name || `Jornada ${deletingMatch.round_number}`}</div>
+              <div><strong>Estado:</strong> {deletingMatch.status}</div>
+              {deletingMatch.status === 'finished' && (
+                <p className="text-error font-medium mt-xs">
+                  Atenção: Esta partida já foi finalizada. A eliminação irá reverter os pontos e estatísticas dos clubes na classificação.
+                </p>
+              )}
+            </div>
+
+            <label className="flex items-center gap-xs text-xs text-on-surface-variant cursor-pointer">
+              <input
+                type="checkbox"
+                checked={forceDeleteMatch}
+                onChange={(e) => setForceDeleteMatch(e.target.checked)}
+                className="rounded border-outline text-error focus:ring-error"
+              />
+              Forçar eliminação (mesmo com eventos registrados)
+            </label>
+
+            <div className="flex justify-end gap-sm pt-xs border-t border-outline-variant/15">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setDeletingMatch(null)
+                  setForceDeleteMatch(false)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                size="sm"
+                disabled={deleteMatch.isPending}
+                onClick={() => {
+                  deleteMatch.mutate(
+                    { matchId: deletingMatch.id, force: forceDeleteMatch },
+                    {
+                      onSuccess: () => {
+                        setDeletingMatch(null)
+                        setForceDeleteMatch(false)
+                      },
+                    }
+                  )
+                }}
+              >
+                {deleteMatch.isPending ? (
+                  <>
+                    <Loader2 className="mr-xs h-4 w-4 animate-spin" />
+                    A eliminar...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-xs h-4 w-4" />
+                    Eliminar
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

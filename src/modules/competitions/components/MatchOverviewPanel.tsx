@@ -30,7 +30,7 @@ function GoalScorersSection({ events, match }: { events: MatchEvent[]; match: Ma
   )
 
   const formatGoal = (e: MatchEvent) => {
-    const name = e.player_name || 'Desconhecido'
+    const name = e.player_name || (e as any).player_full_name || (e as any).notes || 'Desconhecido'
     const min = `${e.minute}'`
     const type = String(e.type || (e as any).event_type || '')
     const suffix = type === 'own_goal' ? ' (AG)' : type.includes('penalty') ? ' (P)' : ''
