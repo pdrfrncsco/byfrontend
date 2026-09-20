@@ -47,8 +47,20 @@ export function ClubCard({ club }: { club: Club }) {
 
           <div className="min-w-0 flex-1 space-y-sm">
             <div className="flex items-center justify-between gap-sm">
-              <h4 className="truncate font-semibold text-on-surface transition-colors group-hover:text-primary">{club.name}</h4>
-              {club.is_verified && <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />}
+              <div className="flex items-center gap-2 min-w-0">
+                <h4
+                  className="truncate font-semibold text-on-surface transition-colors group-hover:text-primary"
+                  title={club.name}
+                >
+                  {club.short_name || club.name}
+                </h4>
+                {club.acronym && (
+                  <span className="shrink-0 text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant">
+                    {club.acronym}
+                  </span>
+                )}
+              </div>
+              {club.is_verified && <ShieldCheck className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />}
             </div>
 
             <div className="flex flex-wrap items-center gap-sm">

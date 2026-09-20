@@ -12,6 +12,8 @@ export interface TransferPlayer {
 export interface TransferClub {
   id: string
   name: string
+  short_name?: string
+  acronym?: string
   slug: string
 }
 
@@ -19,7 +21,11 @@ export interface Transfer {
   id: string
   player: TransferPlayer
   from_club?: TransferClub | null
+  from_club_short_name?: string
+  from_club_acronym?: string
   to_club: TransferClub
+  to_club_short_name?: string
+  to_club_acronym?: string
   transfer_type: TransferType
   transfer_type_display?: string
   transfer_date: string
@@ -78,7 +84,11 @@ export interface TransferListFlat {
   id: string
   player_name: string
   from_club_name?: string | null
+  from_club_short_name?: string | null
+  from_club_acronym?: string | null
   to_club_name: string
+  to_club_short_name?: string | null
+  to_club_acronym?: string | null
   transfer_type: TransferType
   transfer_type_display?: string
   transfer_date: string

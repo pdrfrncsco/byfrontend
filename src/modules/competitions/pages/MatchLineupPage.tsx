@@ -22,6 +22,7 @@ import { useCompetitionMatchEvents } from '../hooks/useMatchCenter'
 import { matchApi } from '../services/match.api'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { MatchLineupGrid, BolaYetuLineupView } from '../components'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 import { toast } from 'sonner'
 import {
   SUPPORTED_FORMATIONS,
@@ -420,8 +421,11 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-sm">
-          <h3 className="text-lg font-semibold text-on-surface">
-            {isHome ? match.home_club_name : match.away_club_name}
+          <h3
+            className="text-lg font-semibold text-on-surface"
+            title={isHome ? formatMatchTeamName(match, 'home', 'official') : formatMatchTeamName(match, 'away', 'official')}
+          >
+            {isHome ? formatMatchTeamName(match, 'home', 'short') : formatMatchTeamName(match, 'away', 'short')}
           </h3>
           {/*<Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>*/}
         </div>
@@ -461,7 +465,7 @@ function LineupSection({ lineup, isHome, match, editable = false, onSave, onConf
                   <div className="absolute inset-0 bg-surface-container/70 backdrop-blur-[1px]" onClick={() => setShowConfirm(false)} />
                   <Card padding="lg" className="relative z-10 max-w-md mx-4">
                     <h3 className="text-lg font-semibold">Confirmar aceitação</h3>
-                    <p className="text-sm text-on-surface-variant mt-sm">Tem a certeza que deseja aceitar a escalação do clube <strong>{isHome ? match.home_club_name : match.away_club_name}</strong>? Esta ação irá confirmar a escalação.</p>
+                    <p className="text-sm text-on-surface-variant mt-sm">Tem a certeza que deseja aceitar a escalação do clube <strong>{isHome ? formatMatchTeamName(match, 'home', 'short') : formatMatchTeamName(match, 'away', 'short')}</strong>? Esta ação irá confirmar a escalação.</p>
                     <div className="mt-md flex justify-end gap-sm">
                       <Button variant="secondary" size="sm" onClick={() => setShowConfirm(false)}>Cancelar</Button>
                       <Button variant="primary" size="sm" onClick={() => { setShowConfirm(false); onConfirm(lineup.club); }} disabled={onConfirmPending}>
@@ -787,7 +791,7 @@ export function MatchLineupPage({ embedded = false }: { embedded?: boolean }) {
     return (
       <DashboardLayout
         title="Escalações"
-        subtitle={`${match.home_club_name} vs ${match.away_club_name}`}
+        subtitle={`${formatMatchTeamName(match, 'home', 'short')} vs ${formatMatchTeamName(match, 'away', 'short')}`}
         dashboardType="competition"
         sidebarLinks={sidebarLinks}
       >

@@ -54,7 +54,7 @@ export function PlayerStatsTable({ competitionId }: { competitionId: string }) {
                   <span>{s.player__first_name} {s.player__last_name}</span>
                 </div>
               </td>
-              <td className="comp-td">{s.club__name}</td>
+              <td className="comp-td" title={s.club__name}>{(s as any).club__short_name || s.club__name}</td>
               <td className="comp-td" style={{ fontWeight: 600 }}>{s.goals}</td>
               <td className="comp-td">{s.own_goals}</td>
               <td className="comp-td" style={{ color: '#eab308' }}>{s.yellow_cards}</td>

@@ -4,6 +4,7 @@ import { resolveMediaUrl } from '@/lib/media'
 import type { Match, MatchEvent } from '../types'
 import { MatchStatusBadge } from './MatchStatusBadge'
 import { getMatchClockInfo } from '../utils/match-clock'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 export interface MatchHeroHeaderProps {
   match: Match
@@ -12,13 +13,25 @@ export interface MatchHeroHeaderProps {
   className?: string
 }
 
-const TeamBadge = ({ src, name, className = '' }: { src?: string; name: string; className?: string }) => {
+const TeamBadge = ({
+  src,
+  name,
+  officialName,
+  acronym,
+  className = '',
+}: {
+  src?: string
+  name: string
+  officialName?: string
+  acronym?: string
+  className?: string
+}) => {
   const [error, setError] = useState(false)
-  const initial = name ? name.charAt(0).toUpperCase() : '?'
+  const initial = acronym ? acronym.slice(0, 3).toUpperCase() : name ? name.charAt(0).toUpperCase() : '?'
   const resolvedSrc = resolveMediaUrl(src)
 
   return (
-    <div className={`flex flex-col items-center gap-sm ${className}`}>
+    <div className={`flex flex-col items-center gap-sm ${className}`} title={officialName || name}>
       <div className="h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-full border border-outline-variant/20 bg-surface-container-high flex items-center justify-center shadow-sm">
         {resolvedSrc && !error ? (
           <img
@@ -101,8 +114,12 @@ export function MatchHeroHeader({ match, competition, events, className = '' }: 
 
   const clockInfo = isLive ? getMatchClockInfo(match, now) : null
 
-  const homeName = match.homeTeamName || match.home_club_name || 'Casa'
-  const awayName = match.awayTeamName || match.away_club_name || 'Fora'
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
+  const homeAcronym = formatMatchTeamName(match, 'home', 'ticker')
+  const awayAcronym = formatMatchTeamName(match, 'away', 'ticker')
   const homeLogo = match.homeTeamLogo || match.home_club_logo
   const awayLogo = match.awayTeamLogo || match.away_club_logo
   const homeTeamId = match.homeTeamId || match.home_club || (match as any).home_team_id
@@ -146,7 +163,12 @@ export function MatchHeroHeader({ match, competition, events, className = '' }: 
       <div className="flex justify-between items-center w-full my-2">
         {/* Home Team */}
         <div className="flex-1 flex justify-start">
-          <TeamBadge src={homeLogo || undefined} name={homeName} />
+          <TeamBadge
+            src={homeLogo || undefined}
+            name={homeName}
+            officialName={homeOfficialName}
+            acronym={homeAcronym}
+          />
         </div>
 
         {/* Center Display: Time / Live / Score */}
@@ -204,7 +226,12 @@ export function MatchHeroHeader({ match, competition, events, className = '' }: 
 
         {/* Away Team */}
         <div className="flex-1 flex justify-end">
-          <TeamBadge src={awayLogo || undefined} name={awayName} />
+          <TeamBadge
+            src={awayLogo || undefined}
+            name={awayName}
+            officialName={awayOfficialName}
+            acronym={awayAcronym}
+          />
         </div>
       </div>
 

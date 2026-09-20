@@ -21,6 +21,7 @@ import { getCompetitionSidebarSections } from '../constants/navigation'
 import { useOrganizationMe, useOrganizationTournaments } from '@/modules/organizations/hooks'
 import { competitionApi } from '../services/competition.api'
 import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 import type { Match } from '../types'
 import { MatchCard } from '../components'
 
@@ -87,7 +88,11 @@ export function CompetitionMatchesPage() {
         || (statusFilter === 'finished' && isFinished)
       const matchesSearch = !normalizedSearch || [
         match.home_club_name,
+        match.home_club_short_name ?? '',
+        match.home_club_acronym ?? '',
         match.away_club_name,
+        match.away_club_short_name ?? '',
+        match.away_club_acronym ?? '',
         String(match.competition ?? ''),
       ].some(value => value.toLocaleLowerCase().includes(normalizedSearch))
       return matchesStatus && matchesSearch
@@ -103,17 +108,23 @@ export function CompetitionMatchesPage() {
       {
         accessorKey: 'home_club_name',
         header: 'Casa',
-        cell: ({ row }) => (
-          <div className="flex items-center gap-sm">
-            <ClubLogo
-              name={row.original.home_club_name}
-              logoUrl={row.original.home_club_logo}
-              size="sm"
-              shape="circle"
-            />
-            <span className="text-sm font-medium">{row.original.home_club_name}</span>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const shortName = formatMatchTeamName(row.original, 'home', 'short')
+          const officialName = formatMatchTeamName(row.original, 'home', 'official')
+          const acronym = formatMatchTeamName(row.original, 'home', 'ticker')
+          return (
+            <div className="flex items-center gap-sm" title={officialName}>
+              <ClubLogo
+                name={shortName}
+                acronym={acronym}
+                logoUrl={row.original.home_club_logo}
+                size="sm"
+                shape="circle"
+              />
+              <span className="text-sm font-medium">{shortName}</span>
+            </div>
+          )
+        },
       },
       {
         id: 'score',
@@ -133,17 +144,23 @@ export function CompetitionMatchesPage() {
       {
         accessorKey: 'away_club_name',
         header: 'Fora',
-        cell: ({ row }) => (
-          <div className="flex items-center gap-sm">
-            <ClubLogo
-              name={row.original.away_club_name}
-              logoUrl={row.original.away_club_logo}
-              size="sm"
-              shape="circle"
-            />
-            <span className="text-sm font-medium">{row.original.away_club_name}</span>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const shortName = formatMatchTeamName(row.original, 'away', 'short')
+          const officialName = formatMatchTeamName(row.original, 'away', 'official')
+          const acronym = formatMatchTeamName(row.original, 'away', 'ticker')
+          return (
+            <div className="flex items-center gap-sm" title={officialName}>
+              <ClubLogo
+                name={shortName}
+                acronym={acronym}
+                logoUrl={row.original.away_club_logo}
+                size="sm"
+                shape="circle"
+              />
+              <span className="text-sm font-medium">{shortName}</span>
+            </div>
+          )
+        },
       },
       {
         accessorKey: 'match_date',

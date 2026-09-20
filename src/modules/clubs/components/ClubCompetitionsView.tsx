@@ -29,6 +29,7 @@ import { clubRoutes } from '@/modules/clubs/routes'
 import type { Competition, Match, Standing } from '@/modules/competitions/types'
 import { CompetitionStandingsRouter } from '@/modules/competitions/components/CompetitionFormatRouter'
 import { useCompetitionRounds } from '@/modules/competitions/hooks/useCompetitionMatches'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 interface ClubCompetitionsViewProps {
   clubId?: string
@@ -708,8 +709,10 @@ function ClubMatchGridCard({
     (clubId && (match.away_club === clubId || match.awayTeamId === clubId)) ||
     Boolean(clubName && match.away_club_name?.toLowerCase() === clubName.toLowerCase())
 
-  const homeName = match.homeTeamName || match.home_club_name || 'Clube Casa'
-  const awayName = match.awayTeamName || match.away_club_name || 'Clube Visitante'
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
   const homeLogo = resolveMediaUrl(match.homeTeamLogo || (match as any).home_club_logo)
   const awayLogo = resolveMediaUrl(match.awayTeamLogo || (match as any).away_club_logo)
   const compName = match.competition_name || (match as any).competitionName || (match as any).competition?.name
@@ -844,7 +847,7 @@ function ClubMatchGridCard({
               className={`mt-1.5 text-xs font-bold w-full truncate ${
                 isHome ? 'text-primary' : 'text-on-surface'
               }`}
-              title={homeName}
+              title={homeOfficialName}
             >
               {homeName}
             </span>
@@ -924,7 +927,7 @@ function ClubMatchGridCard({
               className={`mt-1.5 text-xs font-bold w-full truncate ${
                 isAway ? 'text-primary' : 'text-on-surface'
               }`}
-              title={awayName}
+              title={awayOfficialName}
             >
               {awayName}
             </span>
@@ -1023,8 +1026,9 @@ function ClubMatchRow({
           className={`text-right flex-1 truncate font-semibold ${
             isHome ? 'text-primary font-bold' : 'text-on-surface'
           }`}
+          title={formatMatchTeamName(match, 'home', 'official')}
         >
-          {match.home_club_name}
+          {formatMatchTeamName(match, 'home', 'short')}
         </span>
 
         <div className="flex items-center justify-center rounded-lg bg-surface-container-high px-sm py-1 font-bold text-on-surface min-w-[55px] shadow-xs">
@@ -1039,8 +1043,9 @@ function ClubMatchRow({
           className={`text-left flex-1 truncate font-semibold ${
             !isHome ? 'text-primary font-bold' : 'text-on-surface'
           }`}
+          title={formatMatchTeamName(match, 'away', 'official')}
         >
-          {match.away_club_name}
+          {formatMatchTeamName(match, 'away', 'short')}
         </span>
       </div>
 

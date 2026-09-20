@@ -40,7 +40,7 @@ function buildBracketFallback(
 
   const clubs = standings.map((s) => ({
     id: s.club,
-    name: s.club_name,
+    name: s.club_short_name || (s as any).clubShortName || s.club_name,
   }))
 
   const bracketTemplate = generateCupBracket(clubs, cupConfig)
@@ -70,9 +70,9 @@ function buildBracketFallback(
             : null,
         status: actualMatch.status,
         team1: actualMatch.home_club,
-        team1Name: actualMatch.home_club_name,
+        team1Name: actualMatch.home_club_short_name || actualMatch.homeTeamShortName || actualMatch.home_club_name,
         team2: actualMatch.away_club,
-        team2Name: actualMatch.away_club_name,
+        team2Name: actualMatch.away_club_short_name || actualMatch.awayTeamShortName || actualMatch.away_club_name,
       }
     })
 

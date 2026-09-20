@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { Button, Card, Badge } from '@/components/ui'
 import { BolaYetuPitchField, getPlayerMatchEvents } from './tactical/BolaYetuPitchField'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 import type { Match, LineupSubmission, LineupPlayer, MatchEvent } from '../types'
 
 export interface BolaYetuLineupViewProps {
@@ -30,11 +31,13 @@ export interface BolaYetuLineupViewProps {
 
 function TeamHeaderBadge({
   name,
+  officialName,
   formation,
   logo,
   isHome,
 }: {
   name: string
+  officialName?: string
   formation: string
   logo?: string | null
   isHome: boolean
@@ -62,7 +65,7 @@ function TeamHeaderBadge({
       </div>
 
       <div>
-        <h3 className="text-sm sm:text-base font-bold text-on-surface truncate max-w-[140px] sm:max-w-[200px]">
+        <h3 className="text-sm sm:text-base font-bold text-on-surface truncate max-w-[140px] sm:max-w-[200px]" title={officialName || name}>
           {name}
         </h3>
         <div className={`flex items-center gap-1.5 mt-0.5 ${isHome ? 'justify-start' : 'justify-end'}`}>
@@ -182,8 +185,10 @@ export function BolaYetuLineupView({
 }: BolaYetuLineupViewProps) {
   const [activePlayer, setActivePlayer] = useState<LineupPlayer | null>(null)
 
-  const homeName = match.home_club_name || match.homeTeamName || 'Casa'
-  const awayName = match.away_club_name || match.awayTeamName || 'Fora'
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
   const homeLogo = match.home_club_logo || match.homeTeamLogo
   const awayLogo = match.away_club_logo || match.awayTeamLogo
 
@@ -221,6 +226,7 @@ export function BolaYetuLineupView({
       <div className="flex items-center justify-between p-md rounded-2xl border border-outline-variant/15 bg-surface-container shadow-sm">
         <TeamHeaderBadge
           name={homeName}
+          officialName={homeOfficialName}
           formation={homeFormation}
           logo={homeLogo}
           isHome={true}
@@ -237,6 +243,7 @@ export function BolaYetuLineupView({
 
         <TeamHeaderBadge
           name={awayName}
+          officialName={awayOfficialName}
           formation={awayFormation}
           logo={awayLogo}
           isHome={false}

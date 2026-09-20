@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Loader2, Plus, Trash2, Clock, ShieldAlert, Goal } from 'lucide-react'
 import { useCompetitionMatchEvents, useAddMatchEvent, useDeleteMatchEvent } from '../hooks'
 import type { MatchEvent, EventType, Match } from '../types'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 const EVENT_ICONS: Record<string, { icon: React.ComponentType<any>; color: string }> = {
   goal: { icon: Goal, color: '#10b981' },
@@ -122,8 +123,8 @@ export function MatchEventsPanel({
             onChange={e => setClubId(e.target.value)} 
             required
           >
-            <option value={match.home_club}>{match.home_club_name}</option>
-            <option value={match.away_club}>{match.away_club_name}</option>
+            <option value={match.home_club}>{formatMatchTeamName(match, 'home', 'short')}</option>
+            <option value={match.away_club}>{formatMatchTeamName(match, 'away', 'short')}</option>
           </select>
           
           <button 

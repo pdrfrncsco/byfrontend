@@ -130,7 +130,10 @@ function buildFallbackTournamentData(
   const qualifiers: { id: string; name: string }[] = []
   groups.forEach((group) => {
     group.standings.slice(0, tournamentConfig.groupStage.qualifiersPerGroup).forEach((standing) => {
-      qualifiers.push({ id: standing.club, name: standing.club_name })
+      qualifiers.push({
+        id: standing.club,
+        name: standing.club_short_name || (standing as any).clubShortName || standing.club_name,
+      })
     })
   })
 
@@ -172,9 +175,9 @@ function buildFallbackTournamentData(
             : null,
         status: actualMatch.status,
         team1: actualMatch.home_club,
-        team1Name: actualMatch.home_club_name,
+        team1Name: actualMatch.home_club_short_name || actualMatch.homeTeamShortName || actualMatch.home_club_name,
         team2: actualMatch.away_club,
-        team2Name: actualMatch.away_club_name,
+        team2Name: actualMatch.away_club_short_name || actualMatch.awayTeamShortName || actualMatch.away_club_name,
       }
     })
 

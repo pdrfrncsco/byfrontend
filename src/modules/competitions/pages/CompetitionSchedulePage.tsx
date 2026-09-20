@@ -72,7 +72,8 @@ export function CompetitionSchedulePage() {
       standings
         .map((standing) => ({
           id: standing.club,
-          name: standing.club_name,
+          name: standing.club_short_name || (standing as any).clubShortName || standing.club_name,
+          officialName: standing.club_name,
           logo: standing.club_logo,
         }))
         .sort((a, b) => a.name.localeCompare(b.name)),
@@ -492,7 +493,7 @@ export function CompetitionSchedulePage() {
                     >
                       <option value="">Selecionar clube</option>
                       {registeredClubs.map((club) => (
-                        <option key={club.id} value={club.id}>
+                        <option key={club.id} value={club.id} title={club.officialName}>
                           {club.name}
                         </option>
                       ))}
@@ -512,7 +513,7 @@ export function CompetitionSchedulePage() {
                     >
                       <option value="">Selecionar clube</option>
                       {registeredClubs.map((club) => (
-                        <option key={club.id} value={club.id}>
+                        <option key={club.id} value={club.id} title={club.officialName}>
                           {club.name}
                         </option>
                       ))}
@@ -757,8 +758,11 @@ export function CompetitionSchedulePage() {
                               </div>
                               <div className="grid grid-cols-3 items-end gap-md">
                                 <div className="space-y-xs">
-                                  <label className="text-xs font-semibold text-on-surface-variant">
-                                    {match.home_club_name}
+                                  <label
+                                    className="text-xs font-semibold text-on-surface-variant"
+                                    title={match.home_club_name}
+                                  >
+                                    {match.home_club_short_name || match.home_club_name}
                                   </label>
                                   <Input
                                     type="number"
@@ -782,8 +786,11 @@ export function CompetitionSchedulePage() {
                                   </select>
                                 </div>
                                 <div className="space-y-xs">
-                                  <label className="text-xs font-semibold text-on-surface-variant">
-                                    {match.away_club_name}
+                                  <label
+                                    className="text-xs font-semibold text-on-surface-variant"
+                                    title={match.away_club_name}
+                                  >
+                                    {match.away_club_short_name || match.away_club_name}
                                   </label>
                                   <Input
                                     type="number"

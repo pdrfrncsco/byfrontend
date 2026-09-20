@@ -153,11 +153,15 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
   }
 
   const stepIndex = workflowStepIndex(transfer.status)
+  const fromClubShort = transfer.from_club_short_name || transfer.from_club?.short_name || transfer.from_club?.name || 'Livre'
+  const fromClubOfficial = transfer.from_club?.name || 'Livre'
+  const toClubShort = transfer.to_club_short_name || transfer.to_club?.short_name || transfer.to_club.name
+  const toClubOfficial = transfer.to_club.name
 
   return (
     <DashboardLayout
       title={`Transferência • ${transfer.player.full_name}`}
-      subtitle={`${transfer.from_club?.name || 'Livre'} → ${transfer.to_club.name}`}
+      subtitle={`${fromClubShort} → ${toClubShort}`}
       dashboardType={isClubScope ? 'club' : 'organization'}
       sidebarLinks={sidebarLinks}
       sidebarSections={sidebarSections}
@@ -183,7 +187,7 @@ export function TransferDetailPage({ scope }: TransferDetailPageProps) {
             </div>
             <h1 className="text-3xl font-semibold text-on-surface">{transfer.player.full_name}</h1>
             <p className="text-on-surface-variant">
-              {transfer.from_club?.name || 'Agente livre'} → {transfer.to_club.name}
+              <span title={fromClubOfficial}>{fromClubShort}</span> → <span title={toClubOfficial}>{toClubShort}</span>
             </p>
           </div>
           <Card variant="flat" padding="md">

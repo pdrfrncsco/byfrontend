@@ -31,9 +31,17 @@ export function ClubCardCompact({ club }: ClubCardCompactProps) {
 
         <div className="min-w-0 space-y-0.5">
           <div className="flex items-center gap-1.5">
-            <h4 className="truncate font-semibold text-sm text-on-surface group-hover:text-primary transition-colors">
-              {club.name}
+            <h4
+              className="truncate font-semibold text-sm text-on-surface group-hover:text-primary transition-colors"
+              title={club.name}
+            >
+              {club.short_name || club.name}
             </h4>
+            {club.acronym && (
+              <span className="shrink-0 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant">
+                {club.acronym}
+              </span>
+            )}
             {club.is_verified && (
               <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
             )}

@@ -40,7 +40,8 @@ export function CompetitionDrawPage() {
     setTimeout(() => {
       const clubs = standings.map((s) => ({
         id: s.club,
-        name: s.club_name,
+        name: s.club_short_name || (s as any).clubShortName || s.club_name,
+        officialName: s.club_name,
         logo: s.club_logo,
       }))
 
@@ -208,7 +209,7 @@ export function CompetitionDrawPage() {
                                   {t.name.charAt(0)}
                                 </div>
                               )}
-                              <span className="text-sm text-on-surface font-medium">{t.name}</span>
+                              <span className="text-sm text-on-surface font-medium" title={t.officialName || t.name}>{t.name}</span>
                             </li>
                           ))}
                         </ul>
@@ -232,11 +233,11 @@ export function CompetitionDrawPage() {
                           <div key={idx} className="flex items-center justify-between border border-outline-variant/10 rounded-xl bg-surface-container-low p-sm max-w-md">
                             <div className="flex items-center gap-sm">
                               {t1?.logo ? <img src={t1.logo} className="h-5 w-5 rounded-full object-cover" /> : null}
-                              <span className="text-sm font-medium text-on-surface">{t1?.name || 'BYE'}</span>
+                              <span className="text-sm font-medium text-on-surface" title={t1?.officialName || t1?.name}>{t1?.name || 'BYE'}</span>
                             </div>
                             <span className="text-xs text-on-surface-variant font-bold px-sm">VS</span>
                             <div className="flex items-center gap-sm">
-                              <span className="text-sm font-medium text-on-surface">{t2?.name || 'BYE'}</span>
+                              <span className="text-sm font-medium text-on-surface" title={t2?.officialName || t2?.name}>{t2?.name || 'BYE'}</span>
                               {t2?.logo ? <img src={t2.logo} className="h-5 w-5 rounded-full object-cover" /> : null}
                             </div>
                           </div>

@@ -89,7 +89,7 @@ export function LandingPage() {
     const p = players[0]
     return {
       name: p.full_name,
-      club: p.current_club?.name || 'Petro de Luanda',
+      club: p.current_club?.short_name || p.current_club?.name || 'Petro de Luanda',
       position: p.position_label || 'Avançado',
       avatar: p.avatar || undefined,
       slug: p.slug,

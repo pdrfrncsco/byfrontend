@@ -3,6 +3,7 @@ import { Shield, Trophy, Calendar, MapPin, ArrowRight, Swords } from 'lucide-rea
 import { Badge, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 import { resolveMediaUrl } from '@/lib/media'
 import { useCompetitionMatches } from '../hooks/useCompetitionMatches'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 import type { Match, Standing } from '../types'
 
 export interface MatchH2HPanelProps {
@@ -140,7 +141,8 @@ export function MatchH2HPanel({
           m.home_club_name?.toLowerCase() === homeClubName.toLowerCase()
         const myScore = isHome ? m.home_score ?? 0 : m.away_score ?? 0
         const oppScore = isHome ? m.away_score ?? 0 : m.home_score ?? 0
-        const oppName = isHome ? m.away_club_name : m.home_club_name
+        const oppName = isHome ? formatMatchTeamName(m, 'away', 'short') : formatMatchTeamName(m, 'home', 'short')
+        const oppOfficialName = isHome ? formatMatchTeamName(m, 'away', 'official') : formatMatchTeamName(m, 'home', 'official')
         const oppLogo = resolveMediaUrl(isHome ? (m as any).away_club_logo : (m as any).home_club_logo)
 
         let result: 'W' | 'D' | 'L' = 'D'
@@ -153,6 +155,7 @@ export function MatchH2HPanel({
           myScore,
           oppScore,
           oppName,
+          oppOfficialName,
           oppLogo,
           isHome,
         }
@@ -182,7 +185,8 @@ export function MatchH2HPanel({
           m.home_club_name?.toLowerCase() === awayClubName.toLowerCase()
         const myScore = isClubHome ? m.home_score ?? 0 : m.away_score ?? 0
         const oppScore = isClubHome ? m.away_score ?? 0 : m.home_score ?? 0
-        const oppName = isClubHome ? m.away_club_name : m.home_club_name
+        const oppName = isClubHome ? formatMatchTeamName(m, 'away', 'short') : formatMatchTeamName(m, 'home', 'short')
+        const oppOfficialName = isClubHome ? formatMatchTeamName(m, 'away', 'official') : formatMatchTeamName(m, 'home', 'official')
         const oppLogo = resolveMediaUrl(isClubHome ? (m as any).away_club_logo : (m as any).home_club_logo)
 
         let result: 'W' | 'D' | 'L' = 'D'
@@ -195,6 +199,7 @@ export function MatchH2HPanel({
           myScore,
           oppScore,
           oppName,
+          oppOfficialName,
           oppLogo,
           isHome: isClubHome,
         }
@@ -369,8 +374,9 @@ export function MatchH2HPanel({
                       className={`text-right flex-1 truncate font-semibold ${
                         isHHome ? 'text-primary font-bold' : 'text-on-surface'
                       }`}
+                      title={formatMatchTeamName(m, 'home', 'official')}
                     >
-                      {m.home_club_name}
+                      {formatMatchTeamName(m, 'home', 'short')}
                     </span>
 
                     <div className="rounded-lg bg-surface-container-high px-2.5 py-1 font-mono font-bold text-on-surface shadow-xs text-xs min-w-[50px] text-center">
@@ -381,8 +387,9 @@ export function MatchH2HPanel({
                       className={`text-left flex-1 truncate font-semibold ${
                         !isHHome ? 'text-primary font-bold' : 'text-on-surface'
                       }`}
+                      title={formatMatchTeamName(m, 'away', 'official')}
                     >
-                      {m.away_club_name}
+                      {formatMatchTeamName(m, 'away', 'short')}
                     </span>
                   </div>
 
@@ -418,7 +425,7 @@ export function MatchH2HPanel({
             {homeRecentMatches.length === 0 ? (
               <p className="text-xs text-on-surface-variant/70 py-2">Sem partidas anteriores registadas.</p>
             ) : (
-              homeRecentMatches.map(({ match: rm, result, myScore, oppScore, oppName }) => (
+              homeRecentMatches.map(({ match: rm, result, myScore, oppScore, oppName, oppOfficialName }) => (
                 <div
                   key={rm.id}
                   className="flex items-center justify-between rounded-lg bg-surface-container/40 px-2.5 py-1.5 text-xs"
@@ -435,7 +442,7 @@ export function MatchH2HPanel({
                     >
                       {result === 'W' ? 'V' : result === 'L' ? 'D' : 'E'}
                     </Badge>
-                    <span className="truncate text-on-surface font-medium" title={oppName}>
+                    <span className="truncate text-on-surface font-medium" title={oppOfficialName || oppName}>
                       vs {oppName}
                     </span>
                   </div>
@@ -465,7 +472,7 @@ export function MatchH2HPanel({
             {awayRecentMatches.length === 0 ? (
               <p className="text-xs text-on-surface-variant/70 py-2">Sem partidas anteriores registadas.</p>
             ) : (
-              awayRecentMatches.map(({ match: rm, result, myScore, oppScore, oppName }) => (
+              awayRecentMatches.map(({ match: rm, result, myScore, oppScore, oppName, oppOfficialName }) => (
                 <div
                   key={rm.id}
                   className="flex items-center justify-between rounded-lg bg-surface-container/40 px-2.5 py-1.5 text-xs"
@@ -482,7 +489,7 @@ export function MatchH2HPanel({
                     >
                       {result === 'W' ? 'V' : result === 'L' ? 'D' : 'E'}
                     </Badge>
-                    <span className="truncate text-on-surface font-medium" title={oppName}>
+                    <span className="truncate text-on-surface font-medium" title={oppOfficialName || oppName}>
                       vs {oppName}
                     </span>
                   </div>

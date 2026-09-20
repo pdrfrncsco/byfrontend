@@ -82,13 +82,25 @@ export function normalizeTransfer(raw: Transfer | TransferListFlat | Record<stri
       primary_position: null,
     },
     from_club: flat.from_club_name
-      ? { id: '', name: flat.from_club_name, slug: '' }
+      ? {
+          id: '',
+          name: flat.from_club_name,
+          short_name: flat.from_club_short_name || undefined,
+          acronym: flat.from_club_acronym || undefined,
+          slug: '',
+        }
       : null,
+    from_club_short_name: flat.from_club_short_name || undefined,
+    from_club_acronym: flat.from_club_acronym || undefined,
     to_club: {
       id: '',
       name: flat.to_club_name || '—',
+      short_name: flat.to_club_short_name || undefined,
+      acronym: flat.to_club_acronym || undefined,
       slug: '',
     },
+    to_club_short_name: flat.to_club_short_name || undefined,
+    to_club_acronym: flat.to_club_acronym || undefined,
     transfer_type: flat.transfer_type as TransferType,
     transfer_type_display: flat.transfer_type_display,
     transfer_date: flat.transfer_date,

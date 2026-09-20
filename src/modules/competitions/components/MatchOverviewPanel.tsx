@@ -3,6 +3,7 @@ import type { Match, MatchEvent, MatchStats } from '../types'
 import { MatchTimeline } from './MatchTimeline'
 import { MatchStatsPanel } from './MatchStatsPanel'
 import { MatchCountdown } from './MatchCountdown'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 interface MatchOverviewPanelProps {
   match: Match
@@ -122,8 +123,8 @@ export function MatchOverviewPanel({
           </div>
           <MatchStatsPanel
             stats={stats}
-            homeName={match.homeTeamName || match.home_club_name}
-            awayName={match.awayTeamName || match.away_club_name}
+            homeName={formatMatchTeamName(match, 'home', 'short')}
+            awayName={formatMatchTeamName(match, 'away', 'short')}
             isLoading={loadingStats}
           />
         </section>

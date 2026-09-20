@@ -80,8 +80,20 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
 
     return list.filter((transfer) => {
       const player = transfer.player?.full_name?.toLowerCase() || ''
-      const fromClub = transfer.from_club?.name?.toLowerCase() || ''
-      const toClub = transfer.to_club?.name?.toLowerCase() || ''
+      const fromClub = [
+        transfer.from_club?.name || '',
+        transfer.from_club_short_name || '',
+        transfer.from_club?.short_name || '',
+        transfer.from_club_acronym || '',
+        transfer.from_club?.acronym || '',
+      ].join(' ').toLowerCase()
+      const toClub = [
+        transfer.to_club?.name || '',
+        transfer.to_club_short_name || '',
+        transfer.to_club?.short_name || '',
+        transfer.to_club_acronym || '',
+        transfer.to_club?.acronym || '',
+      ].join(' ').toLowerCase()
       const matchesSearch = !term || player.includes(term) || fromClub.includes(term) || toClub.includes(term)
       const matchesStatus = statusFilter === 'all' || transfer.status === statusFilter
       const matchesType = typeFilter === 'all' || transfer.transfer_type === typeFilter
@@ -108,11 +120,19 @@ export function TransfersListPage({ scope }: TransfersListPageProps) {
       {
         id: 'clubs',
         header: 'Origem / Destino',
-        cell: ({ row }) => (
-          <p className="text-sm text-on-surface-variant">
-            {row.original.from_club?.name || 'Livre'} → {row.original.to_club?.name}
-          </p>
-        ),
+        cell: ({ row }) => {
+          const fromClub = row.original.from_club
+          const toClub = row.original.to_club
+          const fromShort = row.original.from_club_short_name || fromClub?.short_name || fromClub?.name || 'Livre'
+          const fromOfficial = fromClub?.name || 'Livre'
+          const toShort = row.original.to_club_short_name || toClub?.short_name || toClub?.name || '—'
+          const toOfficial = toClub?.name || '—'
+          return (
+            <p className="text-sm text-on-surface-variant">
+              <span title={fromOfficial}>{fromShort}</span> → <span title={toOfficial}>{toShort}</span>
+            </p>
+          )
+        },
       },
       {
         id: 'type',

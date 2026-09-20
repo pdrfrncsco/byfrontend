@@ -15,6 +15,7 @@ import { generateTacticalPositions } from '../utils/tactical.utils'
 import type { Match, LineupSubmission, LineupPlayer } from '../types'
 import { toast } from 'sonner'
 import { useSeo } from '@/hooks/useSeo'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 interface MatchTacticalViewPageProps {
   embedded?: boolean
@@ -39,7 +40,7 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
 
   useSeo({
     title: match
-      ? `Quadro Tático — ${match.home_club_name || match.homeTeamName} vs ${match.away_club_name || match.awayTeamName}`
+      ? `Quadro Tático — ${formatMatchTeamName(match, 'home', 'short')} vs ${formatMatchTeamName(match, 'away', 'short')}`
       : 'Quadro Tático',
     description: 'Simulação e visualização interativa do posicionamento tático dos jogadores no relvado.',
     path: `/competitions/${competitionId}/matches/${matchIdValue}/tactical`,
@@ -271,8 +272,10 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
 
   const homeInfo = getStartersForTeam('home')
   const awayInfo = getStartersForTeam('away')
-  const homeName = match.home_club_name || match.homeTeamName || 'Casa'
-  const awayName = match.away_club_name || match.awayTeamName || 'Fora'
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
 
   // Breadcrumb
   const breadcrumb = (
@@ -292,6 +295,7 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
             : competitionRoutes.matchDetail(competitionId, matchIdValue)
         }
         className="hover:text-primary transition-colors"
+        title={`${homeOfficialName} vs ${awayOfficialName}`}
       >
         {homeName} vs {awayName}
       </Link>
@@ -317,7 +321,7 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-on-surface-variant font-medium">
-            {homeName} <span className="opacity-50">vs</span> {awayName}
+            <span title={homeOfficialName}>{homeName}</span> <span className="opacity-50">vs</span> <span title={awayOfficialName}>{awayName}</span>
           </p>
         </div>
 
@@ -396,6 +400,7 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
                 ? 'bg-surface shadow-sm text-blue-500 font-bold'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
+            title={homeOfficialName}
           >
             <span className="w-2 h-2 rounded-full bg-blue-500" />
             <span>{homeName}</span>
@@ -410,6 +415,7 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
                 ? 'bg-surface shadow-sm text-red-500 font-bold'
                 : 'text-on-surface-variant hover:text-on-surface'
             }`}
+            title={awayOfficialName}
           >
             <span className="w-2 h-2 rounded-full bg-red-500" />
             <span>{awayName}</span>
@@ -419,11 +425,11 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
 
         {/* Formations legend */}
         <div className="flex items-center gap-md text-xs text-on-surface-variant font-medium px-1">
-          <span>
+          <span title={homeOfficialName}>
             {homeName}: <span className="font-bold text-on-surface">{homeInfo.formation}</span>
           </span>
           <span className="opacity-30">|</span>
-          <span>
+          <span title={awayOfficialName}>
             {awayName}: <span className="font-bold text-on-surface">{awayInfo.formation}</span>
           </span>
         </div>

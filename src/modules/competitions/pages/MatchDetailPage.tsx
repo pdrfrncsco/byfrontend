@@ -42,6 +42,7 @@ import { useMatchLive } from '../hooks/useMatchLive'
 import { useMatchStats } from '../hooks/useMatchStats'
 import { useLineups } from '../hooks/useLineups'
 import { matchApi } from '../services/match.api'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 import { toast } from 'sonner'
 import { useSeo } from '@/hooks/useSeo'
 import {
@@ -244,7 +245,7 @@ export function MatchDetailPage() {
   const { data: lineups = [] } = useLineups(matchIdValue)
 
   useSeo({
-    title: match ? `${match.home_club_name || match.homeTeamName} vs ${match.away_club_name || match.awayTeamName} — Partida` : 'Detalhe da partida',
+    title: match ? `${formatMatchTeamName(match, 'home', 'short')} vs ${formatMatchTeamName(match, 'away', 'short')} — Partida` : 'Detalhe da partida',
     description: 'Acompanhe o placar ao vivo, formações, eventos e estatísticas em estilo SofaScore.',
     path: `/competitions/${competitionId}/matches/${matchIdValue}`,
   })
@@ -441,8 +442,8 @@ export function MatchDetailPage() {
         return (
           <MatchStatsWorkspace
             stats={stats}
-            homeName={activeMatch.home_club_name || activeMatch.homeTeamName}
-            awayName={activeMatch.away_club_name || activeMatch.awayTeamName}
+            homeName={formatMatchTeamName(activeMatch, 'home', 'short')}
+            awayName={formatMatchTeamName(activeMatch, 'away', 'short')}
             homeTeamId={activeMatch.home_club || activeMatch.homeTeamId}
             awayTeamId={activeMatch.away_club || activeMatch.awayTeamId}
             canEdit={isMatchOperator && activeMatch.status !== 'archived' && activeMatch.status !== 'cancelled'}
@@ -481,8 +482,8 @@ export function MatchDetailPage() {
             competitionId={competitionId}
             homeClubId={homeClubId}
             awayClubId={awayClubId}
-            homeClubName={activeMatch.home_club_name || activeMatch.homeTeamName || 'Equipa Casa'}
-            awayClubName={activeMatch.away_club_name || activeMatch.awayTeamName || 'Equipa Visitante'}
+            homeClubName={formatMatchTeamName(activeMatch, 'home', 'short')}
+            awayClubName={formatMatchTeamName(activeMatch, 'away', 'short')}
             homeClubLogo={activeMatch.home_club_logo || activeMatch.homeTeamLogo}
             awayClubLogo={activeMatch.away_club_logo || activeMatch.awayTeamLogo}
             standings={standings}
@@ -587,16 +588,16 @@ export function MatchDetailPage() {
         <SportSidebarCard title="Treinadores" icon={Shield}>
           <div className="space-y-xs text-xs">
             <div className="flex items-center justify-between py-1 border-b border-outline-variant/10">
-              <span className="text-on-surface-variant truncate max-w-[110px]">
-                {activeMatch.home_club_name || activeMatch.homeTeamName}
+              <span className="text-on-surface-variant truncate max-w-[110px]" title={formatMatchTeamName(activeMatch, 'home', 'official')}>
+                {formatMatchTeamName(activeMatch, 'home', 'short')}
               </span>
               <span className="font-semibold text-on-surface truncate max-w-[140px]">
                 {homeCoach || '—'}
               </span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span className="text-on-surface-variant truncate max-w-[110px]">
-                {activeMatch.away_club_name || activeMatch.awayTeamName}
+              <span className="text-on-surface-variant truncate max-w-[110px]" title={formatMatchTeamName(activeMatch, 'away', 'official')}>
+                {formatMatchTeamName(activeMatch, 'away', 'short')}
               </span>
               <span className="font-semibold text-on-surface truncate max-w-[140px]">
                 {awayCoach || '—'}
@@ -786,7 +787,7 @@ export function MatchDetailPage() {
   if (isDashboard) {
     return (
       <DashboardLayout
-        title={`${activeMatch.home_club_name || activeMatch.homeTeamName} vs ${activeMatch.away_club_name || activeMatch.awayTeamName}`}
+        title={`${formatMatchTeamName(activeMatch, 'home', 'short')} vs ${formatMatchTeamName(activeMatch, 'away', 'short')}`}
         subtitle={`Jornada ${activeMatch.round_number || activeMatch.roundNumber || ''}`}
         dashboardType="competition"
         sidebarLinks={sidebarLinks}
@@ -827,8 +828,11 @@ export function MatchDetailPage() {
         {competition?.name || 'Competição'}
       </Link>
       <span aria-hidden="true" className="opacity-40">/</span>
-      <span className="truncate font-semibold text-on-surface">
-        {activeMatch.home_club_name || activeMatch.homeTeamName} vs {activeMatch.away_club_name || activeMatch.awayTeamName}
+      <span
+        className="truncate font-semibold text-on-surface"
+        title={`${formatMatchTeamName(activeMatch, 'home', 'official')} vs ${formatMatchTeamName(activeMatch, 'away', 'official')}`}
+      >
+        {formatMatchTeamName(activeMatch, 'home', 'short')} vs {formatMatchTeamName(activeMatch, 'away', 'short')}
       </span>
     </div>
   )

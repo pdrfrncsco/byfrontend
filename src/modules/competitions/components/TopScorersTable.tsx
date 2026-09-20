@@ -79,15 +79,17 @@ export function TopScorersTable({ scorers, limit = 10, isLoading = false }: TopS
                 </div>
               </td>
               <td className="px-md py-sm">
-                <div className="flex items-center gap-sm">
+                <div className="flex items-center gap-sm" title={scorer.club_name}>
                   {scorer.club_logo && (
                     <img
                       src={scorer.club_logo}
-                      alt={scorer.club_name}
+                      alt={scorer.club_short_name || scorer.club_name}
                       className="h-5 w-5 rounded-full object-cover"
                     />
                   )}
-                  <span className="text-on-surface-variant">{scorer.club_name}</span>
+                  <span className="text-on-surface-variant">
+                    {scorer.club_short_name || scorer.club_name}
+                  </span>
                 </div>
               </td>
               <td className="px-sm py-sm text-center">

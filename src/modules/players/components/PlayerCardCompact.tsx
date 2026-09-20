@@ -61,9 +61,12 @@ export function PlayerCardCompact({ player }: PlayerCardCompactProps) {
             {player.current_club && (
               <>
                 <span>•</span>
-                <span className="flex items-center gap-0.5 truncate">
+                <span
+                  className="flex items-center gap-0.5 truncate"
+                  title={player.current_club.name}
+                >
                   <Shield className="h-3 w-3 shrink-0" />
-                  {player.current_club.name}
+                  {(player.current_club as any).short_name || player.current_club.name}
                 </span>
               </>
             )}

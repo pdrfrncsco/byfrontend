@@ -139,9 +139,13 @@ export interface Match {
   roundLabel?: string;
   homeTeamId: string;
   homeTeamName: string;
+  homeTeamShortName?: string;
+  homeTeamAcronym?: string;
   homeTeamLogo?: string;
   awayTeamId: string;
   awayTeamName: string;
+  awayTeamShortName?: string;
+  awayTeamAcronym?: string;
   awayTeamLogo?: string;
   scheduledAt: string;
   venue?: string;

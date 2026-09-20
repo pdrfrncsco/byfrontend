@@ -4,6 +4,7 @@ import { ROUTES } from '@/constants'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Sparkles, Trophy, Activity, ShieldCheck, Flame, Compass, ChevronRight, User } from 'lucide-react'
 import type { Match } from '@/modules/competitions/types'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 export interface HeroSectionProps {
   onGetStarted?: () => void
@@ -60,8 +61,12 @@ export function HeroSection({
   const compId = featuredCompetition?.id || featuredMatch?.competitionId || 'girabola-2025-26-lnfp'
   const matchId = featuredMatch?.id
 
-  const homeName = featuredMatch?.homeTeamName || (featuredMatch as any)?.home_club_name || 'Petro de Luanda'
-  const awayName = featuredMatch?.awayTeamName || (featuredMatch as any)?.away_club_name || '1º de Agosto'
+  const homeName = featuredMatch ? formatMatchTeamName(featuredMatch, 'home', 'short') : 'Petro de Luanda'
+  const awayName = featuredMatch ? formatMatchTeamName(featuredMatch, 'away', 'short') : '1º de Agosto'
+  const homeOfficialName = featuredMatch ? formatMatchTeamName(featuredMatch, 'home', 'official') : homeName
+  const awayOfficialName = featuredMatch ? formatMatchTeamName(featuredMatch, 'away', 'official') : awayName
+  const homeCode = featuredMatch ? formatMatchTeamName(featuredMatch, 'home', 'ticker') : 'APL'
+  const awayCode = featuredMatch ? formatMatchTeamName(featuredMatch, 'away', 'ticker') : 'PRI'
   const homeLogo = featuredMatch?.homeTeamLogo || (featuredMatch as any)?.home_club_logo
   const awayLogo = featuredMatch?.awayTeamLogo || (featuredMatch as any)?.away_club_logo
   const homeScore = featuredMatch?.score?.home ?? (featuredMatch as any)?.home_score ?? 2
@@ -188,8 +193,8 @@ export function HeroSection({
                   className="grid grid-cols-3 items-center text-center py-2 group/match cursor-pointer"
                 >
                   <div className="space-y-1">
-                    <ClubBadge logo={homeLogo} name={homeName} />
-                    <div className="font-bold text-sm text-on-surface group-hover/match:text-primary transition-colors truncate">
+                    <ClubBadge logo={homeLogo} name={homeName} code={homeCode} />
+                    <div className="font-bold text-sm text-on-surface group-hover/match:text-primary transition-colors truncate" title={homeOfficialName}>
                       {homeName}
                     </div>
                   </div>
@@ -202,8 +207,8 @@ export function HeroSection({
                   </div>
 
                   <div className="space-y-1">
-                    <ClubBadge logo={awayLogo} name={awayName} />
-                    <div className="font-bold text-sm text-on-surface group-hover/match:text-primary transition-colors truncate">
+                    <ClubBadge logo={awayLogo} name={awayName} code={awayCode} />
+                    <div className="font-bold text-sm text-on-surface group-hover/match:text-primary transition-colors truncate" title={awayOfficialName}>
                       {awayName}
                     </div>
                   </div>
@@ -211,8 +216,8 @@ export function HeroSection({
               ) : (
                 <div className="grid grid-cols-3 items-center text-center py-2">
                   <div className="space-y-1">
-                    <ClubBadge logo={homeLogo} name={homeName} />
-                    <div className="font-bold text-sm text-on-surface truncate">{homeName}</div>
+                    <ClubBadge logo={homeLogo} name={homeName} code={homeCode} />
+                    <div className="font-bold text-sm text-on-surface truncate" title={homeOfficialName}>{homeName}</div>
                   </div>
 
                   <div className="space-y-1">
@@ -223,8 +228,8 @@ export function HeroSection({
                   </div>
 
                   <div className="space-y-1">
-                    <ClubBadge logo={awayLogo} name={awayName} />
-                    <div className="font-bold text-sm text-on-surface truncate">{awayName}</div>
+                    <ClubBadge logo={awayLogo} name={awayName} code={awayCode} />
+                    <div className="font-bold text-sm text-on-surface truncate" title={awayOfficialName}>{awayName}</div>
                   </div>
                 </div>
               )}

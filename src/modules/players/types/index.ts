@@ -49,6 +49,9 @@ export const ONBOARDING_STEPS_ORDER: NonNullable<OnboardingStep>[] = [
 export interface PlayerCurrentClub {
   id: string
   name: string
+  short_name?: string | null
+  acronym?: string | null
+  display_name?: string | null
   slug: string
   registered_since: string
   shirt_number: number | null

@@ -275,6 +275,8 @@ export interface TopScorer {
   player_avatar?: string | null
   club_id: string
   club_name: string
+  club_short_name?: string
+  club_acronym?: string
   club_logo?: string | null
   goals: number
   penalties?: number
@@ -287,6 +289,8 @@ export interface SeasonRanking {
   player_name: string
   club_id: string
   club_name: string
+  club_short_name?: string
+  club_acronym?: string
   total_goals: number
   total_assists: number
   total_matches: number

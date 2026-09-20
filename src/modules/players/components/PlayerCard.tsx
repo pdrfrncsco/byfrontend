@@ -83,7 +83,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
                   title={player.current_club.name}
                 >
                   <Shield className="mr-1 inline h-3 w-3" aria-hidden="true" />
-                  {player.current_club.name}
+                  {(player.current_club as any).short_name || player.current_club.name}
                 </Badge>
               ) : (
                 <PlayerLinkStatusBadge status="none" className="text-[11px]" />

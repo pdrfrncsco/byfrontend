@@ -67,8 +67,9 @@ export default function ClubDetailPage() {
   const shouldFetchByUuid = isUUID(clubSlug)
   
   const clubQuery = useClub(clubSlug)
+  const clubDisplayName = clubQuery.data?.short_name || clubQuery.data?.name
   useSeo({
-    title: clubQuery.data?.name ? `${clubQuery.data.name} — Clube` : 'Detalhe do clube',
+    title: clubDisplayName ? `${clubDisplayName} — Clube` : 'Detalhe do clube',
     description: clubQuery.data?.description || 'Consulte o perfil público, plantel e atividade deste clube.',
     path: `/clubs/${clubSlug}`,
   })
@@ -154,7 +155,7 @@ export default function ClubDetailPage() {
 
   return (
     <SportDetailLayout
-      breadcrumb={<ClubBreadcrumb current={club.name} />}
+      breadcrumb={<ClubBreadcrumb current={club.short_name || club.name} />}
       header={
         <SportEntityHeader
           visual={
@@ -162,15 +163,21 @@ export default function ClubDetailPage() {
               name={club.name}
               logoUrl={club.logo_url}
               shortName={club.short_name}
+              acronym={club.acronym}
               primaryColor={club.primary_color}
               size="xl"
               shape="squircle"
               className="border border-outline-variant/20 bg-surface-container-high shadow-md"
             />
           }
-          title={club.name}
-          subtitle={club.description || 'Perfil público do clube.'}
+          title={club.short_name || club.name}
+          subtitle={
+            club.short_name && club.short_name !== club.name
+              ? `${club.name} • ${club.description || 'Perfil público do clube.'}`
+              : club.description || 'Perfil público do clube.'
+          }
           chips={[
+            ...(club.acronym ? [{ label: `Sigla: ${club.acronym}` }] : []),
             { icon: MapPin, label: [club.city, club.country].filter(Boolean).join(' • ') || 'Localização indisponível' },
             { label: club.tenant_name || club.tenant_slug || 'Organização não indicada' },
             { label: club.status_label || club.status || 'active' },

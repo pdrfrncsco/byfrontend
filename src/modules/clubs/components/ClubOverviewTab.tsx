@@ -91,8 +91,15 @@ export function ClubOverviewTab({
               Último jogo
             </h3>
             <MatchScoreWidget
-              homeTeam={{ name: lastMatch.home_club_name || lastMatch.home_team_name, logoUrl: lastMatch.home_club_logo || lastMatch.home_team_logo }}
-              awayTeam={{ name: lastMatch.away_club_name || lastMatch.away_team_name, logoUrl: lastMatch.away_club_logo || lastMatch.away_team_logo }}
+              match={lastMatch}
+              homeTeam={{
+                name: lastMatch.home_club_short_name || lastMatch.homeTeamShortName || lastMatch.home_club_name || lastMatch.home_team_name,
+                logoUrl: lastMatch.home_club_logo || lastMatch.home_team_logo,
+              }}
+              awayTeam={{
+                name: lastMatch.away_club_short_name || lastMatch.awayTeamShortName || lastMatch.away_club_name || lastMatch.away_team_name,
+                logoUrl: lastMatch.away_club_logo || lastMatch.away_team_logo,
+              }}
               homeScore={lastMatch.home_score}
               awayScore={lastMatch.away_score}
               status={lastMatch.status}
@@ -108,8 +115,15 @@ export function ClubOverviewTab({
               Próximo jogo
             </h3>
             <MatchScoreWidget
-              homeTeam={{ name: nextMatch.home_club_name || nextMatch.home_team_name, logoUrl: nextMatch.home_club_logo || nextMatch.home_team_logo }}
-              awayTeam={{ name: nextMatch.away_club_name || nextMatch.away_team_name, logoUrl: nextMatch.away_club_logo || nextMatch.away_team_logo }}
+              match={nextMatch}
+              homeTeam={{
+                name: nextMatch.home_club_short_name || nextMatch.homeTeamShortName || nextMatch.home_club_name || nextMatch.home_team_name,
+                logoUrl: nextMatch.home_club_logo || nextMatch.home_team_logo,
+              }}
+              awayTeam={{
+                name: nextMatch.away_club_short_name || nextMatch.awayTeamShortName || nextMatch.away_club_name || nextMatch.away_team_name,
+                logoUrl: nextMatch.away_club_logo || nextMatch.away_team_logo,
+              }}
               homeScore={nextMatch.home_score}
               awayScore={nextMatch.away_score}
               status={nextMatch.status}
