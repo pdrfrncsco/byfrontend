@@ -11,6 +11,7 @@ import {
 import { Button, Input, NativeSelect } from '@/components/ui'
 import { useAddMatchEvent } from '../hooks'
 import { useMatchPlayers } from '../hooks/useMatchPlayers'
+import { getMatchClockInfo } from '../utils/match-clock'
 import type { EventType, Match } from '../types'
 
 interface LiveEventModalProps {
@@ -49,15 +50,17 @@ export function LiveEventModal({
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
-    if (match) {
+    if (isOpen && match) {
       setClubId(homeClubId)
-      setMinute(String(match.current_minute || 1))
+      const clock = getMatchClockInfo(match, Date.now())
+      const currentMin = clock.minute > 0 ? clock.minute : (match.current_minute || 1)
+      setMinute(String(currentMin))
       setPlayerId('')
       setPlayerOffId('')
       setCustomPlayerName('')
       setNotes('')
     }
-  }, [match, homeClubId])
+  }, [isOpen])
 
   if (!isOpen || !match) return null
 

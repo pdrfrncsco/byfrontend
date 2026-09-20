@@ -34,9 +34,66 @@ function resolvePlayerNumber(raw: any): number | undefined {
   return typeof num === 'number' && !isNaN(num) ? num : undefined
 }
 
+const POSITION_MAP: Record<string, string> = {
+  // Main Categories
+  GK: 'Guarda-Redes',
+  GR: 'Guarda-Redes',
+  GOLO: 'Guarda-Redes',
+  GOALKEEPER: 'Guarda-Redes',
+  DF: 'Defesa',
+  DEF: 'Defesa',
+  MF: 'Médio',
+  MID: 'Médio',
+  FW: 'Avançado',
+  FWD: 'Avançado',
+  ATT: 'Avançado',
+
+  // Specific Positions
+  CB: 'Defesa Central',
+  DC: 'Defesa Central',
+  LB: 'Lateral Esquerdo',
+  LE: 'Lateral Esquerdo',
+  RB: 'Lateral Direito',
+  LD: 'Lateral Direito',
+  LWB: 'Ala Esquerdo',
+  RWB: 'Ala Direito',
+  CDM: 'Médio Defensivo',
+  MDF: 'Médio Defensivo',
+  CM: 'Médio Centro',
+  MC: 'Médio Centro',
+  CAM: 'Médio Ofensivo',
+  MCO: 'Médio Ofensivo',
+  MO: 'Médio Ofensivo',
+  LM: 'Médio Esquerdo',
+  ME: 'Médio Esquerdo',
+  RM: 'Médio Direito',
+  MD: 'Médio Direito',
+  LW: 'Extremo Esquerdo',
+  EE: 'Extremo Esquerdo',
+  RW: 'Extremo Direito',
+  ED: 'Extremo Direito',
+  ST: 'Ponta de Lança',
+  PL: 'Ponta de Lança',
+  CF: 'Avançado Centro',
+  AC: 'Avançado Centro',
+}
+
 function resolvePlayerPosition(raw: any): string | undefined {
   if (!raw) return undefined
-  return raw.position_display || raw.position_label || raw.position || raw.player?.position || undefined
+  const specific = raw.position_specific || raw.positionSpecific
+  const pos =
+    raw.position_display ||
+    raw.position_label ||
+    raw.player?.position_label ||
+    raw.player?.position_display ||
+    specific ||
+    raw.position ||
+    raw.player?.position ||
+    undefined
+
+  if (!pos) return undefined
+  const upper = String(pos).trim().toUpperCase()
+  return POSITION_MAP[upper] || pos
 }
 
 export function useMatchPlayers(matchId?: string, homeClubId?: string, awayClubId?: string) {
