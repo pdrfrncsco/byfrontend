@@ -44,6 +44,43 @@ export function ClubOverviewTab({
   const lastMatch = finishedMatches[0]
   const nextMatch = scheduledMatches[scheduledMatches.length - 1] // nearest scheduled match
 
+  // Group standings by competition
+  const groupedStandings = React.useMemo(() => {
+    if (!standings || standings.length === 0) return []
+
+    const compMap = new Map<string, { id: string; name: string; type?: string; rows: any[] }>()
+
+    for (const row of standings) {
+      const compId = row.competition || 'unknown'
+      if (!compMap.has(compId)) {
+        const matchingComp = (competitions || []).find((c) => c.id === compId)
+        const compName =
+          row.competition_name || matchingComp?.name || 'Competição'
+        compMap.set(compId, {
+          id: compId,
+          name: compName,
+          type: matchingComp?.type,
+          rows: [],
+        })
+      }
+      compMap.get(compId)!.rows.push(row)
+    }
+
+    // Sort rows within each competition by position, then points
+    for (const group of compMap.values()) {
+      group.rows.sort((a, b) => (a.position ?? 99) - (b.position ?? 99))
+    }
+
+    return Array.from(compMap.values())
+  }, [standings, competitions])
+
+  const [activeCompId, setActiveCompId] = React.useState<string>('all')
+
+  const visibleCompetitionGroups = React.useMemo(() => {
+    if (activeCompId === 'all') return groupedStandings
+    return groupedStandings.filter((g) => g.id === activeCompId)
+  }, [groupedStandings, activeCompId])
+
   return (
     <div className="space-y-6">
       {/* Matches Section */}
@@ -85,44 +122,134 @@ export function ClubOverviewTab({
       </div>
 
       {/* Standings Section */}
-      {standings && standings.length > 0 && (
-        <div className="rounded-lg border border-outline-variant/15 bg-surface-container p-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">
-            Classificação
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-outline-variant/15 text-[11px] font-semibold uppercase text-on-surface-variant bg-surface-container-low">
-                  <th className="px-3 py-2 text-center w-8">#</th>
-                  <th className="px-3 py-2">Clube</th>
-                  <th className="px-3 py-2 text-center w-10">J</th>
-                  <th className="px-3 py-2 text-center w-10">V</th>
-                  <th className="px-3 py-2 text-center w-10">E</th>
-                  <th className="px-3 py-2 text-center w-10">D</th>
-                  <th className="px-3 py-2 text-center w-12">Pts</th>
-                </tr>
-              </thead>
-              <tbody>
-                {standings.map((row) => (
-                  <tr 
-                    key={row.id} 
+      {groupedStandings.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+              Classificação por Competição
+            </h3>
+            {groupedStandings.length > 1 && (
+              <div className="flex flex-wrap gap-1 bg-surface-container-low p-1 rounded-lg border border-outline-variant/10">
+                <button
+                  type="button"
+                  onClick={() => setActiveCompId('all')}
+                  className={cn(
+                    "px-2.5 py-1 text-xs rounded-md font-medium transition-colors",
+                    activeCompId === 'all'
+                      ? "bg-primary text-on-primary shadow-xs font-semibold"
+                      : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+                  )}
+                >
+                  Todas ({groupedStandings.length})
+                </button>
+                {groupedStandings.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => setActiveCompId(g.id)}
                     className={cn(
-                      "border-b border-outline-variant/8 text-sm hover:bg-surface-container-low/50",
-                      row.club_id === club?.id && "bg-surface-container-high font-medium"
+                      "px-2.5 py-1 text-xs rounded-md font-medium transition-colors truncate max-w-[180px]",
+                      activeCompId === g.id
+                        ? "bg-primary text-on-primary shadow-xs font-semibold"
+                        : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
                     )}
                   >
-                    <td className="px-3 py-2 text-center">{row.position}</td>
-                    <td className="px-3 py-2 truncate max-w-[150px]">{row.club_name}</td>
-                    <td className="px-3 py-2 text-center tabular-nums">{row.matches_played}</td>
-                    <td className="px-3 py-2 text-center tabular-nums">{row.won}</td>
-                    <td className="px-3 py-2 text-center tabular-nums">{row.drawn}</td>
-                    <td className="px-3 py-2 text-center tabular-nums">{row.lost}</td>
-                    <td className="px-3 py-2 text-center tabular-nums font-bold">{row.points}</td>
-                  </tr>
+                    {g.name}
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            {visibleCompetitionGroups.map((group) => (
+              <div
+                key={group.id}
+                className="rounded-xl border border-outline-variant/20 bg-surface-container p-4 shadow-xs"
+              >
+                <div className="flex items-center justify-between mb-3 border-b border-outline-variant/10 pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-on-surface">
+                      {group.name}
+                    </span>
+                    {group.type && (
+                      <Badge variant="secondary" className="text-[10px] uppercase">
+                        {group.type}
+                      </Badge>
+                    )}
+                  </div>
+                  <span className="text-xs text-on-surface-variant">
+                    {group.rows.length} {group.rows.length === 1 ? 'equipa' : 'equipas'}
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-outline-variant/15 text-[11px] font-semibold uppercase text-on-surface-variant bg-surface-container-low">
+                        <th className="px-3 py-2 text-center w-8">#</th>
+                        <th className="px-3 py-2">Clube</th>
+                        <th className="px-3 py-2 text-center w-10" title="Jogos disputados">J</th>
+                        <th className="px-3 py-2 text-center w-10" title="Vitórias">V</th>
+                        <th className="px-3 py-2 text-center w-10" title="Empates">E</th>
+                        <th className="px-3 py-2 text-center w-10" title="Derrotas">D</th>
+                        <th className="px-3 py-2 text-center w-10 hidden sm:table-cell" title="Golos Marcados">GM</th>
+                        <th className="px-3 py-2 text-center w-10 hidden sm:table-cell" title="Golos Sofridos">GS</th>
+                        <th className="px-3 py-2 text-center w-10 hidden sm:table-cell" title="Diferença de Golos">DG</th>
+                        <th className="px-3 py-2 text-center w-12 font-bold" title="Pontos">Pts</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.rows.map((row) => {
+                        const isCurrentClub = row.club === club?.id || row.club_id === club?.id
+                        const matchesCount = row.played ?? row.matches_played ?? 0
+                        const gd = row.goal_difference ?? ((row.goals_for ?? 0) - (row.goals_against ?? 0))
+
+                        return (
+                          <tr
+                            key={row.id}
+                            className={cn(
+                              "border-b border-outline-variant/8 text-sm transition-colors hover:bg-surface-container-low/50",
+                              isCurrentClub && "bg-primary/10 font-medium text-primary border-primary/20"
+                            )}
+                          >
+                            <td className="px-3 py-2 text-center font-bold">
+                              {row.position}
+                            </td>
+                            <td className="px-3 py-2 truncate max-w-[200px]">
+                              <span className={cn(isCurrentClub && "font-bold")}>
+                                {row.club_name}
+                              </span>
+                              {isCurrentClub && (
+                                <span className="ml-1.5 text-[10px] uppercase font-bold text-primary bg-primary/15 px-1.5 py-0.5 rounded-full">
+                                  Este Clube
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 text-center tabular-nums">{matchesCount}</td>
+                            <td className="px-3 py-2 text-center tabular-nums">{row.won ?? 0}</td>
+                            <td className="px-3 py-2 text-center tabular-nums">{row.drawn ?? 0}</td>
+                            <td className="px-3 py-2 text-center tabular-nums">{row.lost ?? 0}</td>
+                            <td className="px-3 py-2 text-center tabular-nums hidden sm:table-cell text-on-surface-variant">
+                              {row.goals_for ?? 0}
+                            </td>
+                            <td className="px-3 py-2 text-center tabular-nums hidden sm:table-cell text-on-surface-variant">
+                              {row.goals_against ?? 0}
+                            </td>
+                            <td className="px-3 py-2 text-center tabular-nums hidden sm:table-cell text-on-surface-variant">
+                              {gd > 0 ? `+${gd}` : gd}
+                            </td>
+                            <td className="px-3 py-2 text-center tabular-nums font-bold text-base">
+                              {row.points ?? 0}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
