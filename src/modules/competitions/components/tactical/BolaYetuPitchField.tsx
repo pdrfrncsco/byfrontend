@@ -337,13 +337,22 @@ export function BolaYetuPitchField({
               key={p.tacticalId}
               transform={`translate(${cx}, ${cy})`}
               filter="url(#token-shadow)"
-              className="cursor-pointer transition-transform duration-150 hover:scale-110"
+              className="cursor-pointer select-none group"
               onClick={() => onPlayerClick?.(p.player, p.isHome)}
             >
               {/* Outer halo when active */}
               {isActive && (
-                <circle r={25} fill="none" stroke="#ffffff" strokeWidth={3} className="animate-pulse" />
+                <circle r={26} fill="none" stroke="#ffffff" strokeWidth={3} className="animate-pulse" />
               )}
+
+              {/* Hover ring (safe SVG hover effect without CSS transform) */}
+              <circle
+                r={24}
+                fill="none"
+                stroke={baseBorderColor}
+                strokeWidth={2}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+              />
 
               {/* Player Avatar Circle Background */}
               <circle
@@ -351,6 +360,7 @@ export function BolaYetuPitchField({
                 fill={p.isGK ? '#78350f' : p.isHome ? '#1e3a8a' : '#7f1d1d'}
                 stroke={baseBorderColor}
                 strokeWidth={2.5}
+                className="transition-all duration-150 group-hover:stroke-[3.5px] group-hover:brightness-110"
               />
 
               {/* Player Avatar Photo (if available) */}

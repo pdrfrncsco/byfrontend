@@ -60,11 +60,17 @@ export default function TacticalField({
   )
 
   const onPointerDown = (e: React.PointerEvent, id: string) => {
+    e.preventDefault()
+    e.stopPropagation()
     const p = findPlayer(id)
     if (!p) return
     const svg = svgRef.current
     if (!svg) return
-    ;(e.target as Element).setPointerCapture?.(e.pointerId)
+    try {
+      svg.setPointerCapture(e.pointerId)
+    } catch {
+      // Fallback in older browsers
+    }
     const norm = toNormalized(e.clientX, e.clientY)
     dragging.current = { id, offsetX: norm.x - p.x, offsetY: norm.y - p.y }
   }
@@ -73,20 +79,30 @@ export default function TacticalField({
     if (!dragging.current) return
     const { id, offsetX, offsetY } = dragging.current
     const norm = toNormalized(e.clientX, e.clientY)
-    const newX = Math.max(0.02, Math.min(0.98, norm.x - offsetX))
+    const newX = Math.max(0.03, Math.min(0.97, norm.x - offsetX))
     const newY = Math.max(0.04, Math.min(0.96, norm.y - offsetY))
     const next = playersRef.current.map(p =>
       p.id === id ? { ...p, x: newX, y: newY } : p
     )
+    playersRef.current = next
     setPlayers(next)
+    onPositionsChange?.(next)
   }
 
-  const onPointerUp = (_e: React.PointerEvent) => {
+  const onPointerUp = (e: React.PointerEvent) => {
     if (!dragging.current) return
-    dragging.current = null
-    if (onPositionsChange) {
-      onPositionsChange(playersRef.current)
+    const svg = svgRef.current
+    if (svg) {
+      try {
+        if (svg.hasPointerCapture(e.pointerId)) {
+          svg.releasePointerCapture(e.pointerId)
+        }
+      } catch {
+        // Ignore
+      }
     }
+    dragging.current = null
+    onPositionsChange?.(playersRef.current)
   }
 
   // Pitch dimensions with 24px inner margin
@@ -113,10 +129,10 @@ export default function TacticalField({
         viewBox={`0 0 ${width} ${height}`}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
+        onPointerCancel={onPointerUp}
         role="img"
         aria-label="Prancheta táctica do campo de futebol"
-        className="touch-none rounded-2xl shadow-xl"
+        className="touch-none rounded-2xl shadow-xl select-none"
       >
         <defs>
           <linearGradient id="grass-turf" x1="0" x2="0" y1="0" y2="1">

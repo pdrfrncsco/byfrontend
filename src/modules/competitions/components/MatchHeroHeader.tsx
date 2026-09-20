@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Calendar, MapPin, Trophy } from 'lucide-react'
+import { resolveMediaUrl } from '@/lib/media'
 import type { Match, MatchEvent } from '../types'
 import { MatchStatusBadge } from './MatchStatusBadge'
 import { getMatchClockInfo } from '../utils/match-clock'
@@ -14,13 +15,14 @@ export interface MatchHeroHeaderProps {
 const TeamBadge = ({ src, name, className = '' }: { src?: string; name: string; className?: string }) => {
   const [error, setError] = useState(false)
   const initial = name ? name.charAt(0).toUpperCase() : '?'
+  const resolvedSrc = resolveMediaUrl(src)
 
   return (
     <div className={`flex flex-col items-center gap-sm ${className}`}>
       <div className="h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-full border border-outline-variant/20 bg-surface-container-high flex items-center justify-center shadow-sm">
-        {src && !error ? (
+        {resolvedSrc && !error ? (
           <img
-            src={src}
+            src={resolvedSrc}
             alt={name}
             className="h-full w-full object-cover"
             onError={() => setError(true)}

@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react'
+import { useState, useEffect, useMemo, Suspense, lazy } from 'react'
 import { useParams, Link, useLocation } from 'react-router-dom'
 import {
   Users,
@@ -17,8 +17,9 @@ import {
   ExternalLink,
   Compass,
   Zap,
+  Layers,
 } from 'lucide-react'
-import { Button } from '@/components/ui'
+import { Button, Badge } from '@/components/ui'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { useAuth } from '@/app/providers'
 import { PublicDetailPageShell } from '@/modules/shared/components'
@@ -51,6 +52,7 @@ import {
   MatchHeroHeader,
   MatchStandingsCard,
   StandingsTable,
+  MatchH2HPanel,
 } from '../components'
 import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
 import { ManualMatchScoresheetModal } from '../components/ManualMatchScoresheetModal'
@@ -267,6 +269,30 @@ export function MatchDetailPage() {
   const extraTimeAllowed = Boolean(competitionConfig.extraTimeOnDraw || competitionConfig.knockoutStage?.extraTimeOnDraw)
   const penaltiesAllowed = Boolean(competitionConfig.penaltiesOnDraw || competitionConfig.knockoutStage?.penaltiesOnDraw)
 
+  const compFormat = (competition?.format || (competition as any)?.type || '').toLowerCase()
+  const isCup = compFormat === 'cup' || compFormat === 'knockout'
+  const isTournament = compFormat === 'tournament'
+
+  const activeTabs: TabConfig[] = useMemo(() => [
+    { id: 'overview', label: 'Resumo', icon: LayoutDashboard, roles: ['*'] },
+    { id: 'lineup', label: 'Formações', icon: Users, roles: ['*'] },
+    { id: 'tactical', label: 'Quadro Tático', icon: Compass, roles: ['*'] },
+    { id: 'stats', label: 'Estatísticas', icon: BarChart3, roles: ['*'] },
+    {
+      id: 'standings',
+      label: isCup ? 'Chaveamento' : isTournament ? 'Grupos' : 'Classificação',
+      icon: isCup ? Layers : Trophy,
+      roles: ['*'],
+    },
+    { id: 'h2h', label: 'H2H', icon: Shield, roles: ['*'] },
+    {
+      id: 'report',
+      label: 'Relatório',
+      icon: FileText,
+      roles: ['referee', 'match_referee', 'manager', 'org_admin', 'delegate', 'owner', 'admin'],
+    },
+  ], [isCup, isTournament])
+
   const activeMatch = liveState.match ?? match
 
   // Coaches extraction from lineups or match
@@ -430,7 +456,13 @@ export function MatchDetailPage() {
         return (
           <div className="space-y-md">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-on-surface">Tabela Classificativa</h2>
+              <h2 className="text-sm font-bold text-on-surface">
+                {isCup
+                  ? 'Chaveamento Eliminatório'
+                  : isTournament
+                  ? 'Fase de Grupos & Classificação'
+                  : 'Tabela Classificativa'}
+              </h2>
               <Link
                 to={competitionRoutes.detail(competitionId)}
                 className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
@@ -444,34 +476,17 @@ export function MatchDetailPage() {
 
       case 'h2h':
         return (
-          <div className="space-y-lg">
-            <div className="rounded-xl border border-outline-variant/15 bg-surface-container p-lg">
-              <h3 className="text-sm font-bold text-on-surface mb-sm">Confronto Direto</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Histórico de confrontos e métricas comparativas entre as equipas nesta competição.
-              </p>
-              <div className="mt-lg grid grid-cols-2 gap-md text-center">
-                <div className="rounded-lg bg-surface-container-high p-md">
-                  <p className="text-xs text-on-surface-variant font-medium">Clube da Casa</p>
-                  <p className="text-sm font-bold text-on-surface mt-1">
-                    {activeMatch.home_club_name || activeMatch.homeTeamName}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-surface-container-high p-md">
-                  <p className="text-xs text-on-surface-variant font-medium">Clube Visitante</p>
-                  <p className="text-sm font-bold text-on-surface mt-1">
-                    {activeMatch.away_club_name || activeMatch.awayTeamName}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <MatchStandingsCard
-              standings={standings}
-              homeClubId={homeClubId}
-              awayClubId={awayClubId}
-              isLoading={loadingStandings}
-            />
-          </div>
+          <MatchH2HPanel
+            match={activeMatch}
+            competitionId={competitionId}
+            homeClubId={homeClubId}
+            awayClubId={awayClubId}
+            homeClubName={activeMatch.home_club_name || activeMatch.homeTeamName || 'Equipa Casa'}
+            awayClubName={activeMatch.away_club_name || activeMatch.awayTeamName || 'Equipa Visitante'}
+            homeClubLogo={activeMatch.home_club_logo || activeMatch.homeTeamLogo}
+            awayClubLogo={activeMatch.away_club_logo || activeMatch.awayTeamLogo}
+            standings={standings}
+          />
         )
 
       case 'report':
@@ -543,13 +558,14 @@ export function MatchDetailPage() {
           )}
 
           <div className="pt-2">
-            <Link
-              to={competitionRoutes.tacticalView(competitionId, matchIdValue)}
-              className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg border border-outline-variant/20 bg-surface-container-high text-xs font-semibold text-on-surface hover:bg-surface-container-highest transition-colors"
+            <button
+              type="button"
+              onClick={() => setActiveTab('tactical')}
+              className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg border border-outline-variant/20 bg-surface-container-high text-xs font-semibold text-on-surface hover:bg-surface-container-highest transition-colors cursor-pointer"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-primary" />
+              <Compass className="w-3.5 h-3.5 text-primary" />
               <span>Ver no Quadro Tático</span>
-            </Link>
+            </button>
           </div>
         </div>
       </SportSidebarCard>
@@ -590,28 +606,74 @@ export function MatchDetailPage() {
         </SportSidebarCard>
       )}
 
-      {/* 4. Standings Card */}
-      {standings.length > 0 && (
+      {/* 4. Standings / Bracket Card */}
+      {isCup ? (
         <SportSidebarCard
-          title="Classificação"
+          title="Fase Eliminatória"
+          icon={Layers}
+          action={
+            <button
+              type="button"
+              onClick={() => setActiveTab('standings')}
+              className="text-[10px] font-bold text-primary hover:underline uppercase cursor-pointer"
+            >
+              Ver Chaveamento
+            </button>
+          }
+        >
+          <div className="space-y-sm text-xs">
+            <div className="flex items-center justify-between py-1 border-b border-outline-variant/10">
+              <span className="text-on-surface-variant">Tipo de Prova</span>
+              <Badge variant="outline" className="text-[10px] font-bold">
+                Taça (Eliminatória)
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between py-1 border-b border-outline-variant/10">
+              <span className="text-on-surface-variant">Fase do Confronto</span>
+              <span className="font-semibold text-on-surface">
+                {activeMatch.phase ||
+                  (activeMatch.roundNumber ? `Eliminatória ${activeMatch.roundNumber}` : 'Mata-Mata')}
+              </span>
+            </div>
+            <p className="text-[11px] text-on-surface-variant/80 mt-1">
+              Prova eliminatória com apuramento direto.
+            </p>
+          </div>
+        </SportSidebarCard>
+      ) : standings.length > 0 ? (
+        <SportSidebarCard
+          title={isTournament ? 'Classificação do Grupo' : 'Classificação'}
           icon={Trophy}
           action={
-            <Link
-              to={competitionRoutes.detail(competitionId)}
-              className="text-[10px] font-bold text-primary hover:underline uppercase"
+            <button
+              type="button"
+              onClick={() => setActiveTab('standings')}
+              className="text-[10px] font-bold text-primary hover:underline uppercase cursor-pointer"
             >
               Ver Tudo
-            </Link>
+            </button>
           }
         >
           <MatchStandingsCard
-            standings={standings.slice(0, 8)}
+            standings={
+              isTournament
+                ? standings
+                    .filter((s) => {
+                      const mGroupId = (activeMatch as any).group_id || (activeMatch as any).group
+                      if (mGroupId) {
+                        return (s as any).group === mGroupId || (s as any).group_id === mGroupId
+                      }
+                      return true
+                    })
+                    .slice(0, 8)
+                : standings.slice(0, 8)
+            }
             homeClubId={homeClubId}
             awayClubId={awayClubId}
             isLoading={loadingStandings}
           />
         </SportSidebarCard>
-      )}
+      ) : null}
 
       {/* 5. Operator / Admin Card */}
       {(isMatchOperator || isAdmin) && (
@@ -698,7 +760,7 @@ export function MatchDetailPage() {
   const mainContent = (
     <SportTabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabId)}>
       <SportTabsList className="mb-md">
-        {TABS.map((tab) => {
+        {activeTabs.map((tab) => {
           if (!hasRequiredRole(userRoles, tab.roles)) return null
           return (
             <SportTabsTrigger key={tab.id} value={tab.id} icon={tab.icon}>
@@ -708,7 +770,7 @@ export function MatchDetailPage() {
         })}
       </SportTabsList>
 
-      {TABS.map((tab) => {
+      {activeTabs.map((tab) => {
         if (!hasRequiredRole(userRoles, tab.roles)) return null
         return (
           <SportTabsContent key={tab.id} value={tab.id}>

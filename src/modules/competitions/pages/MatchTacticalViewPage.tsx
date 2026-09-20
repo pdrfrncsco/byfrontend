@@ -351,18 +351,20 @@ export default function MatchTacticalViewPage({ embedded = false }: MatchTactica
             </Button>
           )}
 
-          <Link
-            to={
-              isDashboard
-                ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
-                : competitionRoutes.matchDetail(competitionId, matchIdValue)
-            }
-          >
-            <Button variant="outline" size="sm" className="text-xs">
-              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-              Voltar
-            </Button>
-          </Link>
+          {!embedded && (
+            <Link
+              to={
+                isDashboard
+                  ? competitionRoutes.adminMatchDetail(competitionId, matchIdValue)
+                  : competitionRoutes.matchDetail(competitionId, matchIdValue)
+              }
+            >
+              <Button variant="outline" size="sm" className="text-xs">
+                <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+                Voltar
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 

@@ -54,15 +54,25 @@ export default function PlayerToken({
       role={`player-${id}`}
       transform={`translate(${cx}, ${cy})`}
       style={{ cursor: 'grab' }}
-      className="transition-transform duration-75 active:scale-110 select-none"
+      className="select-none group"
       onPointerDown={(e) => onPointerDown && onPointerDown(e, id)}
     >
+      {/* Outer hover ring (SVG-safe without CSS scale) */}
+      <circle
+        r={radius + 4}
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth={2}
+        className="opacity-0 group-hover:opacity-75 transition-opacity duration-150"
+      />
+
       {/* Circle Token */}
       <circle
         r={radius}
         fill={fillColor}
         stroke={strokeColor}
         strokeWidth={2.5}
+        className="transition-all duration-150 group-hover:stroke-[3.5px] group-hover:brightness-110 group-active:brightness-125"
       />
 
       {/* Shirt number */}
