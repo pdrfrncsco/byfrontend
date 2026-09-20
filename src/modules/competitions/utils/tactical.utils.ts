@@ -87,10 +87,93 @@ export const FORMATION_LAYOUTS: Record<
 
 export const SUPPORTED_FORMATIONS = Object.keys(FORMATION_LAYOUTS)
 
-const GK_CODES = new Set(['gk', 'gr', 'golo', 'goalkeeper', 'porteiro'])
-const DEF_CODES = new Set(['cb', 'dc', 'lb', 'le', 'rb', 'ld', 'lwb', 'rwb', 'df', 'def'])
-const MID_CODES = new Set(['cm', 'mc', 'cdm', 'mdf', 'cam', 'mco', 'mo', 'lm', 'me', 'rm', 'md', 'mf', 'mid'])
-const FWD_CODES = new Set(['st', 'pl', 'cf', 'ac', 'fw', 'fwd', 'att', 'lw', 'ee', 'rw', 'ed'])
+export const GK_CODES = new Set(['gk', 'gr', 'golo', 'goalkeeper', 'porteiro', 'guarda-redes', 'guarda_redes', 'guarda redes', 'goleiro'])
+export const DEF_CODES = new Set(['cb', 'dc', 'lb', 'le', 'rb', 'ld', 'lwb', 'rwb', 'df', 'def', 'defesa', 'lateral', 'zagueiro'])
+export const MID_CODES = new Set(['cm', 'mc', 'cdm', 'mdf', 'cam', 'mco', 'mo', 'lm', 'me', 'rm', 'md', 'mf', 'mid', 'médio', 'medio', 'volante', 'meio-campo'])
+export const FWD_CODES = new Set(['st', 'pl', 'cf', 'ac', 'fw', 'fwd', 'att', 'lw', 'ee', 'rw', 'ed', 'avançado', 'avancado', 'atacante', 'ponta de lança', 'ponta de lanca'])
+export const FLEX_CODES = new Set(['lw', 'rw', 'ee', 'ed', 'lm', 'rm', 'me', 'md'])
+
+export interface TacticalPositionOption {
+  code: string
+  label: string
+  sector: 'GK' | 'DEF' | 'MID' | 'FWD'
+  isFlex?: boolean
+}
+
+export const AVAILABLE_TACTICAL_POSITIONS: TacticalPositionOption[] = [
+  // GK
+  { code: 'GK', label: 'GK — Guarda-redes', sector: 'GK' },
+  // DEF
+  { code: 'CB', label: 'CB — Defesa Central', sector: 'DEF' },
+  { code: 'LB', label: 'LB — Lateral Esquerdo', sector: 'DEF' },
+  { code: 'RB', label: 'RB — Lateral Direito', sector: 'DEF' },
+  { code: 'LWB', label: 'LWB — Ala Esquerdo', sector: 'DEF' },
+  { code: 'RWB', label: 'RWB — Ala Direito', sector: 'DEF' },
+  // MID
+  { code: 'CDM', label: 'CDM — Médio Defensivo', sector: 'MID' },
+  { code: 'CM', label: 'CM — Médio Centro', sector: 'MID' },
+  { code: 'CAM', label: 'CAM — Médio Ofensivo', sector: 'MID' },
+  { code: 'LM', label: 'LM — Médio Esquerdo', sector: 'MID', isFlex: true },
+  { code: 'RM', label: 'RM — Médio Direito', sector: 'MID', isFlex: true },
+  // FWD
+  { code: 'ST', label: 'ST — Ponta de Lança', sector: 'FWD' },
+  { code: 'CF', label: 'CF — Avançado Centro', sector: 'FWD' },
+  { code: 'LW', label: 'LW — Extremo Esquerdo', sector: 'FWD', isFlex: true },
+  { code: 'RW', label: 'RW — Extremo Direito', sector: 'FWD', isFlex: true },
+]
+
+export function isPositionAllowedInSector(pos?: string, sector?: 'GK' | 'DEF' | 'MID' | 'FWD'): boolean {
+  if (!sector) return true
+  if (!pos) return sector === 'MID'
+  const p = pos.trim().toLowerCase()
+
+  if (sector === 'GK') {
+    return GK_CODES.has(p) || p.includes('guarda') || p.includes('keeper') || p.includes('goleiro')
+  }
+
+  // Goalkeepers cannot play in outfield sectors
+  if (GK_CODES.has(p) || p.includes('guarda') || p.includes('keeper') || p.includes('goleiro')) {
+    return false
+  }
+
+  if (sector === 'DEF') {
+    return (
+      DEF_CODES.has(p) ||
+      p.includes('defesa') ||
+      p.includes('lateral') ||
+      p.includes('zagueiro') ||
+      p.includes('central')
+    )
+  }
+
+  if (sector === 'MID') {
+    if (FLEX_CODES.has(p)) return true
+    return (
+      MID_CODES.has(p) ||
+      p.includes('médio') ||
+      p.includes('medio') ||
+      p.includes('meio') ||
+      p.includes('volante') ||
+      p.includes('midfield')
+    )
+  }
+
+  if (sector === 'FWD') {
+    if (FLEX_CODES.has(p)) return true
+    return (
+      FWD_CODES.has(p) ||
+      p.includes('avançad') ||
+      p.includes('avancad') ||
+      p.includes('atacante') ||
+      p.includes('ponta') ||
+      p.includes('extremo') ||
+      p.includes('striker') ||
+      p.includes('forward')
+    )
+  }
+
+  return true
+}
 
 export function categorizePlayerPosition(pos?: string): 'GK' | 'DEF' | 'MID' | 'FWD' {
   if (!pos) return 'MID'
@@ -159,6 +242,10 @@ export interface FormationValidationResult {
   defCount: number
   midCount: number
   fwdCount: number
+  flexCount: number
+  targetDef: number
+  targetMid: number
+  targetFwd: number
   totalStarters: number
 }
 
@@ -170,16 +257,24 @@ export function validateTacticalFormation(
   let defCount = 0
   let midCount = 0
   let fwdCount = 0
+  let flexCount = 0
 
   starters.forEach(p => {
-    const rawPos = p.positionSpecific || p.position
-    if (p.is_goalkeeper || categorizePlayerPosition(rawPos) === 'GK') {
+    const rawPos = (p.positionSpecific || p.position || '').trim().toLowerCase()
+    const isGk = p.is_goalkeeper || GK_CODES.has(rawPos) || rawPos.includes('guarda') || rawPos.includes('keeper') || rawPos.includes('goleiro')
+
+    if (isGk) {
       gkCount++
+    } else if (DEF_CODES.has(rawPos) || rawPos.includes('defesa') || rawPos.includes('lateral') || rawPos.includes('zagueiro') || rawPos.includes('central')) {
+      defCount++
+    } else if (FLEX_CODES.has(rawPos)) {
+      flexCount++
+    } else if (MID_CODES.has(rawPos) || rawPos.includes('médio') || rawPos.includes('medio') || rawPos.includes('meio') || rawPos.includes('volante')) {
+      midCount++
+    } else if (FWD_CODES.has(rawPos) || rawPos.includes('avançad') || rawPos.includes('avancad') || rawPos.includes('atacante') || rawPos.includes('ponta') || rawPos.includes('extremo')) {
+      fwdCount++
     } else {
-      const cat = categorizePlayerPosition(rawPos)
-      if (cat === 'DEF') defCount++
-      else if (cat === 'MID') midCount++
-      else if (cat === 'FWD') fwdCount++
+      midCount++
     }
   })
 
@@ -196,30 +291,32 @@ export function validateTacticalFormation(
 
   // Check total starters
   if (totalStarters !== 11) {
-    warnings.push(`A equipa titular tem ${totalStarters} jogadores (o padrão regulamentar é 11).`)
+    errors.push(`O onze titular deve ter exatamente 11 jogadores (atualmente: ${totalStarters}).`)
   }
 
   // Check formation line distribution
   const layout = FORMATION_LAYOUTS[formationStr]
-  if (layout) {
-    let targetDef = 0
-    let targetMid = 0
-    let targetFwd = 0
+  let targetDef = 0
+  let targetMid = 0
+  let targetFwd = 0
 
+  if (layout) {
     layout.lines.forEach(line => {
       if (line.role === 'DEF') targetDef += line.count
       else if (line.role === 'MID') targetMid += line.count
       else if (line.role === 'FWD') targetFwd += line.count
     })
 
-    if (targetDef > 0 && defCount !== targetDef) {
-      warnings.push(`Formação ${formationStr} prevê ${targetDef} defesas (atualmente: ${defCount}).`)
+    if (defCount !== targetDef) {
+      errors.push(`A formação ${formationStr} requer ${targetDef} defesas, mas foram escalados ${defCount} defesas.`)
     }
-    if (targetMid > 0 && midCount !== targetMid) {
-      warnings.push(`Formação ${formationStr} prevê ${targetMid} médios (atualmente: ${midCount}).`)
-    }
-    if (targetFwd > 0 && fwdCount !== targetFwd) {
-      warnings.push(`Formação ${formationStr} prevê ${targetFwd} avançados (atualmente: ${fwdCount}).`)
+
+    const neededMid = Math.max(0, targetMid - midCount)
+    const neededFwd = Math.max(0, targetFwd - fwdCount)
+    if ((neededMid + neededFwd) !== flexCount) {
+      errors.push(
+        `A formação ${formationStr} requer ${targetDef} defesas, ${targetMid} médios e ${targetFwd} avançados. A distribuição atual dos titulares não é compatível com esta formação.`
+      )
     }
   }
 
@@ -231,6 +328,10 @@ export function validateTacticalFormation(
     defCount,
     midCount,
     fwdCount,
+    flexCount,
+    targetDef,
+    targetMid,
+    targetFwd,
     totalStarters,
   }
 }

@@ -27,7 +27,14 @@ import { getClubSidebarSections } from '@/modules/clubs/constants/navigation'
 import { useClubMe, useClubMeMatches, useClubSquad } from '@/modules/clubs/hooks/useClubs'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { matchApi } from '@/modules/competitions/services/match.api'
-import { categorizePlayerPosition } from '@/modules/competitions/utils/tactical.utils'
+import {
+  categorizePlayerPosition,
+  validateTacticalFormation,
+  getFormationLayout,
+  isPositionAllowedInSector,
+  AVAILABLE_TACTICAL_POSITIONS,
+  SUPPORTED_FORMATIONS,
+} from '@/modules/competitions/utils/tactical.utils'
 import type { LineupPlayer } from '@/modules/competitions/types'
 import { toast } from 'sonner'
 import { ROUTES } from '@/constants/routes'
@@ -95,44 +102,78 @@ export function formatPositionLabel(pos?: string, isGoalkeeper?: boolean): strin
   return POSITION_LABELS[upper] || pos
 }
 
-// ─── Formation Field Display ─────────────────────────────────────────────────
+// ─── Formation Field Display (Sector-Aware) ──────────────────────────────────
 
-const FORMATION_SCHEMAS: Record<string, number[]> = {
-  '4-4-2': [4, 4, 2],
-  '4-3-3': [4, 3, 3],
-  '4-2-3-1': [4, 2, 3, 1],
-  '3-5-2': [3, 5, 2],
-  '5-3-2': [5, 3, 2],
-  '3-4-3': [3, 4, 3],
+interface FormationFieldProps {
+  starters: CallupPlayer[]
+  formation?: string
+  draggedPlayerId?: string | null
+  onPromote?: (playerId: string, targetSector?: 'GK' | 'DEF' | 'MID' | 'FWD') => void
 }
 
-function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onPromote }: { starters: CallupPlayer[]; formation?: string; draggedPlayerId?: string | null; onPromote?: (playerId: string) => void }) {
-  const fieldRows = useMemo(() => {
-    const allGks = starters.filter((p) => p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK')
-    const primaryGk = allGks[0]
-    const extraGks = allGks.slice(1)
-    const fieldPlayers = starters.filter((p) => !allGks.includes(p))
+function FormationField({
+  starters,
+  formation = '4-3-3',
+  draggedPlayerId,
+  onPromote,
+}: FormationFieldProps) {
+  const layout = getFormationLayout(formation)
 
-    const schema = FORMATION_SCHEMAS[formation] || [4, 3, 3]
-    const rows: CallupPlayer[][] = []
+  const fieldSlices = useMemo(() => {
+    const gks = starters.filter(
+      (p) => p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+    )
+    const primaryGk = gks[0]
+    const extraGks = gks.slice(1)
 
-    let currentIdx = 0
-    schema.forEach((count) => {
-      rows.push(fieldPlayers.slice(currentIdx, currentIdx + count))
-      currentIdx += count
-    })
+    const defPool = starters.filter(
+      (p) => !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'DEF'
+    )
+    const midPool = starters.filter(
+      (p) => !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'MID'
+    )
+    const fwdPool = starters.filter(
+      (p) => !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'FWD'
+    )
 
-    // Catch any remaining starters if array exceeds schema
-    if (currentIdx < fieldPlayers.length) {
-      rows[rows.length - 1] = [...(rows[rows.length - 1] || []), ...fieldPlayers.slice(currentIdx)]
+    const pools: Record<'DEF' | 'MID' | 'FWD', CallupPlayer[]> = {
+      DEF: [...defPool],
+      MID: [...midPool],
+      FWD: [...fwdPool],
     }
 
-    return { primaryGk, extraGks, rows }
-  }, [starters, formation])
+    const lines = layout.lines.map((lineDef, idx) => {
+      const role = lineDef.role || 'MID'
+      const assigned = pools[role].splice(0, lineDef.count)
+      const emptyCount = Math.max(0, lineDef.count - assigned.length)
+      return {
+        lineIdx: idx,
+        role,
+        count: lineDef.count,
+        assigned,
+        emptyCount,
+      }
+    })
 
-  const handleDrop = (event: React.DragEvent) => {
-    event.preventDefault()
-    const playerId = event.dataTransfer.getData('application/x-bolayetu-substitute') || draggedPlayerId
+    const overflow = {
+      DEF: pools.DEF,
+      MID: pools.MID,
+      FWD: pools.FWD,
+    }
+
+    return { primaryGk, extraGks, lines, overflow }
+  }, [starters, layout])
+
+  const handleSectorDrop = (e: React.DragEvent, role: 'GK' | 'DEF' | 'MID' | 'FWD') => {
+    e.preventDefault()
+    e.stopPropagation()
+    const playerId = e.dataTransfer.getData('application/x-bolayetu-substitute') || draggedPlayerId
+    if (playerId) onPromote?.(playerId, role)
+  }
+
+  const handleGeneralDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const playerId = e.dataTransfer.getData('application/x-bolayetu-substitute') || draggedPlayerId
     if (playerId) onPromote?.(playerId)
   }
 
@@ -140,7 +181,16 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
 
   return (
     <div className="relative mx-auto max-w-md my-md">
-      <div onDragOver={(event) => { if (openSlots > 0) event.preventDefault() }} onDrop={handleDrop} className={`aspect-[3/4] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-md shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)] transition-all ${draggedPlayerId && openSlots > 0 ? 'ring-2 ring-[#f4c430]/70 ring-offset-2 ring-offset-surface' : ''}`}>
+      <div
+        onDragOver={(event) => {
+          if (openSlots > 0) event.preventDefault()
+        }}
+        onDrop={handleGeneralDrop}
+        className={`aspect-[3/4] min-h-[480px] rounded-2xl bg-gradient-to-b from-[#123b38] via-[#0f2f2c] to-[#092422] p-md shadow-[0_20px_45px_-24px_rgba(15,118,110,0.7)] transition-all ${
+          draggedPlayerId && openSlots > 0 ? 'ring-2 ring-[#f4c430]/70 ring-offset-2 ring-offset-surface' : ''
+        }`}
+      >
+        {/* Tactical Pitch Markings */}
         <div className="relative h-full rounded-xl border border-white/25">
           <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/25" />
           <div className="absolute left-0 right-0 top-1/2 h-px bg-white/20" />
@@ -148,18 +198,32 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
           <div className="absolute bottom-0 left-1/2 h-12 w-28 -translate-x-1/2 border-t border-l border-r border-white/20" />
         </div>
 
-        <div className="absolute inset-0 flex flex-col items-center justify-between py-md">
-          {/* Goalkeeper */}
-          <div className="flex flex-col items-center justify-center gap-xs">
+        <div className="absolute inset-0 flex flex-col items-center justify-between py-md px-xs">
+          {/* Goalkeeper Line (Top) */}
+          <div
+            className="flex flex-col items-center justify-center gap-xs w-full"
+            onDragOver={(e) => {
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'move'
+            }}
+            onDrop={(e) => handleSectorDrop(e, 'GK')}
+          >
+            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-300/70">Baliza (1)</span>
             <div className="flex justify-center gap-sm">
-              {fieldRows.primaryGk ? (
-                <PlayerBadgeOnField player={fieldRows.primaryGk} />
+              {fieldSlices.primaryGk ? (
+                <PlayerBadgeOnField player={fieldSlices.primaryGk} />
               ) : (
-                <div className="h-9 w-9 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center text-[10px] text-on-surface-variant">
-                  GK
+                <div
+                  className="flex flex-col items-center cursor-pointer group"
+                  onClick={() => {}}
+                >
+                  <div className="h-9 w-9 rounded-full border-2 border-dashed border-amber-400/60 bg-amber-500/10 flex items-center justify-center text-[10px] font-bold text-amber-300 group-hover:border-amber-300 group-hover:bg-amber-400/20 transition-all">
+                    GK
+                  </div>
+                  <span className="mt-1 text-[8px] font-bold text-amber-300/80">Vaga GR</span>
                 </div>
               )}
-              {fieldRows.extraGks.map((extraGk) => (
+              {fieldSlices.extraGks.map((extraGk) => (
                 <div key={extraGk.playerId || extraGk.id} className="relative">
                   <PlayerBadgeOnField player={extraGk} />
                   <span className="absolute -top-1 -left-1 rounded-full bg-rose-600 px-1 text-[8px] font-bold text-white shadow">
@@ -168,24 +232,74 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
                 </div>
               ))}
             </div>
-            {fieldRows.extraGks.length > 0 && (
+            {fieldSlices.extraGks.length > 0 && (
               <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[9px] font-bold text-rose-300 border border-rose-500/30">
-                Aviso: {fieldRows.extraGks.length + 1} guarda-redes titulares
+                Aviso: {fieldSlices.extraGks.length + 1} guarda-redes no onze
               </span>
             )}
           </div>
 
-          {/* Formation Lines (Defenders -> Midfielders -> Forwards) */}
-          {fieldRows.rows.map((rowPlayers, rowIndex) => (
-            <div key={rowIndex} className="flex w-full justify-around px-md">
-              {rowPlayers.map((player) => (
-                <PlayerBadgeOnField key={player.playerId || player.id} player={player} />
+          {/* Formation Lines: DEF -> MID -> FWD */}
+          {fieldSlices.lines.map((line) => {
+            const roleLabel = line.role === 'DEF' ? 'Defesa' : line.role === 'MID' ? 'Meio-Campo' : 'Ataque'
+            const roleBadgeClass = line.role === 'DEF' ? 'text-blue-300/70' : line.role === 'MID' ? 'text-emerald-300/70' : 'text-rose-300/70'
+            const emptyBorderClass = line.role === 'DEF' ? 'border-blue-400/50 bg-blue-500/10 text-blue-300' : line.role === 'MID' ? 'border-emerald-400/50 bg-emerald-500/10 text-emerald-300' : 'border-rose-400/50 bg-rose-500/10 text-rose-300'
+
+            return (
+              <div
+                key={line.lineIdx}
+                className="flex flex-col items-center w-full px-xs"
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  e.dataTransfer.dropEffect = 'move'
+                }}
+                onDrop={(e) => handleSectorDrop(e, line.role)}
+              >
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${roleBadgeClass} mb-0.5`}>
+                  {roleLabel} ({line.count})
+                </span>
+                <div className="flex w-full justify-around items-center px-xs">
+                  {/* Render Assigned Starters */}
+                  {line.assigned.map((player) => (
+                    <PlayerBadgeOnField key={player.playerId || player.id} player={player} />
+                  ))}
+
+                  {/* Render Empty Slots for this line */}
+                  {Array.from({ length: line.emptyCount }).map((_, slotIdx) => (
+                    <div
+                      key={`empty-${line.lineIdx}-${slotIdx}`}
+                      className="flex flex-col items-center group cursor-pointer"
+                    >
+                      <div className={`h-9 w-9 rounded-full border-2 border-dashed flex items-center justify-center text-[10px] font-bold transition-all group-hover:scale-105 ${emptyBorderClass}`}>
+                        +
+                      </div>
+                      <span className="mt-1 text-[8px] font-medium text-white/70">
+                        Vaga {line.role}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+
+          {/* Overflow players if any sector exceeds formation */}
+          {(fieldSlices.overflow.DEF.length > 0 || fieldSlices.overflow.MID.length > 0 || fieldSlices.overflow.FWD.length > 0) && (
+            <div className="flex flex-wrap items-center justify-center gap-xs rounded-lg bg-rose-950/80 border border-rose-500/40 px-sm py-xs text-[10px] text-rose-200">
+              <span className="font-bold">Excedentes no 11:</span>
+              {[...fieldSlices.overflow.DEF, ...fieldSlices.overflow.MID, ...fieldSlices.overflow.FWD].map((p) => (
+                <span key={p.playerId} className="rounded bg-rose-600/80 px-1 py-0.5 text-[9px] font-bold text-white">
+                  {p.playerName} ({p.positionSpecific || p.position})
+                </span>
               ))}
             </div>
-          ))}
+          )}
+
           {openSlots > 0 && (
-            <div className="absolute inset-x-0 bottom-3 flex justify-center">
-              <span className="rounded-full border border-dashed border-white/40 bg-white/10 px-sm py-xs text-[10px] font-semibold text-white/85">Arraste um suplente para o onze</span>
+            <div className="flex justify-center pb-xs">
+              <span className="rounded-full border border-dashed border-white/40 bg-white/10 px-sm py-xs text-[10px] font-semibold text-white/85">
+                Arraste um suplente para o setor desejado ({openSlots} vagas)
+              </span>
             </div>
           )}
         </div>
@@ -195,18 +309,33 @@ function FormationField({ starters, formation = '4-3-3', draggedPlayerId, onProm
 }
 
 function PlayerBadgeOnField({ player }: { player: CallupPlayer }) {
+  const isGk = player.is_goalkeeper || categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
+  const sector = isGk ? 'GK' : categorizePlayerPosition(player.positionSpecific || player.position)
+
+  const sectorStyles = {
+    GK: 'border-amber-300 bg-amber-100 text-amber-900 shadow-amber-300/30',
+    DEF: 'border-blue-400 bg-blue-100 text-blue-950 shadow-blue-400/30',
+    MID: 'border-emerald-400 bg-emerald-100 text-emerald-950 shadow-emerald-400/30',
+    FWD: 'border-rose-400 bg-rose-100 text-rose-950 shadow-rose-400/30',
+  }
+
+  const badgeStyle = sectorStyles[sector] || sectorStyles.MID
+
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col items-center group">
       <div
-        className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold shadow-lg border-2 ${
-          player.is_goalkeeper ? 'bg-amber-100 text-amber-700 border-amber-300' : 'border-[#f4c430] bg-[#f4c430] text-[#093c6e] shadow-[#f4c430]/30'
-        }`}
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold shadow-lg border-2 transition-transform group-hover:scale-105 ${badgeStyle}`}
       >
         {player.playerNumber || player.shirt_number || '#'}
       </div>
-      {player.is_captain && <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-300 drop-shadow-[0_0_5px_rgba(252,211,77,0.9)]" />}
-      <span className="mt-1 max-w-[70px] truncate text-center text-[10px] font-bold text-white/85">
+      {player.is_captain && (
+        <Crown className="absolute -right-1 -top-1 h-4 w-4 text-amber-400 drop-shadow-[0_0_5px_rgba(252,211,77,0.9)]" />
+      )}
+      <span className="mt-0.5 max-w-[65px] truncate text-center text-[10px] font-bold text-white/90">
         {player.playerName || player.player?.full_name?.split(' ').pop()}
+      </span>
+      <span className="text-[8px] font-semibold text-white/70 uppercase">
+        {(player.positionSpecific || player.position || sector).toUpperCase()}
       </span>
     </div>
   )
@@ -286,13 +415,17 @@ export default function ClubMatchLineupManagerPage() {
     return initializedPlayers.map((p) => {
       const custom = callupState[p.playerId]
       if (!custom) return p
+      const posCode = custom.position || p.positionSpecific || p.position
+      const isGK = posCode === 'GK' || categorizePlayerPosition(posCode) === 'GK'
       return {
         ...p,
         isCalledUp: custom.isCalledUp,
         isStarter: custom.isStarter,
-        position: (custom.position as any) || p.position,
+        position: (posCode as any),
+        positionSpecific: posCode,
         playerNumber: custom.number,
         is_captain: custom.isCaptain,
+        is_goalkeeper: isGK,
       }
     })
   }, [initializedPlayers, callupState])
@@ -303,23 +436,44 @@ export default function ClubMatchLineupManagerPage() {
   const gkCount = starters.filter(
     (player) => player.position === 'GK' || player.is_goalkeeper || categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
   ).length
-  const hasGoalkeeper = gkCount === 1
   const hasCaptain = starters.some((player) => player.is_captain)
+
+  const tacticalValidation = useMemo(
+    () => validateTacticalFormation(starters, formation),
+    [starters, formation]
+  )
+
   const lineupChecks = [
     { label: `${starters.length}/${REQUIRED_STARTERS} titulares`, complete: starters.length === REQUIRED_STARTERS },
     {
       label:
-        gkCount === 1
-          ? '1 Guarda-redes definido'
-          : gkCount === 0
+        tacticalValidation.gkCount === 1
+          ? '1 Guarda-redes'
+          : tacticalValidation.gkCount === 0
           ? 'Guarda-redes em falta'
-          : `${gkCount} guarda-redes (máximo 1 permitido)`,
-      complete: gkCount === 1,
+          : `${tacticalValidation.gkCount} guarda-redes (máx. 1)`,
+      complete: tacticalValidation.gkCount === 1,
+    },
+    {
+      label: `Defesas: ${tacticalValidation.defCount}/${tacticalValidation.targetDef}`,
+      complete: tacticalValidation.defCount === tacticalValidation.targetDef,
+    },
+    {
+      label: `Médios: ${tacticalValidation.midCount}/${tacticalValidation.targetMid}`,
+      complete:
+        tacticalValidation.midCount === tacticalValidation.targetMid &&
+        Math.max(0, tacticalValidation.targetMid - tacticalValidation.midCount) +
+          Math.max(0, tacticalValidation.targetFwd - tacticalValidation.fwdCount) ===
+          tacticalValidation.flexCount,
+    },
+    {
+      label: `Avançados: ${tacticalValidation.fwdCount}/${tacticalValidation.targetFwd}`,
+      complete: tacticalValidation.fwdCount === tacticalValidation.targetFwd,
     },
     { label: `${substitutes.length}/${MAX_SUBSTITUTES} suplentes`, complete: substitutes.length <= MAX_SUBSTITUTES },
     { label: hasCaptain ? 'Capitão definido' : 'Capitão em falta', complete: hasCaptain },
   ]
-  const rosterIsValid = lineupChecks.every((check) => check.complete)
+  const rosterIsValid = tacticalValidation.isValid && hasCaptain && substitutes.length <= MAX_SUBSTITUTES
 
   // Submit Mutation
   const submitMutation = useMutation({
@@ -334,14 +488,9 @@ export default function ClubMatchLineupManagerPage() {
         throw new Error(`São permitidos no máximo ${MAX_SUBSTITUTES} suplentes no banco de reservas (atual: ${substitutes.length}).`)
       }
 
-      const gks = starters.filter(
-        (p) => p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
-      )
-      if (gks.length === 0) {
-        throw new Error('O onze inicial deve incluir 1 Guarda-redes (GK).')
-      }
-      if (gks.length > 1) {
-        throw new Error(`O onze inicial só pode ter 1 guarda-redes (atual: ${gks.length}). Remova os guarda-redes excedentes.`)
+      const tacticalCheck = validateTacticalFormation(starters, formation)
+      if (!tacticalCheck.isValid) {
+        throw new Error(tacticalCheck.errors[0] || 'A distribuição dos titulares não é compatível com a formação.')
       }
 
       if (!hasCaptain) {
@@ -352,22 +501,24 @@ export default function ClubMatchLineupManagerPage() {
         formation,
         players: [
           ...starters.map((p) => {
-            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+            const rawPos = p.positionSpecific || p.position
+            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(rawPos) === 'GK'
             return {
               player_id: p.playerId,
               status: 'starter' as const,
-              position: p.positionSpecific || p.position,
+              position: rawPos,
               shirt_number: p.playerNumber,
               is_captain: p.is_captain,
               is_goalkeeper: isGk,
             }
           }),
           ...substitutes.map((p) => {
-            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+            const rawPos = p.positionSpecific || p.position
+            const isGk = p.position === 'GK' || p.is_goalkeeper || categorizePlayerPosition(rawPos) === 'GK'
             return {
               player_id: p.playerId,
               status: 'substitute' as const,
-              position: p.positionSpecific || p.position,
+              position: rawPos,
               shirt_number: p.playerNumber,
               is_captain: p.is_captain,
               is_goalkeeper: isGk,
@@ -389,6 +540,24 @@ export default function ClubMatchLineupManagerPage() {
   })
 
   // Handlers
+  const handlePositionChange = (pId: string, newPosition: string) => {
+    setCallupState((prev) => {
+      const current = prev[pId]
+      const defaultP = initializedPlayers.find((p) => p.playerId === pId)
+      return {
+        ...prev,
+        [pId]: {
+          isCalledUp: current ? current.isCalledUp : defaultP?.isCalledUp ?? true,
+          isStarter: current ? current.isStarter : defaultP?.isStarter ?? false,
+          position: newPosition,
+          number: current?.number ?? defaultP?.playerNumber ?? 0,
+          isCaptain: current?.isCaptain ?? defaultP?.is_captain ?? false,
+        },
+      }
+    })
+    toast.info(`Posição tática de jogo ajustada para ${newPosition}.`)
+  }
+
   const toggleCallup = (pId: string) => {
     setCallupState((prev) => {
       const current = prev[pId]
@@ -407,7 +576,7 @@ export default function ClubMatchLineupManagerPage() {
     })
   }
 
-  const toggleStarter = (pId: string) => {
+  const toggleStarter = (pId: string, targetSector?: 'GK' | 'DEF' | 'MID' | 'FWD') => {
     const player = playersList.find((item) => item.playerId === pId)
     if (!player) return
     const willBeStarter = !player.isStarter
@@ -417,20 +586,69 @@ export default function ClubMatchLineupManagerPage() {
         toast.error(`O onze inicial já tem ${REQUIRED_STARTERS} jogadores.`)
         return
       }
+
+      const playerPos = (player.positionSpecific || player.position || '').trim()
       const isPlayerGk =
         player.is_goalkeeper ||
         player.position === 'GK' ||
-        categorizePlayerPosition(player.positionSpecific || player.position) === 'GK'
-      const hasExistingGk = starters.some(
-        (p) =>
-          p.playerId !== pId &&
-          (p.is_goalkeeper ||
-            p.position === 'GK' ||
-            categorizePlayerPosition(p.positionSpecific || p.position) === 'GK')
-      )
-      if (isPlayerGk && hasExistingGk) {
-        toast.error('Já existe um guarda-redes no onze titular. Remova o titular antes de adicionar outro.')
-        return
+        categorizePlayerPosition(playerPos) === 'GK'
+      const playerSector = isPlayerGk ? 'GK' : categorizePlayerPosition(playerPos)
+
+      // 1. If dropped directly onto a sector slot on the pitch
+      if (targetSector) {
+        if (targetSector === 'GK' && !isPlayerGk) {
+          toast.error(`Apenas guarda-redes podem ocupar a baliza. Altere a posição de ${player.playerName} para GK se for guarda-redes.`)
+          return
+        }
+        if (isPlayerGk && targetSector !== 'GK') {
+          toast.error(`Um guarda-redes não pode ser escalado na linha de ${targetSector}.`)
+          return
+        }
+        if (!isPositionAllowedInSector(playerPos, targetSector)) {
+          toast.error(
+            `Setor incompatível: ${player.playerName} está como ${formatPositionLabel(playerPos)} (${playerSector}) e não pode ocupar um slot de ${targetSector}. Altere a sua posição tática para ${targetSector} primeiro.`
+          )
+          return
+        }
+      }
+
+      // 2. Check sector limits against active formation
+      const layout = getFormationLayout(formation)
+      let targetDef = 0
+      let targetMid = 0
+      let targetFwd = 0
+      layout.lines.forEach((l) => {
+        if (l.role === 'DEF') targetDef += l.count
+        else if (l.role === 'MID') targetMid += l.count
+        else if (l.role === 'FWD') targetFwd += l.count
+      })
+
+      const effectiveSector = targetSector || playerSector
+
+      if (effectiveSector === 'GK') {
+        const hasGk = starters.some((p) => p.playerId !== pId && (p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'))
+        if (hasGk) {
+          toast.error('Já existe um guarda-redes no onze titular. Remova o titular antes de adicionar outro.')
+          return
+        }
+      } else if (effectiveSector === 'DEF') {
+        const currentDefs = starters.filter((p) => p.playerId !== pId && !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'DEF')
+        if (currentDefs.length >= targetDef) {
+          toast.error(`A formação ${formation} requer ${targetDef} defesas e a linha defensiva já está preenchida.`)
+          return
+        }
+      } else if (effectiveSector === 'MID') {
+        const currentMids = starters.filter((p) => p.playerId !== pId && !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'MID')
+        if (currentMids.length >= targetMid) {
+          toast.error(`A formação ${formation} requer ${targetMid} médios e o meio-campo já está preenchido.`)
+          return
+        }
+      } else if (effectiveSector === 'FWD') {
+        const currentFwds = starters.filter((p) => p.playerId !== pId && !p.is_goalkeeper && categorizePlayerPosition(p.positionSpecific || p.position) === 'FWD')
+        if (currentFwds.length >= targetFwd) {
+          toast.error(`A formação ${formation} requer ${targetFwd} avançados e o ataque já está preenchido.`)
+          return
+        }
       }
     }
 
@@ -441,7 +659,7 @@ export default function ClubMatchLineupManagerPage() {
         [pId]: {
           isCalledUp: true,
           isStarter: willBeStarter,
-          position: current?.position || player.position,
+          position: current?.position || player.positionSpecific || player.position,
           number: current?.number || player.playerNumber || 0,
           isCaptain: current?.isCaptain || player.is_captain || false,
         },
@@ -449,8 +667,8 @@ export default function ClubMatchLineupManagerPage() {
     })
   }
 
-  const promoteSubstitute = (pId: string) => {
-    toggleStarter(pId)
+  const promoteSubstitute = (pId: string, targetSector?: 'GK' | 'DEF' | 'MID' | 'FWD') => {
+    toggleStarter(pId, targetSector)
     setDraggedSubstituteId(null)
   }
 
@@ -686,40 +904,75 @@ export default function ClubMatchLineupManagerPage() {
                   onChange={(e) => setFormation(e.target.value)}
                   className="rounded-lg border border-outline-variant/30 bg-surface-container-high px-sm py-1 text-xs font-semibold text-on-surface"
                 >
-                  <option value="4-3-3">4-3-3</option>
-                  <option value="4-4-2">4-4-2</option>
-                  <option value="3-5-2">3-5-2</option>
-                  <option value="4-2-3-1">4-2-3-1</option>
-                  <option value="5-3-2">5-3-2</option>
+                  {SUPPORTED_FORMATIONS.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
                 </select>
               </CardHeader>
 
               <CardContent className="p-none">
-                {/* Validação de Regras */}
-                {starters.length !== 11 && (
-                  <div className="mb-md flex items-center gap-xs rounded-xl bg-amber-500/10 border border-amber-500/30 p-sm text-xs text-amber-800">
-                    <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                    <span>Selecione exatamente 11 titulares (atualmente: {starters.length}).</span>
+                {/* Validação e Alertas Táticos */}
+                {tacticalValidation.errors.length > 0 && (
+                  <div className="mb-md space-y-1">
+                    {tacticalValidation.errors.map((err, i) => (
+                      <div key={i} className="flex items-center gap-xs rounded-xl bg-rose-500/10 border border-rose-500/30 p-sm text-xs text-rose-700 font-semibold">
+                        <AlertTriangle className="h-4 w-4 flex-shrink-0 text-rose-600" />
+                        <span>{err}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
-                <FormationField starters={starters} formation={formation} draggedPlayerId={draggedSubstituteId} onPromote={promoteSubstitute} />
+                <FormationField
+                  starters={starters}
+                  formation={formation}
+                  draggedPlayerId={draggedSubstituteId}
+                  onPromote={promoteSubstitute}
+                />
 
                 <div className="mt-md space-y-xs text-xs text-on-surface-variant">
                   <div className="flex justify-between border-b border-outline-variant/10 py-1">
                     <span>Titulares Escolhidos:</span>
-                    <span className="font-bold text-on-surface">{starters.length} / 11</span>
+                    <span className={`font-bold ${starters.length === 11 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {starters.length} / 11
+                    </span>
                   </div>
                   <div className="flex justify-between border-b border-outline-variant/10 py-1">
-                    <span>Guarda-Redes no 11:</span>
-                    <span className={`font-bold ${gkCount === 1 ? 'text-emerald-600' : 'text-error'}`}>
-                      {gkCount === 1 ? '✅ 1 (Correto)' : gkCount === 0 ? '❌ 0 (Em falta)' : `❌ ${gkCount} (Máximo 1)`}
+                    <span>Guarda-Redes (GK):</span>
+                    <span className={`font-bold ${tacticalValidation.gkCount === 1 ? 'text-emerald-600' : 'text-error'}`}>
+                      {tacticalValidation.gkCount === 1 ? '✅ 1 (Correto)' : tacticalValidation.gkCount === 0 ? '❌ 0 (Em falta)' : `❌ ${tacticalValidation.gkCount} (Máximo 1)`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-outline-variant/10 py-1">
+                    <span>Defesas (DEF):</span>
+                    <span className={`font-bold ${tacticalValidation.defCount === tacticalValidation.targetDef ? 'text-emerald-600' : 'text-error'}`}>
+                      {tacticalValidation.defCount === tacticalValidation.targetDef
+                        ? `✅ ${tacticalValidation.defCount} / ${tacticalValidation.targetDef} (Correto)`
+                        : `❌ ${tacticalValidation.defCount} / ${tacticalValidation.targetDef} (Requer ${tacticalValidation.targetDef})`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-outline-variant/10 py-1">
+                    <span>Médios (MID):</span>
+                    <span className={`font-bold ${tacticalValidation.midCount === tacticalValidation.targetMid ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {tacticalValidation.midCount === tacticalValidation.targetMid
+                        ? `✅ ${tacticalValidation.midCount} / ${tacticalValidation.targetMid}`
+                        : `${tacticalValidation.midCount} / ${tacticalValidation.targetMid}`}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-outline-variant/10 py-1">
+                    <span>Avançados (FWD):</span>
+                    <span className={`font-bold ${tacticalValidation.fwdCount === tacticalValidation.targetFwd ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {tacticalValidation.fwdCount === tacticalValidation.targetFwd
+                        ? `✅ ${tacticalValidation.fwdCount} / ${tacticalValidation.targetFwd}`
+                        : `${tacticalValidation.fwdCount} / ${tacticalValidation.targetFwd}`}
                     </span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span>Capitão de Equipa:</span>
                     <span className="font-bold text-amber-600">
-                      {starters.find((p) => p.is_captain)?.playerName || 'Não definido'}
+                      {starters.find((p) => p.is_captain)?.playerName || '❌ Não definido'}
                     </span>
                   </div>
                 </div>
@@ -735,8 +988,8 @@ export default function ClubMatchLineupManagerPage() {
                 <CardTitle className="text-sm font-bold flex items-center gap-xs text-primary">
                   <UserCheck className="h-4 w-4" /> Onze Inicial ({starters.length}/11)
                 </CardTitle>
-                <Badge variant={starters.length === 11 ? 'success' : 'warning'}>
-                  {starters.length === 11 ? 'Completo' : 'Incompleto'}
+                <Badge variant={starters.length === 11 && tacticalValidation.isValid ? 'success' : 'warning'}>
+                  {starters.length === 11 && tacticalValidation.isValid ? 'Completo & Válido' : 'Incompleto ou Inválido'}
                 </Badge>
               </CardHeader>
               <CardContent className="p-none space-y-xs">
@@ -745,42 +998,74 @@ export default function ClubMatchLineupManagerPage() {
                     Nenhum titular selecionado. Clique em &quot;+ Titular&quot; nos convocados abaixo.
                   </p>
                 ) : (
-                  starters.map((p) => (
-                    <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary-container/10 p-sm text-xs">
-                      <div className="flex items-center gap-sm">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-on-primary">
-                          {p.playerNumber || '#'}
-                        </span>
-                        <div>
-                          <p className="font-bold text-on-surface">{p.playerName}</p>
-                          <span className="text-[10px] text-on-surface-variant">
-                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                  starters.map((p) => {
+                    const isGk = p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+                    const sec = isGk ? 'GK' : categorizePlayerPosition(p.positionSpecific || p.position)
+                    const secBadgeClass =
+                      sec === 'GK'
+                        ? 'bg-amber-500/15 text-amber-800 border-amber-500/30'
+                        : sec === 'DEF'
+                        ? 'bg-blue-500/15 text-blue-800 border-blue-500/30'
+                        : sec === 'MID'
+                        ? 'bg-emerald-500/15 text-emerald-800 border-emerald-500/30'
+                        : 'bg-rose-500/15 text-rose-800 border-rose-500/30'
+
+                    return (
+                      <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-primary/20 bg-primary-container/10 p-sm text-xs">
+                        <div className="flex items-center gap-sm">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary font-bold text-on-primary">
+                            {p.playerNumber || '#'}
                           </span>
+                          <div>
+                            <div className="flex items-center gap-xs">
+                              <p className="font-bold text-on-surface">{p.playerName}</p>
+                              <span className={`rounded px-1.5 py-0.2 text-[9px] font-bold border ${secBadgeClass}`}>
+                                {sec}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-on-surface-variant">
+                              {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-xs">
+                          {/* Tactical Position Selector */}
+                          <select
+                            value={(p.positionSpecific || p.position || 'CM').toUpperCase()}
+                            onChange={(e) => handlePositionChange(p.playerId, e.target.value)}
+                            className="h-7 rounded border border-outline-variant/30 bg-surface-container px-1 text-[10px] font-semibold text-on-surface hover:border-primary/50 transition-colors"
+                            title="Alterar posição tática de jogo"
+                          >
+                            {AVAILABLE_TACTICAL_POSITIONS.map((pos) => (
+                              <option key={pos.code} value={pos.code}>
+                                {pos.code} ({pos.sector})
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={() => setCaptain(p.playerId)}
+                            className={`rounded-lg p-1.5 text-[11px] font-semibold transition-all ${
+                              p.is_captain ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-surface-container-high text-on-surface-variant hover:bg-amber-500/20'
+                            }`}
+                            title="Definir Capitão"
+                          >
+                            <Crown className="h-3.5 w-3.5" />
+                          </button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-700 transition-colors hover:bg-amber-500/15" aria-label="Mover para suplentes">
+                                <ArrowDownToLine className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Mover para suplentes</TooltipContent>
+                          </Tooltip>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-xs">
-                        <button
-                          type="button"
-                          onClick={() => setCaptain(p.playerId)}
-                          className={`rounded-lg p-1 text-[11px] font-semibold transition-all ${
-                            p.is_captain ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-surface-container-high text-on-surface-variant hover:bg-amber-500/20'
-                          }`}
-                          title="Definir Capitão"
-                        >
-                          <Crown className="h-3.5 w-3.5" />
-                        </button>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-700 transition-colors hover:bg-amber-500/15" aria-label="Mover para suplentes">
-                              <ArrowDownToLine className="h-3.5 w-3.5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Mover para suplentes</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  ))
+                    )
+                  })
                 )}
               </CardContent>
             </Card>
@@ -808,40 +1093,72 @@ export default function ClubMatchLineupManagerPage() {
                     Nenhum suplente adicionado.
                   </p>
                 ) : (
-                  substitutes.map((p) => (
-                    <div key={p.playerId} draggable onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('application/x-bolayetu-substitute', p.playerId); setDraggedSubstituteId(p.playerId) }} onDragEnd={() => setDraggedSubstituteId(null)} className={`flex cursor-grab items-center justify-between rounded-xl border border-outline-variant/15 bg-surface-container p-sm text-xs transition-opacity active:cursor-grabbing ${draggedSubstituteId === p.playerId ? 'opacity-50' : ''}`}>
-                      <div className="flex items-center gap-sm">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-highest font-semibold text-on-surface">
-                          {p.playerNumber || '#'}
-                        </span>
-                        <div>
-                          <p className="font-semibold text-on-surface">{p.playerName}</p>
-                          <span className="text-[10px] text-on-surface-variant">
-                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                  substitutes.map((p) => {
+                    const isGk = p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+                    const sec = isGk ? 'GK' : categorizePlayerPosition(p.positionSpecific || p.position)
+                    const secBadgeClass =
+                      sec === 'GK'
+                        ? 'bg-amber-500/15 text-amber-800 border-amber-500/30'
+                        : sec === 'DEF'
+                        ? 'bg-blue-500/15 text-blue-800 border-blue-500/30'
+                        : sec === 'MID'
+                        ? 'bg-emerald-500/15 text-emerald-800 border-emerald-500/30'
+                        : 'bg-rose-500/15 text-rose-800 border-rose-500/30'
+
+                    return (
+                      <div key={p.playerId} draggable onDragStart={(event) => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('application/x-bolayetu-substitute', p.playerId); setDraggedSubstituteId(p.playerId) }} onDragEnd={() => setDraggedSubstituteId(null)} className={`flex cursor-grab items-center justify-between rounded-xl border border-outline-variant/15 bg-surface-container p-sm text-xs transition-opacity active:cursor-grabbing ${draggedSubstituteId === p.playerId ? 'opacity-50' : ''}`}>
+                        <div className="flex items-center gap-sm">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-highest font-semibold text-on-surface">
+                            {p.playerNumber || '#'}
                           </span>
+                          <div>
+                            <div className="flex items-center gap-xs">
+                              <p className="font-semibold text-on-surface">{p.playerName}</p>
+                              <span className={`rounded px-1.5 py-0.2 text-[9px] font-bold border ${secBadgeClass}`}>
+                                {sec}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-on-surface-variant">
+                              {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-xs">
+                          {/* Tactical Position Selector */}
+                          <select
+                            value={(p.positionSpecific || p.position || 'CM').toUpperCase()}
+                            onChange={(e) => handlePositionChange(p.playerId, e.target.value)}
+                            className="h-7 rounded border border-outline-variant/30 bg-surface-container-high px-1 text-[10px] font-semibold text-on-surface hover:border-primary/50 transition-colors"
+                            title="Alterar posição tática de jogo"
+                          >
+                            {AVAILABLE_TACTICAL_POSITIONS.map((pos) => (
+                              <option key={pos.code} value={pos.code}>
+                                {pos.code} ({pos.sector})
+                              </option>
+                            ))}
+                          </select>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary/10" aria-label="Promover a titular">
+                                <ArrowUpToLine className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Promover a titular</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button type="button" onClick={() => toggleCallup(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-error transition-colors hover:bg-error/10" aria-label="Desconvocar jogador">
+                                <UserMinus className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Desconvocar jogador</TooltipContent>
+                          </Tooltip>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-xs">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button type="button" onClick={() => toggleStarter(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-primary transition-colors hover:bg-primary/10" aria-label="Promover a titular">
-                              <ArrowUpToLine className="h-3.5 w-3.5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Promover a titular</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button type="button" onClick={() => toggleCallup(p.playerId)} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-error transition-colors hover:bg-error/10" aria-label="Desconvocar jogador">
-                              <UserMinus className="h-3.5 w-3.5" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Desconvocar jogador</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  ))
+                    )
+                  })
                 )}
               </CardContent>
             </Card>
@@ -863,33 +1180,67 @@ export default function ClubMatchLineupManagerPage() {
                     className="max-w-none border-emerald-500/20 bg-emerald-500/5 py-lg"
                   />
                 ) : (
-                  uncalled.map((p) => (
-                    <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-outline-variant/10 bg-surface-container-low p-sm text-xs">
-                      <div className="flex items-center gap-sm">
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-highest font-medium text-on-surface-variant">
-                          {p.playerNumber || '#'}
-                        </span>
-                        <div>
-                          <p className={`font-medium ${p.eligible ? 'text-on-surface' : 'text-on-surface-variant line-through'}`}>
-                            {p.playerName}
-                          </p>
-                          <span className="text-[10px] text-on-surface-variant">
-                            {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                  uncalled.map((p) => {
+                    const isGk = p.is_goalkeeper || categorizePlayerPosition(p.positionSpecific || p.position) === 'GK'
+                    const sec = isGk ? 'GK' : categorizePlayerPosition(p.positionSpecific || p.position)
+                    const secBadgeClass =
+                      sec === 'GK'
+                        ? 'bg-amber-500/15 text-amber-800 border-amber-500/30'
+                        : sec === 'DEF'
+                        ? 'bg-blue-500/15 text-blue-800 border-blue-500/30'
+                        : sec === 'MID'
+                        ? 'bg-emerald-500/15 text-emerald-800 border-emerald-500/30'
+                        : 'bg-rose-500/15 text-rose-800 border-rose-500/30'
+
+                    return (
+                      <div key={p.playerId} className="flex items-center justify-between rounded-xl border border-outline-variant/10 bg-surface-container-low p-sm text-xs">
+                        <div className="flex items-center gap-sm">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-container-highest font-medium text-on-surface-variant">
+                            {p.playerNumber || '#'}
                           </span>
+                          <div>
+                            <div className="flex items-center gap-xs">
+                              <p className={`font-medium ${p.eligible ? 'text-on-surface' : 'text-on-surface-variant line-through'}`}>
+                                {p.playerName}
+                              </p>
+                              <span className={`rounded px-1.5 py-0.2 text-[9px] font-bold border ${secBadgeClass}`}>
+                                {sec}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-on-surface-variant">
+                              {formatPositionLabel(p.positionSpecific || p.position, p.is_goalkeeper)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-xs">
+                          {p.eligible && (
+                            <select
+                              value={(p.positionSpecific || p.position || 'CM').toUpperCase()}
+                              onChange={(e) => handlePositionChange(p.playerId, e.target.value)}
+                              className="h-7 rounded border border-outline-variant/30 bg-surface px-1 text-[10px] font-semibold text-on-surface hover:border-primary/50 transition-colors"
+                              title="Ajustar posição tática"
+                            >
+                              {AVAILABLE_TACTICAL_POSITIONS.map((pos) => (
+                                <option key={pos.code} value={pos.code}>
+                                  {pos.code} ({pos.sector})
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                          {p.eligible ? (
+                            <Button variant="outline" size="sm" onClick={() => toggleCallup(p.playerId)} className="h-7 text-xs">
+                              + Convocar
+                            </Button>
+                          ) : (
+                            <Badge variant="danger" className="text-[10px]">
+                              {p.eligibilityWarning || 'Não elegível'}
+                            </Badge>
+                          )}
                         </div>
                       </div>
-
-                      {p.eligible ? (
-                        <Button variant="outline" size="sm" onClick={() => toggleCallup(p.playerId)} className="h-7 text-xs">
-                          + Convocar
-                        </Button>
-                      ) : (
-                        <Badge variant="danger" className="text-[10px]">
-                          {p.eligibilityWarning || 'Não elegível'}
-                        </Badge>
-                      )}
-                    </div>
-                  ))
+                    )
+                  })
                 )}
               </CardContent>
             </Card>
