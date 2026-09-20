@@ -12,7 +12,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { Button, Card, Badge } from '@/components/ui'
-import { BolaYetuPitchField } from './tactical/BolaYetuPitchField'
+import { BolaYetuPitchField, getPlayerMatchEvents } from './tactical/BolaYetuPitchField'
 import type { Match, LineupSubmission, LineupPlayer, MatchEvent } from '../types'
 
 export interface BolaYetuLineupViewProps {
@@ -84,35 +84,36 @@ function SubstituteItem({
   events?: MatchEvent[]
   isHome: boolean
 }) {
-  const pId = player.id || player.playerId || player.player_id
   const name = player.playerName || player.player?.full_name || 'Jogador'
   const number = player.shirt_number || player.playerNumber || '-'
   const avatar = player.avatarUrl || (player.player as any)?.avatar
 
-  // Look for substitution events involving this player
-  const subEvent = events.find(e => {
-    const isSub = String(e.type || (e as any).event_type || '').includes('substitution')
-    if (!isSub) return false
-    return (
-      String(e.playerId || e.player) === String(pId) ||
-      String(e.substitutedPlayerId || e.player_off) === String(pId)
-    )
-  })
+  const {
+    goals,
+    yellowCards,
+    redCards,
+    isSubstitutedIn,
+    subInMinute,
+    subOutPlayerName,
+  } = getPlayerMatchEvents(player, events)
 
-  let subText: string | null = null
-  if (subEvent) {
-    const isIncoming = String(subEvent.playerId || subEvent.player) === String(pId)
-    if (isIncoming) {
-      subText = `${subEvent.minute}' Entrou${subEvent.player_off_name ? ` (Saiu: ${subEvent.player_off_name})` : ''}`
-    } else {
-      subText = `${subEvent.minute}' Saiu${subEvent.player_name ? ` (Entrou: ${subEvent.player_name})` : ''}`
-    }
-  }
+  const hasYellowCard = yellowCards > 0
+  const hasRedCard = redCards > 0
 
   return (
-    <div className="flex items-center justify-between p-2 rounded-lg border border-outline-variant/10 bg-surface-container hover:bg-surface-container-high transition-colors">
+    <div
+      className={`flex items-center justify-between p-2 rounded-lg border transition-colors ${
+        isSubstitutedIn
+          ? 'border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/15'
+          : 'border-outline-variant/10 bg-surface-container hover:bg-surface-container-high'
+      }`}
+    >
       <div className="flex items-center gap-sm min-w-0">
-        <span className="w-5 text-center font-mono text-xs font-bold text-primary flex-shrink-0">
+        <span
+          className={`w-5 text-center font-mono text-xs font-bold flex-shrink-0 ${
+            isSubstitutedIn ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-primary'
+          }`}
+        >
           {number}
         </span>
         <div className="h-7 w-7 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0 overflow-hidden text-[11px] font-bold text-on-surface-variant">
@@ -123,11 +124,27 @@ function SubstituteItem({
           )}
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-on-surface truncate">{name}</p>
-          {subText ? (
-            <p className="text-[10px] text-emerald-600 flex items-center gap-1 font-medium">
+          <div className="flex items-center gap-1">
+            <p className="text-xs font-semibold text-on-surface truncate">{name}</p>
+            {goals > 0 && (
+              <span className="text-[11px] flex-shrink-0" title={`${goals} golo(s)`}>
+                ⚽{goals > 1 ? goals : ''}
+              </span>
+            )}
+            {hasRedCard && (
+              <span className="inline-block w-2 h-3 rounded-xs bg-red-600 border border-white flex-shrink-0" title="Cartão Vermelho" />
+            )}
+            {hasYellowCard && !hasRedCard && (
+              <span className="inline-block w-2 h-3 rounded-xs bg-amber-500 border border-white flex-shrink-0" title="Cartão Amarelo" />
+            )}
+          </div>
+          {isSubstitutedIn ? (
+            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold mt-0.5">
               <ArrowRightLeft className="w-2.5 h-2.5" />
-              <span>{subText}</span>
+              <span>
+                {subInMinute != null ? `${subInMinute}' ` : ''}Entrou
+                {subOutPlayerName ? ` (Saiu: ${subOutPlayerName})` : ''}
+              </span>
             </p>
           ) : (
             <p className="text-[10px] text-on-surface-variant">
@@ -137,9 +154,16 @@ function SubstituteItem({
         </div>
       </div>
 
-      {player.is_captain && (
-        <Crown className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 ml-1" />
-      )}
+      <div className="flex items-center gap-1 flex-shrink-0 ml-1">
+        {isSubstitutedIn && (
+          <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-600 bg-emerald-500/20 px-1.5 py-0.5 rounded">
+            Utilizado
+          </span>
+        )}
+        {player.is_captain && (
+          <Crown className="w-3.5 h-3.5 text-amber-500" />
+        )}
+      </div>
     </div>
   )
 }

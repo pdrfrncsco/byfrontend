@@ -410,6 +410,7 @@ export function useSubmitManualScoresheet(competitionId: string) {
         goals?: Array<{
           club_id: string
           player_id?: string | null
+          assist_player_id?: string | null
           minute: number
           event_type: string
           notes?: string

@@ -18,7 +18,7 @@ export interface BolaYetuPitchFieldProps {
   className?: string
 }
 
-interface EnrichedPitchPlayer {
+export interface EnrichedPitchPlayer {
   tacticalId: string
   player: LineupPlayer
   isHome: boolean
@@ -33,9 +33,11 @@ interface EnrichedPitchPlayer {
   hasYellowCard: boolean
   hasRedCard: boolean
   isSubstituted: boolean
+  subMinute?: number
+  subPlayerInName?: string
 }
 
-function getShortName(fullName?: string): string {
+export function getShortName(fullName?: string): string {
   if (!fullName) return 'Jogador'
   const parts = fullName.trim().split(/\s+/)
   if (parts.length === 1) return parts[0]
@@ -43,6 +45,132 @@ function getShortName(fullName?: string): string {
   const firstInitial = parts[0].charAt(0).toUpperCase()
   const lastName = parts[parts.length - 1]
   return `${firstInitial}. ${lastName}`
+}
+
+export function getPlayerIdentifiers(player: LineupPlayer): { ids: Set<string>; names: Set<string> } {
+  const ids = new Set<string>()
+  const names = new Set<string>()
+
+  const addId = (id: any) => {
+    if (id != null && id !== '' && id !== 'undefined' && id !== 'null') {
+      ids.add(String(id).toLowerCase())
+    }
+  }
+
+  const addName = (name: any) => {
+    if (typeof name === 'string' && name.trim()) {
+      names.add(name.trim().toLowerCase())
+    }
+  }
+
+  addId(player.player_id)
+  addId(player.playerId)
+  addId(player.player?.id)
+  addId(player.id)
+
+  addName(player.player?.full_name)
+  addName(player.playerName)
+  addName((player as any).name)
+  const pAny = player.player as any
+  if (pAny?.first_name || pAny?.last_name) {
+    addName(`${pAny.first_name || ''} ${pAny.last_name || ''}`.trim())
+  }
+
+  return { ids, names }
+}
+
+export function eventMatchesPlayer(
+  targetId: any,
+  targetName: any,
+  player: LineupPlayer
+): boolean {
+  const { ids, names } = getPlayerIdentifiers(player)
+  const resolvedId =
+    typeof targetId === 'object' && targetId ? targetId.id : targetId
+
+  if (resolvedId && ids.has(String(resolvedId).toLowerCase())) {
+    return true
+  }
+
+  if (typeof targetName === 'string' && targetName.trim()) {
+    if (names.has(targetName.trim().toLowerCase())) {
+      return true
+    }
+  }
+
+  return false
+}
+
+export function getPlayerMatchEvents(player: LineupPlayer, events: MatchEvent[]) {
+  let goals = 0
+  let yellowCards = 0
+  let redCards = 0
+  let isSubstitutedOut = false
+  let subOutMinute: number | undefined
+  let subInPlayerName: string | undefined
+  let isSubstitutedIn = false
+  let subInMinute: number | undefined
+  let subOutPlayerName: string | undefined
+
+  events.forEach(e => {
+    const type = String(e.type || (e as any).event_type || '').toLowerCase()
+    const pId = e.playerId || e.player || (e as any).player_id
+    const ep = e.player as any
+    const pName = e.player_name || (e as any).player_full_name || (ep && typeof ep === 'object' ? ep.full_name : undefined)
+    const pOffId = e.player_off || (e as any).player_off_id || e.substitutedPlayerId
+    const epo = e.player_off as any
+    const pOffName = e.player_off_name || (e as any).player_off_full_name || (epo && typeof epo === 'object' ? epo.full_name : undefined)
+
+    const matchesPrimary = eventMatchesPlayer(pId, pName, player)
+    const matchesOff = eventMatchesPlayer(pOffId, pOffName, player)
+
+    // Goals: goal, penalty_scored, penalty_goal
+    if (matchesPrimary && (type === 'goal' || type === 'penalty_scored' || type === 'penalty_goal' || (type.includes('goal') && type !== 'own_goal'))) {
+      goals += 1
+    }
+
+    // Yellow cards
+    if (matchesPrimary && type === 'yellow_card') {
+      yellowCards += 1
+    }
+
+    // Red cards & 2nd yellows
+    if (matchesPrimary && (type === 'red_card' || type === 'yellow_red' || type === 'yellow_red_card')) {
+      redCards += 1
+    }
+
+    // Substitutions
+    if (type.includes('substitution')) {
+      if (matchesOff) {
+        isSubstitutedOut = true
+        subOutMinute = e.minute
+        subInPlayerName = pName
+      }
+      if (matchesPrimary) {
+        if (type === 'substitution_out') {
+          isSubstitutedOut = true
+          subOutMinute = e.minute
+          subInPlayerName = pOffName || e.notes || undefined
+        } else {
+          isSubstitutedIn = true
+          subInMinute = e.minute
+          subOutPlayerName = pOffName
+        }
+      }
+    }
+  })
+
+  return {
+    goals,
+    yellowCards,
+    redCards,
+    isSubstitutedOut,
+    subOutMinute,
+    subInPlayerName,
+    isSubstitutedIn,
+    subInMinute,
+    subOutPlayerName,
+  }
 }
 
 export function BolaYetuPitchField({
@@ -80,39 +208,6 @@ export function BolaYetuPitchField({
     [awayStarters, awayFormation]
   )
 
-  // Map events to player IDs
-  const playerEventsMap = useMemo(() => {
-    const map: Record<
-      string,
-      { goals: number; yellowCards: number; redCards: number; subbed: boolean }
-    > = {}
-
-    events.forEach(e => {
-      const pId = e.playerId || e.player || (e as any).player_id
-      if (!pId) return
-      const sId = String(pId)
-      if (!map[sId]) {
-        map[sId] = { goals: 0, yellowCards: 0, redCards: 0, subbed: false }
-      }
-
-      const type = String(e.type || (e as any).event_type || '')
-      if (type.includes('goal') && type !== 'own_goal') {
-        map[sId].goals += 1
-      }
-      if (type === 'yellow_card') {
-        map[sId].yellowCards += 1
-      }
-      if (type === 'red_card' || type === 'yellow_red' || type === 'yellow_red_card') {
-        map[sId].redCards += 1
-      }
-      if (type.includes('substitution')) {
-        map[sId].subbed = true
-      }
-    })
-
-    return map
-  }, [events])
-
   // Combine tactical positions with player data
   const enrichPlayers = (
     starters: LineupPlayer[],
@@ -126,12 +221,7 @@ export function BolaYetuPitchField({
         y: 0.15 + (idx % 5) * 0.15,
       }
 
-      const ev = playerEventsMap[String(pId)] || playerEventsMap[String(player.player_id)] || {
-        goals: 0,
-        yellowCards: 0,
-        redCards: 0,
-        subbed: false,
-      }
+      const ev = getPlayerMatchEvents(player, events)
 
       const rawPos = player.positionSpecific || player.position
       const isGK = Boolean(
@@ -154,19 +244,21 @@ export function BolaYetuPitchField({
         goalsCount: ev.goals,
         hasYellowCard: ev.yellowCards > 0,
         hasRedCard: ev.redCards > 0,
-        isSubstituted: ev.subbed,
+        isSubstituted: ev.isSubstitutedOut,
+        subMinute: ev.subOutMinute,
+        subPlayerInName: ev.subInPlayerName,
       }
     })
   }
 
   const enrichedHome = useMemo(
     () => enrichPlayers(homeStarters, homePositions, true),
-    [homeStarters, homePositions, playerEventsMap]
+    [homeStarters, homePositions, events]
   )
 
   const enrichedAway = useMemo(
     () => enrichPlayers(awayStarters, awayPositions, false),
-    [awayStarters, awayPositions, playerEventsMap]
+    [awayStarters, awayPositions, events]
   )
 
   const allPlayers = [...enrichedHome, ...enrichedAway]
@@ -345,6 +437,18 @@ export function BolaYetuPitchField({
                 <circle r={26} fill="none" stroke="#ffffff" strokeWidth={3} className="animate-pulse" />
               )}
 
+              {/* Substituted Out dashed halo */}
+              {p.isSubstituted && (
+                <circle
+                  r={24}
+                  fill="none"
+                  stroke="#ef4444"
+                  strokeWidth={1.8}
+                  strokeDasharray="4 2"
+                  opacity={0.9}
+                />
+              )}
+
               {/* Hover ring (safe SVG hover effect without CSS transform) */}
               <circle
                 r={24}
@@ -358,14 +462,15 @@ export function BolaYetuPitchField({
               <circle
                 r={20}
                 fill={p.isGK ? '#78350f' : p.isHome ? '#1e3a8a' : '#7f1d1d'}
-                stroke={baseBorderColor}
+                stroke={p.isSubstituted ? '#f87171' : baseBorderColor}
                 strokeWidth={2.5}
+                opacity={p.isSubstituted ? 0.82 : 1}
                 className="transition-all duration-150 group-hover:stroke-[3.5px] group-hover:brightness-110"
               />
 
               {/* Player Avatar Photo (if available) */}
               {p.avatarUrl ? (
-                <g>
+                <g opacity={p.isSubstituted ? 0.82 : 1}>
                   <clipPath id={`clip-${p.tacticalId}`}>
                     <circle r={18} />
                   </clipPath>
@@ -388,6 +493,7 @@ export function BolaYetuPitchField({
                   fontSize="14"
                   fontWeight="bold"
                   fontFamily="monospace"
+                  opacity={p.isSubstituted ? 0.82 : 1}
                 >
                   {p.number}
                 </text>
@@ -458,16 +564,42 @@ export function BolaYetuPitchField({
                 </g>
               )}
 
+              {/* Events: Substitution Badge */}
+              {p.isSubstituted && (
+                <g transform="translate(0, -18)">
+                  <rect
+                    x={-17}
+                    y={-6.5}
+                    width={34}
+                    height={13}
+                    rx={3.5}
+                    fill="#dc2626"
+                    stroke="#ffffff"
+                    strokeWidth={0.8}
+                  />
+                  <text
+                    textAnchor="middle"
+                    y={3}
+                    fill="#ffffff"
+                    fontSize="8.5"
+                    fontWeight="bold"
+                    fontFamily="monospace"
+                  >
+                    ⇄ {p.subMinute != null ? `${p.subMinute}'` : 'SUB'}
+                  </text>
+                </g>
+              )}
+
               {/* Player Short Name Banner beneath player */}
               <g transform="translate(0, 32)">
                 <rect
-                  x={-42}
+                  x={-44}
                   y={-9}
-                  width={84}
-                  height={17}
+                  width={88}
+                  height={p.isSubstituted && p.subPlayerInName ? 26 : 17}
                   rx={4}
-                  fill="rgba(15, 23, 42, 0.82)"
-                  stroke="rgba(255, 255, 255, 0.15)"
+                  fill="rgba(15, 23, 42, 0.88)"
+                  stroke={p.isSubstituted ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255, 255, 255, 0.15)'}
                   strokeWidth={0.8}
                 />
                 <text
@@ -480,6 +612,18 @@ export function BolaYetuPitchField({
                 >
                   {p.shortName}
                 </text>
+                {p.isSubstituted && p.subPlayerInName && (
+                  <text
+                    textAnchor="middle"
+                    y={14}
+                    fill="#fca5a5"
+                    fontSize="7.5"
+                    fontWeight="600"
+                    fontFamily="system-ui, sans-serif"
+                  >
+                    ⇄ {p.subMinute != null ? `${p.subMinute}' ` : ''}{getShortName(p.subPlayerInName)}
+                  </text>
+                )}
               </g>
             </g>
           )

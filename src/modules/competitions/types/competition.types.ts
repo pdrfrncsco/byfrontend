@@ -112,6 +112,7 @@ export interface MatchEventCreateData {
   club: string
   player?: string | null
   player_off?: string | null
+  assist_player?: string | null
   notes?: string
   idempotency_key?: string
 }

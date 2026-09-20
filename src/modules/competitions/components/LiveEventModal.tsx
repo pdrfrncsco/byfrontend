@@ -46,6 +46,7 @@ export function LiveEventModal({
   const [playerId, setPlayerId] = useState('')
   const [customPlayerName, setCustomPlayerName] = useState('')
   const [playerOffId, setPlayerOffId] = useState('')
+  const [assistPlayerId, setAssistPlayerId] = useState('')
   const [minute, setMinute] = useState(String(match?.current_minute ?? 1))
   const [notes, setNotes] = useState('')
 
@@ -57,6 +58,7 @@ export function LiveEventModal({
       setMinute(String(currentMin))
       setPlayerId('')
       setPlayerOffId('')
+      setAssistPlayerId('')
       setCustomPlayerName('')
       setNotes('')
     }
@@ -65,6 +67,7 @@ export function LiveEventModal({
   if (!isOpen || !match) return null
 
   const isSubstitution = eventType === 'substitution_in' || eventType === 'substitution_out'
+  const isAssistableGoal = eventType === 'goal' || eventType === 'penalty_scored'
   const isCustomPlayer = playerId === 'custom'
 
   const availablePlayers = getPlayersForClub(clubId)
@@ -97,6 +100,7 @@ export function LiveEventModal({
         club: clubId,
         player: resolvedPlayerId,
         player_off: isSubstitution ? (playerOffId === 'custom' ? null : playerOffId) : null,
+        assist_player: isAssistableGoal && assistPlayerId ? assistPlayerId : null,
         notes: resolvedNotes || undefined,
       },
       {
@@ -146,6 +150,7 @@ export function LiveEventModal({
                   setEventType('goal')
                   setPlayerId('')
                   setPlayerOffId('')
+                  setAssistPlayerId('')
                 }}
                 className={`flex flex-col items-center justify-center rounded-xl p-2 text-xs font-semibold transition-all border ${
                   eventType === 'goal'
@@ -163,6 +168,7 @@ export function LiveEventModal({
                   setEventType('yellow_card')
                   setPlayerId('')
                   setPlayerOffId('')
+                  setAssistPlayerId('')
                 }}
                 className={`flex flex-col items-center justify-center rounded-xl p-2 text-xs font-semibold transition-all border ${
                   eventType === 'yellow_card'
@@ -180,6 +186,7 @@ export function LiveEventModal({
                   setEventType('red_card')
                   setPlayerId('')
                   setPlayerOffId('')
+                  setAssistPlayerId('')
                 }}
                 className={`flex flex-col items-center justify-center rounded-xl p-2 text-xs font-semibold transition-all border ${
                   eventType === 'red_card'
@@ -197,6 +204,7 @@ export function LiveEventModal({
                   setEventType('substitution_in')
                   setPlayerId('')
                   setPlayerOffId('')
+                  setAssistPlayerId('')
                 }}
                 className={`flex flex-col items-center justify-center rounded-xl p-2 text-xs font-semibold transition-all border ${
                   isSubstitution
@@ -376,6 +384,55 @@ export function LiveEventModal({
                 onChange={(e) => setCustomPlayerName(e.target.value)}
                 className="h-9 text-xs"
               />
+            </div>
+          )}
+
+          {/* Assistência (para golos) */}
+          {isAssistableGoal && (
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1">
+                Assistência (opcional)
+              </label>
+              <NativeSelect
+                value={assistPlayerId}
+                onChange={(e) => setAssistPlayerId(e.target.value)}
+                disabled={loadingPlayers}
+              >
+                <option value="">Sem assistência</option>
+                {starters.length > 0 && (
+                  <optgroup label="Titulares em Campo">
+                    {starters
+                      .filter((player) => player.id !== playerId)
+                      .map((player) => (
+                        <option key={player.id} value={player.id}>
+                          #{player.number ?? '-'} {player.name} ({player.position ?? 'Jogador'})
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+                {substitutes.length > 0 && (
+                  <optgroup label="Suplentes">
+                    {substitutes
+                      .filter((player) => player.id !== playerId)
+                      .map((player) => (
+                        <option key={player.id} value={player.id}>
+                          #{player.number ?? '-'} {player.name} ({player.position ?? 'Jogador'})
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+                {otherSquad.length > 0 && (
+                  <optgroup label="Plantel Geral">
+                    {otherSquad
+                      .filter((player) => player.id !== playerId)
+                      .map((player) => (
+                        <option key={player.id} value={player.id}>
+                          #{player.number ?? '-'} {player.name} ({player.position ?? 'Jogador'})
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+              </NativeSelect>
             </div>
           )}
 

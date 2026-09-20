@@ -20,6 +20,7 @@ interface GoalEntry {
   id: string
   club_id: string
   player_id?: string
+  assist_player_id?: string
   custom_name?: string
   minute: number
   event_type: 'goal' | 'penalty_scored' | 'own_goal'
@@ -80,7 +81,7 @@ export function ManualMatchScoresheetModal({
   const [substitutions, setSubstitutions] = useState<SubstitutionEntry[]>([])
 
   useEffect(() => {
-    if (match) {
+    if (isOpen && match) {
       setHomeScore(match.home_score ?? 0)
       setAwayScore(match.away_score ?? 0)
       setStatus(match.status === 'scheduled' ? 'finished' : match.status)
@@ -92,7 +93,7 @@ export function ManualMatchScoresheetModal({
       setNotes('')
       setActiveTab('score')
     }
-  }, [match])
+  }, [isOpen])
 
   if (!isOpen || !match) return null
 
@@ -105,6 +106,7 @@ export function ManualMatchScoresheetModal({
         minute: 45,
         event_type: 'goal',
         player_id: '',
+        assist_player_id: '',
         notes: '',
       },
     ])
@@ -183,6 +185,7 @@ export function ManualMatchScoresheetModal({
       return {
         club_id: g.club_id,
         player_id: resolvedPlayerId,
+        assist_player_id: g.assist_player_id && g.assist_player_id !== '' ? g.assist_player_id : null,
         minute: Number(g.minute) || 1,
         event_type: g.event_type,
         notes: resolvedNotes,
@@ -617,6 +620,57 @@ export function ManualMatchScoresheetModal({
                             </button>
                           </div>
                         </div>
+
+                        {/* Assistência (apenas para golos regulares e penáltis) */}
+                        {g.event_type !== 'own_goal' && (
+                          <div className="pl-xs pt-xs flex items-center gap-xs">
+                            <span className="text-[11px] text-on-surface-variant font-semibold whitespace-nowrap">Assistência:</span>
+                            <select
+                              value={g.assist_player_id || ''}
+                              onChange={(e) => handleUpdateGoal(g.id, 'assist_player_id' as any, e.target.value)}
+                              className="flex-1 max-w-sm text-xs rounded-lg border border-outline-variant/30 bg-surface p-1.5 text-on-surface"
+                            >
+                              <option value="">Sem assistência</option>
+                              {(() => {
+                                const players = getPlayersForClub(g.club_id)
+                                const starterPlayers = players.filter((p) => p.status === 'starter')
+                                const subPlayers = players.filter((p) => p.status === 'substitute')
+                                const otherPlayers = players.filter((p) => p.status !== 'starter' && p.status !== 'substitute')
+                                return (
+                                  <>
+                                    {starterPlayers.length > 0 && (
+                                      <optgroup label="Titulares">
+                                        {starterPlayers.filter(p => p.id !== g.player_id).map((p) => (
+                                          <option key={p.id} value={p.id}>
+                                            #{p.number ?? '-'} {p.name}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    )}
+                                    {subPlayers.length > 0 && (
+                                      <optgroup label="Suplentes">
+                                        {subPlayers.filter(p => p.id !== g.player_id).map((p) => (
+                                          <option key={p.id} value={p.id}>
+                                            #{p.number ?? '-'} {p.name}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    )}
+                                    {otherPlayers.length > 0 && (
+                                      <optgroup label="Outros">
+                                        {otherPlayers.filter(p => p.id !== g.player_id).map((p) => (
+                                          <option key={p.id} value={p.id}>
+                                            #{p.number ?? '-'} {p.name}
+                                          </option>
+                                        ))}
+                                      </optgroup>
+                                    )}
+                                  </>
+                                )
+                              })()}
+                            </select>
+                          </div>
+                        )}
 
                         {/* Campo extra se for "Outro / Não listado" ou auto-golo */}
                         {isCustom && (
