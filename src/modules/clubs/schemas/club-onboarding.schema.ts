@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
 export const clubInstitutionalStepSchema = z.object({
-  name: z.string().min(2, 'O nome do clube é obrigatório.'),
+  name: z.string().min(2, 'O nome oficial do clube é obrigatório.'),
   short_name: z.string().optional().or(z.literal('')),
+  acronym: z.string().max(10, 'A sigla/acrónimo não pode exceder 10 caracteres.').optional().or(z.literal('')),
   founded_year: z.union([z.coerce.number().int().min(1800).max(2100), z.literal('')]).optional(),
   country: z.string().optional().or(z.literal('')),
   city: z.string().optional().or(z.literal('')),

@@ -81,6 +81,8 @@ export interface Standing {
   competition: string
   club: string
   club_name: string
+  club_short_name?: string | null
+  club_acronym?: string | null
   club_logo: string | null
   played: number
   won: number
@@ -99,6 +101,8 @@ export interface CompetitionRegistration {
   competition: string
   club: string
   club_name: string
+  club_short_name?: string | null
+  club_acronym?: string | null
   club_logo: string | null
   registered_at: string
 }

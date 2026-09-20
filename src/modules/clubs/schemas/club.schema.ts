@@ -1,10 +1,15 @@
 import { z } from 'zod'
 
 export const clubSettingsSchema = z.object({
-  name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres.').max(255, 'O nome não pode exceder 255 caracteres.'),
+  name: z.string().min(2, 'O nome oficial deve ter pelo menos 2 caracteres.').max(255, 'O nome não pode exceder 255 caracteres.'),
   short_name: z
     .string()
-    .max(20, 'A sigla não pode exceder 20 caracteres.')
+    .max(80, 'O nome curto não pode exceder 80 caracteres.')
+    .optional()
+    .or(z.literal('')),
+  acronym: z
+    .string()
+    .max(10, 'A sigla/acrónimo não pode exceder 10 caracteres.')
     .optional()
     .or(z.literal('')),
   founded_year: z

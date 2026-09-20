@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
+
 export interface MatchScoreWidgetProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> {
   match?: any
   variant?: 'compact' | 'normal'
@@ -41,11 +43,13 @@ export const MatchScoreWidget = React.forwardRef<HTMLDivElement, MatchScoreWidge
   ) => {
     // Resolve from match prop if provided
     const resolvedHomeTeam = homeTeam || {
-      name: match?.home_club_name || match?.home_team_name || match?.home_club?.name || 'Casa',
+      name: formatMatchTeamName(match, 'home', 'short'),
+      officialName: formatMatchTeamName(match, 'home', 'official'),
       logoUrl: match?.home_club_logo || match?.home_team_logo || match?.home_club?.logo_url,
     }
     const resolvedAwayTeam = awayTeam || {
-      name: match?.away_club_name || match?.away_team_name || match?.away_club?.name || 'Fora',
+      name: formatMatchTeamName(match, 'away', 'short'),
+      officialName: formatMatchTeamName(match, 'away', 'official'),
       logoUrl: match?.away_club_logo || match?.away_team_logo || match?.away_club?.logo_url,
     }
     const resolvedHomeScore = homeScore !== undefined ? homeScore : match?.home_score ?? null
@@ -99,7 +103,7 @@ export const MatchScoreWidget = React.forwardRef<HTMLDivElement, MatchScoreWidge
       >
         <div className="flex items-center justify-between gap-3 mb-2">
           {/* Home Team */}
-          <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
+          <div className="flex items-center gap-2 flex-1 min-w-0 justify-end" title={(resolvedHomeTeam as any).officialName || resolvedHomeTeam.name}>
             <span className="truncate text-sm font-medium text-on-surface">
               {resolvedHomeTeam.name}
             </span>
@@ -123,7 +127,7 @@ export const MatchScoreWidget = React.forwardRef<HTMLDivElement, MatchScoreWidge
           </div>
 
           {/* Away Team */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0" title={(resolvedAwayTeam as any).officialName || resolvedAwayTeam.name}>
             {renderLogo(resolvedAwayTeam)}
             <span className="truncate text-sm font-medium text-on-surface">
               {resolvedAwayTeam.name}

@@ -179,9 +179,13 @@ export interface Match {
   group_id?: string | null;
   home_club: string;
   home_club_name: string;
+  home_club_short_name?: string | null;
+  home_club_acronym?: string | null;
   home_club_logo: string | null;
   away_club: string;
   away_club_name: string;
+  away_club_short_name?: string | null;
+  away_club_acronym?: string | null;
   away_club_logo: string | null;
   match_date: string;
   status_label: string;

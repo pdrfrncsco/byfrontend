@@ -7,6 +7,7 @@ import { MatchCountdown } from './MatchCountdown'
 import { MatchScoreboard } from './MatchScoreboard'
 import { MatchStatusBadge } from './MatchStatusBadge'
 import { resolveMediaUrl } from '@/lib/media'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 interface MatchCardProps {
   match: Match
@@ -24,8 +25,10 @@ interface MatchCardProps {
  * <MatchCard match={m} competitionId={comp.id} showLink />
  */
 export function MatchCard({ match, competitionId, showLink = false, compact = false }: MatchCardProps) {
-  const homeName = match.homeTeamName || match.home_club_name
-  const awayName = match.awayTeamName || match.away_club_name
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
   const homeLogo = resolveMediaUrl(match.homeTeamLogo || match.home_club_logo)
   const awayLogo = resolveMediaUrl(match.awayTeamLogo || match.away_club_logo)
   const scheduledAt = match.scheduledAt || match.match_date
@@ -100,7 +103,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
           <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary ${homeLogo ? 'hidden' : ''}`}>
             {homeName?.charAt(0) || '?'}
           </div>
-          <span className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
+          <span title={homeOfficialName} className={`truncate font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
             {homeName}
           </span>
         </div>
@@ -110,7 +113,7 @@ export function MatchCard({ match, competitionId, showLink = false, compact = fa
 
         {/* Away Team */}
         <div className="flex flex-1 items-center justify-end gap-sm overflow-hidden">
-          <span className={`truncate text-right font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
+          <span title={awayOfficialName} className={`truncate text-right font-semibold text-on-surface ${compact ? 'text-sm' : 'text-base'}`}>
             {awayName}
           </span>
           {awayLogo ? (

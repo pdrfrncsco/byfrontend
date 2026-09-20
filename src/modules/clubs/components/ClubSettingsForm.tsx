@@ -19,6 +19,7 @@ function toFormDefaults(club?: any): ClubSettingsFormData {
   return {
     name: club?.name || '',
     short_name: club?.short_name || '',
+    acronym: club?.acronym || '',
     founded_year: club?.founded_year || '',
     stadium_name: club?.stadium_name || '',
     stadium_capacity: club?.stadium_capacity || '',
@@ -71,6 +72,7 @@ export function ClubSettingsForm({
         founded_year: data.founded_year === '' ? undefined : Number(data.founded_year),
         stadium_capacity: data.stadium_capacity === '' ? undefined : Number(data.stadium_capacity),
         short_name: data.short_name || undefined,
+        acronym: data.acronym ? data.acronym.toUpperCase() : undefined,
         stadium_name: data.stadium_name || undefined,
         city: data.city || undefined,
         email: data.email || undefined,
@@ -157,14 +159,23 @@ export function ClubSettingsForm({
         </CardHeader>
         <CardContent>
           <form className="space-y-lg" onSubmit={handleSubmit(onSubmit)}>
-            <FormField label="Nome do Clube" htmlFor="name" error={errors.name?.message} required>
-              <Input id="name" {...register('name')} state={errors.name ? 'error' : 'default'} />
+            <FormField label="Nome Oficial do Clube" htmlFor="name" error={errors.name?.message} required>
+              <Input id="name" placeholder="Ex.: Atlético Clube Petróleos de Luanda" {...register('name')} state={errors.name ? 'error' : 'default'} />
+              <span className="mt-1 block text-xs text-on-surface-variant">Nome oficial e formal utilizado em documentos legais, contratos e súmulas de jogo.</span>
             </FormField>
 
-            <div className="grid gap-md md:grid-cols-3">
-              <FormField label="Sigla" htmlFor="short_name" error={errors.short_name?.message}>
-                <Input id="short_name" {...register('short_name')} state={errors.short_name ? 'error' : 'default'} />
+            <div className="grid gap-md md:grid-cols-2">
+              <FormField label="Nome Curto" htmlFor="short_name" error={errors.short_name?.message}>
+                <Input id="short_name" placeholder="Ex.: Petro de Luanda" {...register('short_name')} state={errors.short_name ? 'error' : 'default'} />
+                <span className="mt-1 block text-xs text-on-surface-variant">Nome comum para placares, tabelas de classificação e calendários.</span>
               </FormField>
+              <FormField label="Sigla / Acrónimo" htmlFor="acronym" error={errors.acronym?.message}>
+                <Input id="acronym" placeholder="Ex.: APL" maxLength={10} {...register('acronym')} state={errors.acronym ? 'error' : 'default'} />
+                <span className="mt-1 block text-xs text-on-surface-variant">Sigla de 2 a 5 letras para tickers ao vivo e placares ultracurtos.</span>
+              </FormField>
+            </div>
+
+            <div className="grid gap-md md:grid-cols-2">
               <FormField label="Ano de Fundação" htmlFor="founded_year" error={errors.founded_year?.message}>
                 <Input id="founded_year" type="number" {...register('founded_year')} state={errors.founded_year ? 'error' : 'default'} />
               </FormField>

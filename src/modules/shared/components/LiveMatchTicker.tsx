@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Activity, ChevronRight, Trophy, Flame } from 'lucide-react'
 import type { Match } from '@/modules/competitions/types'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 export interface LiveMatchTickerProps {
   matches?: Match[]
@@ -78,8 +79,10 @@ export function LiveMatchTicker({
           {matches.length > 0 ? (
             matches.slice(0, 6).map(match => {
               const compId = match.competitionId || (match as any).competition_id || competitionId || 'competitions'
-              const homeName = match.homeTeamName || (match as any).home_club_name || 'Casa'
-              const awayName = match.awayTeamName || (match as any).away_club_name || 'Fora'
+              const homeDisplayName = formatMatchTeamName(match, 'home', 'ticker')
+              const awayDisplayName = formatMatchTeamName(match, 'away', 'ticker')
+              const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+              const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
               const homeLogo = match.homeTeamLogo || (match as any).home_club_logo
               const awayLogo = match.awayTeamLogo || (match as any).away_club_logo
               const homeScore = match.score?.home ?? (match as any).home_score ?? 0
@@ -94,10 +97,10 @@ export function LiveMatchTicker({
                   className="group flex items-center gap-3 px-3 py-1.5 rounded-xl border border-outline-variant/20 bg-surface-container-high/60 hover:bg-surface-container-high hover:border-primary/40 transition-all shrink-0 text-xs shadow-xs"
                 >
                   {/* Home Team */}
-                  <div className="flex items-center gap-1.5 max-w-[100px] truncate">
-                    <TeamLogo logo={homeLogo} name={homeName} />
+                  <div className="flex items-center gap-1.5 max-w-[100px] truncate" title={homeOfficialName}>
+                    <TeamLogo logo={homeLogo} name={homeDisplayName} />
                     <span className="font-semibold text-on-surface truncate group-hover:text-primary transition-colors">
-                      {homeName}
+                      {homeDisplayName}
                     </span>
                   </div>
 
@@ -129,11 +132,11 @@ export function LiveMatchTicker({
                   </div>
 
                   {/* Away Team */}
-                  <div className="flex items-center gap-1.5 max-w-[100px] truncate">
+                  <div className="flex items-center gap-1.5 max-w-[100px] truncate" title={awayOfficialName}>
                     <span className="font-semibold text-on-surface truncate group-hover:text-primary transition-colors text-right">
-                      {awayName}
+                      {awayDisplayName}
                     </span>
-                    <TeamLogo logo={awayLogo} name={awayName} />
+                    <TeamLogo logo={awayLogo} name={awayDisplayName} />
                   </div>
                 </Link>
               )

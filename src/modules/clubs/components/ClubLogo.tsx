@@ -9,6 +9,7 @@ export interface ClubLogoProps {
   name: string
   logoUrl?: string | null
   shortName?: string | null
+  acronym?: string | null
   primaryColor?: string | null
   size?: ClubLogoSize
   shape?: ClubLogoShape
@@ -55,6 +56,7 @@ export function ClubLogo({
   name,
   logoUrl,
   shortName,
+  acronym,
   primaryColor,
   size = 'md',
   shape = 'squircle',
@@ -71,7 +73,9 @@ export function ClubLogo({
     setImgError(false)
   }, [logoUrl])
 
-  const initials = (shortName || name || '?').slice(0, 2).toUpperCase()
+  const initials = acronym
+    ? acronym.slice(0, 4).toUpperCase()
+    : (shortName || name || '?').slice(0, 2).toUpperCase()
 
   const sizeConfig = size === 'custom' ? null : SIZE_MAP[size]
   const containerSizeClass = sizeConfig ? sizeConfig.container : ''

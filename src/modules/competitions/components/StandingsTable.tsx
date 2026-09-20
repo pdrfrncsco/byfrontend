@@ -93,19 +93,20 @@ export function StandingsTable({
                     {s.club_logo ? (
                       <img
                         src={s.club_logo}
-                        alt={s.club_name}
+                        alt={s.club_short_name || s.club_name}
                         className="h-7 w-7 flex-shrink-0 rounded-full object-cover"
                       />
                     ) : (
                       <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-container/20 text-xs font-bold text-primary">
-                        {s.club_name.charAt(0)}
+                        {(s.club_acronym || s.club_short_name || s.club_name || '?').slice(0, 2).toUpperCase()}
                       </div>
                     )}
                     <Link
                       to={`/clubs/${s.club}`}
+                      title={s.club_name}
                       className="font-medium text-on-surface transition-colors hover:text-primary"
                     >
-                      {s.club_name}
+                      {s.club_short_name || s.club_name}
                     </Link>
                   </div>
                 </td>

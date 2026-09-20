@@ -41,6 +41,7 @@ export default function ClubOnboardingPage() {
     defaultValues: {
       name: wizardData.name || '',
       short_name: wizardData.short_name || '',
+      acronym: wizardData.acronym || '',
       founded_year: wizardData.founded_year ? Number(wizardData.founded_year) : undefined,
       country: wizardData.country || 'Angola',
       city: wizardData.city || '',
@@ -115,6 +116,7 @@ export default function ClubOnboardingPage() {
       data: {
         name: allData.name!,
         short_name: allData.short_name,
+        acronym: allData.acronym ? allData.acronym.toUpperCase() : undefined,
         country: allData.country,
         city: allData.city,
         email: allData.email,
@@ -183,12 +185,18 @@ export default function ClubOnboardingPage() {
           </div>
           <form onSubmit={form1.handleSubmit(handleNextStep1)} className="space-y-md" noValidate>
             <div className="grid gap-md md:grid-cols-2">
-              <FormField label="Nome do clube" htmlFor="name" error={form1.formState.errors.name?.message} required>
-                <Input id="name" {...form1.register('name')} />
-              </FormField>
+              <div className="md:col-span-2">
+                <FormField label="Nome oficial do clube" htmlFor="name" error={form1.formState.errors.name?.message} required>
+                  <Input id="name" placeholder="Ex.: Atlético Clube Petróleos de Luanda" {...form1.register('name')} />
+                </FormField>
+              </div>
 
               <FormField label="Nome curto" htmlFor="short_name">
-                <Input id="short_name" {...form1.register('short_name')} />
+                <Input id="short_name" placeholder="Ex.: Petro de Luanda" {...form1.register('short_name')} />
+              </FormField>
+
+              <FormField label="Sigla / Acrónimo" htmlFor="acronym" error={form1.formState.errors.acronym?.message}>
+                <Input id="acronym" placeholder="Ex.: APL" maxLength={10} {...form1.register('acronym')} />
               </FormField>
 
               <FormField label="Ano de fundação" htmlFor="founded_year">

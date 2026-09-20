@@ -3,6 +3,7 @@ import { Activity } from 'lucide-react'
 import type { Match } from '../types'
 import { MatchStatusBadge } from './MatchStatusBadge'
 import { formatMatchClock, getMatchClockInfo } from '../utils/match-clock'
+import { formatMatchTeamName } from '@/modules/clubs/utils/club-name'
 
 export interface MatchScoreboardProps {
   match: Match
@@ -48,8 +49,10 @@ function LiveClockDisplay({ match, now }: { match: Match; now: number }) {
 
 export function MatchScoreboard({ match, compact = false, className = '' }: MatchScoreboardProps) {
   const [now, setNow] = useState(Date.now())
-  const homeName = match.homeTeamName || match.home_club_name
-  const awayName = match.awayTeamName || match.away_club_name
+  const homeName = formatMatchTeamName(match, 'home', 'short')
+  const awayName = formatMatchTeamName(match, 'away', 'short')
+  const homeOfficialName = formatMatchTeamName(match, 'home', 'official')
+  const awayOfficialName = formatMatchTeamName(match, 'away', 'official')
   const homeScore = match.score?.home ?? match.home_score
   const awayScore = match.score?.away ?? match.away_score
   const hasScore = homeScore !== null && homeScore !== undefined && awayScore !== null && awayScore !== undefined
@@ -80,9 +83,9 @@ export function MatchScoreboard({ match, compact = false, className = '' }: Matc
       )}
     </div>
     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-md sm:gap-xl">
-      <div className="flex min-w-0 flex-col items-center gap-sm text-center"><TeamBadge name={homeName} logo={match.homeTeamLogo || match.home_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{homeName}</span></div>
+      <div className="flex min-w-0 flex-col items-center gap-sm text-center" title={homeOfficialName}><TeamBadge name={homeName} logo={match.homeTeamLogo || match.home_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{homeName}</span></div>
       <div className="text-center"><div className="flex items-center gap-sm font-mono text-5xl font-black tabular-nums tracking-tight text-on-surface sm:text-7xl">{hasScore ? <><span>{homeScore}</span><span className="text-on-surface-variant/60">-</span><span>{awayScore}</span></> : <span className="text-2xl text-on-surface-variant">VS</span>}</div>{match.score?.homeFirstHalf !== undefined && <span className="text-xs text-on-surface-variant">Intervalo {match.score?.homeFirstHalf ?? '-'}-{match.score?.awayFirstHalf ?? '-'}</span>}</div>
-      <div className="flex min-w-0 flex-col items-center gap-sm text-center"><TeamBadge name={awayName} logo={match.awayTeamLogo || match.away_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{awayName}</span></div>
+      <div className="flex min-w-0 flex-col items-center gap-sm text-center" title={awayOfficialName}><TeamBadge name={awayName} logo={match.awayTeamLogo || match.away_club_logo} /><span className="max-w-full truncate text-sm font-semibold text-on-surface sm:text-base">{awayName}</span></div>
     </div>
   </div>
 }

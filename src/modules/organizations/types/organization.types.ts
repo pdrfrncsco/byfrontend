@@ -145,6 +145,7 @@ export interface ClubAffiliationRequest {
   id: string
   name: string
   short_name?: string
+  acronym?: string
   city?: string
   country?: string
   email?: string
@@ -162,6 +163,7 @@ export interface ClubAffiliationRequest {
 export interface ClubAffiliationCreateData {
   name: string
   short_name?: string
+  acronym?: string
   founded_year?: number | null
   city?: string | null
   country?: string

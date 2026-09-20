@@ -22,6 +22,7 @@ export function AffiliationRequestModal({
   const [formData, setFormData] = useState<ClubAffiliationCreateData>({
     name: '',
     short_name: '',
+    acronym: '',
     city: '',
     country: 'Angola',
     email: '',
@@ -34,77 +35,78 @@ export function AffiliationRequestModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.name.trim()) return
+    if (!formData.name) return
 
-    submitMutation.mutate(
-      {
+    try {
+      await submitMutation.mutateAsync({
         slug: organizationSlug,
         data: formData,
-      },
-      {
-        onSuccess: () => {
-          onClose()
-        },
-      }
-    )
+      })
+      onClose()
+    } catch {
+      // Error handled by hook
+    }
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-md"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="affiliation-modal-title"
-    >
-      <div className="relative w-full max-w-lg rounded-2xl border border-outline-variant/30 bg-surface p-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex items-center justify-between border-b border-outline-variant/20 pb-md">
-          <div className="flex items-center gap-sm">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Building2 className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 id="affiliation-modal-title" className="font-display text-base font-bold text-on-surface">
-                Solicitar Filiação
-              </h2>
-              <p className="text-xs text-on-surface-variant">
-                Ao {organizationName}
-              </p>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-2xl border border-outline-variant/30 bg-surface-container p-6 shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <Building2 className="h-5 w-5" />
           </div>
-          <button
-            onClick={onClose}
-            disabled={submitMutation.isPending}
-            className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors cursor-pointer"
-            aria-label="Fechar"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div>
+            <h3 className="text-lg font-bold text-on-surface">Solicitar Filiação de Clube</h3>
+            <p className="text-xs text-on-surface-variant">Envie os dados do seu clube para aprovação pela associação.</p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-md space-y-md">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">
-              Nome do Clube *
+              Nome Oficial do Clube *
             </label>
             <Input
               required
-              placeholder="Ex.: Atlético Sport Aviação"
+              placeholder="Ex.: Atlético Clube Petróleos de Luanda"
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
             />
+            <span className="mt-1 block text-[11px] text-on-surface-variant">Nome legal para documentos oficiais, súmulas e certificados.</span>
           </div>
 
           <div className="grid grid-cols-2 gap-md">
             <div>
               <label className="block text-xs font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">
-                Sigla / Nome Curto
+                Nome Curto
               </label>
               <Input
-                placeholder="Ex.: ASA"
+                placeholder="Ex.: Petro de Luanda"
                 value={formData.short_name || ''}
                 onChange={e => setFormData({ ...formData, short_name: e.target.value })}
               />
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">
+                Sigla / Acrónimo
+              </label>
+              <Input
+                placeholder="Ex.: APL"
+                maxLength={10}
+                value={formData.acronym || ''}
+                onChange={e => setFormData({ ...formData, acronym: e.target.value.toUpperCase() })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-md">
             <div>
               <label className="block text-xs font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">
                 Cidade
@@ -113,6 +115,16 @@ export function AffiliationRequestModal({
                 placeholder="Ex.: Luanda"
                 value={formData.city || ''}
                 onChange={e => setFormData({ ...formData, city: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">
+                País
+              </label>
+              <Input
+                placeholder="Ex.: Angola"
+                value={formData.country || ''}
+                onChange={e => setFormData({ ...formData, country: e.target.value })}
               />
             </div>
           </div>

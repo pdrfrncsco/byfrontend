@@ -4,6 +4,7 @@ export interface ClubOnboardingData {
   organization_slug?: string
   name?: string
   short_name?: string
+  acronym?: string
   founded_year?: number | string
   country?: string
   city?: string

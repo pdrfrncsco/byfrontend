@@ -38,6 +38,7 @@ export function ClubCard({ club }: { club: Club }) {
             name={club.name}
             logoUrl={club.logo_url}
             shortName={club.short_name}
+            acronym={club.acronym}
             primaryColor={club.primary_color}
             size="lg"
             shape="squircle"

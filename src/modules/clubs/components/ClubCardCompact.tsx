@@ -22,6 +22,7 @@ export function ClubCardCompact({ club }: ClubCardCompactProps) {
           name={club.name}
           logoUrl={club.logo_url}
           shortName={club.short_name}
+          acronym={club.acronym}
           primaryColor={club.primary_color}
           size="md"
           shape="squircle"

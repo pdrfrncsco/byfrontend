@@ -18,6 +18,8 @@ export interface Club {
   name: string
   slug: string
   short_name?: string | null
+  acronym?: string | null
+  display_name?: string
   tenant?: string
   tenant_name?: string
   tenant_slug?: string
@@ -212,6 +214,7 @@ export interface PaginatedResponse<T> {
 export interface ClubCreateData {
   name: string
   short_name?: string
+  acronym?: string
   founded_year?: number
   stadium_name?: string
   stadium_capacity?: number
