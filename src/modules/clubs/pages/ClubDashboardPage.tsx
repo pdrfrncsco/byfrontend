@@ -36,6 +36,7 @@ import {
 } from '@/modules/clubs/hooks/useClubs'
 import { useClubPlayerRegistrationRequests } from '@/modules/players/hooks'
 import { POSITION_COLOR } from '@/modules/players/constants'
+import { FeedPublisherCard } from '@/modules/fans/components'
 
 function formatRelativeTime(dateString?: string | null): string {
   if (!dateString) return 'Recentemente'
@@ -290,6 +291,15 @@ export default function ClubDashboardPage() {
         <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
           {/* Coluna Principal (65%) */}
           <div className="space-y-lg lg:col-span-2">
+            {/* Publicar no Feed dos Adeptos */}
+            <FeedPublisherCard
+              defaultAuthorType="club"
+              authorName={club?.name || 'Clube'}
+              authorAvatar={club?.logo_url || undefined}
+              clubId={club?.id}
+              compact
+            />
+
             {/* Card: Plantel Recente */}
             <Card variant="flat" padding="none" className="border-outline-variant/30 bg-surface shadow-xs">
               <CardHeader className="border-b border-outline-variant/20 pb-md">

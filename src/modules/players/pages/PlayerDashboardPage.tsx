@@ -22,6 +22,7 @@ import {
   PlayerQuickActionsCard,
   PlayerTransferStatus,
 } from '../components'
+import { FeedPublisherCard } from '@/modules/fans/components'
 import { usePlayerMe, usePlayerMedicalProfile } from '../hooks'
 import { playerRoutes } from '../routes'
 import { getPlayerSidebarLinks } from '../constants/navigation'
@@ -165,6 +166,15 @@ export function PlayerDashboardPage() {
         <div className="grid gap-lg lg:grid-cols-12">
           {/* MAIN COLUMN (65% -> 8 cols) */}
           <div className="space-y-lg lg:col-span-8">
+            {/* Publicar no Feed dos Adeptos */}
+            <FeedPublisherCard
+              defaultAuthorType="player"
+              authorName={player.full_name || 'Atleta'}
+              authorAvatar={avatarUrl || undefined}
+              playerId={player.id}
+              compact
+            />
+
             {/* Performance Stats Bar */}
             <PlayerTechnicalAttributesCard player={player} />
 

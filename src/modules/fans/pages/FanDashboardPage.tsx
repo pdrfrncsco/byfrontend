@@ -23,6 +23,7 @@ export function FanDashboardPage() {
     submitPrediction,
     feedItems,
     toggleFeedLike,
+    addFeedComment,
     leaderboard,
     stats,
   } = useFanFavorites()
@@ -60,6 +61,7 @@ export function FanDashboardPage() {
             <FanFeedWidget
               feedItems={feedItems}
               onToggleLike={toggleFeedLike}
+              onAddComment={(feedId, content) => addFeedComment(feedId, content, userName)}
             />
           </div>
 

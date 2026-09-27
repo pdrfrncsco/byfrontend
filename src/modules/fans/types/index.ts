@@ -1,3 +1,6 @@
+export type PostAuthorType = 'organization' | 'club' | 'player'
+export type PostCategory = 'general' | 'matchday' | 'announcement' | 'training' | 'highlight'
+
 export interface FollowedItem {
   id: string
   type: 'club' | 'player' | 'competition'
@@ -48,6 +51,14 @@ export interface FanPrediction {
   status: 'pending' | 'correct' | 'incorrect'
 }
 
+export interface FeedPostComment {
+  id: string
+  authorName: string
+  authorUsername: string
+  content: string
+  createdAt: string
+}
+
 export interface FanFeedItem {
   id: string
   type: 'match_result' | 'highlight' | 'transfer' | 'club_news' | 'award'
@@ -55,12 +66,32 @@ export interface FanFeedItem {
   summary: string
   entityName: string
   entityLogo?: string
-  entityType: 'club' | 'player' | 'competition'
+  entityType: 'club' | 'player' | 'competition' | 'organization'
+  category?: PostCategory
+  authorType?: PostAuthorType
+  authorId?: string
+  authorSlug?: string
   timestamp: string
   mediaUrl?: string
   actionUrl?: string
   likesCount: number
+  commentsCount?: number
   hasLiked?: boolean
+  comments?: FeedPostComment[]
+  isOfficial?: boolean
+  isPinned?: boolean
+}
+
+export interface CreateFeedPostPayload {
+  authorType: PostAuthorType
+  category: PostCategory
+  title?: string
+  content: string
+  mediaUrl?: string
+  clubId?: string
+  playerId?: string
+  organizationId?: string
+  isPinned?: boolean
 }
 
 export interface FanLeaderboardUser {

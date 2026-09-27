@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import type { FollowedItem, FanPrediction, FanFeedItem } from '../types'
+import type { FollowedItem, FanPrediction, FanFeedItem, FeedPostComment } from '../types'
 import {
   INITIAL_FOLLOWED_ITEMS,
   MOCK_FEED_ITEMS,
@@ -11,6 +11,7 @@ import {
 const STORAGE_KEY_FOLLOWS = 'boayetu_fan_follows_v1'
 const STORAGE_KEY_PREDICTIONS = 'boayetu_fan_predictions_v1'
 const STORAGE_KEY_FEED_LIKES = 'boayetu_fan_feed_likes_v1'
+const STORAGE_KEY_FEED_POSTS = 'boayetu_fan_feed_posts_v1'
 
 export function useFanFavorites() {
   const [followedItems, setFollowedItems] = useState<FollowedItem[]>(() => {
@@ -43,17 +44,20 @@ export function useFanFavorites() {
 
   const [feedItems, setFeedItems] = useState<FanFeedItem[]>(() => {
     try {
+      const savedPosts = localStorage.getItem(STORAGE_KEY_FEED_POSTS)
+      const baseItems: FanFeedItem[] = savedPosts ? JSON.parse(savedPosts) : MOCK_FEED_ITEMS
       const savedLikes = localStorage.getItem(STORAGE_KEY_FEED_LIKES)
       if (savedLikes) {
         const likedIds = new Set<string>(JSON.parse(savedLikes))
-        return MOCK_FEED_ITEMS.map((item) => ({
+        return baseItems.map((item) => ({
           ...item,
           hasLiked: likedIds.has(item.id),
-          likesCount: likedIds.has(item.id) ? item.likesCount + 1 : item.likesCount,
+          likesCount: likedIds.has(item.id) ? (item.hasLiked ? item.likesCount : item.likesCount + 1) : item.likesCount,
         }))
       }
+      return baseItems
     } catch (e) {
-      console.error('Failed to load feed likes', e)
+      console.error('Failed to load feed items', e)
     }
     return MOCK_FEED_ITEMS
   })
@@ -75,6 +79,15 @@ export function useFanFavorites() {
       console.error('Failed to save fan predictions to localStorage', e)
     }
   }, [predictions])
+
+  // Sync custom feed items
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_FEED_POSTS, JSON.stringify(feedItems))
+    } catch (e) {
+      console.error('Failed to save feed posts to localStorage', e)
+    }
+  }, [feedItems])
 
   const isFollowing = useCallback(
     (type: 'club' | 'player' | 'competition', idOrSlug: string) => {
@@ -142,6 +155,31 @@ export function useFanFavorites() {
     })
   }, [])
 
+  const addFeedComment = useCallback((feedId: string, content: string, authorName = 'Adepto') => {
+    setFeedItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== feedId) return item
+        const newComment: FeedPostComment = {
+          id: `comment-${Date.now()}`,
+          authorName,
+          authorUsername: authorName.toLowerCase().replace(/\s+/g, '_'),
+          content,
+          createdAt: 'Agora mesmo',
+        }
+        const updatedComments = [...(item.comments || []), newComment]
+        return {
+          ...item,
+          comments: updatedComments,
+          commentsCount: updatedComments.length,
+        }
+      })
+    )
+  }, [])
+
+  const addNewFeedPost = useCallback((newPost: FanFeedItem) => {
+    setFeedItems((prev) => [newPost, ...prev])
+  }, [])
+
   const followedClubs = useMemo(
     () => followedItems.filter((i) => i.type === 'club'),
     [followedItems]
@@ -175,6 +213,8 @@ export function useFanFavorites() {
     submitPrediction,
     feedItems,
     toggleFeedLike,
+    addFeedComment,
+    addNewFeedPost,
     upcomingMatches: MOCK_UPCOMING_MATCHES,
     leaderboard: MOCK_LEADERBOARD,
     stats,
