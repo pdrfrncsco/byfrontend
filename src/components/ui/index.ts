@@ -68,5 +68,4 @@ export { NativeSelect, nativeSelectVariants, type NativeSelectProps } from './na
 export { KpiCard, type KpiCardProps } from './kpi-card'
 export { PageSkeleton } from './page-skeleton'
 export { ThemeToggle } from './ThemeToggle'
-
-
+export { PasswordInput, type PasswordInputProps } from './password-input'

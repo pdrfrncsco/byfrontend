@@ -1,5 +1,6 @@
 import { organizationApi } from '@/modules/organizations'
 import { getPlayerOnboardingStatus } from '@/modules/players'
+import { getClubMe } from '@/modules/clubs/services'
 import { ROUTES } from '@/constants/routes'
 import type { User } from '@/types'
 
@@ -8,9 +9,18 @@ import type { User } from '@/types'
  */
 export async function resolvePostAuthRedirect(user?: User): Promise<string> {
   const roles = user?.roles ?? []
-  const isPlayer = user?.profile_type === 'player' || user?.profileType === 'player' || roles.includes('player')
-  const isClubAdmin = roles.includes('club_admin') || roles.includes('club_manager')
+  const isPlayer =
+    user?.profile_type === 'player' ||
+    user?.profileType === 'player' ||
+    roles.includes('player')
+  const isClubAdmin =
+    user?.profile_type === 'club' ||
+    user?.profileType === 'club' ||
+    roles.includes('club') ||
+    roles.includes('club_admin') ||
+    roles.includes('club_manager')
 
+  // Player Flow
   if (isPlayer) {
     try {
       const status = await getPlayerOnboardingStatus()
@@ -36,10 +46,25 @@ export async function resolvePostAuthRedirect(user?: User): Promise<string> {
     }
   }
 
+  // Club Flow
   if (isClubAdmin) {
-    return ROUTES.CLUB_ONBOARDING
+    try {
+      const club = await getClubMe()
+      if (!club) {
+        return ROUTES.CLUB_ONBOARDING
+      }
+      return ROUTES.DASHBOARD_CLUB
+    } catch {
+      return ROUTES.DASHBOARD_CLUB
+    }
   }
 
+  // Fan Flow
+  if (user?.profile_type === 'fan' || user?.profileType === 'fan' || roles.includes('fan')) {
+    return ROUTES.HOME
+  }
+
+  // Organization / Platform Admin Flow
   try {
     const status = await organizationApi.getOnboardingStatus()
     if (status.onboarding_required) {

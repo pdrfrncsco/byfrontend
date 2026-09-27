@@ -9,18 +9,25 @@ import {
 } from '@/modules/auth/schemas'
 import { ROUTES } from '@/constants/routes'
 import { useSeo } from '@/hooks/useSeo'
-
-const inputClass =
-  'w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm'
-const labelClass = 'block font-title-md text-on-surface mb-sm text-xs'
+import { PasswordInput } from '@/components/ui/password-input'
+import {
+  ArrowRight,
+  ArrowLeft,
+  Building2,
+  ShieldCheck,
+  Trophy,
+  Award,
+  Globe,
+} from 'lucide-react'
 
 export function RegisterOrganizationPage() {
   const navigate = useNavigate()
   const registerMutation = useRegisterOrganization()
 
   useSeo({
-    title: 'Registar organização',
-    description: 'Registe a sua federação, associação ou liga na Bolayetu e comece a gerir o seu futebol.',
+    title: 'Registar Organização Oficial',
+    description:
+      'Registe a sua federação, associação ou liga na BolaYetu e comece a gerir o seu ecossistema desportivo.',
     path: '/register/organization',
   })
 
@@ -46,6 +53,9 @@ export function RegisterOrganizationPage() {
       MZ: 'Moçambique',
       PT: 'Portugal',
       BR: 'Brasil',
+      CV: 'Cabo Verde',
+      GW: 'Guiné-Bissau',
+      ST: 'São Tomé e Príncipe',
     }
 
     const result = await registerMutation.mutateAsync({
@@ -66,112 +76,242 @@ export function RegisterOrganizationPage() {
     }
   }
 
+  const inputClass =
+    'w-full px-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors text-sm'
+  const labelClass = 'block font-title-md text-on-surface mb-1 text-xs font-semibold'
+
   return (
-    <AuthLayout>
-      <div className="glass-panel rounded-xl p-xl max-w-lg w-full border border-outline-variant">
-        <h1 className="font-display-lg text-headline-lg text-on-surface mb-xs text-center">
-          Registar Organização
-        </h1>
-        <p className="text-on-surface-variant text-sm text-center mb-lg">
-          Crie a sua conta de administrador e inicie o setup do ecossistema digital.
-        </p>
+    <AuthLayout
+      panelProps={{
+        badge: 'Governança & Homologação Oficial',
+        title: 'Digitalização Completa de Ligas, Associações e Federações',
+        quote:
+          'A BolaYetu permitiu estruturar todo o campeonato provincial com emissão eletrónica de licenças e súmulas em tempo real.',
+        author: 'Dr. Manuel Gonçalves, Federação Provincial',
+        stats: [
+          {
+            icon: Building2,
+            value: '+50',
+            label: 'Federações & Ligas',
+            colorClass: 'text-primary',
+          },
+          {
+            icon: Award,
+            value: '100%',
+            label: 'Conformidade Regulamentar',
+            colorClass: 'text-emerald-500',
+          },
+        ],
+      }}
+    >
+      <div className="glass-panel rounded-2xl p-6 sm:p-8 max-w-lg w-full border border-outline-variant shadow-xl">
+        {/* Top Back Nav */}
+        <Link
+          to={ROUTES.REGISTER}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors mb-4 group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          Alterar tipo de perfil
+        </Link>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-md">
-          <div className="grid grid-cols-2 gap-sm">
-            <div>
-              <label className={labelClass}>Nome</label>
-              <input className={inputClass} {...form.register('first_name')} />
-              {form.formState.errors.first_name && (
-                <p className="text-xs text-error mt-1">{form.formState.errors.first_name.message}</p>
-              )}
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+              <Building2 className="h-4 w-4" />
             </div>
-            <div>
-              <label className={labelClass}>Apelido</label>
-              <input className={inputClass} {...form.register('last_name')} />
-              {form.formState.errors.last_name && (
-                <p className="text-xs text-error mt-1">{form.formState.errors.last_name.message}</p>
-              )}
-            </div>
+            <span className="text-xs uppercase font-bold tracking-wider text-blue-500">
+              Registo Institucional
+            </span>
           </div>
+          <h1 className="font-display-lg text-2xl font-bold text-on-surface">
+            Registar Organização
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-on-surface-variant leading-relaxed">
+            Crie a sua conta de administrador e prepare o lançamento do seu portal desportivo.
+          </p>
+        </div>
 
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {/* Organization Name */}
           <div>
-            <label className={labelClass}>Nome da Organização</label>
+            <label className={labelClass} htmlFor="org_name">
+              Nome da Organização / Federação / Liga
+            </label>
             <input
+              id="org_name"
               className={inputClass}
-              placeholder="Ex: Federação Nacional de Futebol"
+              placeholder="Ex: Federação Angolana de Futebol ou Liga Provincial"
+              autoFocus
               {...form.register('organization_name')}
             />
             {form.formState.errors.organization_name && (
-              <p className="text-xs text-error mt-1">{form.formState.errors.organization_name.message}</p>
+              <p className="text-xs text-error mt-1">
+                {form.formState.errors.organization_name.message}
+              </p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-sm">
+          {/* Type and Country */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>Tipo</label>
-              <select className={inputClass} {...form.register('organization_type')}>
-                <option value="federation">Federação</option>
-                <option value="association">Associação</option>
-                <option value="league">Liga</option>
-                <option value="organizer">Organizador</option>
-                <option value="academy">Academia</option>
+              <label className={labelClass} htmlFor="org_type">
+                Tipo de Entidade
+              </label>
+              <select id="org_type" className={inputClass} {...form.register('organization_type')}>
+                <option value="federation">Federação Nacional</option>
+                <option value="association">Associação Provincial</option>
+                <option value="league">Liga / Torneio</option>
+                <option value="organizer">Organizador Privado</option>
+                <option value="academy">Academia / Centro Formação</option>
               </select>
             </div>
             <div>
-              <label className={labelClass}>País</label>
-              <select className={inputClass} {...form.register('country')}>
-                <option value="AO">Angola</option>
-                <option value="MZ">Moçambique</option>
-                <option value="PT">Portugal</option>
-                <option value="BR">Brasil</option>
+              <label className={labelClass} htmlFor="org_country">
+                País
+              </label>
+              <select id="org_country" className={inputClass} {...form.register('country')}>
+                <option value="AO">🇦🇴 Angola</option>
+                <option value="MZ">🇲🇿 Moçambique</option>
+                <option value="PT">🇵🇹 Portugal</option>
+                <option value="BR">🇧🇷 Brasil</option>
+                <option value="CV">🇨🇻 Cabo Verde</option>
+                <option value="GW">🇬🇼 Guiné-Bissau</option>
+                <option value="ST">🇸🇹 São Tomé e Príncipe</option>
               </select>
             </div>
           </div>
 
+          {/* City */}
           <div>
-            <label className={labelClass}>Email</label>
-            <input type="email" className={inputClass} {...form.register('email')} />
+            <label className={labelClass} htmlFor="org_city">
+              Cidade / Província
+            </label>
+            <input
+              id="org_city"
+              placeholder="Ex: Luanda, Benguela, Maputo..."
+              className={inputClass}
+              {...form.register('city')}
+            />
+          </div>
+
+          {/* Administrator Name */}
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label className={labelClass} htmlFor="adm_first_name">
+                Nome do Responsável
+              </label>
+              <input
+                id="adm_first_name"
+                placeholder="Ex: Manuel"
+                className={inputClass}
+                {...form.register('first_name')}
+              />
+              {form.formState.errors.first_name && (
+                <p className="text-xs text-error mt-1">
+                  {form.formState.errors.first_name.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="adm_last_name">
+                Apelido
+              </label>
+              <input
+                id="adm_last_name"
+                placeholder="Ex: Neto"
+                className={inputClass}
+                {...form.register('last_name')}
+              />
+              {form.formState.errors.last_name && (
+                <p className="text-xs text-error mt-1">
+                  {form.formState.errors.last_name.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className={labelClass} htmlFor="org_email">
+              Email Institucional
+            </label>
+            <input
+              id="org_email"
+              type="email"
+              placeholder="admin@federacao.ao"
+              className={inputClass}
+              {...form.register('email')}
+            />
             {form.formState.errors.email && (
               <p className="text-xs text-error mt-1">{form.formState.errors.email.message}</p>
             )}
           </div>
 
+          {/* Phone */}
           <div>
-            <label className={labelClass}>Telemóvel (Opcional)</label>
-            <input type="tel" className={inputClass} {...form.register('phone')} />
+            <label className={labelClass} htmlFor="org_phone">
+              Telemóvel de Contacto (Opcional)
+            </label>
+            <input
+              id="org_phone"
+              type="tel"
+              placeholder="+244 923 000 000"
+              className={inputClass}
+              {...form.register('phone')}
+            />
           </div>
 
+          {/* Password */}
           <div>
-            <label className={labelClass}>Senha</label>
-            <input type="password" className={inputClass} {...form.register('password')} />
-            {form.formState.errors.password && (
-              <p className="text-xs text-error mt-1">{form.formState.errors.password.message}</p>
-            )}
+            <label className={labelClass} htmlFor="org_password">
+              Palavra-passe do Administrador
+            </label>
+            <PasswordInput
+              id="org_password"
+              placeholder="••••••••"
+              showStrengthMeter
+              error={form.formState.errors.password?.message}
+              {...form.register('password')}
+            />
           </div>
 
+          {/* Confirm Password */}
           <div>
-            <label className={labelClass}>Confirmar Senha</label>
-            <input type="password" className={inputClass} {...form.register('password_confirm')} />
-            {form.formState.errors.password_confirm && (
-              <p className="text-xs text-error mt-1">{form.formState.errors.password_confirm.message}</p>
-            )}
+            <label className={labelClass} htmlFor="org_password_confirm">
+              Confirmar Palavra-passe
+            </label>
+            <PasswordInput
+              id="org_password_confirm"
+              placeholder="••••••••"
+              error={form.formState.errors.password_confirm?.message}
+              {...form.register('password_confirm')}
+            />
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={registerMutation.isPending}
-            className="w-full bg-primary text-on-primary-fixed px-lg py-md font-bold rounded-lg hover:scale-[1.02] transition-transform disabled:opacity-50"
+            className="w-full mt-3 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-lg py-3 font-bold text-on-primary-fixed transition-all hover:scale-[1.01] active:scale-[0.99] text-sm disabled:cursor-not-allowed disabled:opacity-50 shadow-md shadow-primary/20 cursor-pointer"
           >
-            {registerMutation.isPending ? 'A criar conta...' : 'Criar Organização e Iniciar Setup'}
+            {registerMutation.isPending ? (
+              'A criar organização...'
+            ) : (
+              <>
+                <span>Registar Organização & Iniciar Setup</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
-        <p className="mt-lg text-center text-sm text-on-surface-variant">
-          Já tem conta?{' '}
-          <Link to={ROUTES.LOGIN} className="text-primary font-bold underline">
+        <div className="mt-6 pt-5 border-t border-outline-variant/60 text-center text-xs text-on-surface-variant">
+          Já tem conta institucional?{' '}
+          <Link to={ROUTES.LOGIN} className="text-primary font-bold hover:underline">
             Fazer Login
           </Link>
-        </p>
+        </div>
       </div>
     </AuthLayout>
   )
