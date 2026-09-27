@@ -12,25 +12,22 @@ import {
 } from '@/modules/shared/components'
 import { useSeo } from '@/hooks/useSeo'
 import { useCompetitionsPaginated } from '@/modules/competitions/hooks/useCompetitions'
-import { useCompetitionMatches, useCompetitionStandings } from '@/modules/competitions/hooks/useCompetitionMatches'
+import {
+  useCompetitionMatches,
+  useCompetitionStandings,
+} from '@/modules/competitions/hooks/useCompetitionMatches'
 import { useClubs } from '@/modules/clubs/hooks/useClubs'
 import { usePlayers } from '@/modules/players/hooks'
 import { usePublicOrganizations } from '@/modules/organizations/hooks'
 
 const HowItWorks = lazy(() =>
-  import('@/modules/shared/components/HowItWorks').then(m => ({ default: m.HowItWorks })),
+  import('@/modules/shared/components/HowItWorks').then((m) => ({ default: m.HowItWorks })),
 )
 const Ecosystem = lazy(() =>
-  import('@/modules/shared/components/Ecosystem').then(m => ({ default: m.Ecosystem })),
-)
-const Pricing = lazy(() =>
-  import('@/modules/shared/components/Pricing').then(m => ({ default: m.Pricing })),
-)
-const Testimonials = lazy(() =>
-  import('@/modules/shared/components/Testimonials').then(m => ({ default: m.Testimonials })),
+  import('@/modules/shared/components/Ecosystem').then((m) => ({ default: m.Ecosystem })),
 )
 const FAQ = lazy(() =>
-  import('@/modules/shared/components/FAQ').then(m => ({ default: m.FAQ })),
+  import('@/modules/shared/components/FAQ').then((m) => ({ default: m.FAQ })),
 )
 
 export function LandingPage() {
@@ -57,8 +54,8 @@ export function LandingPage() {
 
   // Select a live or standout match for hero display
   const featuredMatch = useMemo(() => {
-    const live = matches.find(m => m.status === 'live' || m.status === 'halftime')
-    const finished = matches.find(m => m.status === 'finished')
+    const live = matches.find((m) => m.status === 'live' || m.status === 'halftime')
+    const finished = matches.find((m) => m.status === 'finished')
     return live || finished || matches[0] || null
   }, [matches])
 
@@ -66,7 +63,10 @@ export function LandingPage() {
   const { data: compStandings, isLoading: standingsLoading } = useCompetitionStandings(
     featuredComp?.id || '',
   )
-  const standings = useMemo(() => (Array.isArray(compStandings) ? compStandings : []), [compStandings])
+  const standings = useMemo(
+    () => (Array.isArray(compStandings) ? compStandings : []),
+    [compStandings],
+  )
 
   // 4. Fetch Clubs
   const { data: clubsData, isLoading: clubsLoading } = useClubs({
@@ -99,7 +99,7 @@ export function LandingPage() {
   }, [players])
 
   // 6. Fetch Organizations
-  const { data: orgsData, isLoading: orgsLoading } = usePublicOrganizations()
+  const { data: orgsData } = usePublicOrganizations()
   const rawOrgs = useMemo(() => (Array.isArray(orgsData) ? orgsData : []), [orgsData])
   const organizationsTotal = rawOrgs.length
 
@@ -147,7 +147,7 @@ export function LandingPage() {
         {t('landing.skipToContent', 'Saltar para o conteúdo')}
       </a>
 
-      {/* Top Live / Upcoming Match Ticker - Offset by fixed header height (64px) */}
+      {/* Top Live / Upcoming Match Ticker */}
       <div className="pt-16">
         <LiveMatchTicker
           matches={matches}
@@ -200,11 +200,7 @@ export function LandingPage() {
 
         {/* Registered Clubs Showcase */}
         <section id="clubs-showcase">
-          <ClubsShowcase
-            clubs={clubs}
-            totalClubs={clubsTotal}
-            isLoading={clubsLoading}
-          />
+          <ClubsShowcase clubs={clubs} totalClubs={clubsTotal} isLoading={clubsLoading} />
         </section>
 
         {/* Features & Solutions Grid */}
@@ -227,14 +223,6 @@ export function LandingPage() {
             <Ecosystem />
           </section>
 
-          {/* <section id="pricing">
-            <Pricing />
-          </section>
-
-          <section id="testimonials">
-            <Testimonials />
-          </section>  */}
-
           <section id="faq">
             <FAQ />
           </section>
@@ -251,7 +239,10 @@ export function LandingPage() {
         >
           <div className="bg-surface-container-high rounded-2xl max-w-2xl w-full p-6 border border-outline-variant/30 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h2 id="demo-title" className="font-display-lg text-xl sm:text-2xl font-bold text-on-surface">
+              <h2
+                id="demo-title"
+                className="font-display-lg text-xl sm:text-2xl font-bold text-on-surface"
+              >
                 {t('landing.demo.title', 'Demonstração da Plataforma BolaYetu')}
               </h2>
               <button
@@ -259,18 +250,23 @@ export function LandingPage() {
                 type="button"
                 onClick={() => setShowDemoModal(false)}
                 aria-label={t('landing.demo.close', 'Fechar')}
-                className="text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-1"
+                className="text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-1 cursor-pointer"
               >
                 <span aria-hidden="true">✕</span>
               </button>
             </div>
-            <div className="aspect-video bg-surface-container rounded-xl flex items-center justify-center mb-6 border border-outline-variant/20">
-              <span className="text-on-surface-variant text-sm">{t('landing.demo.placeholder', 'Vídeo interativo de demonstração da central de jogos e gestão de competições.')}</span>
+            <div className="aspect-video bg-surface-container rounded-xl flex items-center justify-center mb-6 border border-outline-variant/20 text-center p-4">
+              <span className="text-on-surface-variant text-sm">
+                {t(
+                  'landing.demo.placeholder',
+                  'Vídeo interativo de demonstração da central de jogos, súmulas eletrónicas e gestão de competições.',
+                )}
+              </span>
             </div>
             <button
               type="button"
               onClick={() => setShowDemoModal(false)}
-              className="w-full bg-primary text-on-primary-fixed font-bold py-3 rounded-xl hover:bg-primary/90 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-full bg-primary text-on-primary-fixed font-bold py-3 rounded-xl hover:bg-primary/90 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
             >
               {t('landing.demo.close', 'Fechar Demonstração')}
             </button>

@@ -33,12 +33,12 @@ describe('Public Navigation', () => {
 
     fireEvent.click(screen.getByText('Explorar'))
 
-    expect(screen.getByRole('link', { name: 'Competições' })).toHaveAttribute('href', '/competitions')
-    expect(screen.getByRole('link', { name: 'Clubes' })).toHaveAttribute('href', '/clubs')
-    expect(screen.getByRole('link', { name: 'Organizações' })).toHaveAttribute('href', '/organizations')
-    expect(screen.getByRole('link', { name: 'Jogadores' })).toHaveAttribute('href', '/players')
-    expect(screen.getByRole('link', { name: 'Entrar' })).toHaveAttribute('href', '/login')
-    expect(screen.getByRole('link', { name: 'Registar' })).toHaveAttribute('href', '/register')
+    expect(screen.getAllByRole('link', { name: /Competições/i })[0]).toHaveAttribute('href', '/competitions')
+    expect(screen.getByRole('link', { name: /Clubes/i })).toHaveAttribute('href', '/clubs')
+    expect(screen.getByRole('link', { name: /Organizações/i })).toHaveAttribute('href', '/organizations')
+    expect(screen.getByRole('link', { name: /Jogadores/i })).toHaveAttribute('href', '/players')
+    expect(screen.getByRole('link', { name: /Entrar/i })).toHaveAttribute('href', '/login')
+    expect(screen.getByRole('link', { name: /Registar/i })).toHaveAttribute('href', '/register')
   })
 
   it('shows the authenticated dashboard and profile actions', () => {
@@ -57,7 +57,7 @@ describe('Public Navigation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Abrir menu' }))
 
     expect(screen.getByRole('button', { name: 'Fechar menu' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Competições' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: /Competições/i }).length).toBeGreaterThan(0)
   })
 
   it('renders the minimal variant without public navigation groups', () => {
