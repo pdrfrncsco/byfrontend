@@ -20,14 +20,14 @@ export function SidebarEntityHeader({ context }: SidebarEntityHeaderProps) {
             alt={context.entityName}
             className={cn(
               "h-full w-full object-cover",
-              context.type === 'player' ? "rounded-full" : "rounded-md"
+              context.type === 'player' || context.type === 'fan' ? "rounded-full" : "rounded-md"
             )}
           />
         ) : (
           <div className={cn(
             "h-full w-full flex items-center justify-center",
             "bg-[#0f6e56] text-white text-sm font-semibold",
-            context.type === 'player' ? "rounded-full" : "rounded-md"
+            context.type === 'player' || context.type === 'fan' ? "rounded-full" : "rounded-md"
           )}>
             {fallback}
           </div>

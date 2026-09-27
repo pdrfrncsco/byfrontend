@@ -61,7 +61,7 @@ export async function resolvePostAuthRedirect(user?: User): Promise<string> {
 
   // Fan Flow
   if (user?.profile_type === 'fan' || user?.profileType === 'fan' || roles.includes('fan')) {
-    return ROUTES.HOME
+    return ROUTES.DASHBOARD_FAN
   }
 
   // Organization / Platform Admin Flow

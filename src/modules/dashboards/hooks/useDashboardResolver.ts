@@ -14,6 +14,7 @@ export type DashboardType =
   | 'competition'  // Competition organizer within a league/federation
   | 'club'         // Club admin managing squads, transfers, licences
   | 'player'       // Individual athlete portal
+  | 'fan'          // Dedicated fan / supporter portal
 
 // ─── Role Constants ───────────────────────────────────────────────────────────
 
@@ -76,15 +77,6 @@ export interface DashboardResolution {
 /**
  * Resolves the dashboard type from the user's role array using a strict
  * priority chain. Only the FIRST match in the array is used.
- *
- * Priority (highest first):
- *   owner / admin  → organization (multi-tenant owner view)
- *   executive      → executive (cross-org analytics)
- *   manager        → executive (fallback manager view)
- *   club_admin     → club
- *   competition_organizer → competition
- *   player         → player
- *   member / fan / active → executive (guest/logged-in default)
  */
 function resolveFromRoles(roles: string[]): DashboardType {
   const has = (role: string) => roles.includes(role)
@@ -96,8 +88,9 @@ function resolveFromRoles(roles: string[]): DashboardType {
   if (has(DERIVED_ROLES.CLUB)) return 'club'
   if (has(DERIVED_ROLES.COMPETITION_ORGANIZER)) return 'competition'
   if (has(DERIVED_ROLES.PLAYER)) return 'player'
+  if (has(DERIVED_ROLES.FAN)) return 'fan'
 
-  // 'member', 'fan', 'active', or any unrecognised role → safe executive fallback
+  // 'member', 'active', or any unrecognised role → safe executive fallback
   return 'executive'
 }
 
@@ -138,6 +131,7 @@ const DASHBOARD_LABELS: Record<DashboardType, string> = {
   competition: 'Organizador de Provas',
   club: 'Gestor de Clube',
   player: 'Portal do Jogador',
+  fan: 'Portal do Adepto',
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -179,9 +173,10 @@ export function useDashboardResolver(): DashboardResolution {
     if (user) {
       const roles = user.roles ?? []
       const activeRole = user.role ?? null
+      const isFanProfile = (user as any).profile_type === 'fan' || (user as any).profileType === 'fan'
 
       // Active membership role takes precedence over derived roles
-      let dashType: DashboardType = 'executive'
+      let dashType: DashboardType = isFanProfile ? 'fan' : 'executive'
 
       if (activeRole && activeRole !== DERIVED_ROLES.FAN) {
         dashType = resolveFromRoles([activeRole, ...roles])
@@ -190,7 +185,7 @@ export function useDashboardResolver(): DashboardResolution {
       }
 
       const hasRole = roles.some(
-        r => r !== DERIVED_ROLES.FAN && r !== DERIVED_ROLES.ACTIVE,
+        r => r !== DERIVED_ROLES.ACTIVE,
       )
 
       return {
@@ -198,7 +193,7 @@ export function useDashboardResolver(): DashboardResolution {
         resolvedLabel: DASHBOARD_LABELS[dashType],
         isTenantResolved: false,
         hasRole,
-        primaryRole: activeRole,
+        primaryRole: activeRole || (isFanProfile ? 'fan' : null),
         isLoading,
       }
     }

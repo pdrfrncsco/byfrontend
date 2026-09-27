@@ -79,6 +79,16 @@ export function resolveNavContext(
     }
   }
 
+  if (normalizedType === 'fan' || pathname.includes('/dashboard/fan') || pathname.includes('/fan/')) {
+    return {
+      type: 'fan',
+      entityId: user?.id || '',
+      entityName: user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : (user?.username || 'Adepto'),
+      entityAvatar: user?.avatarUrl,
+      subLabel: 'Área do Adepto',
+    }
+  }
+
   // Fallback Administrativo/Executivo
   return {
     type: 'admin',

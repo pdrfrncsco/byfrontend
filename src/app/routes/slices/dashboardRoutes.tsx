@@ -12,6 +12,9 @@ import { onboardingRoutes } from '@/modules/onboarding/routes'
 import { ROUTES } from '@/constants/routes'
 // Lazy loaded pages for dashboards and organizations
 const DashboardPageSelector = lazy(() => import('@/modules/dashboards').then(m => ({ default: m.DashboardPageSelector })))
+const FanDashboardPage = lazy(() => import('@/modules/fans/pages/FanDashboardPage').then(m => ({ default: m.FanDashboardPage })))
+const FanFavoritesPage = lazy(() => import('@/modules/fans/pages/FanFavoritesPage').then(m => ({ default: m.FanFavoritesPage })))
+const FanCommunityPage = lazy(() => import('@/modules/fans/pages/FanCommunityPage').then(m => ({ default: m.FanCommunityPage })))
 const CompetitionDashboardPage = lazy(() => import('@/modules/competitions/pages/CompetitionDashboardPage').then(m => ({ default: m.CompetitionDashboardPage })))
 
 const OrganizationDashboardPage = lazy(() => import('@/modules/organizations').then(m => ({ default: m.OrganizationDashboardPage })))
@@ -196,6 +199,32 @@ export function dashboardRouteElements() {
         element={
           <ProtectedRoute requiredRoles={['player', 'owner', 'admin']}>
             <Suspense fallback={<RouteFallback />}><PlayerDashboardSettingsPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fan / Adepto routes */}
+      <Route
+        path={ROUTES.DASHBOARD_FAN}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><FanDashboardPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.DASHBOARD_FAN_FAVORITES}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><FanFavoritesPage /></Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.DASHBOARD_FAN_COMMUNITY}
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}><FanCommunityPage /></Suspense>
           </ProtectedRoute>
         }
       />

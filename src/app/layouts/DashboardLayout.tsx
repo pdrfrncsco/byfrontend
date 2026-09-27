@@ -18,7 +18,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode
   title: string
   subtitle?: string
-  dashboardType: 'federation' | 'executive' | 'organization' | 'league' | 'club' | 'competition' | 'player'
+  dashboardType: 'federation' | 'executive' | 'organization' | 'league' | 'club' | 'competition' | 'player' | 'fan'
   sidebarLinks?: NavItem[]
   sidebarSections?: SidebarSection[]
   headerActions?: React.ReactNode
@@ -77,6 +77,8 @@ export function DashboardLayout({
         return t('dashboard.sublabels.organization', 'Organização')
       case 'player':
         return t('dashboard.sublabels.player')
+      case 'fan':
+        return t('dashboard.sublabels.fan', 'Portal do Adepto')
       default:
         return t('dashboard.sublabels.default')
     }

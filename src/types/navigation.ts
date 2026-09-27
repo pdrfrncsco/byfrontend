@@ -20,7 +20,7 @@ export interface NavItem {
 }
 
 export interface NavContext {
-  type: 'organization' | 'club' | 'competition' | 'player' | 'admin'
+  type: 'organization' | 'club' | 'competition' | 'player' | 'fan' | 'admin'
   entityId: string
   entityName: string
   entityLogo?: string

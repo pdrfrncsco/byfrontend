@@ -78,6 +78,10 @@ export const ROUTES = {
   DASHBOARD_CLUB_LINEUP: '/dashboard/club/lineup',
   DASHBOARD_CLUB_MATCH_LINEUP: (matchId: string) => `/dashboard/club/matches/${matchId}/lineup`,
   FANS: '/fans',
+  DASHBOARD_FAN: '/dashboard/fan',
+  DASHBOARD_FAN_FAVORITES: '/dashboard/fan/favorites',
+  DASHBOARD_FAN_MATCHES: '/dashboard/fan/matches',
+  DASHBOARD_FAN_COMMUNITY: '/dashboard/fan/community',
   // Competition public routes
   COMPETITIONS: '/competitions',
   COMPETITION_DETAIL: (id: string) => `/competitions/${id}`,

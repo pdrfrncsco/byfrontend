@@ -18,6 +18,7 @@ import {
   Network,
   Swords,
   User,
+  Heart,
   ChevronRight,
 } from 'lucide-react'
 
@@ -26,6 +27,12 @@ import {
 const PlayerDashboardPage = lazy(() =>
   import('@/modules/players/pages/PlayerDashboardPage').then((m) => ({
     default: m.PlayerDashboardPage,
+  })),
+)
+
+const FanDashboardPage = lazy(() =>
+  import('@/modules/fans/pages/FanDashboardPage').then((m) => ({
+    default: m.FanDashboardPage,
   })),
 )
 
@@ -68,6 +75,12 @@ const DEV_OPTIONS: DevDashboardOption[] = [
     icon: <User className="w-4 h-4" />,
     role: 'player',
     color: '#f472b6',
+  },
+  {
+    type: 'fan',
+    icon: <Heart className="w-4 h-4" />,
+    role: 'fan / adepto',
+    color: '#f43f5e',
   },
 ]
 
@@ -112,6 +125,19 @@ function renderDashboard(type: DashboardType) {
           }
         >
           <PlayerDashboardPage />
+        </Suspense>
+      )
+    case 'fan':
+      return (
+        <Suspense
+          fallback={
+            <div className="p-8 text-sm text-on-surface-variant flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-[#f43f5e] border-t-transparent rounded-full animate-spin" />
+              A carregar portal do adepto…
+            </div>
+          }
+        >
+          <FanDashboardPage />
         </Suspense>
       )
     default:
