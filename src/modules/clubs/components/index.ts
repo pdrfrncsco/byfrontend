@@ -7,4 +7,4 @@ export { ClubLogo } from './ClubLogo'
 export { ClubLogoUploadCard } from './ClubLogoUploadCard'
 export { ClubSquadPlayerCard } from './ClubSquadPlayerCard'
 export { ClubPlayerPreviewModal } from './ClubPlayerPreviewModal'
-
+export { ClubSquadLicensesModal } from './ClubSquadLicensesModal'

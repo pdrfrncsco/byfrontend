@@ -54,10 +54,12 @@ import {
   MatchStandingsCard,
   StandingsTable,
   MatchH2HPanel,
+  MatchOfficialScoresheetModal,
 } from '../components'
 import { CompetitionStandingsRouter } from '../components/CompetitionFormatRouter'
 import { ManualMatchScoresheetModal } from '../components/ManualMatchScoresheetModal'
 import { LiveEventModal } from '../components/LiveEventModal'
+import { Printer } from 'lucide-react'
 
 // Lazy load heavier components
 const MatchLineupPage = lazy(() => import('./MatchLineupPage').then(m => ({ default: m.MatchLineupPage })))
@@ -237,6 +239,7 @@ export function MatchDetailPage() {
   const [activeTab, setActiveTab] = useState<TabId>(getInitialTab)
   const [manualScoresheetOpen, setManualScoresheetOpen] = useState(false)
   const [liveEventModalOpen, setLiveEventModalOpen] = useState(false)
+  const [officialScoresheetOpen, setOfficialScoresheetOpen] = useState(false)
 
   // Data fetching
   const { data: competition, isLoading: loadingComp } = useCompetition(competitionId)
@@ -303,6 +306,79 @@ export function MatchDetailPage() {
   const awayLineupSubmission = lineups.find(l => String(l.club) === String(awayClubId))
   const homeCoach = (homeLineupSubmission as any)?.coach || activeMatch?.homeLineup?.coach || (activeMatch as any)?.home_coach
   const awayCoach = (awayLineupSubmission as any)?.coach || activeMatch?.awayLineup?.coach || (activeMatch as any)?.away_coach
+
+  const matchScoresheetData = useMemo(() => {
+    if (!activeMatch) return null
+    return {
+      id: activeMatch.id,
+      competitionName: competition?.name || (activeMatch as any).competition_name || 'Competição Oficial',
+      season: competition?.season || '2026/2027',
+      roundName: activeMatch.round_name || (activeMatch.round_number ? `Jornada ${activeMatch.round_number}` : 'Fase Regular'),
+      date: activeMatch.match_date || activeMatch.scheduledAt || new Date().toISOString(),
+      time: (activeMatch as any).time || undefined,
+      stadium: activeMatch.venue || (activeMatch as any).stadium || 'Estádio Principal',
+      city: (activeMatch as any).city || 'Luanda',
+      homeClub: {
+        id: String(homeClubId || 'home'),
+        name: formatMatchTeamName(activeMatch, 'home', 'official'),
+        logoUrl: activeMatch.home_club_logo || activeMatch.homeTeamLogo,
+        score: activeMatch.home_score ?? (activeMatch as any).homeScore ?? 0,
+        lineup: (homeLineupSubmission as any)?.players?.map((p: any) => ({
+          number: p.jersey_number || p.number || 1,
+          name: p.player_name || p.name || 'Atleta',
+          position: p.position || 'Jogador',
+          isCaptain: p.is_captain,
+          isStarter: p.is_starter ?? true,
+        })) || (homeLineupSubmission as any)?.starters?.map((p: any) => ({
+          number: p.jersey_number || p.number || 1,
+          name: p.player_name || p.name || 'Atleta',
+          position: p.position || 'Jogador',
+          isCaptain: p.is_captain,
+          isStarter: true,
+        })) || [],
+      },
+      awayClub: {
+        id: String(awayClubId || 'away'),
+        name: formatMatchTeamName(activeMatch, 'away', 'official'),
+        logoUrl: activeMatch.away_club_logo || activeMatch.awayTeamLogo,
+        score: activeMatch.away_score ?? (activeMatch as any).awayScore ?? 0,
+        lineup: (awayLineupSubmission as any)?.players?.map((p: any) => ({
+          number: p.jersey_number || p.number || 1,
+          name: p.player_name || p.name || 'Atleta',
+          position: p.position || 'Jogador',
+          isCaptain: p.is_captain,
+          isStarter: p.is_starter ?? true,
+        })) || (awayLineupSubmission as any)?.starters?.map((p: any) => ({
+          number: p.jersey_number || p.number || 1,
+          name: p.player_name || p.name || 'Atleta',
+          position: p.position || 'Jogador',
+          isCaptain: p.is_captain,
+          isStarter: true,
+        })) || [],
+      },
+      goals: (liveState.events || []).filter((e: any) => e.type === 'goal' || e.event_type === 'goal').map((e: any) => ({
+        minute: e.minute,
+        playerName: e.player_name || e.playerName || 'Jogador',
+        team: (e.team_id === homeClubId || e.is_home ? 'home' : 'away') as 'home' | 'away',
+        type: e.detail || e.goal_type || 'Golo',
+      })),
+      cards: (liveState.events || []).filter((e: any) => e.type === 'card' || e.event_type === 'card' || e.type === 'yellow_card' || e.type === 'red_card').map((e: any) => ({
+        minute: e.minute,
+        playerName: e.player_name || e.playerName || 'Jogador',
+        team: (e.team_id === homeClubId || e.is_home ? 'home' : 'away') as 'home' | 'away',
+        card: (e.card_type === 'red' || e.type === 'red_card' ? 'red' : 'yellow') as 'yellow' | 'red',
+        reason: e.detail || e.reason,
+      })),
+      referees: {
+        mainReferee: activeMatch.refereeName || (activeMatch as any).referee_name || 'Árbitro Nomeado',
+        assistant1: (activeMatch as any).assistant_referee_1 || 'Assistente 1',
+        assistant2: (activeMatch as any).assistant_referee_2 || 'Assistente 2',
+        fourthOfficial: (activeMatch as any).fourth_official || '4º Árbitro',
+        delegate: (activeMatch as any).match_delegate || 'Delegado FAF',
+      },
+      status: activeMatch.status,
+    }
+  }, [activeMatch, competition, homeClubId, awayClubId, homeLineupSubmission, awayLineupSubmission, liveState.events])
 
   // Guard: missing ID
   if (!matchId || !compId) {
@@ -719,6 +795,16 @@ export function MatchDetailPage() {
               </Button>
             )}
 
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full border-brand-500/40 text-brand-400 hover:bg-brand-500/10 font-bold"
+              onClick={() => setOfficialScoresheetOpen(true)}
+            >
+              <Printer className="mr-xs h-3.5 w-3.5" /> Súmula Oficial (PDF)
+            </Button>
+
             {activeMatch.status === 'pre_match' && isMatchOperator && (
               <Button
                 variant="secondary"
@@ -867,6 +953,13 @@ export function MatchDetailPage() {
         onClose={() => setLiveEventModalOpen(false)}
         onSuccess={() => liveState.refetch()}
       />
+      {matchScoresheetData && (
+        <MatchOfficialScoresheetModal
+          isOpen={officialScoresheetOpen}
+          onClose={() => setOfficialScoresheetOpen(false)}
+          matchData={matchScoresheetData}
+        />
+      )}
     </>
   )
 }

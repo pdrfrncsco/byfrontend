@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
-import { CheckCheck, Bell, Loader2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CheckCheck, Bell, Loader2, ArrowRight } from 'lucide-react'
 import { useNotificationsList, useMarkRead } from '../hooks/useNotifications'
 
 const PAGE_SIZE = 6
@@ -175,9 +176,15 @@ export const NotificationsDropdown: React.FC = () => {
       </div>
 
       {/* Footer */}
-      {items.length > 0 && (
-        <div className="px-4 py-2 bg-[#0d1b2a] border-t border-[#26364a] flex items-center justify-between">
-          <span className="text-[10px] text-on-surface-variant">{items.length} total</span>
+      <div className="px-4 py-2.5 bg-[#0d1b2a] border-t border-[#26364a] flex items-center justify-between">
+        <Link
+          to="/notifications"
+          className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold"
+        >
+          <span>Ver todas</span>
+          <ArrowRight className="w-3 h-3" />
+        </Link>
+        {items.length > 0 && (
           <div className="flex gap-2">
             {page > 1 && (
               <button
@@ -192,12 +199,12 @@ export const NotificationsDropdown: React.FC = () => {
                 className="text-xs text-primary hover:text-primary/80 transition-colors"
                 onClick={() => setPage(p => p + 1)}
               >
-                Ver mais →
+                Mais →
               </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

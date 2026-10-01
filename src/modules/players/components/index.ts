@@ -68,3 +68,4 @@ export type {
 
 export { PlayerCategoryBadge } from './PlayerCategoryBadge'
 export { PlayerCategorySelect } from './PlayerCategorySelect'
+export { PlayerDigitalLicenseModal } from './PlayerDigitalLicenseModal'

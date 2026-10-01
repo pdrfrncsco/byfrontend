@@ -12,12 +12,14 @@ import {
   User,
   Footprints,
   Maximize2,
+  Printer,
 } from 'lucide-react'
 import { resolveMediaUrl } from '@/lib/media'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { ClubMember, ClubSquadMember } from '@/modules/clubs/types'
 import { usePlayer } from '@/modules/players/hooks/usePlayerQueries'
+import { PlayerDigitalLicenseModal } from '@/modules/players/components/PlayerDigitalLicenseModal'
 import { getPositionAccentColor, getStatusBadgeConfig } from './ClubSquadPlayerCard'
 
 interface ClubPlayerPreviewModalProps {
@@ -56,6 +58,7 @@ export function ClubPlayerPreviewModal({
   onClose,
 }: ClubPlayerPreviewModalProps) {
   const [imgError, setImgError] = useState(false)
+  const [showLicense, setShowLicense] = useState(false)
 
   // Listen to Escape key to close
   useEffect(() => {
@@ -417,9 +420,21 @@ export function ClubPlayerPreviewModal({
 
         {/* Modal Actions Footer */}
         <div className="flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-low/80 px-4 py-2.5 sm:px-5">
-          <Button variant="outline" size="sm" onClick={onClose} className="h-8 text-xs">
-            Fechar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={onClose} className="h-8 text-xs">
+              Fechar
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowLicense(true)}
+              className="h-8 text-xs gap-1"
+            >
+              <Printer className="h-3.5 w-3.5 text-primary" />
+              <span>Licença Digital</span>
+            </Button>
+          </div>
 
           {publicProfileSlug ? (
             <Button asChild size="sm" variant="primary" className="h-8 text-xs">
@@ -433,6 +448,32 @@ export function ClubPlayerPreviewModal({
           )}
         </div>
       </div>
+
+      {/* Embedded Player Digital License Modal */}
+      {showLicense && (
+        <PlayerDigitalLicenseModal
+          isOpen={showLicense}
+          onClose={() => setShowLicense(false)}
+          player={
+            fullPlayerProfile || ({
+              id: player.id,
+              slug: playerSlug || player.id,
+              full_name: name,
+              first_name: name.split(' ')[0],
+              last_name: name.split(' ').slice(1).join(' '),
+              primary_position: positionLabel,
+              position_label: positionLabel,
+              nationality: nationality,
+              avatar: rawAvatar || undefined,
+              current_club: clubName ? { id: 'club', name: clubName, slug: 'club' } : undefined,
+              status: rawStatus || 'active',
+              status_label: statusLabel,
+            } as any)
+          }
+          medicalStatus="fit"
+          medicalClearance={true}
+        />
+      )}
     </div>
   )
 }

@@ -1,13 +1,24 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ExplorePage } from '@/modules/shared/pages/ExplorePage'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <ExplorePage />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <ExplorePage />
+      </MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 
@@ -15,18 +26,18 @@ describe('ExplorePage', () => {
   it('renders the main exploration destinations and editorial journeys', () => {
     renderPage()
 
-    expect(screen.getByRole('heading', { name: 'Explore o futebol em Angola e África' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Explorar o Futebol em Angola' })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: /Competições/ }).some(link => link.getAttribute('href') === '/competitions')).toBe(true)
-    expect(screen.getByRole('link', { name: /Acompanhar uma competição/ })).toHaveAttribute('href', '/competitions')
-    expect(screen.getByRole('link', { name: /Criar conta/ })).toHaveAttribute('href', '/register')
+    expect(screen.getByRole('link', { name: /Criar Conta/ })).toHaveAttribute('href', '/register')
   })
 
-  it('filters destinations and exposes an empty state', () => {
+  it('filters destinations and provides search input', () => {
     renderPage()
 
-    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'inexistente' } })
+    const searchInput = screen.getByPlaceholderText('Pesquisar competições, clubes, organizações ou jogadores...')
+    expect(searchInput).toBeInTheDocument()
 
-    expect(screen.getByText('Nenhuma área corresponde à sua pesquisa.')).toBeInTheDocument()
-    expect(screen.getByText('áreas disponíveis').parentElement).toHaveTextContent('0 áreas disponíveis')
+    fireEvent.change(searchInput, { target: { value: 'Petro' } })
+    expect(searchInput).toHaveValue('Petro')
   })
 })

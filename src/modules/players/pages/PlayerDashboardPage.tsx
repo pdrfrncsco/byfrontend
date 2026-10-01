@@ -11,6 +11,7 @@ import {
   GraduationCap,
   HeartPulse,
   Sparkles,
+  Shield,
 } from 'lucide-react'
 import { DashboardLayout } from '@/app/layouts/DashboardLayout'
 import { ROUTES } from '@/constants/routes'
@@ -21,6 +22,7 @@ import {
   PlayerTechnicalAttributesCard,
   PlayerQuickActionsCard,
   PlayerTransferStatus,
+  PlayerDigitalLicenseModal,
 } from '../components'
 import { FeedPublisherCard } from '@/modules/fans/components'
 import { usePlayerMe, usePlayerMedicalProfile } from '../hooks'
@@ -32,6 +34,7 @@ export function PlayerDashboardPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [imgError, setImgError] = useState(false)
+  const [showLicenseModal, setShowLicenseModal] = useState(false)
   const { data: player, isLoading, isError } = usePlayerMe()
   const { data: medicalProfile } = usePlayerMedicalProfile(player?.id ?? '', !!player?.id)
   const isMedicalFit = medicalProfile?.medical_status === 'fit' || medicalProfile?.medical_clearance === true
@@ -143,7 +146,17 @@ export function PlayerDashboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-xs shrink-0">
+          <div className="flex items-center gap-xs shrink-0 flex-wrap">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLicenseModal(true)}
+              className="gap-xs text-xs border-brand-500/40 text-brand-400 hover:bg-brand-500/10 font-bold"
+            >
+              <Shield className="h-3.5 w-3.5" />
+              Licença Digital
+            </Button>
             <Button asChild variant="outline" size="sm" className="gap-xs text-xs">
               <Link to={playerRoutes.detail(player.slug)}>
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -353,6 +366,17 @@ export function PlayerDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Official Digital License Modal */}
+      {player && (
+        <PlayerDigitalLicenseModal
+          isOpen={showLicenseModal}
+          onClose={() => setShowLicenseModal(false)}
+          player={player}
+          medicalStatus={medicalProfile?.medical_status}
+          medicalClearance={medicalProfile?.medical_clearance}
+        />
+      )}
     </DashboardLayout>
   )
 }

@@ -18,6 +18,8 @@ const ResetPasswordPage = lazy(() => import('@/modules/auth/pages').then(m => ({
 const ProfilePage = lazy(() => import('@/modules/shared/pages/ProfilePage').then(m => ({ default: m.ProfilePage })))
 const NotFoundPage = lazy(() => import('@/modules/shared/pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })))
 const NotificationsPage = lazy(() => import('@/modules/notifications/pages/NotificationsPage').then(m => ({ default: m.NotificationsPage })))
+const VerifyPlayerPage = lazy(() => import('@/modules/players/pages/VerifyPlayerPage').then(m => ({ default: m.VerifyPlayerPage })))
+const VerifyMatchPage = lazy(() => import('@/modules/competitions/pages/VerifyMatchPage').then(m => ({ default: m.VerifyMatchPage })))
 
 function RouteFallback() {
   return (
@@ -118,6 +120,10 @@ export function publicRouteElements() {
           </ProtectedRoute>
         }
       />
+
+      {/* Pitch-side Public QR Code Verification Routes */}
+      <Route path="/verify/player/:slug" element={<Suspense fallback={<RouteFallback />}><VerifyPlayerPage /></Suspense>} />
+      <Route path="/verify/match/:id" element={<Suspense fallback={<RouteFallback />}><VerifyMatchPage /></Suspense>} />
 
       <Route path={sharedRoutes.notFoundPage} element={<Suspense fallback={<RouteFallback />}><NotFoundPage /></Suspense>} />
       <Route path={sharedRoutes.notFound} element={<Navigate to={sharedRoutes.notFoundPage} replace />} />

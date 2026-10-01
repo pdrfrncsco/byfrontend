@@ -12,6 +12,7 @@ import {
   Calendar,
   X,
   Tag,
+  Printer,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -41,6 +42,7 @@ import {
   getStatusBadgeConfig,
 } from '@/modules/clubs/components/ClubSquadPlayerCard'
 import { ClubPlayerPreviewModal } from '@/modules/clubs/components/ClubPlayerPreviewModal'
+import { ClubSquadLicensesModal } from '@/modules/clubs/components/ClubSquadLicensesModal'
 import { ClubLogo } from '@/modules/clubs/components/ClubLogo'
 
 type SectorType = 'all' | 'gk' | 'def' | 'mid' | 'att'
@@ -142,6 +144,7 @@ export default function ClubSquadPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilterType>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [selectedPlayer, setSelectedPlayer] = useState<ClubSquadMember | ClubMember | null>(null)
+  const [showSquadLicenses, setShowSquadLicenses] = useState(false)
 
   const { players, staff } = useMemo(() => {
     const memberList = Array.isArray(members) ? members : []
@@ -350,6 +353,16 @@ export default function ClubSquadPage() {
             </div>
 
             <div className="flex flex-wrap gap-xs">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowSquadLicenses(true)}
+                className="gap-1.5"
+              >
+                <Printer className="h-4 w-4 text-primary" />
+                <span>Imprimir Licenças (Plantel)</span>
+              </Button>
               <Button asChild variant="secondary" size="sm">
                 <Link to={ROUTES.DASHBOARD_CLUB_CATEGORIES}>
                   <Tag className="mr-xs h-4 w-4" />
@@ -877,6 +890,16 @@ export default function ClubSquadPage() {
         player={selectedPlayer}
         clubName={club.name}
         onClose={() => setSelectedPlayer(null)}
+      />
+
+      {/* Bulk Squad Licenses Export / Print Modal */}
+      <ClubSquadLicensesModal
+        isOpen={showSquadLicenses}
+        onClose={() => setShowSquadLicenses(false)}
+        clubName={club.name}
+        clubLogoUrl={club.logo_url}
+        players={players}
+        categories={categories}
       />
     </DashboardLayout>
   )

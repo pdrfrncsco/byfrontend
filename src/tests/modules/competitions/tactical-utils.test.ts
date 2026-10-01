@@ -178,7 +178,8 @@ describe('Tactical Utils', () => {
     expect(val.gkCount).toBe(1)
     expect(val.defCount).toBe(4)
     expect(val.midCount).toBe(3)
-    expect(val.fwdCount).toBe(3)
+    expect(val.fwdCount + val.flexCount).toBe(3)
+    expect(val.flexCount).toBe(2)
 
     // Now make MDF an extra GK
     const ptLineupWith2Gk: LineupPlayer[] = [

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MatchCenterPage } from '@/modules/competitions/pages/MatchCenterPage'
 import { useMatchCenter } from '@/modules/competitions/hooks/useMatchCenter'
 import { useCompetition } from '@/modules/competitions/hooks/useCompetitions'
@@ -17,6 +18,14 @@ vi.mock('@/modules/competitions/hooks/useCompetitionAccess', () => ({
 vi.mock('@/modules/competitions/hooks/useMatchCenter', () => ({
   useMatchCenter: vi.fn(),
 }))
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 describe('MatchCenterPage status filter', () => {
   beforeEach(() => {
@@ -58,11 +67,13 @@ describe('MatchCenterPage status filter', () => {
 
   it('applies the selected status to the live list query', () => {
     render(
-      <MemoryRouter initialEntries={['/competitions/comp-1/match-center']}>
-        <Routes>
-          <Route path="/competitions/:compId/match-center" element={<MatchCenterPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/competitions/comp-1/match-center']}>
+          <Routes>
+            <Route path="/competitions/:compId/match-center" element={<MatchCenterPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     fireEvent.click(screen.getByRole('button', { name: /ao vivo/i }))
@@ -92,11 +103,13 @@ describe('MatchCenterPage status filter', () => {
     }))
 
     render(
-      <MemoryRouter initialEntries={['/competitions/comp-1/match-center']}>
-        <Routes>
-          <Route path="/competitions/:compId/match-center" element={<MatchCenterPage />} />
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/competitions/comp-1/match-center']}>
+          <Routes>
+            <Route path="/competitions/:compId/match-center" element={<MatchCenterPage />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     )
 
     fireEvent.click(screen.getByRole('button', { name: /ao vivo/i }))

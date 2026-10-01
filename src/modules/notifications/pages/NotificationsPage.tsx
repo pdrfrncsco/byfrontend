@@ -7,6 +7,7 @@ import { getOrganizationSidebarSections } from '@/modules/organizations/constant
 import { getClubSidebarLinks } from '@/modules/clubs/constants/navigation'
 import { getPlayerSidebarLinks } from '@/modules/players/constants/navigation'
 import { getCompetitionSidebarLinks } from '@/modules/competitions/constants'
+import { getFanSidebarLinks } from '@/modules/fans/constants/navigation'
 import { useNotificationsList, useMarkRead } from '../hooks/useNotifications'
 import { useNotificationStream } from '../hooks/useNotificationStream'
 import type { Notification } from '../types'
@@ -54,6 +55,8 @@ export const NotificationsPage: React.FC = () => {
     ? getPlayerSidebarLinks()
     : resolvedType === 'competition'
     ? getCompetitionSidebarLinks()
+    : resolvedType === 'fan'
+    ? getFanSidebarLinks()
     : undefined
 
   const headerActions = (
